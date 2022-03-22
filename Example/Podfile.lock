@@ -1,0 +1,16 @@
+PODS:
+  - JupiterSDK (0.1.0)
+
+DEPENDENCIES:
+  - JupiterSDK (from `../`)
+
+EXTERNAL SOURCES:
+  JupiterSDK:
+    :path: "../"
+
+SPEC CHECKSUMS:
+  JupiterSDK: b781b15b5fa3281b8c52aaf7b851f413b6dce99e
+
+PODFILE CHECKSUM: 2ac05ab02d453ebe5bfec74bf1a3f0d9ded15521
+
+COCOAPODS: 1.11.2

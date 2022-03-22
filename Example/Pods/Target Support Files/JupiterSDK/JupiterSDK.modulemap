@@ -1,0 +1,6 @@
+framework module JupiterSDK {
+  umbrella header "JupiterSDK-umbrella.h"
+
+  export *
+  module * { export * }
+}

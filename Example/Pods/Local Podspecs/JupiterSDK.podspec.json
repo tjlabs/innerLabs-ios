@@ -1,0 +1,22 @@
+{
+  "name": "JupiterSDK",
+  "version": "0.1.0",
+  "summary": "A short description of JupiterSDK.",
+  "description": "TODO: Add long description of the pod here.",
+  "homepage": "https://github.com/Leo/JupiterSDK",
+  "license": {
+    "type": "MIT",
+    "file": "LICENSE"
+  },
+  "authors": {
+    "Leo": "92098727+tjlabs-dev@users.noreply.github.com"
+  },
+  "source": {
+    "git": "https://github.com/Leo/JupiterSDK.git",
+    "tag": "0.1.0"
+  },
+  "platforms": {
+    "ios": "9.0"
+  },
+  "source_files": "JupiterSDK/Classes/**/*"
+}

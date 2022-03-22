@@ -9,12 +9,29 @@
 /* Begin PBXBuildFile section */
 		094712FBE9AB87C7271608AA /* Pods_JupiterSDK_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F53652D9802675AD38E29753 /* Pods_JupiterSDK_Tests.framework */; };
 		607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACD51AFB9204008FA782 /* AppDelegate.swift */; };
-		607FACD81AFB9204008FA782 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACD71AFB9204008FA782 /* ViewController.swift */; };
+		607FACD81AFB9204008FA782 /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACD71AFB9204008FA782 /* MainViewController.swift */; };
 		607FACDB1AFB9204008FA782 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 607FACD91AFB9204008FA782 /* Main.storyboard */; };
 		607FACDD1AFB9204008FA782 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 607FACDC1AFB9204008FA782 /* Images.xcassets */; };
 		607FACE01AFB9204008FA782 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 607FACDE1AFB9204008FA782 /* LaunchScreen.xib */; };
 		607FACEC1AFB9204008FA782 /* Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACEB1AFB9204008FA782 /* Tests.swift */; };
 		9A16870CE33E63FE35238C05 /* Pods_JupiterSDK_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DB77B350B78C4D6D3DA0D745 /* Pods_JupiterSDK_Example.framework */; };
+		B3BD699227E98E0E00A32A7A /* JupiterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3BD699127E98E0E00A32A7A /* JupiterViewController.swift */; };
+		B3BD699827E9A4A500A32A7A /* ColorPalette.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3BD699727E9A4A500A32A7A /* ColorPalette.swift */; };
+		B3BD699A27E9A4BE00A32A7A /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B3BD699927E9A4BE00A32A7A /* Colors.xcassets */; };
+		B3BD699D27E9A4FE00A32A7A /* setCharacterSpacing.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3BD699C27E9A4FE00A32A7A /* setCharacterSpacing.swift */; };
+		B3BD699F27E9A51100A32A7A /* makeVibrate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3BD699E27E9A51100A32A7A /* makeVibrate.swift */; };
+		B3BD69A127E9A52500A32A7A /* applyShadow.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3BD69A027E9A52500A32A7A /* applyShadow.swift */; };
+		B3BD69A427E9A54700A32A7A /* StringExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3BD69A327E9A54700A32A7A /* StringExtension.swift */; };
+		B3BD69A627E9A55400A32A7A /* UIViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3BD69A527E9A55400A32A7A /* UIViewExtension.swift */; };
+		B3BD69A827E9A56B00A32A7A /* UITableViewRegisterable.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3BD69A727E9A56B00A32A7A /* UITableViewRegisterable.swift */; };
+		B3BD69AA27E9A57500A32A7A /* getClassName + UIViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3BD69A927E9A57500A32A7A /* getClassName + UIViewController.swift */; };
+		B3BD69AC27E9A57E00A32A7A /* UICollectionViewRegisterable.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3BD69AB27E9A57E00A32A7A /* UICollectionViewRegisterable.swift */; };
+		B3BD69AF27E9A78000A32A7A /* SectorContainerTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3BD69AD27E9A78000A32A7A /* SectorContainerTableViewCell.swift */; };
+		B3BD69B027E9A78000A32A7A /* SectorContainerTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B3BD69AE27E9A78000A32A7A /* SectorContainerTableViewCell.xib */; };
+		B3BD69B427E9A8AD00A32A7A /* ZoneCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3BD69B227E9A8AD00A32A7A /* ZoneCollectionViewCell.swift */; };
+		B3BD69B527E9A8AD00A32A7A /* ZoneCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B3BD69B327E9A8AD00A32A7A /* ZoneCollectionViewCell.xib */; };
+		B3BD69B827E9ABA300A32A7A /* DataModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3BD69B727E9ABA300A32A7A /* DataModel.swift */; };
+		B3BD69BA27E9ABB200A32A7A /* ZoneDataModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3BD69B927E9ABB200A32A7A /* ZoneDataModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -29,13 +46,13 @@
 
 /* Begin PBXFileReference section */
 		001F364143D86A2C5C1D9BB0 /* Pods-JupiterSDK_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-JupiterSDK_Tests.release.xcconfig"; path = "Target Support Files/Pods-JupiterSDK_Tests/Pods-JupiterSDK_Tests.release.xcconfig"; sourceTree = "<group>"; };
-		33536F035F43D878561B6254 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
-		38E38E00A30376AD81C0CB48 /* JupiterSDK.podspec */ = {isa = PBXFileReference; includeInIndex = 1; name = JupiterSDK.podspec; path = ../JupiterSDK.podspec; sourceTree = "<group>"; };
+		33536F035F43D878561B6254 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
+		38E38E00A30376AD81C0CB48 /* JupiterSDK.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = JupiterSDK.podspec; path = ../JupiterSDK.podspec; sourceTree = "<group>"; };
 		4B6D660DDF3C43E212E26391 /* Pods-JupiterSDK_Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-JupiterSDK_Tests.debug.xcconfig"; path = "Target Support Files/Pods-JupiterSDK_Tests/Pods-JupiterSDK_Tests.debug.xcconfig"; sourceTree = "<group>"; };
 		607FACD01AFB9204008FA782 /* JupiterSDK_Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = JupiterSDK_Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		607FACD41AFB9204008FA782 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		607FACD51AFB9204008FA782 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		607FACD71AFB9204008FA782 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		607FACD71AFB9204008FA782 /* MainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
 		607FACDA1AFB9204008FA782 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		607FACDC1AFB9204008FA782 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		607FACDF1AFB9204008FA782 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
@@ -44,7 +61,24 @@
 		607FACEB1AFB9204008FA782 /* Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tests.swift; sourceTree = "<group>"; };
 		6C664AF60D59718EECD6DBBC /* Pods-JupiterSDK_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-JupiterSDK_Example.debug.xcconfig"; path = "Target Support Files/Pods-JupiterSDK_Example/Pods-JupiterSDK_Example.debug.xcconfig"; sourceTree = "<group>"; };
 		8B538B887A8FED7CB659550A /* Pods-JupiterSDK_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-JupiterSDK_Example.release.xcconfig"; path = "Target Support Files/Pods-JupiterSDK_Example/Pods-JupiterSDK_Example.release.xcconfig"; sourceTree = "<group>"; };
-		D004876B84847F9E6841D160 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; name = README.md; path = ../README.md; sourceTree = "<group>"; };
+		B3BD699127E98E0E00A32A7A /* JupiterViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JupiterViewController.swift; sourceTree = "<group>"; };
+		B3BD699727E9A4A500A32A7A /* ColorPalette.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorPalette.swift; sourceTree = "<group>"; };
+		B3BD699927E9A4BE00A32A7A /* Colors.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Colors.xcassets; sourceTree = "<group>"; };
+		B3BD699C27E9A4FE00A32A7A /* setCharacterSpacing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = setCharacterSpacing.swift; sourceTree = "<group>"; };
+		B3BD699E27E9A51100A32A7A /* makeVibrate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = makeVibrate.swift; sourceTree = "<group>"; };
+		B3BD69A027E9A52500A32A7A /* applyShadow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = applyShadow.swift; sourceTree = "<group>"; };
+		B3BD69A327E9A54700A32A7A /* StringExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringExtension.swift; sourceTree = "<group>"; };
+		B3BD69A527E9A55400A32A7A /* UIViewExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIViewExtension.swift; sourceTree = "<group>"; };
+		B3BD69A727E9A56B00A32A7A /* UITableViewRegisterable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITableViewRegisterable.swift; sourceTree = "<group>"; };
+		B3BD69A927E9A57500A32A7A /* getClassName + UIViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "getClassName + UIViewController.swift"; sourceTree = "<group>"; };
+		B3BD69AB27E9A57E00A32A7A /* UICollectionViewRegisterable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UICollectionViewRegisterable.swift; sourceTree = "<group>"; };
+		B3BD69AD27E9A78000A32A7A /* SectorContainerTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SectorContainerTableViewCell.swift; sourceTree = "<group>"; };
+		B3BD69AE27E9A78000A32A7A /* SectorContainerTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SectorContainerTableViewCell.xib; sourceTree = "<group>"; };
+		B3BD69B227E9A8AD00A32A7A /* ZoneCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoneCollectionViewCell.swift; sourceTree = "<group>"; };
+		B3BD69B327E9A8AD00A32A7A /* ZoneCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ZoneCollectionViewCell.xib; sourceTree = "<group>"; };
+		B3BD69B727E9ABA300A32A7A /* DataModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataModel.swift; sourceTree = "<group>"; };
+		B3BD69B927E9ABB200A32A7A /* ZoneDataModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoneDataModel.swift; sourceTree = "<group>"; };
+		D004876B84847F9E6841D160 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
 		DB77B350B78C4D6D3DA0D745 /* Pods_JupiterSDK_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_JupiterSDK_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F53652D9802675AD38E29753 /* Pods_JupiterSDK_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_JupiterSDK_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -77,7 +111,6 @@
 				4B6D660DDF3C43E212E26391 /* Pods-JupiterSDK_Tests.debug.xcconfig */,
 				001F364143D86A2C5C1D9BB0 /* Pods-JupiterSDK_Tests.release.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
@@ -105,9 +138,15 @@
 		607FACD21AFB9204008FA782 /* Example for JupiterSDK */ = {
 			isa = PBXGroup;
 			children = (
+				B3BD69B627E9AB9400A32A7A /* DataModel */,
+				B3BD69B127E9A88B00A32A7A /* Sector */,
+				B3BD69A227E9A53C00A32A7A /* Extensions */,
+				B3BD699B27E9A4D100A32A7A /* Utils */,
+				B3BD699627E9A48E00A32A7A /* Color */,
 				607FACD51AFB9204008FA782 /* AppDelegate.swift */,
-				607FACD71AFB9204008FA782 /* ViewController.swift */,
+				607FACD71AFB9204008FA782 /* MainViewController.swift */,
 				607FACD91AFB9204008FA782 /* Main.storyboard */,
+				B3BD699127E98E0E00A32A7A /* JupiterViewController.swift */,
 				607FACDC1AFB9204008FA782 /* Images.xcassets */,
 				607FACDE1AFB9204008FA782 /* LaunchScreen.xib */,
 				607FACD31AFB9204008FA782 /* Supporting Files */,
@@ -149,6 +188,57 @@
 				33536F035F43D878561B6254 /* LICENSE */,
 			);
 			name = "Podspec Metadata";
+			sourceTree = "<group>";
+		};
+		B3BD699627E9A48E00A32A7A /* Color */ = {
+			isa = PBXGroup;
+			children = (
+				B3BD699727E9A4A500A32A7A /* ColorPalette.swift */,
+				B3BD699927E9A4BE00A32A7A /* Colors.xcassets */,
+			);
+			name = Color;
+			sourceTree = "<group>";
+		};
+		B3BD699B27E9A4D100A32A7A /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				B3BD699C27E9A4FE00A32A7A /* setCharacterSpacing.swift */,
+				B3BD699E27E9A51100A32A7A /* makeVibrate.swift */,
+				B3BD69A027E9A52500A32A7A /* applyShadow.swift */,
+			);
+			name = Utils;
+			sourceTree = "<group>";
+		};
+		B3BD69A227E9A53C00A32A7A /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				B3BD69A327E9A54700A32A7A /* StringExtension.swift */,
+				B3BD69A527E9A55400A32A7A /* UIViewExtension.swift */,
+				B3BD69A727E9A56B00A32A7A /* UITableViewRegisterable.swift */,
+				B3BD69A927E9A57500A32A7A /* getClassName + UIViewController.swift */,
+				B3BD69AB27E9A57E00A32A7A /* UICollectionViewRegisterable.swift */,
+			);
+			name = Extensions;
+			sourceTree = "<group>";
+		};
+		B3BD69B127E9A88B00A32A7A /* Sector */ = {
+			isa = PBXGroup;
+			children = (
+				B3BD69AD27E9A78000A32A7A /* SectorContainerTableViewCell.swift */,
+				B3BD69AE27E9A78000A32A7A /* SectorContainerTableViewCell.xib */,
+				B3BD69B227E9A8AD00A32A7A /* ZoneCollectionViewCell.swift */,
+				B3BD69B327E9A8AD00A32A7A /* ZoneCollectionViewCell.xib */,
+			);
+			name = Sector;
+			sourceTree = "<group>";
+		};
+		B3BD69B627E9AB9400A32A7A /* DataModel */ = {
+			isa = PBXGroup;
+			children = (
+				B3BD69B727E9ABA300A32A7A /* DataModel.swift */,
+				B3BD69B927E9ABB200A32A7A /* ZoneDataModel.swift */,
+			);
+			name = DataModel;
 			sourceTree = "<group>";
 		};
 		FF4C89D2434460AC285975FD /* Frameworks */ = {
@@ -227,6 +317,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 				Base,
 			);
@@ -246,9 +337,12 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B3BD69B527E9A8AD00A32A7A /* ZoneCollectionViewCell.xib in Resources */,
 				607FACDB1AFB9204008FA782 /* Main.storyboard in Resources */,
+				B3BD699A27E9A4BE00A32A7A /* Colors.xcassets in Resources */,
 				607FACE01AFB9204008FA782 /* LaunchScreen.xib in Resources */,
 				607FACDD1AFB9204008FA782 /* Images.xcassets in Resources */,
+				B3BD69B027E9A78000A32A7A /* SectorContainerTableViewCell.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -331,8 +425,22 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				607FACD81AFB9204008FA782 /* ViewController.swift in Sources */,
+				B3BD69AA27E9A57500A32A7A /* getClassName + UIViewController.swift in Sources */,
+				B3BD699227E98E0E00A32A7A /* JupiterViewController.swift in Sources */,
+				B3BD69AF27E9A78000A32A7A /* SectorContainerTableViewCell.swift in Sources */,
+				B3BD69A127E9A52500A32A7A /* applyShadow.swift in Sources */,
+				B3BD69AC27E9A57E00A32A7A /* UICollectionViewRegisterable.swift in Sources */,
+				B3BD69BA27E9ABB200A32A7A /* ZoneDataModel.swift in Sources */,
+				B3BD69B827E9ABA300A32A7A /* DataModel.swift in Sources */,
+				607FACD81AFB9204008FA782 /* MainViewController.swift in Sources */,
+				B3BD699D27E9A4FE00A32A7A /* setCharacterSpacing.swift in Sources */,
+				B3BD69A427E9A54700A32A7A /* StringExtension.swift in Sources */,
+				B3BD69B427E9A8AD00A32A7A /* ZoneCollectionViewCell.swift in Sources */,
 				607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */,
+				B3BD69A627E9A55400A32A7A /* UIViewExtension.swift in Sources */,
+				B3BD699827E9A4A500A32A7A /* ColorPalette.swift in Sources */,
+				B3BD69A827E9A56B00A32A7A /* UITableViewRegisterable.swift in Sources */,
+				B3BD699F27E9A51100A32A7A /* makeVibrate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -419,7 +527,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -465,7 +573,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
@@ -484,7 +592,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.demo.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
 		};
@@ -499,7 +607,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.demo.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
 		};
