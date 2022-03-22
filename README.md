@@ -22,8 +22,8 @@ pod 'JupiterSDK'
 
 ## Author
 
-Leo, 92098727+tjlabs-dev@users.noreply.github.com
+Leo, leo.shin@tjlabscorp.com
 
 ## License
 
-JupiterSDK is available under the MIT license. See the LICENSE file for more info.
+JupiterSDK is available under the TJLABS Corp. license. See the LICENSE file for more info.
