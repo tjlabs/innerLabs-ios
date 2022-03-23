@@ -1,0 +1,134 @@
+//
+//  CalculateFunctions.swift
+//  JupiterSDK
+//
+//  Created by 신동현 on 2022/03/23.
+//
+
+import Foundation
+
+public class CalculateFunctions: NSObject {
+    
+    public override init() {
+        
+    }
+    
+    public func exponentialMovingAverage(preEMA: Float, curValue: Float, windowSize: Int) -> Float {
+        let windowSizeFloat: Float = Float(windowSize)
+        return preEMA * (windowSizeFloat - 1) / windowSizeFloat + curValue / windowSizeFloat
+    }
+    
+    public func callAttEMA(preAttEMA: Attitude, curAtt: Attitude, windowSize: Int) -> Attitude{
+        return Attitude(
+            Roll: exponentialMovingAverage(preEMA: preAttEMA.Roll, curValue: curAtt.Roll, windowSize: windowSize),
+            Pitch: exponentialMovingAverage(preEMA: preAttEMA.Pitch, curValue: curAtt.Pitch, windowSize: windowSize),
+            Yaw: exponentialMovingAverage(preEMA: preAttEMA.Yaw, curValue: curAtt.Yaw, windowSize: windowSize)
+        )
+    }
+    
+    public func getRotationMatrixFromVector(rotationVector: [Float], returnSize: Int) -> [[Float]] {
+        var rotationMatrix = [[Float]](repeating: [Float](repeating: 0, count: 4), count: 4)
+        
+        let q1: Float = rotationVector[0]
+        let q2: Float = rotationVector[1]
+        let q3: Float = rotationVector[2]
+        let q0: Float = rotationVector[3]
+        
+        let sqq1 = 2 * q1 * q1
+        let sqq2 = 2 * q2 * q2
+        let sqq3 = 2 * q3 * q3
+        let q1q2 = 2 * q1 * q2
+        let q3q0 = 2 * q3 * q0
+        let q1q3 = 2 * q1 * q3
+        let q2q0 = 2 * q2 * q0
+        let q2q3 = 2 * q2 * q3
+        let q1q0 = 2 * q1 * q0
+        
+        if returnSize == 16 {
+            rotationMatrix[0][0] = 1 - sqq2 - sqq3
+            rotationMatrix[0][1] = q1q2 - q3q0
+            rotationMatrix[0][2] = q1q3 + q2q0
+            
+            rotationMatrix[1][0] = q1q2 + q3q0
+            rotationMatrix[1][1] = 1 - sqq1 - sqq3
+            rotationMatrix[1][2] = q2q3 - q1q0
+            
+            rotationMatrix[2][0] = q1q3 - q2q0
+            rotationMatrix[2][1] = q2q3 + q1q0
+            rotationMatrix[2][2] = 1 - sqq1 - sqq2
+            
+            rotationMatrix[3][3] = 1
+        } else if returnSize == 9 {
+            rotationMatrix[0][0] = 1 - sqq2 - sqq3
+            rotationMatrix[0][1] = q1q2 - q3q0
+            rotationMatrix[0][2] = q1q3 + q2q0
+            
+            rotationMatrix[1][0] = q1q2 + q3q0
+            rotationMatrix[1][1] = 1 - sqq1 - sqq3
+            rotationMatrix[1][2] = q2q3 - q1q0
+            
+            rotationMatrix[2][0] = q1q3 - q2q0
+            rotationMatrix[2][1] = q2q3 + q1q0
+            rotationMatrix[2][2] = 1 - sqq1 - sqq2
+        }
+        
+        return rotationMatrix
+    }
+    
+    public func getOrientation(rotationMatrix: [[Float]]) -> [Float] {
+        var orientation = [Float](repeating: 0, count: 3)
+        orientation[0] = atan2(rotationMatrix[0][1], rotationMatrix[1][1])
+        orientation[1] = asin(-rotationMatrix[2][1])
+        orientation[2] = atan2(-rotationMatrix[2][0], rotationMatrix[2][2])
+        
+        return orientation
+    }
+    
+    public func rotationXY(roll: Float, pitch: Float, gyro: [Float]) -> [Float] {
+        var rotationMatrix = [[Float]](repeating: [Float](repeating: 3, count: 0), count: 3)
+        var processedGyro = [Float](repeating: 0, count: 3)
+        
+        let gx = gyro[0]
+        let gy = gyro[1]
+        let gz = gyro[2]
+        
+        rotationMatrix[0][0] = cos(roll)
+        rotationMatrix[0][1] = 0
+        rotationMatrix[0][2] = -sin(roll)
+        
+        rotationMatrix[1][0] = sin(roll) * sin(pitch)
+        rotationMatrix[1][1] = 0
+        rotationMatrix[1][2] = cos(roll) * sin(pitch)
+        
+        rotationMatrix[2][0] = cos(pitch) * sin(roll)
+        rotationMatrix[2][1] = -sin(pitch)
+        rotationMatrix[2][2] = cos(pitch) * cos(roll)
+        
+        processedGyro[0] =
+        (gx * rotationMatrix[0][0]) + (gy * rotationMatrix[0][1]) + (gz * rotationMatrix[0][2])
+        processedGyro[1] =
+        (gx * rotationMatrix[1][0]) + (gy * rotationMatrix[1][1]) + (gz * rotationMatrix[1][2])
+        processedGyro[2] =
+        (gx * rotationMatrix[2][0]) + (gy * rotationMatrix[2][1]) + (gz * rotationMatrix[2][2])
+        
+        return processedGyro
+    }
+    
+    public func calAttitudeUsingGameVector(gameVec: [Float]) -> Attitude {
+        let rotationMatrix = getRotationMatrixFromVector(rotationVector: gameVec, returnSize: 9)
+        let vecOrientation = getOrientation(rotationMatrix: rotationMatrix)
+        
+        return Attitude(Roll: vecOrientation[2], Pitch: -vecOrientation[1], Yaw: -vecOrientation[0])
+    }
+    
+    public func l2Normalize(originalVector: [Float]) -> Float {
+        let squared = originalVector.map { $0 * $0 }
+        let arraySum: Float = squared.reduce(0, +)
+        
+        return sqrt(arraySum)
+    }
+    
+    public func transBody2Nav(att: Attitude, data: [Float]) -> [Float] {
+        return rotationXY(roll: -att.Roll, pitch: -att.Pitch, gyro: data)
+    }
+}

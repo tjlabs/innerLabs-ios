@@ -1,4 +1,5 @@
 import UIKit
+import JupiterSDK
 
 enum TableList{
     case sector
@@ -10,6 +11,8 @@ class JupiterViewController: UIViewController {
     
     private let tableList: [TableList] = [.sector]
     
+    var jupiterService = PDRService()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -18,6 +21,8 @@ class JupiterViewController: UIViewController {
         
         makeDelegate()
         registerXib()
+        
+        jupiterService.startService(parent: self)
     }
 
     @IBAction func tapBackButton(_ sender: UIButton) {

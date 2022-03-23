@@ -10,6 +10,21 @@
 To run the example project, clone the repo, and run `pod install` from the Example directory first.
 
 ## Requirements
+ <info.plist>
+Privacy - Motion Usage Description : Allow my app to access motion usage.
+Privacy - Location When In Use Usage Description : Allow my app to access GPS
+Privacy - Bluetooth Always Usage Description : Allow my app to access Bluetooth
+Required device capabilites : 
+ item 0 : armv7 (default)
+ item 1 : Accelerometer
+ item 2 : Gyroscope
+ item 3 : Magnetometer
+Required background modes :
+ item 0 : App communicates with an accessory
+ item 1 : App communicates using CoreBluetooth
+ item 2 : App downloads content from the network
+ item 3 : App registers for location updates
+
 
 ## Installation
 
