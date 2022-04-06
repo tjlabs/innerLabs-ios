@@ -27,6 +27,8 @@
 		B3BD69CC27EB202700A32A7A /* PacingDetectFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3BD69CB27EB202600A32A7A /* PacingDetectFunctions.swift */; };
 		B3BD69CE27EB206500A32A7A /* PeakValleyDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3BD69CD27EB206500A32A7A /* PeakValleyDetector.swift */; };
 		B3BD69D027EB208200A32A7A /* StepLengthEstimation.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3BD69CF27EB208200A32A7A /* StepLengthEstimation.swift */; };
+		B3BD69D227EC035400A32A7A /* ListExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3BD69D127EC035400A32A7A /* ListExtension.swift */; };
+		B3BD69D427EC200F00A32A7A /* ArrayExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3BD69D327EC200F00A32A7A /* ArrayExtension.swift */; };
 		F0F3C36A115FA8259D7467F8404751DE /* Pods-JupiterSDK_Example-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = D09690B8CF21331896CF985BFFA13AE6 /* Pods-JupiterSDK_Example-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
 /* End PBXBuildFile section */
 
@@ -79,6 +81,8 @@
 		B3BD69CB27EB202600A32A7A /* PacingDetectFunctions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PacingDetectFunctions.swift; sourceTree = "<group>"; };
 		B3BD69CD27EB206500A32A7A /* PeakValleyDetector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PeakValleyDetector.swift; sourceTree = "<group>"; };
 		B3BD69CF27EB208200A32A7A /* StepLengthEstimation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StepLengthEstimation.swift; sourceTree = "<group>"; };
+		B3BD69D127EC035400A32A7A /* ListExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListExtension.swift; sourceTree = "<group>"; };
+		B3BD69D327EC200F00A32A7A /* ArrayExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArrayExtension.swift; sourceTree = "<group>"; };
 		B5F162BEA5F8D34B7DAC7BB941E5303A /* Pods-JupiterSDK_Example-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-JupiterSDK_Example-dummy.m"; sourceTree = "<group>"; };
 		B9B5FFFD1CA465914E2D29B4434F5480 /* Pods-JupiterSDK_Example.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = "Pods-JupiterSDK_Example.modulemap"; sourceTree = "<group>"; };
 		BECA89D4E08AA67AB828EA516B173F66 /* Pods-JupiterSDK_Tests-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-JupiterSDK_Tests-Info.plist"; sourceTree = "<group>"; };
@@ -145,6 +149,8 @@
 				B3BD69CD27EB206500A32A7A /* PeakValleyDetector.swift */,
 				B3BD69CF27EB208200A32A7A /* StepLengthEstimation.swift */,
 				B3BD69BF27E9BE5F00A32A7A /* StringExtension.swift */,
+				B3BD69D327EC200F00A32A7A /* ArrayExtension.swift */,
+				B3BD69D127EC035400A32A7A /* ListExtension.swift */,
 				C82871A3ED2869571BE43F2F55A83D72 /* Pod */,
 				F2CC256DF26CFBC5FED9DD36AFFB1908 /* Support Files */,
 			);
@@ -416,12 +422,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B3BD69D427EC200F00A32A7A /* ArrayExtension.swift in Sources */,
 				1752AA7D859E401CCC140434CF869184 /* JupiterSDK-dummy.m in Sources */,
 				B3BD69BC27E9BD7400A32A7A /* PDRService.swift in Sources */,
 				B3BD69CA27EB1F5E00A32A7A /* HeadingFunctions.swift in Sources */,
 				B3BD69C627EAFE4600A32A7A /* CalculateFunctions.swift in Sources */,
 				B3BD69C027E9BE5F00A32A7A /* StringExtension.swift in Sources */,
 				B3BD69BE27E9BD7E00A32A7A /* BluetoothManager.swift in Sources */,
+				B3BD69D227EC035400A32A7A /* ListExtension.swift in Sources */,
 				B3BD69CC27EB202700A32A7A /* PacingDetectFunctions.swift in Sources */,
 				B3BD69CE27EB206500A32A7A /* PeakValleyDetector.swift in Sources */,
 				B3BD69C827EAFF9300A32A7A /* Entity.swift in Sources */,

@@ -70,7 +70,7 @@ public class PDRService: NSObject {
                 if let accZ = data?.acceleration.z {
                     self.accZ = accZ
                 }
-                let data = toString()
+//                let data = toString()
             }
         }
         
