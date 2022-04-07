@@ -8,6 +8,7 @@
 import Foundation
 
 public class PeakValleyDetector: NSObject {
+    
     public override init() {
         
     }
@@ -19,31 +20,42 @@ public class PeakValleyDetector: NSObject {
         public var type: Type = Type.NONE
         public var timestamp: Double = 0
         public var pvValue: Float = 0.0
-        
-        public mutating func updatePeakValley (localPeakValley: PeakValleyStruct) {
-            if(type == Type.PEAK && localPeakValley.type == Type.PEAK) {
-                updatePeakIfBigger(localPeak: localPeakValley)
-            } else if (type == Type.VALLEY && localPeakValley.type == Type.VALLEY) {
-                updateValleyIfSmaller(localValley: localPeakValley)
-            }
-        }
-        
-        public mutating func updatePeakIfBigger(localPeak: PeakValleyStruct) {
-            if (localPeak.pvValue > pvValue) {
-                self.timestamp = localPeak.timestamp
-                self.pvValue = localPeak.pvValue
-            }
-        }
-        
-        public mutating func updateValleyIfSmaller(localValley: PeakValleyStruct) {
-            if (localValley.pvValue < pvValue) {
-                self.timestamp = localValley.timestamp
-                self.pvValue = localValley.pvValue
-            }
-        }
     }
     
-    public var lastPeakValley: PeakValleyStruct = PeakValleyStruct(type: Type.PEAK, timestamp: 0, pvValue: 0)
+    public func updatePeakValley(localPeakValley: PeakValleyStruct, lastPeakValley: PeakValleyStruct) -> PeakValleyStruct {
+        var updatePeakValley: PeakValleyStruct = lastPeakValley
+        if (lastPeakValley.type == Type.PEAK && localPeakValley.type == Type.PEAK) {
+            updatePeakValley = updatePeakIfBigger(localPeak: localPeakValley, lastPeak: lastPeakValley)
+        } else if (lastPeakValley.type == Type.VALLEY && localPeakValley.type == Type.VALLEY) {
+            updatePeakValley = updateValleyIfSmaller(localValley: localPeakValley, lastValley: lastPeakValley)
+        }
+        return updatePeakValley
+    }
+    
+    public func updatePeakIfBigger(localPeak: PeakValleyStruct, lastPeak: PeakValleyStruct) -> PeakValleyStruct {
+        var updatePeakValley: PeakValleyStruct = lastPeak
+        
+        if (localPeak.pvValue > lastPeak.pvValue) {
+            updatePeakValley.timestamp = localPeak.timestamp
+            updatePeakValley.pvValue = localPeak.pvValue
+        }
+        
+        return updatePeakValley
+    }
+    
+    public func updateValleyIfSmaller(localValley: PeakValleyStruct, lastValley: PeakValleyStruct) -> PeakValleyStruct {
+        var updatePeakValley: PeakValleyStruct = lastValley
+        
+        if (localValley.pvValue < lastValley.pvValue) {
+            updatePeakValley.timestamp = localValley.timestamp
+            updatePeakValley.pvValue = localValley.pvValue
+        }
+        
+        return updatePeakValley
+    }
+    
+    
+    public var lastPeakValley: PeakValleyStruct = PeakValleyStruct(type: Type.PEAK, timestamp: 100, pvValue: -100)
     
     public func findLocalPeakValley(queue: LinkedList<TimestampFloat>) -> PeakValleyStruct {
         if (isLocalPeak(data: queue)) {
@@ -111,7 +123,8 @@ public class PeakValleyDetector: NSObject {
     public func findPeakValley(smoothedNormAcc: LinkedList<TimestampFloat>) -> PeakValleyStruct {
         let localPeakValley = findLocalPeakValley(queue: smoothedNormAcc)
         let foundGlobalPeakValley = findGlobalPeakValley(localPeakValley: localPeakValley)
-        lastPeakValley.updatePeakValley(localPeakValley: localPeakValley)
+        
+        lastPeakValley = updatePeakValley(localPeakValley: localPeakValley, lastPeakValley: lastPeakValley)
         return foundGlobalPeakValley
     }
 }

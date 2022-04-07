@@ -70,10 +70,12 @@ public class PacingDetectFunctions: NSObject {
         return normalStepCount >= 2
     }
     
-    public func checkLossStep(normalStepCountBuffer: [Int]) -> Bool {
+    public func checkLossStep(normalStepCountBuffer: LinkedList<Int>) -> Bool {
         if (normalStepCountBuffer.count < 3) {
             return false
-        } else if (normalStepCountBuffer == [1, 2, 3]) {
+        } else if (normalStepCountBuffer.node(at: 0)!.value == 0 &&
+                   normalStepCountBuffer.node(at: 1)!.value == 1 &&
+                   normalStepCountBuffer.node(at: 2)!.value == 2) {
             return true
         } else {
             return false

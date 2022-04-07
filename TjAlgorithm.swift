@@ -22,7 +22,7 @@ public class TjAlgorithm: NSObject {
     }
     
     public var timeBefore: Double = 0.0
-    public var PeakValleyDetector = PeakValleyDetector()
+    public var peakValleyDetector = PeakValleyDetector()
     public var stepLengthEstimator = StepLengthEstimator()
     public var preAccNormEMA = 0
     public var preGameVecAttEMA = Attitude(Roll: 0, Pitch: 0, Yaw: 0)
@@ -40,9 +40,9 @@ public class TjAlgorithm: NSObject {
     
     public var normalStepCheckCount = -1
     
-    public func runAlgorithm(sensorData: SensorData) -> Step {
-        
-    }
+//    public func runAlgorithm(sensorData: SensorData) -> Step {
+//
+//    }
     
     public func updateAccQueue(pvStruct: PeakValleyDetector.PeakValleyStruct) {
         if (pvStruct.type == Type.PEAK) {
@@ -80,6 +80,8 @@ public class TjAlgorithm: NSObject {
             normalStepLossCheckQueue.remove(at: 0)
         }
         normalStepLossCheckQueue.add(Node(value:normalStepCount))
+
+        return PacingDetectFunctions().checkLossStep(normalStepCountBuffer: normalStepLossCheckQueue)
     }
     
     public func checkLookingAttitude(lookingFlagStepQueue: LinkedList<Bool>) -> Bool {
