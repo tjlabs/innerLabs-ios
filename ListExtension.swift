@@ -11,7 +11,7 @@ public class Node<T> {
     public var value: T
     public var next: Node<T>?
     
-    public init(value: T, next: Node<T>?) {
+    public init(value: T, next: Node<T>? = nil) {
         self.value = value
         self.next = next
     }
@@ -21,10 +21,10 @@ public class LinkedList<T> {
     public var head: Node<T>?
     public var tail: Node<T>?
     
-    public init (head: Node<T>?) {
-        self.head = head
-        self.tail = head
-    }
+//    public init (head: Node<T>?) {
+//        self.head = head
+//        self.tail = head
+//    }
     
     public var isEmpty: Bool {
         return head == nil
@@ -82,6 +82,18 @@ public class LinkedList<T> {
             self.head = newNode
             self.tail = newNode
         }
+    }
+    
+    public func add(_ node: Node<T>) {
+        if self.head == nil {
+            self.head = node
+            self.tail = node
+            return
+        }
+        
+        // search for last node and attatch new
+        self.tail?.next = node
+        self.tail = node
     }
     
     public func insert(_ newNode: Node<T>, at index: Int) {
