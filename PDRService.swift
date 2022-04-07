@@ -50,7 +50,7 @@ public class PDRService: NSObject {
         self.parent = parent
         if motionManager.isDeviceMotionAvailable {
             initialzeSenseors()
-//            startTimer()
+            startTimer()
         }
         else {
             print("DeviceMotion unavailable")
@@ -141,7 +141,7 @@ public class PDRService: NSObject {
         let timeStamp = String(format: "%u", getCurrentTimeInMilliseconds() )
         let sensor = toString()
         
-//        print(timeStamp, "\\", sensor)
+        print(timeStamp, "\\", sensor)
         
 //        parent?.informServer(info: data, completion: {
 //            self.bleRSSIJson = ""

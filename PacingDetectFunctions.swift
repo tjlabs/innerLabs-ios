@@ -17,8 +17,17 @@ public class PacingDetectFunctions: NSObject {
         if (queue.count < 5) {
             return false
         }
-//        var diffStepLengthBuffer = callDif
-        return false
+        var Buffer: [Float] = []
+        
+        for i in 0...queue.count {
+            let stepLength = queue.node(at: i)!.value.stepLength
+            Buffer += stepLength
+        }
+        
+        let diffStepLengthBuffer = calDiffFloatBuffer(buffer: Buffer)
+        let diffStepLengthVariance = calVariance(buffer: diffStepLengthBuffer)
+        
+        return diffStepLengthVariance >= 0.00
     }
 //
     public func calDiffFloatBuffer(buffer: [Float]) -> [Float] {
@@ -61,11 +70,13 @@ public class PacingDetectFunctions: NSObject {
         return normalStepCount >= 2
     }
     
-//    public func checkLossStep(normalStepCountBuffer: [Int]) -> Bool {
-//        return if (normalStepCountBuffer.count < 3) {
-//            false
-//        } else {
-//            normalStepCountBuffer ==
-//        }
-//    }
+    public func checkLossStep(normalStepCountBuffer: [Int]) -> Bool {
+        if (normalStepCountBuffer.count < 3) {
+            return false
+        } else if (normalStepCountBuffer == [1, 2, 3]) {
+            return true
+        } else {
+            return false
+        }
+    }
 }
