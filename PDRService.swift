@@ -183,8 +183,7 @@ public class PDRService: NSObject {
 //        print(testQueue.showList())
         
         
-        var stepResult = TJ.runAlgorithm(sensorData: sensorData)
-//        print(timeStamp, "\\ \(stepResult.unit_idx) \\ \(stepResult.step_length)")
+        let stepResult = TJ.runAlgorithm(sensorData: sensorData)
         if (stepResult.isStepDetected) {
             print(timeStamp, "\\ \(stepResult.unit_idx) \\ \(stepResult.step_length)")
         }
