@@ -16,6 +16,8 @@
 		6E676B41DC581D787CCB1F3C9104E364 /* JupiterSDK-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = FE2D1E340C1B72E6EAA45BA24E238BBE /* JupiterSDK-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		7F89299BC53FB38152350B3575B068C0 /* Pods-JupiterSDK_Tests-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = A47C89D249618CF9B23A917D89798273 /* Pods-JupiterSDK_Tests-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A56C4863FD51AD9CA73BF371EF3FD4B4 /* Pods-JupiterSDK_Example-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = B5F162BEA5F8D34B7DAC7BB941E5303A /* Pods-JupiterSDK_Example-dummy.m */; };
+		B309080228000AC600CD8955 /* Node.swift in Sources */ = {isa = PBXBuildFile; fileRef = B309080128000AC600CD8955 /* Node.swift */; };
+		B309080428000B3800CD8955 /* LinkedList.swift in Sources */ = {isa = PBXBuildFile; fileRef = B309080328000B3800CD8955 /* LinkedList.swift */; };
 		B3BD69BC27E9BD7400A32A7A /* PDRService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3BD69BB27E9BD7400A32A7A /* PDRService.swift */; };
 		B3BD69BE27E9BD7E00A32A7A /* BluetoothManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3BD69BD27E9BD7E00A32A7A /* BluetoothManager.swift */; };
 		B3BD69C027E9BE5F00A32A7A /* StringExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3BD69BF27E9BE5F00A32A7A /* StringExtension.swift */; };
@@ -72,6 +74,8 @@
 		A47C89D249618CF9B23A917D89798273 /* Pods-JupiterSDK_Tests-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Pods-JupiterSDK_Tests-umbrella.h"; sourceTree = "<group>"; };
 		A6C2F251A3F589FF36C6F044558A475A /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		AD3287B8D2D0F012580482A0E6CF6739 /* JupiterTest.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = JupiterTest.swift; path = JupiterSDK/Classes/JupiterTest.swift; sourceTree = "<group>"; };
+		B309080128000AC600CD8955 /* Node.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Node.swift; sourceTree = "<group>"; };
+		B309080328000B3800CD8955 /* LinkedList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkedList.swift; sourceTree = "<group>"; };
 		B3BD69BB27E9BD7400A32A7A /* PDRService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDRService.swift; sourceTree = "<group>"; };
 		B3BD69BD27E9BD7E00A32A7A /* BluetoothManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BluetoothManager.swift; sourceTree = "<group>"; };
 		B3BD69BF27E9BE5F00A32A7A /* StringExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringExtension.swift; sourceTree = "<group>"; };
@@ -157,6 +161,8 @@
 				B3BD69D127EC035400A32A7A /* ListExtension.swift */,
 				B3BD69FA27FEBD4700A32A7A /* Step.swift */,
 				B3BD69F827FEACCA00A32A7A /* Type.swift */,
+				B309080328000B3800CD8955 /* LinkedList.swift */,
+				B309080128000AC600CD8955 /* Node.swift */,
 				C82871A3ED2869571BE43F2F55A83D72 /* Pod */,
 				F2CC256DF26CFBC5FED9DD36AFFB1908 /* Support Files */,
 			);
@@ -431,10 +437,12 @@
 				B3BD69D427EC200F00A32A7A /* ArrayExtension.swift in Sources */,
 				1752AA7D859E401CCC140434CF869184 /* JupiterSDK-dummy.m in Sources */,
 				B3BD69FB27FEBD4700A32A7A /* Step.swift in Sources */,
+				B309080228000AC600CD8955 /* Node.swift in Sources */,
 				B3BD69BC27E9BD7400A32A7A /* PDRService.swift in Sources */,
 				B3BD69CA27EB1F5E00A32A7A /* HeadingFunctions.swift in Sources */,
 				B3BD69C627EAFE4600A32A7A /* CalculateFunctions.swift in Sources */,
 				B3BD69C027E9BE5F00A32A7A /* StringExtension.swift in Sources */,
+				B309080428000B3800CD8955 /* LinkedList.swift in Sources */,
 				B3BD69BE27E9BD7E00A32A7A /* BluetoothManager.swift in Sources */,
 				B3BD69F927FEACCA00A32A7A /* Type.swift in Sources */,
 				B3BD69D227EC035400A32A7A /* ListExtension.swift in Sources */,

@@ -7,30 +7,30 @@
 
 import Foundation
 
-public struct Attitude {
-    public var Roll: Float = 0
-    public var Pitch: Float = 0
-    public var Yaw: Float = 0
+public struct Attitude: Equatable {
+    public var Roll: Double = 0
+    public var Pitch: Double = 0
+    public var Yaw: Double = 0
 }
 
-public struct StepResult {
+public struct StepResult: Equatable {
     public var count: Double = 0
-    public var heading: Float = 0
-    public var pressure: Float = 0
-    public var stepLength: Float = 0
+    public var heading: Double = 0
+    public var pressure: Double = 0
+    public var stepLength: Double = 0
     public var isLooking: Bool = true
 }
 
 
-public struct TimestampFloat {
+public struct TimestampDouble: Equatable {
     public var timestamp: Double = 0
-    public var valuestamp: Float = 0
+    public var valuestamp: Double = 0
 }
 
 
-public struct StepLengthWithTimestamp {
+public struct StepLengthWithTimestamp: Equatable {
     public var timestamp: Double = 0
-    public var stepLength: Float = 0
+    public var stepLength: Double = 0
 
 }
 

@@ -8,10 +8,12 @@
 import Foundation
 
 public struct SensorData {
-    public var acc = [Float](repeating: 0, count: 3)
-    public var gyro = [Float](repeating: 0, count: 3)
-    public var mag = [Float](repeating: 0, count: 3)
-    public var grav = [Float](repeating: 0, count: 3)
+    public var acc = [Double](repeating: 0, count: 3)
+    public var gyro = [Double](repeating: 0, count: 3)
+    public var mag = [Double](repeating: 0, count: 3)
+    public var grav = [Double](repeating: 0, count: 3)
+    public var pressure = [Double](repeating: 0, count: 1)
+    public var att = [Double](repeating: 0, count: 3)
     
     public func toString() -> String {
         return "acc=\(self.acc), gyro=\(self.gyro), mag=\(self.mag), grav=\(self.grav)"

@@ -13,16 +13,16 @@ public class HeadingFunctions: NSObject {
         
     }
     
-    public func calAngleOfRotation(timeInterval: Double, angularVelocity: Float) -> Float {
-        return angularVelocity * Float(timeInterval) * 1e-3
+    public func calAngleOfRotation(timeInterval: Double, angularVelocity: Double) -> Double {
+        return angularVelocity * Double(timeInterval) * 1e-3
     }
 
-    public func degree2radian(degree: Float) -> Float {
-        return degree * Float.pi / 180
+    public func degree2radian(degree: Double) -> Double {
+        return degree * Double.pi / 180
     }
 
-    public func radian2degree(radian: Float) -> Float {
-        return radian * 180 / Float.pi
+    public func radian2degree(radian: Double) -> Double {
+        return radian * 180 / Double.pi
     }
 
 }

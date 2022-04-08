@@ -13,8 +13,8 @@ public class CalculateFunctions: NSObject {
         
     }
     
-    public func exponentialMovingAverage(preEMA: Float, curValue: Float, windowSize: Int) -> Float {
-        let windowSizeFloat: Float = Float(windowSize)
+    public func exponentialMovingAverage(preEMA: Double, curValue: Double, windowSize: Int) -> Double {
+        let windowSizeFloat: Double = Double(windowSize)
         return preEMA * (windowSizeFloat - 1) / windowSizeFloat + curValue / windowSizeFloat
     }
     
@@ -26,13 +26,13 @@ public class CalculateFunctions: NSObject {
         )
     }
     
-    public func getRotationMatrixFromVector(rotationVector: [Float], returnSize: Int) -> [[Float]] {
-        var rotationMatrix = [[Float]](repeating: [Float](repeating: 0, count: 4), count: 4)
+    public func getRotationMatrixFromVector(rotationVector: [Double], returnSize: Int) -> [[Double]] {
+        var rotationMatrix = [[Double]](repeating: [Double](repeating: 0, count: 4), count: 4)
         
-        let q1: Float = rotationVector[0]
-        let q2: Float = rotationVector[1]
-        let q3: Float = rotationVector[2]
-        let q0: Float = rotationVector[3]
+        let q1: Double = rotationVector[0]
+        let q2: Double = rotationVector[1]
+        let q3: Double = rotationVector[2]
+        let q0: Double = rotationVector[3]
         
         let sqq1 = 2 * q1 * q1
         let sqq2 = 2 * q2 * q2
@@ -75,8 +75,8 @@ public class CalculateFunctions: NSObject {
         return rotationMatrix
     }
     
-    public func getOrientation(rotationMatrix: [[Float]]) -> [Float] {
-        var orientation = [Float](repeating: 0, count: 3)
+    public func getOrientation(rotationMatrix: [[Double]]) -> [Double] {
+        var orientation = [Double](repeating: 0, count: 3)
         orientation[0] = atan2(rotationMatrix[0][1], rotationMatrix[1][1])
         orientation[1] = asin(-rotationMatrix[2][1])
         orientation[2] = atan2(-rotationMatrix[2][0], rotationMatrix[2][2])
@@ -84,9 +84,9 @@ public class CalculateFunctions: NSObject {
         return orientation
     }
     
-    public func rotationXY(roll: Float, pitch: Float, gyro: [Float]) -> [Float] {
-        var rotationMatrix = [[Float]](repeating: [Float](repeating: 3, count: 0), count: 3)
-        var processedGyro = [Float](repeating: 0, count: 3)
+    public func rotationXY(roll: Double, pitch: Double, gyro: [Double]) -> [Double] {
+        var rotationMatrix = [[Double]](repeating: [Double](repeating: 0, count: 3), count: 3)
+        var processedGyro = [Double](repeating: 0, count: 3)
         
         let gx = gyro[0]
         let gy = gyro[1]
@@ -114,21 +114,21 @@ public class CalculateFunctions: NSObject {
         return processedGyro
     }
     
-    public func calAttitudeUsingGameVector(gameVec: [Float]) -> Attitude {
+    public func calAttitudeUsingGameVector(gameVec: [Double]) -> Attitude {
         let rotationMatrix = getRotationMatrixFromVector(rotationVector: gameVec, returnSize: 9)
         let vecOrientation = getOrientation(rotationMatrix: rotationMatrix)
         
         return Attitude(Roll: vecOrientation[2], Pitch: -vecOrientation[1], Yaw: -vecOrientation[0])
     }
     
-    public func l2Normalize(originalVector: [Float]) -> Float {
+    public func l2Normalize(originalVector: [Double]) -> Double {
         let squared = originalVector.map { $0 * $0 }
-        let arraySum: Float = squared.reduce(0, +)
+        let arraySum: Double = squared.reduce(0, +)
         
         return sqrt(arraySum)
     }
     
-    public func transBody2Nav(att: Attitude, data: [Float]) -> [Float] {
+    public func transBody2Nav(att: Attitude, data: [Double]) -> [Double] {
         return rotationXY(roll: -att.Roll, pitch: -att.Pitch, gyro: data)
     }
 }

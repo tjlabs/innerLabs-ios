@@ -8,10 +8,10 @@
 import Foundation
 
 public struct Step {
-    public var heading: Float = 0
+    public var heading: Double = 0
     public var lookingFlag: Bool = false
-    public var pressure : Float = 0
-    public var step_length: Float = 0
+    public var pressure : Double = 0
+    public var step_length: Double = 0
     public var unit_idx: Int = 0
     public var isStepDetected: Bool = false
     

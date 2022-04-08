@@ -17,9 +17,9 @@ public class PacingDetectFunctions: NSObject {
         if (queue.count < 5) {
             return false
         }
-        var Buffer: [Float] = []
+        var Buffer: [Double] = []
         
-        for i in 0...queue.count {
+        for i in 0..<queue.count {
             let stepLength = queue.node(at: i)!.value.stepLength
             Buffer += stepLength
         }
@@ -30,25 +30,25 @@ public class PacingDetectFunctions: NSObject {
         return diffStepLengthVariance >= 0.00
     }
 //
-    public func calDiffFloatBuffer(buffer: [Float]) -> [Float] {
-        var diffBuffer: [Float] = []
-        for i in 1...buffer.count {
+    public func calDiffFloatBuffer(buffer: [Double]) -> [Double] {
+        var diffBuffer: [Double] = []
+        for i in 1..<buffer.count {
             diffBuffer += buffer[i] - buffer[i-1]
         }
         return diffBuffer
     }
     
-    public func calVariance(buffer: [Float]) -> Double {
+    public func calVariance(buffer: [Double]) -> Double {
         var bufferSum: Double = 0
         let bufferMean = buffer.average
-        for i in 0...buffer.count {
+        for i in 0..<buffer.count {
             bufferSum += pow((Double(buffer[i]) - bufferMean), 2)
         }
         
         return bufferSum / Double(buffer.count - 1)
     }
     
-    public func updateNormalStepCheckCount(accPeakQueue: LinkedList<TimestampFloat>, accValleyQueue: LinkedList<TimestampFloat>, normalStepCheckCount: Int) -> Int {
+    public func updateNormalStepCheckCount(accPeakQueue: LinkedList<TimestampDouble>, accValleyQueue: LinkedList<TimestampDouble>, normalStepCheckCount: Int) -> Int {
         
         if (accPeakQueue.count <= 2 || accValleyQueue.count <= 2) {
             return normalStepCheckCount + 1
