@@ -13,6 +13,18 @@ class JupiterViewController: UIViewController {
     
     var jupiterService = PDRService()
     
+    var timer = Timer()
+    var timerCounter: Int = 0
+    var timerTimeOut: Int = 10
+    let TIMER_INTERVAL: TimeInterval = 1/40 // second
+    
+    var pastTime: Double = 0
+    var elapsedTime: Double = 0
+    
+    @IBOutlet weak var timeLabel: UILabel!
+    @IBOutlet weak var unitCountLabel: UILabel!
+    @IBOutlet weak var unitLengthLabel: UILabel!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -21,6 +33,7 @@ class JupiterViewController: UIViewController {
         
         makeDelegate()
         registerXib()
+        startTimer()
         
         jupiterService.startService(parent: self)
     }
@@ -42,6 +55,42 @@ class JupiterViewController: UIViewController {
     func setTableView() {
         //테이블 뷰 셀 사이의 회색 선 없애기
         jupiterTableView.separatorStyle = UITableViewCell.SeparatorStyle.none
+    }
+    
+    func startTimer() {
+        self.timer = Timer.scheduledTimer(timeInterval: TIMER_INTERVAL, target: self, selector: #selector(self.timerUpdate), userInfo: nil, repeats: true)
+        
+        timerCounter = 0
+    }
+    
+    func stopTimer() {
+        self.timer.invalidate()
+    }
+    
+    @objc func timerUpdate() {
+        let timeStamp = getCurrentTimeInMilliseconds()
+        let dt = timeStamp - pastTime
+        pastTime = timeStamp
+        
+        if (dt < 100) {
+            elapsedTime += (dt*1e-3)
+        }
+        self.timeLabel.text = String(format: "%.2f", elapsedTime)
+        
+        let jupiterFlag = jupiterService.stepResult.isStepDetected
+        let unitIdx = Int(jupiterService.stepResult.unit_idx)
+        let unitLength = jupiterService.stepResult.step_length
+        
+        if (jupiterFlag) {
+            print("\(elapsedTime) \\ \(unitIdx) \\ \(unitLength)")
+            self.unitCountLabel.text = String(unitIdx)
+            self.unitLengthLabel.text = String(format: "%.4f", unitLength)
+        }
+    }
+    
+    func getCurrentTimeInMilliseconds() -> Double
+    {
+        return Double(Date().timeIntervalSince1970 * 1000)
     }
 }
 

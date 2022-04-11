@@ -7,6 +7,8 @@ public class PDRService: NSObject {
     let motionManager = CMMotionManager()
     let motionAltimeter = CMAltimeter()
     
+    let G: Double = 9.81
+    
     var accX: Double = 0
     var accY: Double = 0
     var accZ: Double = 0
@@ -34,7 +36,11 @@ public class PDRService: NSObject {
     var roll: Double = 0
     var yaw: Double = 0
     
+    var pastTime: Double = 0
+    var elapsedTime: Double = 0
+    
     public var sensorData = SensorData()
+    public var stepResult = Step()
     
     public var testQueue = LinkedList<TimestampDouble>()
     
@@ -70,15 +76,15 @@ public class PDRService: NSObject {
             motionManager.startAccelerometerUpdates(to: .main) { [self] (data, error) in
                 if let accX = data?.acceleration.x {
                     self.accX = accX
-                    sensorData.acc[0] = accX
+                    sensorData.acc[0] = accX*G
                 }
                 if let accY = data?.acceleration.y {
                     self.accY = accY
-                    sensorData.acc[1] = accY
+                    sensorData.acc[1] = accY*G
                 }
                 if let accZ = data?.acceleration.z {
                     self.accZ = accZ
-                    sensorData.acc[2] = accZ
+                    sensorData.acc[2] = accZ*G
                 }
             }
         }
@@ -145,6 +151,10 @@ public class PDRService: NSObject {
                 self.pitch = m.attitude.pitch
                 self.yaw = m.attitude.yaw
                 
+//                sensorData.acc[0] = m.userAcceleration.x
+//                sensorData.acc[1] = m.userAcceleration.y
+//                sensorData.acc[2] = m.userAcceleration.z
+                
                 sensorData.att[0] = m.attitude.roll
                 sensorData.att[1] = m.attitude.pitch
                 sensorData.att[2] = m.attitude.yaw
@@ -167,8 +177,12 @@ public class PDRService: NSObject {
     }
     
     @objc func timerUpdate() {
-        let timeStamp = String(format: "%u", getCurrentTimeInMilliseconds() )
+        let timeStamp = getCurrentTimeInMilliseconds()
         let sensor = checkSensorData(sensorData: sensorData)
+        
+        let dt = timeStamp - pastTime
+        pastTime = timeStamp
+        elapsedTime += dt
 //        print(timeStamp, "\\", sensor)
         
 //        var value1 = Double.random(in: 2.71...3.14)
@@ -183,15 +197,16 @@ public class PDRService: NSObject {
 //        print(testQueue.showList())
         
         
-        let stepResult = TJ.runAlgorithm(sensorData: sensorData)
-        if (stepResult.isStepDetected) {
-            print(timeStamp, "\\ \(stepResult.unit_idx) \\ \(stepResult.step_length)")
-        }
+//        let stepResult = TJ.runAlgorithm(sensorData: sensorData)
+        stepResult = TJ.runAlgorithm(sensorData: sensorData)
+//        if (stepResult.isStepDetected) {
+//            print("\(elapsedTime) \\ \(stepResult.unit_idx) \\ \(stepResult.step_length)")
+//        }
     }
     
-    func getCurrentTimeInMilliseconds() -> Int64
+    func getCurrentTimeInMilliseconds() -> Double
     {
-        return Int64(Date().timeIntervalSince1970 * 1000)
+        return Double(Date().timeIntervalSince1970 * 1000)
     }
     
     public func toString() -> String {
