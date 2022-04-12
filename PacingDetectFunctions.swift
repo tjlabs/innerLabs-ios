@@ -24,13 +24,13 @@ public class PacingDetectFunctions: NSObject {
             Buffer += stepLength
         }
         
-        let diffStepLengthBuffer = calDiffFloatBuffer(buffer: Buffer)
+        let diffStepLengthBuffer = calDiffDoubleBuffer(buffer: Buffer)
         let diffStepLengthVariance = calVariance(buffer: diffStepLengthBuffer)
         
-        return diffStepLengthVariance >= 0.00
+        return diffStepLengthVariance >= 0.09
     }
 //
-    public func calDiffFloatBuffer(buffer: [Double]) -> [Double] {
+    public func calDiffDoubleBuffer(buffer: [Double]) -> [Double] {
         var diffBuffer: [Double] = []
         for i in 1..<buffer.count {
             diffBuffer += buffer[i] - buffer[i-1]

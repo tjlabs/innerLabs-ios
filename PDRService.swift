@@ -151,9 +151,9 @@ public class PDRService: NSObject {
                 self.pitch = m.attitude.pitch
                 self.yaw = m.attitude.yaw
                 
-//                sensorData.acc[0] = m.userAcceleration.x
-//                sensorData.acc[1] = m.userAcceleration.y
-//                sensorData.acc[2] = m.userAcceleration.z
+                sensorData.userAcc[0] = m.userAcceleration.x
+                sensorData.userAcc[1] = m.userAcceleration.y
+                sensorData.userAcc[2] = m.userAcceleration.z
                 
                 sensorData.att[0] = m.attitude.roll
                 sensorData.att[1] = m.attitude.pitch

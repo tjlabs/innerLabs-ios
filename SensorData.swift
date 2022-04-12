@@ -9,6 +9,7 @@ import Foundation
 
 public struct SensorData {
     public var acc = [Double](repeating: 0, count: 3)
+    public var userAcc = [Double](repeating: 0, count: 3)
     public var gyro = [Double](repeating: 0, count: 3)
     public var mag = [Double](repeating: 0, count: 3)
     public var grav = [Double](repeating: 0, count: 3)

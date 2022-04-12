@@ -34,7 +34,7 @@ public class StepLengthEstimator: NSObject {
         let differencePV = accPeakQueue.last!.value.valuestamp - accValleyQueue.last!.value.valuestamp
         var stepLength = DEFAULT_STEP_LENGTH
         
-        print("Difference PV : \(differencePV)")
+//        print("Difference PV : \(differencePV)")
         
         if (differencePV > DIFFERENCE_PV_THRESHOLD) {
             stepLength = calLongStepLength(differencePV: differencePV)
@@ -42,9 +42,9 @@ public class StepLengthEstimator: NSObject {
             stepLength = calShortStepLength(differencePV: differencePV)
         }
         
-        print("StepLength Befor Limit : \(stepLength)")
+//        print("StepLength Befor Limit : \(stepLength)")
         stepLength = limitStepLength(stepLength: stepLength)
-        print("StepLength After Limit : \(stepLength)")
+//        print("StepLength After Limit : \(stepLength)")
         
         return compensateStepLength(curStepLength: stepLength)
     }

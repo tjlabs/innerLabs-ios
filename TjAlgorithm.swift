@@ -110,14 +110,13 @@ public class TjAlgorithm: NSObject {
                     finalStepResult.heading = HF.radian2degree(radian: curAttitude.Yaw)
                     finalStepResult.pressure = sensorData.pressure[0]
                     finalStepResult.step_length = stepLengthEstimator.estStepLength(accPeakQueue: accPeakQueue, accValleyQueue: accValleyQueue)
-                    print("Estimated StepLength : \(finalStepResult.step_length)")
+//                    print("Estimated StepLength : \(finalStepResult.step_length)")
                     updateStepLengthQueue(stepLengthWithTimeStamp: StepLengthWithTimestamp(timestamp: foundAccPV.timestamp, stepLength: finalStepResult.step_length))
 
                     if (isLossStep && finalStepResult.unit_idx > 3) {
                         finalStepResult.step_length = 2.1
                     }
                     if (PDF.isPacing(queue: stepLengthQueue)) {
-                        print("isPacing? : YES")
                         finalStepResult.step_length = 0.01
                     }
                 }
