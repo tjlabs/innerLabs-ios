@@ -57,12 +57,12 @@
 		1A839F6C5A4CA76AD2F192FDE638F831 /* Pods-JupiterSDK_Tests-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-JupiterSDK_Tests-acknowledgements.markdown"; sourceTree = "<group>"; };
 		22F07E1E170AB1C239D9CD1821388339 /* JupiterSDK.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = JupiterSDK.release.xcconfig; sourceTree = "<group>"; };
 		2432E63E4E4A07405185257E2DC43C2B /* JupiterSDK.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; path = JupiterSDK.podspec; sourceTree = "<group>"; tabWidth = 2; };
-		249D3629879889DAFD7B486C2E89F745 /* JupiterSDK */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = JupiterSDK; path = JupiterSDK.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		249D3629879889DAFD7B486C2E89F745 /* JupiterSDK.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = JupiterSDK.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		24EE9AC6CDE80EC3312405BEF5AAD6F5 /* Pods-JupiterSDK_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-JupiterSDK_Example.release.xcconfig"; sourceTree = "<group>"; };
 		2727BA84D9BEECA451FE0F65F9AD1038 /* Pods-JupiterSDK_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-JupiterSDK_Example.debug.xcconfig"; sourceTree = "<group>"; };
 		2885A9FB368DD3AD54065F9CCB2AE757 /* JupiterSDK-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "JupiterSDK-prefix.pch"; sourceTree = "<group>"; };
 		2D0D80993230E1BA72429375B5814F98 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
-		46007FD9363A51EF486FFA592293542D /* Pods-JupiterSDK_Tests */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = "Pods-JupiterSDK_Tests"; path = Pods_JupiterSDK_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		46007FD9363A51EF486FFA592293542D /* Pods_JupiterSDK_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_JupiterSDK_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		4FFE3E8EE4C3B62974CD6B37C93E783D /* JupiterSDK-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "JupiterSDK-dummy.m"; sourceTree = "<group>"; };
 		5944BE53CD8C4EED738BC2E5076C7C26 /* JupiterSDK.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = JupiterSDK.modulemap; sourceTree = "<group>"; };
 		721B8CF4DE2ADA1CA803667C97A75549 /* JupiterSDK-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "JupiterSDK-Info.plist"; sourceTree = "<group>"; };
@@ -95,7 +95,7 @@
 		B9B5FFFD1CA465914E2D29B4434F5480 /* Pods-JupiterSDK_Example.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = "Pods-JupiterSDK_Example.modulemap"; sourceTree = "<group>"; };
 		BECA89D4E08AA67AB828EA516B173F66 /* Pods-JupiterSDK_Tests-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-JupiterSDK_Tests-Info.plist"; sourceTree = "<group>"; };
 		D09690B8CF21331896CF985BFFA13AE6 /* Pods-JupiterSDK_Example-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Pods-JupiterSDK_Example-umbrella.h"; sourceTree = "<group>"; };
-		D625E9E1A7452D6B5A6D9E6AE733805F /* Pods-JupiterSDK_Example */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = "Pods-JupiterSDK_Example"; path = Pods_JupiterSDK_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		D625E9E1A7452D6B5A6D9E6AE733805F /* Pods_JupiterSDK_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_JupiterSDK_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		DA85982FF7EAB38B1034CC9EF51EC382 /* Pods-JupiterSDK_Example-frameworks.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-JupiterSDK_Example-frameworks.sh"; sourceTree = "<group>"; };
 		DD09B0B761161014E6AEE66E650C19A1 /* Pods-JupiterSDK_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-JupiterSDK_Tests.release.xcconfig"; sourceTree = "<group>"; };
 		E14BD7D13A4E120CAC7A5ECAC32C93E3 /* Pods-JupiterSDK_Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-JupiterSDK_Tests.debug.xcconfig"; sourceTree = "<group>"; };
@@ -252,9 +252,9 @@
 		D3BEAE69612D0E7992C98B8D352E99AE /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				249D3629879889DAFD7B486C2E89F745 /* JupiterSDK */,
-				D625E9E1A7452D6B5A6D9E6AE733805F /* Pods-JupiterSDK_Example */,
-				46007FD9363A51EF486FFA592293542D /* Pods-JupiterSDK_Tests */,
+				249D3629879889DAFD7B486C2E89F745 /* JupiterSDK.framework */,
+				D625E9E1A7452D6B5A6D9E6AE733805F /* Pods_JupiterSDK_Example.framework */,
+				46007FD9363A51EF486FFA592293542D /* Pods_JupiterSDK_Tests.framework */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -319,7 +319,7 @@
 			);
 			name = JupiterSDK;
 			productName = JupiterSDK;
-			productReference = 249D3629879889DAFD7B486C2E89F745 /* JupiterSDK */;
+			productReference = 249D3629879889DAFD7B486C2E89F745 /* JupiterSDK.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		3DC0A8217CB03D4602ABF9FE8BF2A420 /* Pods-JupiterSDK_Example */ = {
@@ -338,7 +338,7 @@
 			);
 			name = "Pods-JupiterSDK_Example";
 			productName = Pods_JupiterSDK_Example;
-			productReference = D625E9E1A7452D6B5A6D9E6AE733805F /* Pods-JupiterSDK_Example */;
+			productReference = D625E9E1A7452D6B5A6D9E6AE733805F /* Pods_JupiterSDK_Example.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		90103C5E0053897D2453A4CBB448B33B /* Pods-JupiterSDK_Tests */ = {
@@ -357,7 +357,7 @@
 			);
 			name = "Pods-JupiterSDK_Tests";
 			productName = Pods_JupiterSDK_Tests;
-			productReference = 46007FD9363A51EF486FFA592293542D /* Pods-JupiterSDK_Tests */;
+			productReference = 46007FD9363A51EF486FFA592293542D /* Pods_JupiterSDK_Tests.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 /* End PBXNativeTarget section */
@@ -489,7 +489,7 @@
 				GCC_PREFIX_HEADER = "Target Support Files/JupiterSDK/JupiterSDK-prefix.pch";
 				INFOPLIST_FILE = "Target Support Files/JupiterSDK/JupiterSDK-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MODULEMAP_FILE = "Target Support Files/JupiterSDK/JupiterSDK.modulemap";
 				PRODUCT_MODULE_NAME = JupiterSDK;
@@ -557,7 +557,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -585,7 +585,7 @@
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				INFOPLIST_FILE = "Target Support Files/Pods-JupiterSDK_Example/Pods-JupiterSDK_Example-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MACH_O_TYPE = staticlib;
 				MODULEMAP_FILE = "Target Support Files/Pods-JupiterSDK_Example/Pods-JupiterSDK_Example.modulemap";
@@ -618,7 +618,7 @@
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				INFOPLIST_FILE = "Target Support Files/Pods-JupiterSDK_Tests/Pods-JupiterSDK_Tests-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MACH_O_TYPE = staticlib;
 				MODULEMAP_FILE = "Target Support Files/Pods-JupiterSDK_Tests/Pods-JupiterSDK_Tests.modulemap";
@@ -650,7 +650,7 @@
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				INFOPLIST_FILE = "Target Support Files/Pods-JupiterSDK_Example/Pods-JupiterSDK_Example-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MACH_O_TYPE = staticlib;
 				MODULEMAP_FILE = "Target Support Files/Pods-JupiterSDK_Example/Pods-JupiterSDK_Example.modulemap";
@@ -717,7 +717,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -743,7 +743,7 @@
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				INFOPLIST_FILE = "Target Support Files/Pods-JupiterSDK_Tests/Pods-JupiterSDK_Tests-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MACH_O_TYPE = staticlib;
 				MODULEMAP_FILE = "Target Support Files/Pods-JupiterSDK_Tests/Pods-JupiterSDK_Tests.modulemap";
@@ -776,7 +776,7 @@
 				GCC_PREFIX_HEADER = "Target Support Files/JupiterSDK/JupiterSDK-prefix.pch";
 				INFOPLIST_FILE = "Target Support Files/JupiterSDK/JupiterSDK-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MODULEMAP_FILE = "Target Support Files/JupiterSDK/JupiterSDK.modulemap";
 				PRODUCT_MODULE_NAME = JupiterSDK;
