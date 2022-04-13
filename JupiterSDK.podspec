@@ -43,5 +43,5 @@ TODO: Add long description of the pod here.
    s.dependency 'Firebase/Core'
    s.dependency 'Firebase/Firestore'
    s.dependency 'FirebaseFirestoreSwift'
-   S.dependency 'Firebase/Analysis'
+   s.dependency 'Firebase/Analytics'
 end
