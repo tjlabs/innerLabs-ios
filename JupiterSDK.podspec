@@ -21,11 +21,11 @@ Pod::Spec.new do |s|
 TODO: Add long description of the pod here.
                        DESC
 
-  s.homepage         = 'https://github.com/Leo/JupiterSDK'
+  s.homepage         = 'https://www.tjlabscorp.com'
   # s.screenshots     = 'www.example.com/screenshots_1', 'www.example.com/screenshots_2'
-  s.license          = { :type => 'MIT', :file => 'LICENSE' }
+  s.license          = { :type => 'TJLABS Corp', :file => 'LICENSE' }
   s.author           = { 'Leo' => 'leo.shin@tjlabscorp.com' }
-  s.source           = { :git => 'https://github.com/tjlabs/jupiter-ios.git', :tag => s.version.to_s }
+  s.source           = { :git => 'https://github.com/tjlabs/jupiter-sdk-ios.git', :tag => s.version.to_s }
   # s.social_media_url = 'https://twitter.com/<TWITTER_USERNAME>'
 
   s.ios.deployment_target = '13.2'
@@ -40,4 +40,8 @@ TODO: Add long description of the pod here.
   # s.frameworks = 'UIKit', 'MapKit'
    s.dependency 'Alamofire', '~> 5.1'
    s.dependency 'Charts', '~> 4.0.0'
+   s.dependency 'Firebase/Core'
+   s.dependency 'Firebase/Firestore'
+   s.dependency 'FirebaseFirestoreSwift'
+   S.dependency 'Firebase/Analysis'
 end
