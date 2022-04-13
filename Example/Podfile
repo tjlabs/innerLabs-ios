@@ -4,8 +4,8 @@ platform :ios, '13.2'
 source 'https://github.com/tjlabs/jupiter-sdk-ios.git'
 
 target 'JupiterSDK_Example' do
-  pod 'Alamofire', '~> 5.1'
-  pod 'Charts', '~> 4.0.0'
+#  pod 'Alamofire', '~> 5.2'
+#  pod 'Charts', '~> 4.0.0'
   pod 'JupiterSDK'
 #  pod 'JupiterSDK', :path => '../'
 
