@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'JupiterSDK'
-  s.version          = '0.3.0'
+  s.version          = '0.5.0'
   s.summary          = 'JupiterSDK for iOS'
   s.swift_version    = '4.0'
   
@@ -39,8 +39,8 @@ Pod::Spec.new do |s|
   # s.public_header_files = 'Pod/Classes/**/*.h'
   # s.frameworks = 'UIKit', 'MapKit'
   s.static_framework = true
-  s.dependency 'Alamofire', '~> 5.2'
-  s.dependency 'Charts', '~> 4.0.0'
+#  s.dependency 'Alamofire', '~> 5.2'
+#  s.dependency 'Charts', '~> 4.0.0'
 #  s.dependency 'Firebase/Core'
 #  s.dependency 'Firebase/Firestore'
 #  s.dependency 'FirebaseFirestoreSwift'
