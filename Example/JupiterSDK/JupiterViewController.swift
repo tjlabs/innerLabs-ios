@@ -11,7 +11,8 @@ class JupiterViewController: UIViewController {
     
     private let tableList: [TableList] = [.sector]
     
-    var jupiterService = PDRService()
+    var jupiterService = JupiterService()
+    var uuid: String = ""
     
     var timer = Timer()
     var timerCounter: Int = 0
@@ -25,6 +26,14 @@ class JupiterViewController: UIViewController {
     @IBOutlet weak var unitCountLabel: UILabel!
     @IBOutlet weak var unitLengthLabel: UILabel!
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(false)
+        
+        jupiterService.uuid = uuid
+        jupiterService.sector = "TJLABS"
+        jupiterService.startService(parent: self)
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -34,8 +43,6 @@ class JupiterViewController: UIViewController {
         makeDelegate()
         registerXib()
         startTimer()
-        
-        jupiterService.startService(parent: self)
     }
 
     @IBAction func tapBackButton(_ sender: UIButton) {
@@ -82,7 +89,7 @@ class JupiterViewController: UIViewController {
         let unitLength = jupiterService.stepResult.step_length
         
         if (jupiterFlag) {
-            print("\(elapsedTime) \\ \(unitIdx) \\ \(unitLength)")
+//            print("\(elapsedTime) \\ \(unitIdx) \\ \(unitLength)")
             self.unitCountLabel.text = String(unitIdx)
             self.unitLengthLabel.text = String(format: "%.4f", unitLength)
         }

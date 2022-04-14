@@ -12,6 +12,7 @@ import JupiterSDK
 class MainViewController: UIViewController {
     
     @IBOutlet weak var codeTextField: UITextField!
+    @IBOutlet weak var guideLabel: UILabel!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -24,10 +25,17 @@ class MainViewController: UIViewController {
     }
     
     @IBAction func tapConfirmButton(_ sender: UIButton) {
-        JupiterTest().callLib()
+        let uuid: String = codeTextField.text ?? ""
         
-        guard let jupiterVC = self.storyboard?.instantiateViewController(withIdentifier: "JupiterViewController") else { return }
-        self.navigationController?.pushViewController(jupiterVC, animated: true)
+        if (uuid == "") {
+            guideLabel.isHidden = false
+        } else {
+            guard let jupiterVC = self.storyboard?.instantiateViewController(withIdentifier: "JupiterViewController") as? JupiterViewController else { return }
+            jupiterVC.uuid = uuid
+            self.navigationController?.pushViewController(jupiterVC, animated: true)
+            guideLabel.isHidden = true
+        }
+        
     }
     
 }

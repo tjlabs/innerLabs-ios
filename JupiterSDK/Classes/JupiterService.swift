@@ -1,9 +1,12 @@
 import Foundation
 import CoreMotion
 import CoreLocation
+import FirebaseFirestore
+import FirebaseFirestoreSwiftTarget
 
-public class PDRService: NSObject {
-
+public class JupiterService: NSObject {
+    
+    // Sensor //
     let motionManager = CMMotionManager()
     let motionAltimeter = CMAltimeter()
     
@@ -48,15 +51,42 @@ public class PDRService: NSObject {
     var timerCounter: Int = 0
     var timerTimeOut: Int = 10
     let TIMER_INTERVAL: TimeInterval = 1/40 // second
-    
     let SENSOR_INTERVAL: TimeInterval = 1/200
+    
+    // Bluetooth //
+    let defaults = UserDefaults.standard
+    var bleManager = BLECentralManager()
+    var bleRSSI: Int = 0
+    
+    var bleList = BLEList()
+    
+    var timerBle = Timer()
+    var timerBleTimeOut: Int = 10
+    let SCAN_INTERVAL: TimeInterval = 30
     
     var parent: UIViewController?
     
     let TJ = TjAlgorithm()
     
+    // To Server //
+    let networkManager = NetworkManager()
+    
+    public var sector: String = ""
+    public var uuid: String = ""
+    public var deviceModel: String = ""
+    public var os: String = ""
+    public var osVersion: Int = 0
+    
     public override init() {
+        super.init()
+        NotificationCenter.default.addObserver(self, selector: #selector(onDidReceiveBluetoothNotification), name: .scanInfo, object: nil)
         
+        deviceModel = UIDevice.modelName
+        os = UIDevice.current.systemVersion
+        let arr = os.components(separatedBy: ".")
+        print("Device Model : \(deviceModel)")
+        osVersion = Int(arr[0]) ?? 0
+        print("OS : \(osVersion)")
     }
     
     public func startService(parent: UIViewController) {
@@ -64,6 +94,7 @@ public class PDRService: NSObject {
         if motionManager.isDeviceMotionAvailable {
             initialzeSenseors()
             startTimer()
+            startBLE()
         }
         else {
             print("DeviceMotion unavailable")
@@ -128,7 +159,7 @@ public class PDRService: NSObject {
         if CMAltimeter.isRelativeAltitudeAvailable() {
             motionAltimeter.startRelativeAltitudeUpdates(to: .main) { [self] (data, error) in
                 if let pressure = data?.pressure {
-                    let pressure_: Double = Double(pressure)
+                    let pressure_: Double = Double(pressure)*10
                     self.pressure = pressure_
                     sensorData.pressure[0] = pressure_
                 }
@@ -196,12 +227,77 @@ public class PDRService: NSObject {
 //        print(testQueue.count)
 //        print(testQueue.showList())
         
-        
-//        let stepResult = TJ.runAlgorithm(sensorData: sensorData)
         stepResult = TJ.runAlgorithm(sensorData: sensorData)
-//        if (stepResult.isStepDetected) {
-//            print("\(elapsedTime) \\ \(stepResult.unit_idx) \\ \(stepResult.step_length)")
-//        }
+        if (stepResult.isStepDetected) {
+            let bleTest = bleList.bleList.devices
+            let bleDictionary = Dictionary(uniqueKeysWithValues: bleTest.map { ($0.ward_id, $0.rssi) })
+            
+            let data = Input(user_id: uuid, unit_idx: stepResult.unit_idx, step_length: stepResult.step_length, heading: stepResult.heading, pressure: stepResult.pressure, looking_flag: stepResult.lookingFlag,
+                             ble: bleDictionary, time_mobile: timeStamp, device_model: deviceModel, os_version: osVersion)
+            
+            // Upload to Firestore
+            networkManager.upload(data) { error in
+                if error == nil {
+                    print("Firestore Upload Success")
+                } else {
+                    print(error as Any)
+                }
+            }
+        }
+    }
+    
+    func startBLE() {
+        bleManager.startScan(option: .Foreground)
+//        startBleTimer()
+    }
+    
+    func stopBLE() {
+        bleManager.stopScan()
+//        stopBleTimer()
+    }
+    
+//    func startBleTimer() {
+//        self.timerBle = Timer.scheduledTimer(timeInterval: SCAN_INTERVAL, target: self, selector: #selector(self.timerBleUpdate), userInfo: nil, repeats: true)
+//
+//        timerCounter = 0
+//    }
+//
+//    func stopBleTimer() {
+//        self.timerBle.invalidate()
+//    }
+//
+//    @objc func timerBleUpdate() {
+//        let timeStamp = Date().timeIntervalSince1970.rounded()
+//
+//        let bleData = KeyStamp(fingerprints: bleList.bleList.devices, mobile_time: timeStamp)
+//        print(bleData)
+//
+//        let d = UploadData(units: [t])
+//
+//        NetworkManager.shared.uploadData(data: d, completion: {statusCode, returnString in
+//
+//            self.bleList.resetList()
+//        })
+//    }
+    
+    @objc func onDidReceiveBluetoothNotification(_ notification: Notification) {
+        if notification.name == .bluetoothReady {
+            bleManager.startScan(option: .Foreground)
+        }
+        
+        if notification.name == .scanInfo {
+            
+            if let data = notification.userInfo as? [String: String]
+            {
+                let deviceID = data["DeviceID"]!
+                let rssi = data["RSSI"]
+                
+                bleRSSI = Int(rssi!)!
+                
+                let bleData = FingerPrint(ward_id: deviceID, rssi: bleRSSI)
+                bleList.insertDevice(bleData)
+            }
+        }
     }
     
     func getCurrentTimeInMilliseconds() -> Double

@@ -4,6 +4,7 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19519"/>
+        <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -29,7 +30,7 @@
                                 <textInputTraits key="textInputTraits"/>
                             </textField>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="I89-If-8y7">
-                                <rect key="frame" x="152.33333333333334" y="200.33333333333334" width="85.333333333333343" height="39.666666666666657"/>
+                                <rect key="frame" x="152.33333333333334" y="246.33333333333334" width="85.333333333333343" height="39.666666666666657"/>
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="filled" title="Confirm">
                                     <fontDescription key="titleFontDescription" name="ChalkboardSE-Regular" family="Chalkboard SE" pointSize="18"/>
@@ -38,6 +39,12 @@
                                     <action selector="tapConfirmButton:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="GuA-mS-h6T"/>
                                 </connections>
                             </button>
+                            <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Code를 입력해주세요 !!" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="S9s-fL-HYt">
+                                <rect key="frame" x="46" y="205.33333333333334" width="165" height="21"/>
+                                <fontDescription key="fontDescription" type="boldSystem" pointSize="17"/>
+                                <color key="textColor" name="red1"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="tJz-hP-2ob"/>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -45,15 +52,18 @@
                             <constraint firstItem="I89-If-8y7" firstAttribute="centerX" secondItem="tJz-hP-2ob" secondAttribute="centerX" id="5Mc-ob-Gug"/>
                             <constraint firstItem="BXl-A2-dCs" firstAttribute="top" secondItem="tJz-hP-2ob" secondAttribute="top" constant="20" id="7GL-yv-0ir"/>
                             <constraint firstItem="nvV-4B-RGQ" firstAttribute="leading" secondItem="BXl-A2-dCs" secondAttribute="leading" id="Kzy-Jw-miL"/>
+                            <constraint firstItem="S9s-fL-HYt" firstAttribute="top" secondItem="nvV-4B-RGQ" secondAttribute="bottom" constant="20" id="TxM-lQ-TxM"/>
                             <constraint firstItem="BXl-A2-dCs" firstAttribute="leading" secondItem="kh9-bI-dsS" secondAttribute="leadingMargin" constant="30" id="bPk-iW-YMN"/>
-                            <constraint firstItem="I89-If-8y7" firstAttribute="top" secondItem="nvV-4B-RGQ" secondAttribute="bottom" constant="15" id="eE1-kT-hJJ"/>
                             <constraint firstAttribute="trailingMargin" secondItem="nvV-4B-RGQ" secondAttribute="trailing" constant="30" id="fwg-Xf-kaa"/>
+                            <constraint firstItem="I89-If-8y7" firstAttribute="top" secondItem="S9s-fL-HYt" secondAttribute="bottom" constant="20" id="jhz-k6-4dj"/>
+                            <constraint firstItem="S9s-fL-HYt" firstAttribute="leading" secondItem="nvV-4B-RGQ" secondAttribute="leading" id="kk3-ke-oY7"/>
                             <constraint firstItem="nvV-4B-RGQ" firstAttribute="top" secondItem="BXl-A2-dCs" secondAttribute="bottom" constant="15" id="wSS-f2-DRO"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="Load" id="ve3-nK-WvA"/>
                     <connections>
                         <outlet property="codeTextField" destination="nvV-4B-RGQ" id="CjM-nf-WwV"/>
+                        <outlet property="guideLabel" destination="S9s-fL-HYt" id="7Og-hy-XCU"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="x5A-6p-PRh" sceneMemberID="firstResponder"/>
@@ -222,6 +232,9 @@
         </scene>
     </scenes>
     <resources>
+        <namedColor name="red1">
+            <color red="0.85100001096725464" green="0.35699999332427979" blue="0.35699999332427979" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
