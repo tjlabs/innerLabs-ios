@@ -16,6 +16,12 @@
 		607FACEC1AFB9204008FA782 /* Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACEB1AFB9204008FA782 /* Tests.swift */; };
 		9A16870CE33E63FE35238C05 /* Pods_JupiterSDK_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DB77B350B78C4D6D3DA0D745 /* Pods_JupiterSDK_Example.framework */; };
 		B360D8652807C6090084FB22 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = B360D8642807C6090084FB22 /* GoogleService-Info.plist */; };
+		B360D88E28090D6A0084FB22 /* NotoSansKR-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = B360D88828090D680084FB22 /* NotoSansKR-Bold.otf */; };
+		B360D88F28090D6A0084FB22 /* NotoSansKR-Light.otf in Resources */ = {isa = PBXBuildFile; fileRef = B360D88928090D680084FB22 /* NotoSansKR-Light.otf */; };
+		B360D89028090D6A0084FB22 /* NotoSansKR-Thin.otf in Resources */ = {isa = PBXBuildFile; fileRef = B360D88A28090D690084FB22 /* NotoSansKR-Thin.otf */; };
+		B360D89128090D6A0084FB22 /* NotoSansKR-Black.otf in Resources */ = {isa = PBXBuildFile; fileRef = B360D88B28090D690084FB22 /* NotoSansKR-Black.otf */; };
+		B360D89228090D6A0084FB22 /* NotoSansKR-Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = B360D88C28090D6A0084FB22 /* NotoSansKR-Medium.otf */; };
+		B360D89328090D6A0084FB22 /* NotoSansKR-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = B360D88D28090D6A0084FB22 /* NotoSansKR-Regular.otf */; };
 		B3BD699227E98E0E00A32A7A /* JupiterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3BD699127E98E0E00A32A7A /* JupiterViewController.swift */; };
 		B3BD699827E9A4A500A32A7A /* ColorPalette.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3BD699727E9A4A500A32A7A /* ColorPalette.swift */; };
 		B3BD699A27E9A4BE00A32A7A /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B3BD699927E9A4BE00A32A7A /* Colors.xcassets */; };
@@ -63,6 +69,12 @@
 		6C664AF60D59718EECD6DBBC /* Pods-JupiterSDK_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-JupiterSDK_Example.debug.xcconfig"; path = "Target Support Files/Pods-JupiterSDK_Example/Pods-JupiterSDK_Example.debug.xcconfig"; sourceTree = "<group>"; };
 		8B538B887A8FED7CB659550A /* Pods-JupiterSDK_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-JupiterSDK_Example.release.xcconfig"; path = "Target Support Files/Pods-JupiterSDK_Example/Pods-JupiterSDK_Example.release.xcconfig"; sourceTree = "<group>"; };
 		B360D8642807C6090084FB22 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../../Downloads/GoogleService-Info.plist"; sourceTree = "<group>"; };
+		B360D88828090D680084FB22 /* NotoSansKR-Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "NotoSansKR-Bold.otf"; sourceTree = "<group>"; };
+		B360D88928090D680084FB22 /* NotoSansKR-Light.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "NotoSansKR-Light.otf"; sourceTree = "<group>"; };
+		B360D88A28090D690084FB22 /* NotoSansKR-Thin.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "NotoSansKR-Thin.otf"; sourceTree = "<group>"; };
+		B360D88B28090D690084FB22 /* NotoSansKR-Black.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "NotoSansKR-Black.otf"; sourceTree = "<group>"; };
+		B360D88C28090D6A0084FB22 /* NotoSansKR-Medium.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "NotoSansKR-Medium.otf"; sourceTree = "<group>"; };
+		B360D88D28090D6A0084FB22 /* NotoSansKR-Regular.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "NotoSansKR-Regular.otf"; sourceTree = "<group>"; };
 		B3BD699127E98E0E00A32A7A /* JupiterViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JupiterViewController.swift; sourceTree = "<group>"; };
 		B3BD699727E9A4A500A32A7A /* ColorPalette.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorPalette.swift; sourceTree = "<group>"; };
 		B3BD699927E9A4BE00A32A7A /* Colors.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Colors.xcassets; sourceTree = "<group>"; };
@@ -140,6 +152,7 @@
 		607FACD21AFB9204008FA782 /* Example for JupiterSDK */ = {
 			isa = PBXGroup;
 			children = (
+				B360D88728090D400084FB22 /* Fonts */,
 				B3BD69B627E9AB9400A32A7A /* DataModel */,
 				B3BD69B127E9A88B00A32A7A /* Sector */,
 				B3BD69A227E9A53C00A32A7A /* Extensions */,
@@ -191,6 +204,19 @@
 				33536F035F43D878561B6254 /* LICENSE */,
 			);
 			name = "Podspec Metadata";
+			sourceTree = "<group>";
+		};
+		B360D88728090D400084FB22 /* Fonts */ = {
+			isa = PBXGroup;
+			children = (
+				B360D88B28090D690084FB22 /* NotoSansKR-Black.otf */,
+				B360D88828090D680084FB22 /* NotoSansKR-Bold.otf */,
+				B360D88928090D680084FB22 /* NotoSansKR-Light.otf */,
+				B360D88C28090D6A0084FB22 /* NotoSansKR-Medium.otf */,
+				B360D88D28090D6A0084FB22 /* NotoSansKR-Regular.otf */,
+				B360D88A28090D690084FB22 /* NotoSansKR-Thin.otf */,
+			);
+			name = Fonts;
 			sourceTree = "<group>";
 		};
 		B3BD699627E9A48E00A32A7A /* Color */ = {
@@ -342,11 +368,17 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B360D89228090D6A0084FB22 /* NotoSansKR-Medium.otf in Resources */,
+				B360D89328090D6A0084FB22 /* NotoSansKR-Regular.otf in Resources */,
 				B3BD69B527E9A8AD00A32A7A /* ZoneCollectionViewCell.xib in Resources */,
+				B360D89128090D6A0084FB22 /* NotoSansKR-Black.otf in Resources */,
 				607FACDB1AFB9204008FA782 /* Main.storyboard in Resources */,
+				B360D88E28090D6A0084FB22 /* NotoSansKR-Bold.otf in Resources */,
 				B3BD699A27E9A4BE00A32A7A /* Colors.xcassets in Resources */,
+				B360D89028090D6A0084FB22 /* NotoSansKR-Thin.otf in Resources */,
 				607FACE01AFB9204008FA782 /* LaunchScreen.xib in Resources */,
 				607FACDD1AFB9204008FA782 /* Images.xcassets in Resources */,
+				B360D88F28090D6A0084FB22 /* NotoSansKR-Light.otf in Resources */,
 				B3BD69B027E9A78000A32A7A /* SectorContainerTableViewCell.xib in Resources */,
 				B360D8652807C6090084FB22 /* GoogleService-Info.plist in Resources */,
 			);

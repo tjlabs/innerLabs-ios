@@ -4,10 +4,19 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19519"/>
+        <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
+    <customFonts key="customFonts">
+        <array key="NotoSansKR-Medium.otf">
+            <string>NotoSansKR-Medium</string>
+        </array>
+        <array key="NotoSansKR-Regular.otf">
+            <string>NotoSansKR-Regular</string>
+        </array>
+    </customFonts>
     <scenes>
         <!--Load-->
         <scene sceneID="ufC-wZ-h7g">
@@ -36,8 +45,8 @@
                                 <rect key="frame" x="23.333333333333343" y="301.33333333333331" width="343.33333333333326" height="58.333333333333314"/>
                             </imageView>
                             <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="ID를 입력하세요" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="4Wm-pG-8t2">
-                                <rect key="frame" x="86.666666666666671" y="321.33333333333331" width="253.33333333333331" height="18.666666666666686"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <rect key="frame" x="86.666666666666671" y="319.66666666666669" width="253.33333333333331" height="22"/>
+                                <fontDescription key="fontDescription" name="NotoSansKR-Regular" family="Noto Sans KR" pointSize="14"/>
                                 <textInputTraits key="textInputTraits"/>
                                 <userDefinedRuntimeAttributes>
                                     <userDefinedRuntimeAttribute type="number" keyPath="borderWidth">
@@ -46,9 +55,15 @@
                                 </userDefinedRuntimeAttributes>
                             </textField>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="아이디 저장" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="vI8-C4-adM">
-                                <rect key="frame" x="288.66666666666669" y="379.66666666666669" width="78" height="21"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <rect key="frame" x="312.66666666666669" y="379.66666666666669" width="54" height="16"/>
+                                <fontDescription key="fontDescription" name="NotoSansKR-Regular" family="Noto Sans KR" pointSize="11"/>
                                 <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="ID 입력은 필수사항 입니다" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3cD-sh-gUq">
+                                <rect key="frame" x="101.66666666666669" y="419.66666666666669" width="187" height="24.666666666666686"/>
+                                <fontDescription key="fontDescription" name="NotoSansKR-Medium" family="Noto Sans KR" pointSize="17"/>
+                                <color key="textColor" name="red1"/>
                                 <nil key="highlightedColor"/>
                             </label>
                         </subviews>
@@ -62,6 +77,7 @@
                             <constraint firstItem="vI8-C4-adM" firstAttribute="trailing" secondItem="So7-VT-aPc" secondAttribute="trailing" id="763-st-fnb"/>
                             <constraint firstItem="I89-If-8y7" firstAttribute="centerX" secondItem="kh9-bI-dsS" secondAttribute="centerX" id="7Mj-SA-W4m"/>
                             <constraint firstItem="4Wm-pG-8t2" firstAttribute="centerY" secondItem="So7-VT-aPc" secondAttribute="centerY" id="CXS-dr-9V7"/>
+                            <constraint firstItem="3cD-sh-gUq" firstAttribute="top" secondItem="So7-VT-aPc" secondAttribute="bottom" constant="60" id="KEb-cY-zKi"/>
                             <constraint firstItem="tJz-hP-2ob" firstAttribute="trailing" secondItem="4Wm-pG-8t2" secondAttribute="trailing" constant="50" id="OT2-VG-OGq"/>
                             <constraint firstItem="tJz-hP-2ob" firstAttribute="trailing" secondItem="So7-VT-aPc" secondAttribute="trailing" constant="23.300000000000001" id="Thl-4W-DeY"/>
                             <constraint firstItem="zl8-wP-m6e" firstAttribute="centerX" secondItem="kh9-bI-dsS" secondAttribute="centerX" id="Upj-wM-nbr"/>
@@ -69,6 +85,7 @@
                             <constraint firstItem="So7-VT-aPc" firstAttribute="leading" secondItem="tJz-hP-2ob" secondAttribute="leading" constant="23.300000000000001" id="ava-Bh-kbu"/>
                             <constraint firstItem="tJz-hP-2ob" firstAttribute="trailing" secondItem="I89-If-8y7" secondAttribute="trailing" constant="23.300000000000001" id="fkl-dQ-qua"/>
                             <constraint firstItem="4Wm-pG-8t2" firstAttribute="leading" secondItem="So7-VT-aPc" secondAttribute="trailing" constant="-280" id="lQY-yI-aGk"/>
+                            <constraint firstItem="3cD-sh-gUq" firstAttribute="centerX" secondItem="kh9-bI-dsS" secondAttribute="centerX" id="qi5-HG-1G0"/>
                             <constraint firstItem="tJz-hP-2ob" firstAttribute="bottom" secondItem="I89-If-8y7" secondAttribute="bottom" constant="53.299999999999997" id="tmX-b5-RZJ"/>
                             <constraint firstItem="So7-VT-aPc" firstAttribute="top" secondItem="zl8-wP-m6e" secondAttribute="bottom" constant="40" id="wNv-6g-THQ"/>
                         </constraints>
@@ -76,6 +93,7 @@
                     <navigationItem key="navigationItem" title="Load" id="ve3-nK-WvA"/>
                     <connections>
                         <outlet property="codeTextField" destination="4Wm-pG-8t2" id="W7T-Fe-Qp3"/>
+                        <outlet property="guideLabel" destination="3cD-sh-gUq" id="qM7-fN-aJC"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="x5A-6p-PRh" sceneMemberID="firstResponder"/>
@@ -246,6 +264,9 @@
         <image name="buttonLogin" width="349.33334350585938" height="58.333332061767578"/>
         <image name="fieldLogin" width="349.33334350585938" height="58.333332061767578"/>
         <image name="jupiterLogin" width="240.66667175292969" height="64.666664123535156"/>
+        <namedColor name="red1">
+            <color red="0.85100001096725464" green="0.35699999332427979" blue="0.35699999332427979" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
