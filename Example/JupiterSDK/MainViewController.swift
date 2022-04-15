@@ -13,7 +13,9 @@ class MainViewController: UIViewController, UITextFieldDelegate {
     
     @IBOutlet weak var codeTextField: UITextField!
     @IBOutlet weak var guideLabel: UILabel!
+    
     @IBOutlet weak var saveUuidButton: UIButton!
+    
     
     var isSaveUuid: Bool = false
     var uuid: String = ""
@@ -25,6 +27,8 @@ class MainViewController: UIViewController, UITextFieldDelegate {
         
         if let name = defaults.string(forKey: "uuid") {
             codeTextField.text = name
+            saveUuidButton.isSelected.toggle()
+            isSaveUuid = true
         }
         
         codeTextField.delegate = self
@@ -84,4 +88,5 @@ class MainViewController: UIViewController, UITextFieldDelegate {
         }
         print("Save UUID : \(isSaveUuid)")
     }
+    
 }

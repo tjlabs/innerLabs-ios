@@ -25,6 +25,8 @@
 		B360D89128090D6A0084FB22 /* NotoSansKR-Black.otf in Resources */ = {isa = PBXBuildFile; fileRef = B360D88B28090D690084FB22 /* NotoSansKR-Black.otf */; };
 		B360D89228090D6A0084FB22 /* NotoSansKR-Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = B360D88C28090D6A0084FB22 /* NotoSansKR-Medium.otf */; };
 		B360D89328090D6A0084FB22 /* NotoSansKR-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = B360D88D28090D6A0084FB22 /* NotoSansKR-Regular.otf */; };
+		B3844E8E28099EE3007A5215 /* CardCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3844E8C28099EE3007A5215 /* CardCollectionViewCell.swift */; };
+		B3844E8F28099EE3007A5215 /* CardCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B3844E8D28099EE3007A5215 /* CardCollectionViewCell.xib */; };
 		B3BD699227E98E0E00A32A7A /* JupiterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3BD699127E98E0E00A32A7A /* JupiterViewController.swift */; };
 		B3BD699827E9A4A500A32A7A /* ColorPalette.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3BD699727E9A4A500A32A7A /* ColorPalette.swift */; };
 		B3BD699A27E9A4BE00A32A7A /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B3BD699927E9A4BE00A32A7A /* Colors.xcassets */; };
@@ -81,6 +83,8 @@
 		B360D88B28090D690084FB22 /* NotoSansKR-Black.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "NotoSansKR-Black.otf"; sourceTree = "<group>"; };
 		B360D88C28090D6A0084FB22 /* NotoSansKR-Medium.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "NotoSansKR-Medium.otf"; sourceTree = "<group>"; };
 		B360D88D28090D6A0084FB22 /* NotoSansKR-Regular.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "NotoSansKR-Regular.otf"; sourceTree = "<group>"; };
+		B3844E8C28099EE3007A5215 /* CardCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardCollectionViewCell.swift; sourceTree = "<group>"; };
+		B3844E8D28099EE3007A5215 /* CardCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CardCollectionViewCell.xib; sourceTree = "<group>"; };
 		B3BD699127E98E0E00A32A7A /* JupiterViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JupiterViewController.swift; sourceTree = "<group>"; };
 		B3BD699727E9A4A500A32A7A /* ColorPalette.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorPalette.swift; sourceTree = "<group>"; };
 		B3BD699927E9A4BE00A32A7A /* Colors.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Colors.xcassets; sourceTree = "<group>"; };
@@ -174,6 +178,8 @@
 				607FACDE1AFB9204008FA782 /* LaunchScreen.xib */,
 				607FACDC1AFB9204008FA782 /* Images.xcassets */,
 				607FACD31AFB9204008FA782 /* Supporting Files */,
+				B3844E8C28099EE3007A5215 /* CardCollectionViewCell.swift */,
+				B3844E8D28099EE3007A5215 /* CardCollectionViewCell.xib */,
 			);
 			name = "Example for JupiterSDK";
 			path = JupiterSDK;
@@ -389,6 +395,7 @@
 				607FACDD1AFB9204008FA782 /* Images.xcassets in Resources */,
 				B360D88F28090D6A0084FB22 /* NotoSansKR-Light.otf in Resources */,
 				B3BD69B027E9A78000A32A7A /* SectorContainerTableViewCell.xib in Resources */,
+				B3844E8F28099EE3007A5215 /* CardCollectionViewCell.xib in Resources */,
 				B360D8652807C6090084FB22 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -480,6 +487,7 @@
 				B3BD69BA27E9ABB200A32A7A /* ZoneDataModel.swift in Sources */,
 				B3BD69B827E9ABA300A32A7A /* DataModel.swift in Sources */,
 				607FACD81AFB9204008FA782 /* MainViewController.swift in Sources */,
+				B3844E8E28099EE3007A5215 /* CardCollectionViewCell.swift in Sources */,
 				B340EE3328093FB20096E404 /* CardViewController.swift in Sources */,
 				B3BD699D27E9A4FE00A32A7A /* setCharacterSpacing.swift in Sources */,
 				B340EE3D280965F90096E404 /* CollectionViewCell.swift in Sources */,

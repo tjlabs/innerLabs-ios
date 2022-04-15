@@ -22,6 +22,52 @@ class CardViewController: UIViewController {
     let cellheightRatio: CGFloat = 0.6
     var isOneStepPaging = true
 
+    private var cardImages: [UIImage] {
+        var cardImages:[UIImage] = []
+        for i in 0..<4 {
+            let index = i % 4
+            var image = UIImage(named: "purpleCard")!
+            switch index {
+            case 0:
+                image = UIImage(named: "purpleCard")!
+            case 1:
+                image = UIImage(named: "orangeCard")!
+            case 2:
+                image = UIImage(named: "greenCard")!
+            case 3:
+                image = UIImage(named: "grayCard")!
+            default:
+                image = UIImage(named: "purpleCard")!
+            }
+            
+            cardImages.append(image)
+        }
+        return cardImages
+    }
+    
+    private var sectorImages: [UIImage] {
+        var sectorImages:[UIImage] = []
+        for i in 0..<4 {
+            let index = i % 4
+            var image = UIImage(named: "sectorDefault")!
+            switch index {
+            case 0:
+                image = UIImage(named: "sectorDefault")!
+            case 1:
+                image = UIImage(named: "sectorDefault")!
+            case 2:
+                image = UIImage(named: "sectorDefault")!
+            case 3:
+                image = UIImage(named: "sectorDefault")!
+            default:
+                image = UIImage(named: "sectorDefault")!
+            }
+            
+            sectorImages.append(image)
+        }
+        return sectorImages
+    }
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(false)
     }
@@ -45,6 +91,7 @@ class CardViewController: UIViewController {
         
         collectionView.delegate = self
         collectionView.dataSource = self
+        collectionView.register(UINib(nibName: "CardCollectionViewCell", bundle: .main), forCellWithReuseIdentifier: "CardCollectionViewCell")
         
         // 스크롤 시 빠르게 감속 되도록 설정
         collectionView.decelerationRate = UIScrollView.DecelerationRate.fast
@@ -72,9 +119,11 @@ extension CardViewController: UICollectionViewDataSource, UICollectionViewDelega
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "collectionViewCell", for: indexPath) as! CollectionViewCell
-        cell.backgroundColor = itemColors[indexPath.row]
-        cell.alpha = 0.5
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "CardCollectionViewCell", for: indexPath) as! CardCollectionViewCell
+//        cell.backgroundColor = itemColors[indexPath.row]
+//        cell.alpha = 0.5
+        cell.cardImageView.image = cardImages[indexPath.row]
+        cell.sectorImageView.image = sectorImages[indexPath.row]
         
 //        let View = UIView()
 //        View.backgroundColor = UIColor(patternImage: UIImage(named: "purpleCard.png")!)
