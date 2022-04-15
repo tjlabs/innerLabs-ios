@@ -4,7 +4,6 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19519"/>
-        <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -18,57 +17,70 @@
                         <rect key="frame" x="0.0" y="0.0" width="390" height="844"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Enterance Code" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="BXl-A2-dCs">
-                                <rect key="frame" x="46" y="108" width="146.66666666666666" height="28.333333333333343"/>
-                                <fontDescription key="fontDescription" name="ChalkboardSE-Bold" family="Chalkboard SE" pointSize="20"/>
-                                <nil key="textColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Enter the code" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="nvV-4B-RGQ">
-                                <rect key="frame" x="46" y="151.33333333333334" width="298" height="34"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                <textInputTraits key="textInputTraits"/>
-                            </textField>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="I89-If-8y7">
-                                <rect key="frame" x="152.33333333333334" y="246.33333333333334" width="85.333333333333343" height="39.666666666666657"/>
-                                <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="filled" title="Confirm">
-                                    <fontDescription key="titleFontDescription" name="ChalkboardSE-Regular" family="Chalkboard SE" pointSize="18"/>
-                                </buttonConfiguration>
+                                <rect key="frame" x="23.333333333333343" y="697.66666666666663" width="343.33333333333326" height="59"/>
+                                <fontDescription key="fontDescription" name="ChalkboardSE-Regular" family="Chalkboard SE" pointSize="18"/>
+                                <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                <state key="normal" image="buttonLogin"/>
                                 <connections>
                                     <action selector="tapConfirmButton:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="GuA-mS-h6T"/>
                                 </connections>
                             </button>
-                            <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Code를 입력해주세요 !!" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="S9s-fL-HYt">
-                                <rect key="frame" x="46" y="205.33333333333334" width="165" height="21"/>
-                                <fontDescription key="fontDescription" type="boldSystem" pointSize="17"/>
-                                <color key="textColor" name="red1"/>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="jupiterLogin" translatesAutoresizingMaskIntoConstraints="NO" id="zl8-wP-m6e">
+                                <rect key="frame" x="74.333333333333329" y="197.33333333333334" width="241.33333333333337" height="64.000000000000028"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" secondItem="zl8-wP-m6e" secondAttribute="height" multiplier="241:64" id="fOn-Bc-MhB"/>
+                                </constraints>
+                            </imageView>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="fieldLogin" translatesAutoresizingMaskIntoConstraints="NO" id="So7-VT-aPc">
+                                <rect key="frame" x="23.333333333333343" y="301.33333333333331" width="343.33333333333326" height="58.333333333333314"/>
+                            </imageView>
+                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="ID를 입력하세요" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="4Wm-pG-8t2">
+                                <rect key="frame" x="86.666666666666671" y="321.33333333333331" width="253.33333333333331" height="18.666666666666686"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits"/>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="borderWidth">
+                                        <real key="value" value="0.0"/>
+                                    </userDefinedRuntimeAttribute>
+                                </userDefinedRuntimeAttributes>
+                            </textField>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="아이디 저장" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="vI8-C4-adM">
+                                <rect key="frame" x="288.66666666666669" y="379.66666666666669" width="78" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="tJz-hP-2ob"/>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
-                            <constraint firstItem="I89-If-8y7" firstAttribute="centerX" secondItem="tJz-hP-2ob" secondAttribute="centerX" id="5Mc-ob-Gug"/>
-                            <constraint firstItem="BXl-A2-dCs" firstAttribute="top" secondItem="tJz-hP-2ob" secondAttribute="top" constant="20" id="7GL-yv-0ir"/>
-                            <constraint firstItem="nvV-4B-RGQ" firstAttribute="leading" secondItem="BXl-A2-dCs" secondAttribute="leading" id="Kzy-Jw-miL"/>
-                            <constraint firstItem="S9s-fL-HYt" firstAttribute="top" secondItem="nvV-4B-RGQ" secondAttribute="bottom" constant="20" id="TxM-lQ-TxM"/>
-                            <constraint firstItem="BXl-A2-dCs" firstAttribute="leading" secondItem="kh9-bI-dsS" secondAttribute="leadingMargin" constant="30" id="bPk-iW-YMN"/>
-                            <constraint firstAttribute="trailingMargin" secondItem="nvV-4B-RGQ" secondAttribute="trailing" constant="30" id="fwg-Xf-kaa"/>
-                            <constraint firstItem="I89-If-8y7" firstAttribute="top" secondItem="S9s-fL-HYt" secondAttribute="bottom" constant="20" id="jhz-k6-4dj"/>
-                            <constraint firstItem="S9s-fL-HYt" firstAttribute="leading" secondItem="nvV-4B-RGQ" secondAttribute="leading" id="kk3-ke-oY7"/>
-                            <constraint firstItem="nvV-4B-RGQ" firstAttribute="top" secondItem="BXl-A2-dCs" secondAttribute="bottom" constant="15" id="wSS-f2-DRO"/>
+                            <constraint firstItem="zl8-wP-m6e" firstAttribute="leading" secondItem="tJz-hP-2ob" secondAttribute="leading" constant="74.299999999999997" id="0TH-6V-Zwl"/>
+                            <constraint firstItem="I89-If-8y7" firstAttribute="leading" secondItem="tJz-hP-2ob" secondAttribute="leading" constant="23.300000000000001" id="0Zh-6P-Tm5"/>
+                            <constraint firstItem="So7-VT-aPc" firstAttribute="centerX" secondItem="zl8-wP-m6e" secondAttribute="centerX" id="3bc-KL-XS6"/>
+                            <constraint firstItem="zl8-wP-m6e" firstAttribute="top" secondItem="tJz-hP-2ob" secondAttribute="top" constant="153.30000000000001" id="4j4-a5-FLr"/>
+                            <constraint firstItem="vI8-C4-adM" firstAttribute="trailing" secondItem="So7-VT-aPc" secondAttribute="trailing" id="763-st-fnb"/>
+                            <constraint firstItem="I89-If-8y7" firstAttribute="centerX" secondItem="kh9-bI-dsS" secondAttribute="centerX" id="7Mj-SA-W4m"/>
+                            <constraint firstItem="4Wm-pG-8t2" firstAttribute="centerY" secondItem="So7-VT-aPc" secondAttribute="centerY" id="CXS-dr-9V7"/>
+                            <constraint firstItem="tJz-hP-2ob" firstAttribute="trailing" secondItem="4Wm-pG-8t2" secondAttribute="trailing" constant="50" id="OT2-VG-OGq"/>
+                            <constraint firstItem="tJz-hP-2ob" firstAttribute="trailing" secondItem="So7-VT-aPc" secondAttribute="trailing" constant="23.300000000000001" id="Thl-4W-DeY"/>
+                            <constraint firstItem="zl8-wP-m6e" firstAttribute="centerX" secondItem="kh9-bI-dsS" secondAttribute="centerX" id="Upj-wM-nbr"/>
+                            <constraint firstItem="vI8-C4-adM" firstAttribute="top" secondItem="So7-VT-aPc" secondAttribute="bottom" constant="20" id="akv-t6-1dE"/>
+                            <constraint firstItem="So7-VT-aPc" firstAttribute="leading" secondItem="tJz-hP-2ob" secondAttribute="leading" constant="23.300000000000001" id="ava-Bh-kbu"/>
+                            <constraint firstItem="tJz-hP-2ob" firstAttribute="trailing" secondItem="I89-If-8y7" secondAttribute="trailing" constant="23.300000000000001" id="fkl-dQ-qua"/>
+                            <constraint firstItem="4Wm-pG-8t2" firstAttribute="leading" secondItem="So7-VT-aPc" secondAttribute="trailing" constant="-280" id="lQY-yI-aGk"/>
+                            <constraint firstItem="tJz-hP-2ob" firstAttribute="bottom" secondItem="I89-If-8y7" secondAttribute="bottom" constant="53.299999999999997" id="tmX-b5-RZJ"/>
+                            <constraint firstItem="So7-VT-aPc" firstAttribute="top" secondItem="zl8-wP-m6e" secondAttribute="bottom" constant="40" id="wNv-6g-THQ"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="Load" id="ve3-nK-WvA"/>
                     <connections>
-                        <outlet property="codeTextField" destination="nvV-4B-RGQ" id="CjM-nf-WwV"/>
-                        <outlet property="guideLabel" destination="S9s-fL-HYt" id="7Og-hy-XCU"/>
+                        <outlet property="codeTextField" destination="4Wm-pG-8t2" id="W7T-Fe-Qp3"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="x5A-6p-PRh" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="278" y="103"/>
+            <point key="canvasLocation" x="276.92307692307691" y="102.3696682464455"/>
         </scene>
         <!--Jupiter View Controller-->
         <scene sceneID="Cf6-wt-mlE">
@@ -217,9 +229,8 @@
         <!--Navigation Controller-->
         <scene sceneID="vRG-l6-FfN">
             <objects>
-                <navigationController id="KJ4-Co-KT0" sceneMemberID="viewController">
+                <navigationController navigationBarHidden="YES" id="KJ4-Co-KT0" sceneMemberID="viewController">
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="9EH-Fv-E5L">
-                        <rect key="frame" x="0.0" y="44" width="390" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <connections>
@@ -232,9 +243,9 @@
         </scene>
     </scenes>
     <resources>
-        <namedColor name="red1">
-            <color red="0.85100001096725464" green="0.35699999332427979" blue="0.35699999332427979" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-        </namedColor>
+        <image name="buttonLogin" width="349.33334350585938" height="58.333332061767578"/>
+        <image name="fieldLogin" width="349.33334350585938" height="58.333332061767578"/>
+        <image name="jupiterLogin" width="240.66667175292969" height="64.666664123535156"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>

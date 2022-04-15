@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="19529" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" launchScreen="YES" useTraitCollections="YES" colorMatched="YES">
-    <device id="retina4_7" orientation="portrait" appearance="light"/>
+    <device id="retina6_0" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19519"/>
@@ -13,46 +13,27 @@
             <rect key="frame" x="0.0" y="0.0" width="480" height="480"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="  Copyright (c) 2022 TJLABS Corp. All rights reserved." textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="9" translatesAutoresizingMaskIntoConstraints="NO" id="8ie-xW-0ye">
-                    <rect key="frame" x="20" y="439" width="440" height="21"/>
-                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                    <color key="textColor" systemColor="darkTextColor"/>
-                    <nil key="highlightedColor"/>
-                </label>
-                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="JupiterSDK" textAlignment="center" lineBreakMode="middleTruncation" baselineAdjustment="alignBaselines" minimumFontSize="18" translatesAutoresizingMaskIntoConstraints="NO" id="kId-c2-rCX">
-                    <rect key="frame" x="20" y="139.5" width="440" height="43"/>
-                    <fontDescription key="fontDescription" type="boldSystem" pointSize="36"/>
-                    <color key="textColor" systemColor="darkTextColor"/>
-                    <nil key="highlightedColor"/>
-                </label>
-                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="tjlabs" translatesAutoresizingMaskIntoConstraints="NO" id="i5e-yT-Gvd">
-                    <rect key="frame" x="140" y="197.5" width="200" height="106.5"/>
-                    <constraints>
-                        <constraint firstAttribute="width" constant="200" id="6Ci-fK-g4Y"/>
-                        <constraint firstAttribute="width" secondItem="i5e-yT-Gvd" secondAttribute="height" multiplier="15:8" id="lYY-X4-lwe"/>
-                    </constraints>
+                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="jupiterName" translatesAutoresizingMaskIntoConstraints="NO" id="i5e-yT-Gvd">
+                    <rect key="frame" x="128.66666666666666" y="210" width="222.99999999999997" height="60"/>
+                </imageView>
+                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="tjlabsSplash" translatesAutoresizingMaskIntoConstraints="NO" id="fxK-16-q1A">
+                    <rect key="frame" x="175.33333333333331" y="332.66666666666669" width="129.33333333333331" height="24.333333333333314"/>
                 </imageView>
             </subviews>
             <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
             <constraints>
-                <constraint firstItem="kId-c2-rCX" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="bottom" multiplier="1/3" constant="1" id="5cJ-9S-tgC"/>
-                <constraint firstItem="i5e-yT-Gvd" firstAttribute="top" secondItem="kId-c2-rCX" secondAttribute="bottom" constant="15" id="J5O-Da-wF5"/>
-                <constraint firstAttribute="centerX" secondItem="kId-c2-rCX" secondAttribute="centerX" id="Koa-jz-hwk"/>
-                <constraint firstAttribute="bottom" secondItem="8ie-xW-0ye" secondAttribute="bottom" constant="20" id="Kzo-t9-V3l"/>
-                <constraint firstItem="8ie-xW-0ye" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="20" symbolic="YES" id="MfP-vx-nX0"/>
-                <constraint firstAttribute="centerX" secondItem="8ie-xW-0ye" secondAttribute="centerX" id="ZEH-qu-HZ9"/>
-                <constraint firstItem="kId-c2-rCX" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="20" symbolic="YES" id="fvb-Df-36g"/>
-                <constraint firstItem="i5e-yT-Gvd" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="rwb-4Y-WPx"/>
+                <constraint firstItem="i5e-yT-Gvd" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="KeC-qV-TGE"/>
+                <constraint firstItem="fxK-16-q1A" firstAttribute="centerX" secondItem="i5e-yT-Gvd" secondAttribute="centerX" id="XNk-hz-ppo"/>
+                <constraint firstAttribute="bottom" secondItem="fxK-16-q1A" secondAttribute="bottom" constant="123" id="cJN-Nb-nZT"/>
+                <constraint firstItem="i5e-yT-Gvd" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" id="gu4-mB-nGe"/>
             </constraints>
             <nil key="simulatedStatusBarMetrics"/>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
-            <point key="canvasLocation" x="548" y="455"/>
+            <point key="canvasLocation" x="547.69230769230762" y="454.9763033175355"/>
         </view>
     </objects>
     <resources>
-        <image name="tjlabs" width="182" height="146"/>
-        <systemColor name="darkTextColor">
-            <color white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-        </systemColor>
+        <image name="jupiterName" width="223" height="60"/>
+        <image name="tjlabsSplash" width="129.33332824707031" height="24.333333969116211"/>
     </resources>
 </document>
