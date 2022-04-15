@@ -105,6 +105,7 @@
                     <connections>
                         <outlet property="codeTextField" destination="4Wm-pG-8t2" id="W7T-Fe-Qp3"/>
                         <outlet property="guideLabel" destination="3cD-sh-gUq" id="qM7-fN-aJC"/>
+                        <outlet property="saveUuidButton" destination="U3z-wL-2zJ" id="n2p-mR-Tg9"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="x5A-6p-PRh" sceneMemberID="firstResponder"/>

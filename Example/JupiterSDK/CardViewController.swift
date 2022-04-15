@@ -18,7 +18,8 @@ class CardViewController: UIViewController {
     let itemColors = [UIColor.red, UIColor.yellow, UIColor.blue, UIColor.green]
     var currentIndex: CGFloat = 0
     let lineSpacing: CGFloat = 20
-    let cellRatio: CGFloat = 0.7
+    let cellWidthRatio: CGFloat = 0.7
+    let cellheightRatio: CGFloat = 0.6
     var isOneStepPaging = true
 
     override func viewWillAppear(_ animated: Bool) {
@@ -29,8 +30,8 @@ class CardViewController: UIViewController {
         super.viewDidLoad()
         
         // width, height 설정
-        let cellWidth = floor(view.frame.width * cellRatio)
-        let cellHeight = floor(view.frame.height * cellRatio)
+        let cellWidth = floor(view.frame.width * cellWidthRatio)
+        let cellHeight = floor(view.frame.height * cellheightRatio)
         
         // 상하, 좌우 inset value 설정
         let insetX = (view.bounds.width - cellWidth) / 2.0
@@ -74,6 +75,11 @@ extension CardViewController: UICollectionViewDataSource, UICollectionViewDelega
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "collectionViewCell", for: indexPath) as! CollectionViewCell
         cell.backgroundColor = itemColors[indexPath.row]
         cell.alpha = 0.5
+        
+//        let View = UIView()
+//        View.backgroundColor = UIColor(patternImage: UIImage(named: "purpleCard.png")!)
+//        cell.backgroundView = UIImageView(image: UIImage(named: "purpleCard.png"))
+        
         return cell
     }
     
@@ -95,7 +101,7 @@ extension CardViewController : UIScrollViewDelegate {
         
         // scrollView, targetContentOffset의 좌표 값으로 스크롤 방향을 알 수 있다.
         // index를 반올림하여 사용하면 item의 절반 사이즈만큼 스크롤을 해야 페이징이 된다.
-        // 스크로로 방향을 체크하여 올림,내림을 사용하면 좀 더 자연스러운 페이징 효과를 낼 수 있다.
+        // 스크롤로 방향을 체크하여 올림,내림을 사용하면 좀 더 자연스러운 페이징 효과를 낼 수 있다.
         if scrollView.contentOffset.x > targetContentOffset.pointee.x {
             roundedIndex = floor(index)
         } else if scrollView.contentOffset.x < targetContentOffset.pointee.x {
@@ -117,6 +123,8 @@ extension CardViewController : UIScrollViewDelegate {
         // 위 코드를 통해 페이징 될 좌표값을 targetContentOffset에 대입하면 된다.
         offset = CGPoint(x: roundedIndex * cellWidthIncludingSpacing - scrollView.contentInset.left, y: -scrollView.contentInset.top)
         targetContentOffset.pointee = offset
+        
+        print("Current Page: \(roundedIndex)")
     }
 }
 

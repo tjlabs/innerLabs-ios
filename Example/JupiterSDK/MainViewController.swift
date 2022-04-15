@@ -13,11 +13,19 @@ class MainViewController: UIViewController, UITextFieldDelegate {
     
     @IBOutlet weak var codeTextField: UITextField!
     @IBOutlet weak var guideLabel: UILabel!
+    @IBOutlet weak var saveUuidButton: UIButton!
     
     var isSaveUuid: Bool = false
+    var uuid: String = ""
+    
+    let defaults = UserDefaults.standard
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        if let name = defaults.string(forKey: "uuid") {
+            codeTextField.text = name
+        }
         
         codeTextField.delegate = self
         // Do any additional setup after loading the view, typically from a nib.
@@ -29,11 +37,17 @@ class MainViewController: UIViewController, UITextFieldDelegate {
     }
     
     @IBAction func tapConfirmButton(_ sender: UIButton) {
-        let uuid: String = codeTextField.text ?? ""
+        self.uuid = codeTextField.text ?? ""
         
         if (uuid == "") {
             guideLabel.isHidden = false
         } else {
+            if (isSaveUuid) {
+                defaults.set(self.uuid, forKey: "uuid")
+            } else {
+                defaults.set(nil, forKey: "uuid")
+            }
+            defaults.synchronize()
             
             guard let cardVC = self.storyboard?.instantiateViewController(withIdentifier: "CardViewController") as? CardViewController else { return }
             cardVC.uuid = uuid
@@ -53,7 +67,7 @@ class MainViewController: UIViewController, UITextFieldDelegate {
         self.view.endEditing(true)
     }
     
-    @IBAction func tapSaveUuid(_ sender: UIButton) {
+    @IBAction func tapSaveUuidButton(_ sender: UIButton) {
         UIView.animate(withDuration: 0.2, delay: 0.0, options: .curveLinear, animations: {
         }) { (success) in
             sender.isSelected = !sender.isSelected
