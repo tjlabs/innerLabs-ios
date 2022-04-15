@@ -55,8 +55,8 @@
                                 </userDefinedRuntimeAttributes>
                             </textField>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="아이디 저장" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="vI8-C4-adM">
-                                <rect key="frame" x="312.66666666666669" y="379.66666666666669" width="54" height="16"/>
-                                <fontDescription key="fontDescription" name="NotoSansKR-Regular" family="Noto Sans KR" pointSize="11"/>
+                                <rect key="frame" x="308" y="379.66666666666669" width="58.666666666666686" height="17.666666666666686"/>
+                                <fontDescription key="fontDescription" name="NotoSansKR-Regular" family="Noto Sans KR" pointSize="12"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
@@ -67,10 +67,10 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="U3z-wL-2zJ">
-                                <rect key="frame" x="286.66666666666669" y="376.66666666666669" width="21" height="22"/>
+                                <rect key="frame" x="278.33333333333331" y="376" width="24.666666666666686" height="25.333333333333314"/>
                                 <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                                 <state key="normal" image="unCheckedBox"/>
-                                <state key="selected" image="checkmark.circle.fill" catalog="system"/>
+                                <state key="selected" image="checkedBox"/>
                                 <connections>
                                     <action selector="tapSaveUuid:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="Tr4-vF-FDg"/>
                                 </connections>
@@ -285,6 +285,38 @@
                                     <action selector="tapAddCardButton:" destination="hKN-cI-aq7" eventType="touchUpInside" id="XiL-om-Sdp"/>
                                 </connections>
                             </button>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="W9g-WD-hba" customClass="CardCollectionView" customModule="JupiterSDK_Example" customModuleProvider="target">
+                                <rect key="frame" x="10" y="127" width="370" height="631"/>
+                                <subviews>
+                                    <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="StD-CP-4oA">
+                                        <rect key="frame" x="0.0" y="0.0" width="370" height="631"/>
+                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <collectionViewFlowLayout key="collectionViewLayout" scrollDirection="horizontal" minimumLineSpacing="10" minimumInteritemSpacing="10" id="gBa-2x-sLe">
+                                            <size key="itemSize" width="50" height="50"/>
+                                            <size key="headerReferenceSize" width="0.0" height="0.0"/>
+                                            <size key="footerReferenceSize" width="0.0" height="0.0"/>
+                                            <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                                        </collectionViewFlowLayout>
+                                        <cells>
+                                            <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="collectionViewCell" id="RGj-gc-YF8" customClass="CollectionViewCell" customModule="CollectionViewPagingExample" customModuleProvider="target">
+                                                <rect key="frame" x="0.0" y="0.0" width="50" height="50"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO">
+                                                    <rect key="frame" x="0.0" y="0.0" width="50" height="50"/>
+                                                    <autoresizingMask key="autoresizingMask"/>
+                                                </view>
+                                            </collectionViewCell>
+                                        </cells>
+                                    </collectionView>
+                                </subviews>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <constraints>
+                                    <constraint firstItem="StD-CP-4oA" firstAttribute="leading" secondItem="W9g-WD-hba" secondAttribute="leading" id="FZl-Rc-Sli"/>
+                                    <constraint firstAttribute="bottom" secondItem="StD-CP-4oA" secondAttribute="bottom" id="RdL-Oa-8BS"/>
+                                    <constraint firstItem="StD-CP-4oA" firstAttribute="top" secondItem="W9g-WD-hba" secondAttribute="top" id="eCv-bI-V1V"/>
+                                    <constraint firstAttribute="trailing" secondItem="StD-CP-4oA" secondAttribute="trailing" id="zda-1F-vDb"/>
+                                </constraints>
+                            </view>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="fqi-tX-EPG"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -292,12 +324,19 @@
                             <constraint firstItem="fqi-tX-EPG" firstAttribute="bottom" secondItem="MUW-dn-rmi" secondAttribute="bottom" constant="20" id="03v-kb-UyT"/>
                             <constraint firstItem="2Xj-Ao-iIB" firstAttribute="top" secondItem="fqi-tX-EPG" secondAttribute="top" constant="20" id="AOk-ke-YeF"/>
                             <constraint firstItem="fqi-tX-EPG" firstAttribute="bottom" secondItem="gSy-dk-oxB" secondAttribute="bottom" constant="20" id="Pz8-NS-rY2"/>
+                            <constraint firstItem="W9g-WD-hba" firstAttribute="top" secondItem="2Xj-Ao-iIB" secondAttribute="bottom" constant="10" id="U0W-3u-bZa"/>
                             <constraint firstItem="fqi-tX-EPG" firstAttribute="trailing" secondItem="2Xj-Ao-iIB" secondAttribute="trailing" id="Vtm-aO-Wr1"/>
                             <constraint firstItem="fqi-tX-EPG" firstAttribute="trailing" secondItem="gSy-dk-oxB" secondAttribute="trailing" constant="30" id="bN1-je-urI"/>
+                            <constraint firstItem="fqi-tX-EPG" firstAttribute="trailing" secondItem="W9g-WD-hba" secondAttribute="trailing" constant="10" id="bYI-LO-bBd"/>
+                            <constraint firstItem="MUW-dn-rmi" firstAttribute="top" secondItem="W9g-WD-hba" secondAttribute="bottom" constant="10" id="fAv-yy-C2f"/>
+                            <constraint firstItem="W9g-WD-hba" firstAttribute="leading" secondItem="fqi-tX-EPG" secondAttribute="leading" constant="10" id="g6b-we-7gH"/>
                             <constraint firstItem="2Xj-Ao-iIB" firstAttribute="leading" secondItem="fqi-tX-EPG" secondAttribute="leading" id="gA0-x8-dU1"/>
                             <constraint firstItem="MUW-dn-rmi" firstAttribute="leading" secondItem="fqi-tX-EPG" secondAttribute="leading" constant="30" id="ggm-RQ-aNc"/>
                         </constraints>
                     </view>
+                    <connections>
+                        <outlet property="collectionView" destination="StD-CP-4oA" id="ExW-lQ-9zy"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="0Ja-XC-Run" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
@@ -322,12 +361,12 @@
     <resources>
         <image name="addCard" width="77.333335876464844" height="22"/>
         <image name="buttonLogin" width="349.33334350585938" height="58.333332061767578"/>
-        <image name="checkmark.circle.fill" catalog="system" width="128" height="121"/>
+        <image name="checkedBox" width="24.666666030883789" height="25.333333969116211"/>
         <image name="fieldLogin" width="349.33334350585938" height="58.333332061767578"/>
         <image name="jupiterLogin" width="240.66667175292969" height="64.666664123535156"/>
         <image name="jupiterNameCard" width="390" height="53"/>
         <image name="showCard" width="78" height="22"/>
-        <image name="unCheckedBox" width="20.333333969116211" height="20.333333969116211"/>
+        <image name="unCheckedBox" width="24.666666030883789" height="25.333333969116211"/>
         <namedColor name="red1">
             <color red="0.85100001096725464" green="0.35699999332427979" blue="0.35699999332427979" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>

@@ -16,6 +16,8 @@
 		607FACEC1AFB9204008FA782 /* Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACEB1AFB9204008FA782 /* Tests.swift */; };
 		9A16870CE33E63FE35238C05 /* Pods_JupiterSDK_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DB77B350B78C4D6D3DA0D745 /* Pods_JupiterSDK_Example.framework */; };
 		B340EE3328093FB20096E404 /* CardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B340EE3228093FB20096E404 /* CardViewController.swift */; };
+		B340EE3B280962AB0096E404 /* CardCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B340EE3A280962AB0096E404 /* CardCollectionView.swift */; };
+		B340EE3D280965F90096E404 /* CollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B340EE3C280965F90096E404 /* CollectionViewCell.swift */; };
 		B360D8652807C6090084FB22 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = B360D8642807C6090084FB22 /* GoogleService-Info.plist */; };
 		B360D88E28090D6A0084FB22 /* NotoSansKR-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = B360D88828090D680084FB22 /* NotoSansKR-Bold.otf */; };
 		B360D88F28090D6A0084FB22 /* NotoSansKR-Light.otf in Resources */ = {isa = PBXBuildFile; fileRef = B360D88928090D680084FB22 /* NotoSansKR-Light.otf */; };
@@ -70,6 +72,8 @@
 		6C664AF60D59718EECD6DBBC /* Pods-JupiterSDK_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-JupiterSDK_Example.debug.xcconfig"; path = "Target Support Files/Pods-JupiterSDK_Example/Pods-JupiterSDK_Example.debug.xcconfig"; sourceTree = "<group>"; };
 		8B538B887A8FED7CB659550A /* Pods-JupiterSDK_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-JupiterSDK_Example.release.xcconfig"; path = "Target Support Files/Pods-JupiterSDK_Example/Pods-JupiterSDK_Example.release.xcconfig"; sourceTree = "<group>"; };
 		B340EE3228093FB20096E404 /* CardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardViewController.swift; sourceTree = "<group>"; };
+		B340EE3A280962AB0096E404 /* CardCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardCollectionView.swift; sourceTree = "<group>"; };
+		B340EE3C280965F90096E404 /* CollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionViewCell.swift; sourceTree = "<group>"; };
 		B360D8642807C6090084FB22 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../../Downloads/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		B360D88828090D680084FB22 /* NotoSansKR-Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "NotoSansKR-Bold.otf"; sourceTree = "<group>"; };
 		B360D88928090D680084FB22 /* NotoSansKR-Light.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "NotoSansKR-Light.otf"; sourceTree = "<group>"; };
@@ -164,6 +168,8 @@
 				607FACD71AFB9204008FA782 /* MainViewController.swift */,
 				B3BD699127E98E0E00A32A7A /* JupiterViewController.swift */,
 				B340EE3228093FB20096E404 /* CardViewController.swift */,
+				B340EE3A280962AB0096E404 /* CardCollectionView.swift */,
+				B340EE3C280965F90096E404 /* CollectionViewCell.swift */,
 				607FACD91AFB9204008FA782 /* Main.storyboard */,
 				607FACDE1AFB9204008FA782 /* LaunchScreen.xib */,
 				607FACDC1AFB9204008FA782 /* Images.xcassets */,
@@ -476,12 +482,14 @@
 				607FACD81AFB9204008FA782 /* MainViewController.swift in Sources */,
 				B340EE3328093FB20096E404 /* CardViewController.swift in Sources */,
 				B3BD699D27E9A4FE00A32A7A /* setCharacterSpacing.swift in Sources */,
+				B340EE3D280965F90096E404 /* CollectionViewCell.swift in Sources */,
 				B3BD69A427E9A54700A32A7A /* StringExtension.swift in Sources */,
 				B3BD69B427E9A8AD00A32A7A /* ZoneCollectionViewCell.swift in Sources */,
 				607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */,
 				B3BD69A627E9A55400A32A7A /* UIViewExtension.swift in Sources */,
 				B3BD699827E9A4A500A32A7A /* ColorPalette.swift in Sources */,
 				B3BD69A827E9A56B00A32A7A /* UITableViewRegisterable.swift in Sources */,
+				B340EE3B280962AB0096E404 /* CardCollectionView.swift in Sources */,
 				B3BD699F27E9A51100A32A7A /* makeVibrate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
