@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="19529" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="KJ4-Co-KT0">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="20037" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="KJ4-Co-KT0">
     <device id="retina6_0" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19519"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="20020"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
@@ -66,6 +66,15 @@
                                 <color key="textColor" name="red1"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="U3z-wL-2zJ">
+                                <rect key="frame" x="286.66666666666669" y="376.66666666666669" width="21" height="22"/>
+                                <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                <state key="normal" image="unCheckedBox"/>
+                                <state key="selected" image="checkmark.circle.fill" catalog="system"/>
+                                <connections>
+                                    <action selector="tapSaveUuid:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="Tr4-vF-FDg"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="tJz-hP-2ob"/>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -74,8 +83,10 @@
                             <constraint firstItem="I89-If-8y7" firstAttribute="leading" secondItem="tJz-hP-2ob" secondAttribute="leading" constant="23.300000000000001" id="0Zh-6P-Tm5"/>
                             <constraint firstItem="So7-VT-aPc" firstAttribute="centerX" secondItem="zl8-wP-m6e" secondAttribute="centerX" id="3bc-KL-XS6"/>
                             <constraint firstItem="zl8-wP-m6e" firstAttribute="top" secondItem="tJz-hP-2ob" secondAttribute="top" constant="153.30000000000001" id="4j4-a5-FLr"/>
+                            <constraint firstItem="U3z-wL-2zJ" firstAttribute="centerY" secondItem="vI8-C4-adM" secondAttribute="centerY" id="6Wh-Fa-azj"/>
                             <constraint firstItem="vI8-C4-adM" firstAttribute="trailing" secondItem="So7-VT-aPc" secondAttribute="trailing" id="763-st-fnb"/>
                             <constraint firstItem="I89-If-8y7" firstAttribute="centerX" secondItem="kh9-bI-dsS" secondAttribute="centerX" id="7Mj-SA-W4m"/>
+                            <constraint firstItem="vI8-C4-adM" firstAttribute="leading" secondItem="U3z-wL-2zJ" secondAttribute="trailing" constant="5" id="7Ru-RD-h3R"/>
                             <constraint firstItem="4Wm-pG-8t2" firstAttribute="centerY" secondItem="So7-VT-aPc" secondAttribute="centerY" id="CXS-dr-9V7"/>
                             <constraint firstItem="3cD-sh-gUq" firstAttribute="top" secondItem="So7-VT-aPc" secondAttribute="bottom" constant="60" id="KEb-cY-zKi"/>
                             <constraint firstItem="tJz-hP-2ob" firstAttribute="trailing" secondItem="4Wm-pG-8t2" secondAttribute="trailing" constant="50" id="OT2-VG-OGq"/>
@@ -242,7 +253,55 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="w9j-Ov-66O" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1084.6153846153845" y="101.65876777251184"/>
+            <point key="canvasLocation" x="2037" y="102"/>
+        </scene>
+        <!--Card View Controller-->
+        <scene sceneID="VxW-1E-WNp">
+            <objects>
+                <viewController storyboardIdentifier="CardViewController" id="hKN-cI-aq7" customClass="CardViewController" customModule="JupiterSDK_Example" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="feE-89-jXQ">
+                        <rect key="frame" x="0.0" y="0.0" width="390" height="844"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="jupiterNameCard" translatesAutoresizingMaskIntoConstraints="NO" id="2Xj-Ao-iIB">
+                                <rect key="frame" x="0.0" y="64" width="390" height="53"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="53" id="r4Z-k0-Fu9"/>
+                                </constraints>
+                            </imageView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="MUW-dn-rmi">
+                                <rect key="frame" x="30" y="768" width="78" height="22"/>
+                                <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                <state key="normal" image="showCard"/>
+                                <connections>
+                                    <action selector="tapShowCardButton:" destination="hKN-cI-aq7" eventType="touchUpInside" id="qDM-sG-6dd"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gSy-dk-oxB">
+                                <rect key="frame" x="282" y="768" width="78" height="22"/>
+                                <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                <state key="normal" image="addCard"/>
+                                <connections>
+                                    <action selector="tapAddCardButton:" destination="hKN-cI-aq7" eventType="touchUpInside" id="XiL-om-Sdp"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="fqi-tX-EPG"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="fqi-tX-EPG" firstAttribute="bottom" secondItem="MUW-dn-rmi" secondAttribute="bottom" constant="20" id="03v-kb-UyT"/>
+                            <constraint firstItem="2Xj-Ao-iIB" firstAttribute="top" secondItem="fqi-tX-EPG" secondAttribute="top" constant="20" id="AOk-ke-YeF"/>
+                            <constraint firstItem="fqi-tX-EPG" firstAttribute="bottom" secondItem="gSy-dk-oxB" secondAttribute="bottom" constant="20" id="Pz8-NS-rY2"/>
+                            <constraint firstItem="fqi-tX-EPG" firstAttribute="trailing" secondItem="2Xj-Ao-iIB" secondAttribute="trailing" id="Vtm-aO-Wr1"/>
+                            <constraint firstItem="fqi-tX-EPG" firstAttribute="trailing" secondItem="gSy-dk-oxB" secondAttribute="trailing" constant="30" id="bN1-je-urI"/>
+                            <constraint firstItem="2Xj-Ao-iIB" firstAttribute="leading" secondItem="fqi-tX-EPG" secondAttribute="leading" id="gA0-x8-dU1"/>
+                            <constraint firstItem="MUW-dn-rmi" firstAttribute="leading" secondItem="fqi-tX-EPG" secondAttribute="leading" constant="30" id="ggm-RQ-aNc"/>
+                        </constraints>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="0Ja-XC-Run" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1069" y="102"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="vRG-l6-FfN">
@@ -261,9 +320,14 @@
         </scene>
     </scenes>
     <resources>
+        <image name="addCard" width="77.333335876464844" height="22"/>
         <image name="buttonLogin" width="349.33334350585938" height="58.333332061767578"/>
+        <image name="checkmark.circle.fill" catalog="system" width="128" height="121"/>
         <image name="fieldLogin" width="349.33334350585938" height="58.333332061767578"/>
         <image name="jupiterLogin" width="240.66667175292969" height="64.666664123535156"/>
+        <image name="jupiterNameCard" width="390" height="53"/>
+        <image name="showCard" width="78" height="22"/>
+        <image name="unCheckedBox" width="20.333333969116211" height="20.333333969116211"/>
         <namedColor name="red1">
             <color red="0.85100001096725464" green="0.35699999332427979" blue="0.35699999332427979" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>

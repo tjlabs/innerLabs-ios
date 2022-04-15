@@ -29,6 +29,7 @@ class JupiterViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(false)
         
+        print(uuid)
         jupiterService.uuid = uuid
         jupiterService.sector = "TJLABS"
         jupiterService.startService(parent: self)
