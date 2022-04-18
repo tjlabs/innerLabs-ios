@@ -40,7 +40,7 @@ class MainViewController: UIViewController, UITextFieldDelegate {
         // Dispose of any resources that can be recreated.
     }
     
-    @IBAction func tapConfirmButton(_ sender: UIButton) {
+    @IBAction func tapLoginButton(_ sender: UIButton) {
         self.uuid = codeTextField.text ?? ""
         
         if (uuid == "") {
@@ -55,10 +55,25 @@ class MainViewController: UIViewController, UITextFieldDelegate {
             
             guard let cardVC = self.storyboard?.instantiateViewController(withIdentifier: "CardViewController") as? CardViewController else { return }
             cardVC.uuid = uuid
+            
+            // Card 정보 가져오기
+            var cardDatas = [CardItemData]()
+            cardDatas.append(CardItemData(name: "Purple", description: "purple", cardImage: "purpleCard", sectorImage: "sectorDefault", code: "purple", sectorID: 0, numZones: 3, order: 0))
+            cardDatas.append(CardItemData(name: "Orange", description: "orange", cardImage: "orangeCard", sectorImage: "sectorDefault", code: "orange", sectorID: 0, numZones: 3, order: 1))
+            cardDatas.append(CardItemData(name: "Green", description: "green", cardImage: "greenCard", sectorImage: "sectorDefault", code: "green", sectorID: 0, numZones: 3, order: 2))
+            cardDatas.append(CardItemData(name: "Gray", description: "gray", cardImage: "grayCard", sectorImage: "sectorDefault", code: "gray", sectorID: 0, numZones: 3, order: 3))
+            
+            // Card 앞 뒤로 추가하기
+            let firstCard = cardDatas[0]
+            let lastCard = cardDatas[cardDatas.count-1]
+            cardDatas.insert(lastCard, at: 0)
+            cardDatas.append(firstCard)
+            
+            cardVC.cardItemData = cardDatas
+            
             self.navigationController?.pushViewController(cardVC, animated: true)
             guideLabel.isHidden = true
         }
-        
     }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {

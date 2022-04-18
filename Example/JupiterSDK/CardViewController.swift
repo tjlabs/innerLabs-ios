@@ -1,87 +1,81 @@
-//
-//  CardViewController.swift
-//  JupiterSDK_Example
-//
-//  Created by 신동현 on 2022/04/15.
-//  Copyright © 2022 CocoaPods. All rights reserved.
-//
-
 import UIKit
+import JupiterSDK
 
 class CardViewController: UIViewController {
     
     @IBOutlet weak var collectionView: UICollectionView!
+    @IBOutlet weak var progressView: UIProgressView!
     
     var uuid: String = ""
+    var cardItemData: [CardItemData] = []
+    var cardImages: [UIImage] = []
+    var sectorImages: [UIImage] = []
+    
+    let INITIAL_CARD: Int = 1
     
     // Card
-    let itemColors = [UIColor.red, UIColor.yellow, UIColor.blue, UIColor.green]
+        let itemColors = [UIColor.green, UIColor.red, UIColor.yellow, UIColor.blue, UIColor.green, UIColor.red]
+//    let itemColors = [UIColor.red, UIColor.yellow, UIColor.blue, UIColor.green]
     var currentIndex: CGFloat = 0
     let lineSpacing: CGFloat = 20
-    let cellWidthRatio: CGFloat = 0.7
-    let cellheightRatio: CGFloat = 0.6
+    
+    var currentPage: Int = 0
+    var previousIndex: Int = 0
+    
+    // Default : 0.7
+    //    let cellWidthRatio: CGFloat = 0.7
+    //    let cellheightRatio: CGFloat = 0.9
+    
+    let cellWidthRatio: CGFloat = 0.8
+    let cellheightRatio: CGFloat = 0.9
+    
     var isOneStepPaging = true
-
-    private var cardImages: [UIImage] {
-        var cardImages:[UIImage] = []
-        for i in 0..<4 {
-            let index = i % 4
-            var image = UIImage(named: "purpleCard")!
-            switch index {
-            case 0:
-                image = UIImage(named: "purpleCard")!
-            case 1:
-                image = UIImage(named: "orangeCard")!
-            case 2:
-                image = UIImage(named: "greenCard")!
-            case 3:
-                image = UIImage(named: "grayCard")!
-            default:
-                image = UIImage(named: "purpleCard")!
-            }
+    
+    func setData(data: Array<CardItemData>) {
+        for i in 0..<data.count {
+            let cardImage = UIImage(named: data[i].cardImage)!
+            cardImages.append(cardImage)
             
-            cardImages.append(image)
+            let sectorImage = UIImage(named: data[i].sectorImage)!
+            sectorImages.append(sectorImage)
         }
-        return cardImages
     }
     
-    private var sectorImages: [UIImage] {
-        var sectorImages:[UIImage] = []
-        for i in 0..<4 {
-            let index = i % 4
-            var image = UIImage(named: "sectorDefault")!
-            switch index {
-            case 0:
-                image = UIImage(named: "sectorDefault")!
-            case 1:
-                image = UIImage(named: "sectorDefault")!
-            case 2:
-                image = UIImage(named: "sectorDefault")!
-            case 3:
-                image = UIImage(named: "sectorDefault")!
-            default:
-                image = UIImage(named: "sectorDefault")!
-            }
-            
-            sectorImages.append(image)
-        }
-        return sectorImages
-    }
-
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(false)
+        
+        setData(data: cardItemData)
+        setupCollectionView()
+        setupProgressView()
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+    }
+    
+    override func viewWillLayoutSubviews() {
+        let cardCount = cardItemData.count
+        collectionView.scrollToItem(at: IndexPath(item: INITIAL_CARD, section: 0), at: .centeredHorizontally, animated: false)
+        let progress: Float = Float(INITIAL_CARD+1) / Float(cardCount)
+        self.progressView.setProgress(progress, animated: true)
+    }
+    
+    // 최초 보여지는 카드
+//    override func viewDidLayoutSubviews() {
+//        let cardCount = cardItemData.count
+//        collectionView.scrollToItem(at: IndexPath(item: INITIAL_CARD, section: 0), at: .centeredHorizontally, animated: false)
+//        let progress: Float = Float(INITIAL_CARD+1) / Float(cardCount)
+//        self.progressView.setProgress(progress, animated: true)
+//    }
+    
+    public func setupCollectionView() {
         // width, height 설정
-        let cellWidth = floor(view.frame.width * cellWidthRatio)
-        let cellHeight = floor(view.frame.height * cellheightRatio)
+        let cellWidth = floor(collectionView.frame.width * cellWidthRatio)
+        let cellHeight = floor(collectionView.frame.height * cellheightRatio)
         
         // 상하, 좌우 inset value 설정
-        let insetX = (view.bounds.width - cellWidth) / 2.0
-        let insetY = (view.bounds.height - cellHeight) / 2.0
+        let insetX = (collectionView.bounds.width - cellWidth) / 2.0
+        let insetY = (collectionView.bounds.height - cellHeight) / 2.0
         
         let layout = collectionView.collectionViewLayout as! UICollectionViewFlowLayout
         layout.itemSize = CGSize(width: cellWidth, height: cellHeight)
@@ -91,16 +85,40 @@ class CardViewController: UIViewController {
         
         collectionView.delegate = self
         collectionView.dataSource = self
+        
+        // Color Card 설정 시 주석 풀기
         collectionView.register(UINib(nibName: "CardCollectionViewCell", bundle: .main), forCellWithReuseIdentifier: "CardCollectionViewCell")
+        self.collectionView.reloadData()
         
         // 스크롤 시 빠르게 감속 되도록 설정
         collectionView.decelerationRate = UIScrollView.DecelerationRate.fast
     }
     
+    public func setupProgressView() {
+        self.progressView.clipsToBounds = true
+        self.progressView.progress = 0.0
+//        self.progressView.transform = progressView.transform.scaledBy(x: 1, y: 1.5)
+        self.progressView.layer.cornerRadius = 3.0
+    }
+    
+    
     @IBAction func tapShowCardButton(_ sender: UIButton) {
         guard let jupiterVC = self.storyboard?.instantiateViewController(withIdentifier: "JupiterViewController") as? JupiterViewController else { return }
         jupiterVC.uuid = uuid
         self.navigationController?.pushViewController(jupiterVC, animated: true)
+    }
+    
+    public func getProgressValue(currentPage: Int) -> Float {
+        var progressValue: Float = 0.0
+        if (currentPage == 0 || currentPage == cardItemData.count-2) {
+            progressValue = 1.0
+        } else if (currentPage == 1 || currentPage == cardItemData.count-1) {
+            progressValue = 1/Float(cardItemData.count-2)
+        } else {
+            progressValue = Float(currentPage)/Float(cardItemData.count-2)
+        }
+
+        return progressValue
     }
     
     
@@ -115,19 +133,22 @@ extension CardViewController: UICollectionViewDataSource, UICollectionViewDelega
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return itemColors.count
+        return cardItemData.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        
+        // Color Card 설정 시 주석 풀기
+        //        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "collectionViewCell", for: indexPath) as! CollectionViewCell
+        //        cell.backgroundColor = itemColors[indexPath.row]
+        //        cell.alpha = 0.5
+        
+        
+        // Image Card 설정 시 주석 풀기
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "CardCollectionViewCell", for: indexPath) as! CardCollectionViewCell
-//        cell.backgroundColor = itemColors[indexPath.row]
-//        cell.alpha = 0.5
         cell.cardImageView.image = cardImages[indexPath.row]
         cell.sectorImageView.image = sectorImages[indexPath.row]
-        
-//        let View = UIView()
-//        View.backgroundColor = UIColor(patternImage: UIImage(named: "purpleCard.png")!)
-//        cell.backgroundView = UIImageView(image: UIImage(named: "purpleCard.png"))
+//        cell.cardView.backgroundColor = itemColors[indexPath.row]
         
         return cell
     }
@@ -136,6 +157,7 @@ extension CardViewController: UICollectionViewDataSource, UICollectionViewDelega
 
 extension CardViewController : UIScrollViewDelegate {
     
+    // 사용자가 스크롤하고 스크린과 손이 떨어졌을 경우
     func scrollViewWillEndDragging(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>)
     {
         // item의 사이즈와 item 간의 간격 사이즈를 구해서 하나의 item 크기로 설정.
@@ -173,7 +195,76 @@ extension CardViewController : UIScrollViewDelegate {
         offset = CGPoint(x: roundedIndex * cellWidthIncludingSpacing - scrollView.contentInset.left, y: -scrollView.contentInset.top)
         targetContentOffset.pointee = offset
         
+        currentPage = Int(roundedIndex)
         print("Current Page: \(roundedIndex)")
+        
+        // ProgressBar
+        let progress = getProgressValue(currentPage: currentPage)
+        UIView.animate(withDuration: 0.5) {
+            self.progressView.setProgress(progress, animated: true)
+        }
+    }
+    
+//    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+//        if currentPage == 0 {
+//            collectionView.scrollToItem(at: IndexPath(item: cardItemData.count-2, section: 0), at: .centeredHorizontally, animated: false)
+//            currentIndex = CGFloat(cardItemData.count-2)
+//            previousIndex = 1
+//        } else if currentPage == cardItemData.count-1 {
+//            collectionView.scrollToItem(at: IndexPath(item: INITIAL_CARD, section: 0), at: .centeredHorizontally, animated: false)
+//            currentIndex = CGFloat(INITIAL_CARD)
+//            previousIndex = cardItemData.count-2
+////            print("You have to move to first")
+//        }
+//    }
+    
+    func animateZoomforCell(zoomCell: UICollectionViewCell) {
+        UIView.animate( withDuration: 0.2, delay: 0, options: .curveEaseOut, animations: { zoomCell.transform = .identity }, completion: nil)
+    }
+    
+    func animateZoomforCellremove(zoomCell: UICollectionViewCell) {
+        UIView.animate( withDuration: 0.2, delay: 0, options: .curveEaseOut, animations: { zoomCell.transform = CGAffineTransform(scaleX: 0.8, y: 0.8) }, completion: nil)
+        
+    }
+    
+    public func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        let layout = self.collectionView.collectionViewLayout as! UICollectionViewFlowLayout
+        
+        let cellWidth = floor(collectionView.frame.width * cellWidthRatio)
+        
+        let cellWidthIncludeSpacing = cellWidth + layout.minimumLineSpacing
+        
+        let offsetX = collectionView.contentOffset.x
+        let index = (offsetX + collectionView.contentInset.left) / cellWidthIncludeSpacing
+        let roundedIndex = round(index)
+        let indexPath = IndexPath(item: Int(roundedIndex), section: 0)
+        
+        //        let roundedIndex = currentPage
+        //        let indexPath = IndexPath(item: Int(roundedIndex), section: 0)
+        if let cell = collectionView.cellForItem(at: indexPath) {
+            animateZoomforCell(zoomCell: cell)
+        }
+        if Int(roundedIndex) != previousIndex {
+            let preIndexPath = IndexPath(item: previousIndex, section: 0)
+            if let preCell = collectionView.cellForItem(at: preIndexPath)
+            {
+                animateZoomforCellremove(zoomCell: preCell)
+                
+            }
+            previousIndex = indexPath.item
+        }
+    }
+    
+    public func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+        if currentPage == 0 {
+            collectionView.scrollToItem(at: IndexPath(item: cardItemData.count-2, section: 0), at: .centeredHorizontally, animated: false)
+            currentIndex = CGFloat(cardItemData.count-2)
+            previousIndex = 1
+        } else if currentPage == cardItemData.count-1 {
+            collectionView.scrollToItem(at: IndexPath(item: INITIAL_CARD, section: 0), at: .centeredHorizontally, animated: false)
+            currentIndex = CGFloat(INITIAL_CARD)
+            previousIndex = cardItemData.count-2
+        }
     }
 }
 

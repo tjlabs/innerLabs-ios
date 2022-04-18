@@ -1,5 +1,33 @@
 import Foundation
 
+public struct CardItemData: Codable {
+    public var name: String
+    public var description: String
+    public var cardImage: String
+    public var sectorImage: String
+    public var code: String
+    public var sectorID: Int
+    public var numZones: Int
+    public var order: Int
+    
+    public init(name: String, description: String, cardImage: String, sectorImage: String, code: String, sectorID: Int, numZones: Int, order: Int) {
+        self.name = name
+        self.description = description
+        self.cardImage = cardImage
+        self.sectorImage = sectorImage
+        self.code = code
+        self.sectorID = sectorID
+        self.numZones = numZones
+        self.order = order
+    }
+}
+
+public struct CardList: Codable {
+    var cards = [CardItemData]()
+    
+    public init() {}
+}
+
 struct SendDataInfo: Encodable {
     let timestamp: String
     let value1: String

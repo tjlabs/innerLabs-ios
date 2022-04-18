@@ -1,17 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "greenCard.png",
+      "filename" : "cardGreen.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "greenCard@2x.png",
+      "filename" : "cardGreen-1.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "greenCard@3x.png",
+      "filename" : "cardGreen-2.png",
       "idiom" : "universal",
       "scale" : "3x"
     }

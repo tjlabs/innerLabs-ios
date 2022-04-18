@@ -1,17 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "grayCard.png",
+      "filename" : "cardGray.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "grayCard@2x.png",
+      "filename" : "cardGray-1.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "grayCard@3x.png",
+      "filename" : "cardGray-2.png",
       "idiom" : "universal",
       "scale" : "3x"
     }

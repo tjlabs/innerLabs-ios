@@ -10,12 +10,13 @@ import UIKit
 
 class CardCollectionViewCell: UICollectionViewCell {
     
+    @IBOutlet weak var cardView: UIView!
     @IBOutlet weak var cardImageView: UIImageView!
     @IBOutlet weak var sectorImageView: UIImageView!
     
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
+        print("CardCollectionViewCell Registered")
     }
-
 }
