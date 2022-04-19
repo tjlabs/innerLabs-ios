@@ -112,6 +112,21 @@
             </objects>
             <point key="canvasLocation" x="276.92307692307691" y="102.3696682464455"/>
         </scene>
+        <!--Add Card View Controller-->
+        <scene sceneID="8Bu-EG-bRg">
+            <objects>
+                <viewController storyboardIdentifier="AddCardViewController" id="xoA-3y-VN5" customClass="AddCardViewController" customModule="JupiterSDK_Example" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="5f8-F4-xuz">
+                        <rect key="frame" x="0.0" y="0.0" width="390" height="844"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="JOV-Hw-mi2"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="3e4-UX-27b" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1712" y="792"/>
+        </scene>
         <!--Jupiter View Controller-->
         <scene sceneID="Cf6-wt-mlE">
             <objects>
@@ -254,7 +269,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="w9j-Ov-66O" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2037" y="102"/>
+            <point key="canvasLocation" x="1828" y="102"/>
         </scene>
         <!--Card View Controller-->
         <scene sceneID="VxW-1E-WNp">

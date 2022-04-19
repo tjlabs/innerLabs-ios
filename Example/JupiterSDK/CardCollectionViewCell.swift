@@ -14,9 +14,22 @@ class CardCollectionViewCell: UICollectionViewCell {
     @IBOutlet weak var cardImageView: UIImageView!
     @IBOutlet weak var sectorImageView: UIImageView!
     
+    @IBOutlet weak var sectorImageHeight: NSLayoutConstraint!
+    @IBOutlet weak var sectorImageWidth: NSLayoutConstraint!
+    @IBOutlet weak var sectorTopSpace: NSLayoutConstraint!
+    
     override func awakeFromNib() {
         super.awakeFromNib()
+        
         // Initialization code
-        print("CardCollectionViewCell Registered")
+        sectorImageWidth.constant = 300
+        sectorImageHeight.constant = 330
+//        print("CardCollectionViewCell Registered")
+        
+//        print("UIView Width : \(cardView.frame.width)")
+//        print("UIView Height : \(cardView.frame.height)")
+//        
+//        print("CardImageView Width : \(cardImageView.frame.width)")
+//        print("CardImageView Height : \(cardImageView.frame.height)")
     }
 }

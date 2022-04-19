@@ -16,7 +16,6 @@
 		607FACEC1AFB9204008FA782 /* Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACEB1AFB9204008FA782 /* Tests.swift */; };
 		9A16870CE33E63FE35238C05 /* Pods_JupiterSDK_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DB77B350B78C4D6D3DA0D745 /* Pods_JupiterSDK_Example.framework */; };
 		B340EE3328093FB20096E404 /* CardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B340EE3228093FB20096E404 /* CardViewController.swift */; };
-		B340EE3B280962AB0096E404 /* CardCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B340EE3A280962AB0096E404 /* CardCollectionView.swift */; };
 		B340EE3D280965F90096E404 /* CollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B340EE3C280965F90096E404 /* CollectionViewCell.swift */; };
 		B360D8652807C6090084FB22 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = B360D8642807C6090084FB22 /* GoogleService-Info.plist */; };
 		B360D88E28090D6A0084FB22 /* NotoSansKR-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = B360D88828090D680084FB22 /* NotoSansKR-Bold.otf */; };
@@ -44,6 +43,7 @@
 		B3BD69B527E9A8AD00A32A7A /* ZoneCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B3BD69B327E9A8AD00A32A7A /* ZoneCollectionViewCell.xib */; };
 		B3BD69B827E9ABA300A32A7A /* DataModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3BD69B727E9ABA300A32A7A /* DataModel.swift */; };
 		B3BD69BA27E9ABB200A32A7A /* ZoneDataModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3BD69B927E9ABB200A32A7A /* ZoneDataModel.swift */; };
+		B3DE146D280E7146006DA43C /* AddCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3DE146C280E7146006DA43C /* AddCardViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -74,7 +74,6 @@
 		6C664AF60D59718EECD6DBBC /* Pods-JupiterSDK_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-JupiterSDK_Example.debug.xcconfig"; path = "Target Support Files/Pods-JupiterSDK_Example/Pods-JupiterSDK_Example.debug.xcconfig"; sourceTree = "<group>"; };
 		8B538B887A8FED7CB659550A /* Pods-JupiterSDK_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-JupiterSDK_Example.release.xcconfig"; path = "Target Support Files/Pods-JupiterSDK_Example/Pods-JupiterSDK_Example.release.xcconfig"; sourceTree = "<group>"; };
 		B340EE3228093FB20096E404 /* CardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardViewController.swift; sourceTree = "<group>"; };
-		B340EE3A280962AB0096E404 /* CardCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardCollectionView.swift; sourceTree = "<group>"; };
 		B340EE3C280965F90096E404 /* CollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionViewCell.swift; sourceTree = "<group>"; };
 		B360D8642807C6090084FB22 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../../Downloads/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		B360D88828090D680084FB22 /* NotoSansKR-Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "NotoSansKR-Bold.otf"; sourceTree = "<group>"; };
@@ -102,6 +101,7 @@
 		B3BD69B327E9A8AD00A32A7A /* ZoneCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ZoneCollectionViewCell.xib; sourceTree = "<group>"; };
 		B3BD69B727E9ABA300A32A7A /* DataModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataModel.swift; sourceTree = "<group>"; };
 		B3BD69B927E9ABB200A32A7A /* ZoneDataModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoneDataModel.swift; sourceTree = "<group>"; };
+		B3DE146C280E7146006DA43C /* AddCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddCardViewController.swift; sourceTree = "<group>"; };
 		D004876B84847F9E6841D160 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
 		DB77B350B78C4D6D3DA0D745 /* Pods_JupiterSDK_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_JupiterSDK_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F53652D9802675AD38E29753 /* Pods_JupiterSDK_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_JupiterSDK_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -172,8 +172,8 @@
 				607FACD71AFB9204008FA782 /* MainViewController.swift */,
 				B3BD699127E98E0E00A32A7A /* JupiterViewController.swift */,
 				B340EE3228093FB20096E404 /* CardViewController.swift */,
-				B340EE3A280962AB0096E404 /* CardCollectionView.swift */,
 				B340EE3C280965F90096E404 /* CollectionViewCell.swift */,
+				B3DE146C280E7146006DA43C /* AddCardViewController.swift */,
 				607FACD91AFB9204008FA782 /* Main.storyboard */,
 				607FACDE1AFB9204008FA782 /* LaunchScreen.xib */,
 				607FACDC1AFB9204008FA782 /* Images.xcassets */,
@@ -483,6 +483,7 @@
 				B3BD699227E98E0E00A32A7A /* JupiterViewController.swift in Sources */,
 				B3BD69AF27E9A78000A32A7A /* SectorContainerTableViewCell.swift in Sources */,
 				B3BD69A127E9A52500A32A7A /* applyShadow.swift in Sources */,
+				B3DE146D280E7146006DA43C /* AddCardViewController.swift in Sources */,
 				B3BD69AC27E9A57E00A32A7A /* UICollectionViewRegisterable.swift in Sources */,
 				B3BD69BA27E9ABB200A32A7A /* ZoneDataModel.swift in Sources */,
 				B3BD69B827E9ABA300A32A7A /* DataModel.swift in Sources */,
@@ -497,7 +498,6 @@
 				B3BD69A627E9A55400A32A7A /* UIViewExtension.swift in Sources */,
 				B3BD699827E9A4A500A32A7A /* ColorPalette.swift in Sources */,
 				B3BD69A827E9A56B00A32A7A /* UITableViewRegisterable.swift in Sources */,
-				B340EE3B280962AB0096E404 /* CardCollectionView.swift in Sources */,
 				B3BD699F27E9A51100A32A7A /* makeVibrate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

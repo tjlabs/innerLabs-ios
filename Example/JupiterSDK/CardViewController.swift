@@ -10,6 +10,8 @@ class CardViewController: UIViewController {
     var cardItemData: [CardItemData] = []
     var cardImages: [UIImage] = []
     var sectorImages: [UIImage] = []
+    var sectorImagesResized: [UIImage] = []
+    var cardSize: [Double]?
     
     // Card
 //    let itemColors = [UIColor.red, UIColor.yellow, UIColor.blue, UIColor.green]
@@ -34,10 +36,37 @@ class CardViewController: UIViewController {
         setData(data: cardItemData)
         setupCollectionView()
         setupProgressView()
+        
+        let sizes = checkImageSize(cards: cardImages, sectors: sectorImages)
+        print("Size of Card : \(sizes.sizeCard)")
+        print("Size of Sector : \(sizes.sizeSector)")
+        
+        sectorImagesResized = changeSectorImageSize(sectors: sectorImages, size: sizes.sizeCard)
+        let afterSizes = checkImageSize(cards: cardImages, sectors: sectorImagesResized)
+        print("Size of Card : \(afterSizes.sizeCard)")
+        print("Size of Sector : \(afterSizes.sizeSector)")
+        
+        cardSize = afterSizes.sizeCard
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
+    }
+    
+    func checkImageSize(cards: Array<UIImage>, sectors: Array<UIImage>) -> (sizeCard: Array<Double>, sizeSector: Array<Double>) {
+        let cardImage = cards[0]
+        let sectorImage = sectors[0]
+        
+//        print(cardImage.size.width)
+//        print(cardImage.size.height)
+//
+//        print(sectorImage.size.width)
+//        print(sectorImage.size.height)
+        
+        let sizeCard: [Double] = [cardImage.size.width, cardImage.size.height]
+        let sizeSector: [Double] = [sectorImage.size.width, sectorImage.size.height]
+        
+        return (sizeCard, sizeSector)
     }
     
     func setData(data: Array<CardItemData>) {
@@ -50,18 +79,25 @@ class CardViewController: UIViewController {
         }
     }
     
+    func changeSectorImageSize(sectors: Array<UIImage>, size: Array<Double>) -> Array<UIImage> {
+        var sectorImages: [UIImage] = []
+        
+        for index in 0..<sectors.count {
+            let image = sectors[index]
+            let targetSize = CGSize(width: size[0] , height: size[1])
+            let newImage: UIImage = resizeImage(image: image, targetSize: targetSize) ?? sectors[index]
+            sectorImages.append(newImage)
+        }
+        
+        return sectorImages
+    }
+    
     func moveToInitSectionFirstCard() {
-//        let cardCount = cardItemData.count
-//        let section = (9-1)/2
-//        let firstCard = cardCount*section
         let firstCard = getInitSectionFisrtCardIndex()
         collectionView.scrollToItem(at: IndexPath(item: firstCard, section: 0), at: .centeredHorizontally, animated: false)
     }
     
     func moveToInitSectionLastCard() {
-//        let cardCount = cardItemData.count
-//        let section = (9-1)/2
-//        let lastCard = (cardCount*section) + (cardCount-1)
         let lastCard = getInitSectionLastCardIndex()
         collectionView.scrollToItem(at: IndexPath(item: lastCard, section: 0), at: .centeredHorizontally, animated: false)
     }
@@ -92,7 +128,6 @@ class CardViewController: UIViewController {
         moveToInitSectionFirstCard()
     }
     
-    // 수정 필요
     public func setupProgressView() {
         self.progressView.clipsToBounds = true
         self.progressView.progress = 0.0
@@ -151,6 +186,35 @@ class CardViewController: UIViewController {
     
     
     @IBAction func tapAddCardButton(_ sender: UIButton) {
+        guard let addCardVC = self.storyboard?.instantiateViewController(withIdentifier: "AddCardViewController") as? AddCardViewController else { return }
+        addCardVC.modalPresentationStyle = .fullScreen
+        self.present(addCardVC, animated: true, completion: nil)
+    }
+    
+    func resizeImage(image: UIImage, targetSize: CGSize) -> UIImage? {
+        let size = image.size
+        
+        let widthRatio  = targetSize.width  / size.width
+        let heightRatio = targetSize.height / size.height
+        
+        // Figure out what our orientation is, and use that to form the rectangle
+        var newSize: CGSize
+        if(widthRatio > heightRatio) {
+            newSize = CGSize(width: size.width * heightRatio, height: size.height * heightRatio)
+        } else {
+            newSize = CGSize(width: size.width * widthRatio, height: size.height * widthRatio)
+        }
+        
+        // This is the rect that we've calculated out and this is what is actually used below
+        let rect = CGRect(origin: .zero, size: newSize)
+        
+        // Actually do the resizing to the rect using the ImageContext stuff
+        UIGraphicsBeginImageContextWithOptions(newSize, false, 1.0)
+        image.draw(in: rect)
+        let newImage = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        
+        return newImage
     }
     
 }
@@ -178,7 +242,12 @@ extension CardViewController: UICollectionViewDataSource, UICollectionViewDelega
         let mod = indexPath.item%cardCount
         cell.cardImageView.image = cardImages[mod]
         cell.sectorImageView.image = sectorImages[mod]
-//        cell.cardView.backgroundColor = itemColors[indexPath.row]
+        
+//        print(cardSize)
+//        print("Before : \(cell.sectorImageView.frame)")
+//        cell.sectorImageView.image = sectorImagesResized[mod]
+//        print("After : \(cell.sectorImageView.frame)")
+//        cell.cardView.backgroundColor = itemColors[mod]
         
         return cell
     }
@@ -226,7 +295,7 @@ extension CardViewController : UIScrollViewDelegate {
         targetContentOffset.pointee = offset
         
         currentPage = Int(roundedIndex)
-//        print("Current Page: \(roundedIndex)")
+        print("Current Page: \(roundedIndex)")
         
         // ProgressBar
         let progress = getProgressValue(currentPage: currentPage)
@@ -234,19 +303,6 @@ extension CardViewController : UIScrollViewDelegate {
             self.progressView.setProgress(progress, animated: true)
         }
     }
-    
-//    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
-//        if currentPage == 0 {
-//            collectionView.scrollToItem(at: IndexPath(item: cardItemData.count-2, section: 0), at: .centeredHorizontally, animated: false)
-//            currentIndex = CGFloat(cardItemData.count-2)
-//            previousIndex = 1
-//        } else if currentPage == cardItemData.count-1 {
-//            collectionView.scrollToItem(at: IndexPath(item: INITIAL_CARD, section: 0), at: .centeredHorizontally, animated: false)
-//            currentIndex = CGFloat(INITIAL_CARD)
-//            previousIndex = cardItemData.count-2
-////            print("You have to move to first")
-//        }
-//    }
     
     func animateZoomforCell(zoomCell: UICollectionViewCell) {
         UIView.animate( withDuration: 0.2, delay: 0, options: .curveEaseOut, animations: { zoomCell.transform = .identity }, completion: nil)
