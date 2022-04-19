@@ -64,10 +64,10 @@ class MainViewController: UIViewController, UITextFieldDelegate {
             cardDatas.append(CardItemData(name: "Gray", description: "gray", cardImage: "grayCard", sectorImage: "sectorDefault", code: "gray", sectorID: 0, numZones: 3, order: 3))
             
             // Card 앞 뒤로 추가하기
-            let firstCard = cardDatas[0]
-            let lastCard = cardDatas[cardDatas.count-1]
-            cardDatas.insert(lastCard, at: 0)
-            cardDatas.append(firstCard)
+//            let firstCard = cardDatas[0]
+//            let lastCard = cardDatas[cardDatas.count-1]
+//            cardDatas.insert(lastCard, at: 0)
+//            cardDatas.append(firstCard)
             
             cardVC.cardItemData = cardDatas
             

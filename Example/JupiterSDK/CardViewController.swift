@@ -11,10 +11,7 @@ class CardViewController: UIViewController {
     var cardImages: [UIImage] = []
     var sectorImages: [UIImage] = []
     
-    let INITIAL_CARD: Int = 1
-    
     // Card
-        let itemColors = [UIColor.green, UIColor.red, UIColor.yellow, UIColor.blue, UIColor.green, UIColor.red]
 //    let itemColors = [UIColor.red, UIColor.yellow, UIColor.blue, UIColor.green]
     var currentIndex: CGFloat = 0
     let lineSpacing: CGFloat = 20
@@ -31,16 +28,6 @@ class CardViewController: UIViewController {
     
     var isOneStepPaging = true
     
-    func setData(data: Array<CardItemData>) {
-        for i in 0..<data.count {
-            let cardImage = UIImage(named: data[i].cardImage)!
-            cardImages.append(cardImage)
-            
-            let sectorImage = UIImage(named: data[i].sectorImage)!
-            sectorImages.append(sectorImage)
-        }
-    }
-    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(false)
         
@@ -53,20 +40,81 @@ class CardViewController: UIViewController {
         super.viewDidLoad()
     }
     
-    override func viewWillLayoutSubviews() {
+    func setData(data: Array<CardItemData>) {
+        for i in 0..<data.count {
+            let cardImage = UIImage(named: data[i].cardImage)!
+            cardImages.append(cardImage)
+            
+            let sectorImage = UIImage(named: data[i].sectorImage)!
+            sectorImages.append(sectorImage)
+        }
+    }
+    
+    func moveToInitSectionFirstCard() {
+//        let cardCount = cardItemData.count
+//        let section = (9-1)/2
+//        let firstCard = cardCount*section
+        let firstCard = getInitSectionFisrtCardIndex()
+        collectionView.scrollToItem(at: IndexPath(item: firstCard, section: 0), at: .centeredHorizontally, animated: false)
+    }
+    
+    func moveToInitSectionLastCard() {
+//        let cardCount = cardItemData.count
+//        let section = (9-1)/2
+//        let lastCard = (cardCount*section) + (cardCount-1)
+        let lastCard = getInitSectionLastCardIndex()
+        collectionView.scrollToItem(at: IndexPath(item: lastCard, section: 0), at: .centeredHorizontally, animated: false)
+    }
+    
+    func getInitSectionFisrtCardIndex() -> Int {
         let cardCount = cardItemData.count
-        collectionView.scrollToItem(at: IndexPath(item: INITIAL_CARD, section: 0), at: .centeredHorizontally, animated: false)
-        let progress: Float = Float(INITIAL_CARD+1) / Float(cardCount)
+        let section = (9-1)/2
+        let firstCard = cardCount*section
+        
+        return firstCard
+    }
+    
+    func getInitSectionLastCardIndex() -> Int {
+        let cardCount = cardItemData.count
+        let section = (9-1)/2
+        let lastCard = (cardCount*section) + (cardCount-1)
+        
+        return lastCard
+    }
+    
+    // 수정 필요
+    // 최초 보여지는 카드
+//    override func viewWillLayoutSubviews() {
+//        moveToInitCard()
+//    }
+    
+    override func viewDidLayoutSubviews() {
+        moveToInitSectionFirstCard()
+    }
+    
+    // 수정 필요
+    public func setupProgressView() {
+        self.progressView.clipsToBounds = true
+        self.progressView.progress = 0.0
+        self.progressView.layer.cornerRadius = 3.0
+        
+        let cardCount = cardItemData.count
+        let progress: Float = 1/Float(cardCount)
         self.progressView.setProgress(progress, animated: true)
     }
     
-    // 최초 보여지는 카드
-//    override func viewDidLayoutSubviews() {
-//        let cardCount = cardItemData.count
-//        collectionView.scrollToItem(at: IndexPath(item: INITIAL_CARD, section: 0), at: .centeredHorizontally, animated: false)
-//        let progress: Float = Float(INITIAL_CARD+1) / Float(cardCount)
-//        self.progressView.setProgress(progress, animated: true)
-//    }
+    // 수정 필요
+    public func getProgressValue(currentPage: Int) -> Float {
+        var progressValue: Float = 0.0
+        let cardCount = cardItemData.count
+        var modPage = (currentPage+1)%cardCount
+        if (modPage == 0) {
+            modPage = cardItemData.count
+        }
+        progressValue = Float(modPage)/Float(cardItemData.count)
+
+        return progressValue
+    }
     
     public func setupCollectionView() {
         // width, height 설정
@@ -94,31 +142,11 @@ class CardViewController: UIViewController {
         collectionView.decelerationRate = UIScrollView.DecelerationRate.fast
     }
     
-    public func setupProgressView() {
-        self.progressView.clipsToBounds = true
-        self.progressView.progress = 0.0
-//        self.progressView.transform = progressView.transform.scaledBy(x: 1, y: 1.5)
-        self.progressView.layer.cornerRadius = 3.0
-    }
-    
     
     @IBAction func tapShowCardButton(_ sender: UIButton) {
         guard let jupiterVC = self.storyboard?.instantiateViewController(withIdentifier: "JupiterViewController") as? JupiterViewController else { return }
         jupiterVC.uuid = uuid
         self.navigationController?.pushViewController(jupiterVC, animated: true)
-    }
-    
-    public func getProgressValue(currentPage: Int) -> Float {
-        var progressValue: Float = 0.0
-        if (currentPage == 0 || currentPage == cardItemData.count-2) {
-            progressValue = 1.0
-        } else if (currentPage == 1 || currentPage == cardItemData.count-1) {
-            progressValue = 1/Float(cardItemData.count-2)
-        } else {
-            progressValue = Float(currentPage)/Float(cardItemData.count-2)
-        }
-
-        return progressValue
     }
     
     
@@ -133,7 +161,7 @@ extension CardViewController: UICollectionViewDataSource, UICollectionViewDelega
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return cardItemData.count
+        return cardItemData.count * 9
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -145,9 +173,11 @@ extension CardViewController: UICollectionViewDataSource, UICollectionViewDelega
         
         
         // Image Card 설정 시 주석 풀기
+        let cardCount = cardItemData.count
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "CardCollectionViewCell", for: indexPath) as! CardCollectionViewCell
-        cell.cardImageView.image = cardImages[indexPath.row]
-        cell.sectorImageView.image = sectorImages[indexPath.row]
+        let mod = indexPath.item%cardCount
+        cell.cardImageView.image = cardImages[mod]
+        cell.sectorImageView.image = sectorImages[mod]
 //        cell.cardView.backgroundColor = itemColors[indexPath.row]
         
         return cell
@@ -196,7 +226,7 @@ extension CardViewController : UIScrollViewDelegate {
         targetContentOffset.pointee = offset
         
         currentPage = Int(roundedIndex)
-        print("Current Page: \(roundedIndex)")
+//        print("Current Page: \(roundedIndex)")
         
         // ProgressBar
         let progress = getProgressValue(currentPage: currentPage)
@@ -257,13 +287,15 @@ extension CardViewController : UIScrollViewDelegate {
     
     public func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
         if currentPage == 0 {
-            collectionView.scrollToItem(at: IndexPath(item: cardItemData.count-2, section: 0), at: .centeredHorizontally, animated: false)
-            currentIndex = CGFloat(cardItemData.count-2)
-            previousIndex = 1
-        } else if currentPage == cardItemData.count-1 {
-            collectionView.scrollToItem(at: IndexPath(item: INITIAL_CARD, section: 0), at: .centeredHorizontally, animated: false)
-            currentIndex = CGFloat(INITIAL_CARD)
-            previousIndex = cardItemData.count-2
+            moveToInitSectionFirstCard()
+            let index = getInitSectionFisrtCardIndex()
+            currentIndex = CGFloat(index)
+            previousIndex = index+1
+        } else if currentPage == (cardItemData.count*9)-1 {
+            moveToInitSectionLastCard()
+            let index = getInitSectionLastCardIndex()
+            currentIndex = CGFloat(index)
+            previousIndex = index-1
         }
     }
 }
