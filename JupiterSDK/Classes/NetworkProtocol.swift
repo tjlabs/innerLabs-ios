@@ -4,17 +4,21 @@ public struct CardItemData: Codable {
     public var name: String
     public var description: String
     public var cardImage: String
+    public var cardShowImage: String
     public var sectorImage: String
+    public var sectorShowImage: String
     public var code: String
     public var sectorID: Int
     public var numZones: Int
     public var order: Int
     
-    public init(name: String, description: String, cardImage: String, sectorImage: String, code: String, sectorID: Int, numZones: Int, order: Int) {
+    public init(name: String, description: String, cardImage: String, cardShowImage: String, sectorImage: String, sectorShowImage: String, code: String, sectorID: Int, numZones: Int, order: Int) {
         self.name = name
         self.description = description
         self.cardImage = cardImage
+        self.cardShowImage = cardShowImage
         self.sectorImage = sectorImage
+        self.sectorShowImage = sectorShowImage
         self.code = code
         self.sectorID = sectorID
         self.numZones = numZones

@@ -31,8 +31,6 @@ class AddCardViewController: UIViewController, UITextFieldDelegate {
     }
 
     @IBAction func tapBackButton(_ sender: UIButton) {
-        print("Tapped Back Button")
-        
         self.delegate?.sendCardItemData(data: cardItemData)
         self.presentingViewController?.dismiss(animated: true)
     }
@@ -43,7 +41,9 @@ class AddCardViewController: UIViewController, UITextFieldDelegate {
         self.code = codeTextField.text ?? ""
         
         if (checkValidCode(code: code)) {
-            let addedCard = CardItemData(name: "Added Card", description: "카드를 터치해주세요", cardImage: "purpleCard", sectorImage: "sectorDefault", code: "purple", sectorID: 0, numZones: 3, order: 0)
+            let lastCardOrder = cardItemData[cardItemData.count-1].order
+            let addedCard = CardItemData(name: "Added Card", description: "카드를 터치해주세요", cardImage: "purpleCard", cardShowImage: "purpleCardShow",
+                                         sectorImage: "sectorDefault", sectorShowImage: "tjlabsShow",code: "purple", sectorID: 0, numZones: 3, order: lastCardOrder+1)
             cardItemData.append(addedCard)
             
             responseLabel.text = "\(addedCard.name) 카드가 정상적으로 추가 됐습니다."

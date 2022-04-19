@@ -147,6 +147,15 @@
                                     <constraint firstAttribute="height" constant="53" id="riw-p0-9c3"/>
                                 </constraints>
                             </imageView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Roy-K8-fGl">
+                                <rect key="frame" x="332" y="79.666666666666671" width="28" height="22"/>
+                                <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                <state key="normal" image="editButton"/>
+                                <connections>
+                                    <action selector="tapEditButton:" destination="44t-SH-dMq" eventType="touchUpInside" id="e1h-O4-9cQ"/>
+                                    <action selector="tapShowCardButton:" destination="hKN-cI-aq7" eventType="touchUpInside" id="To0-op-3JB"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="I3Y-5a-cYb"/>
                         <color key="backgroundColor" systemColor="systemGray6Color"/>
@@ -156,6 +165,8 @@
                             <constraint firstItem="pBp-5f-4dS" firstAttribute="trailing" secondItem="I3Y-5a-cYb" secondAttribute="trailing" id="URs-O2-LjD"/>
                             <constraint firstItem="pBp-5f-4dS" firstAttribute="leading" secondItem="I3Y-5a-cYb" secondAttribute="leading" id="WAz-Qf-mYN"/>
                             <constraint firstItem="I3Y-5a-cYb" firstAttribute="bottom" secondItem="AfR-kN-Sa2" secondAttribute="bottom" constant="20" id="Xxm-Jw-G5y"/>
+                            <constraint firstItem="I3Y-5a-cYb" firstAttribute="trailing" secondItem="Roy-K8-fGl" secondAttribute="trailing" constant="30" id="bzS-Nz-gjC"/>
+                            <constraint firstItem="Roy-K8-fGl" firstAttribute="centerY" secondItem="pBp-5f-4dS" secondAttribute="centerY" id="g91-lz-mPp"/>
                             <constraint firstItem="I3Y-5a-cYb" firstAttribute="bottom" secondItem="8EU-Pm-XCs" secondAttribute="bottom" constant="20" id="hy7-5x-Khl"/>
                             <constraint firstItem="I3Y-5a-cYb" firstAttribute="trailing" secondItem="8EU-Pm-XCs" secondAttribute="trailing" constant="30" id="xJq-D6-EMh"/>
                         </constraints>
@@ -512,6 +523,7 @@
         <image name="addCard" width="77.333335876464844" height="22"/>
         <image name="backButton" width="29" height="29"/>
         <image name="checkedBox" width="24.666666030883789" height="25.333333969116211"/>
+        <image name="editButton" width="28" height="22"/>
         <image name="fieldLogin" width="349.33334350585938" height="58.333332061767578"/>
         <image name="jupiterLogin" width="240.66667175292969" height="64.666664123535156"/>
         <image name="jupiterNameCard" width="390" height="53"/>
