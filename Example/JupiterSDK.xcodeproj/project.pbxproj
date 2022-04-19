@@ -43,6 +43,7 @@
 		B3BD69B527E9A8AD00A32A7A /* ZoneCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B3BD69B327E9A8AD00A32A7A /* ZoneCollectionViewCell.xib */; };
 		B3BD69B827E9ABA300A32A7A /* DataModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3BD69B727E9ABA300A32A7A /* DataModel.swift */; };
 		B3BD69BA27E9ABB200A32A7A /* ZoneDataModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3BD69B927E9ABB200A32A7A /* ZoneDataModel.swift */; };
+		B3C09C64280E941B00E6F55F /* ShowCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3C09C63280E941B00E6F55F /* ShowCardViewController.swift */; };
 		B3DE146D280E7146006DA43C /* AddCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3DE146C280E7146006DA43C /* AddCardViewController.swift */; };
 		B3DE146F280E7556006DA43C /* UIApplicationExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3DE146E280E7556006DA43C /* UIApplicationExtension.swift */; };
 /* End PBXBuildFile section */
@@ -102,6 +103,7 @@
 		B3BD69B327E9A8AD00A32A7A /* ZoneCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ZoneCollectionViewCell.xib; sourceTree = "<group>"; };
 		B3BD69B727E9ABA300A32A7A /* DataModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataModel.swift; sourceTree = "<group>"; };
 		B3BD69B927E9ABB200A32A7A /* ZoneDataModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoneDataModel.swift; sourceTree = "<group>"; };
+		B3C09C63280E941B00E6F55F /* ShowCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowCardViewController.swift; sourceTree = "<group>"; };
 		B3DE146C280E7146006DA43C /* AddCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddCardViewController.swift; sourceTree = "<group>"; };
 		B3DE146E280E7556006DA43C /* UIApplicationExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIApplicationExtension.swift; sourceTree = "<group>"; };
 		D004876B84847F9E6841D160 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
@@ -177,6 +179,7 @@
 				B3844E8C28099EE3007A5215 /* CardCollectionViewCell.swift */,
 				B3844E8D28099EE3007A5215 /* CardCollectionViewCell.xib */,
 				B340EE3C280965F90096E404 /* CollectionViewCell.swift */,
+				B3C09C63280E941B00E6F55F /* ShowCardViewController.swift */,
 				B3DE146C280E7146006DA43C /* AddCardViewController.swift */,
 				607FACD91AFB9204008FA782 /* Main.storyboard */,
 				607FACDE1AFB9204008FA782 /* LaunchScreen.xib */,
@@ -487,6 +490,7 @@
 				B3BD69AF27E9A78000A32A7A /* SectorContainerTableViewCell.swift in Sources */,
 				B3BD69A127E9A52500A32A7A /* applyShadow.swift in Sources */,
 				B3DE146D280E7146006DA43C /* AddCardViewController.swift in Sources */,
+				B3C09C64280E941B00E6F55F /* ShowCardViewController.swift in Sources */,
 				B3BD69AC27E9A57E00A32A7A /* UICollectionViewRegisterable.swift in Sources */,
 				B3BD69BA27E9ABB200A32A7A /* ZoneDataModel.swift in Sources */,
 				B3BD69B827E9ABA300A32A7A /* DataModel.swift in Sources */,

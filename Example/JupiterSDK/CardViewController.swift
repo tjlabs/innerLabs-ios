@@ -1,7 +1,7 @@
 import UIKit
 import JupiterSDK
 
-class CardViewController: UIViewController, AddCardDelegate {
+class CardViewController: UIViewController, AddCardDelegate, ShowCardDelegate {
     func sendCardItemData(data: [CardItemData]) {
         cardItemData = data
         initCardVC()
@@ -186,9 +186,17 @@ class CardViewController: UIViewController, AddCardDelegate {
     
     
     @IBAction func tapShowCardButton(_ sender: UIButton) {
-        guard let jupiterVC = self.storyboard?.instantiateViewController(withIdentifier: "JupiterViewController") as? JupiterViewController else { return }
-        jupiterVC.uuid = uuid
-        self.navigationController?.pushViewController(jupiterVC, animated: true)
+//        guard let jupiterVC = self.storyboard?.instantiateViewController(withIdentifier: "JupiterViewController") as? JupiterViewController else { return }
+//        jupiterVC.uuid = uuid
+//        self.navigationController?.pushViewController(jupiterVC, animated: true)
+        
+        guard let showCardVC = self.storyboard?.instantiateViewController(withIdentifier: "ShowCardViewController") as? ShowCardViewController else { return }
+        showCardVC.modalPresentationStyle = .currentContext
+        
+        showCardVC.cardItemData = self.cardItemData
+        showCardVC.delegate = self
+        
+        self.present(showCardVC, animated: true, completion: nil)
     }
     
     
@@ -269,6 +277,16 @@ extension CardViewController: UICollectionViewDataSource, UICollectionViewDelega
         return cell
     }
     
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let cardCount = cardItemData.count
+        let mod = indexPath.item%cardCount
+        print(cardItemData[mod])
+        
+        guard let jupiterVC = self.storyboard?.instantiateViewController(withIdentifier: "JupiterViewController") as? JupiterViewController else { return }
+        jupiterVC.uuid = uuid
+        self.navigationController?.pushViewController(jupiterVC, animated: true)
+    }
+    
 }
 
 extension CardViewController : UIScrollViewDelegate {
@@ -312,7 +330,7 @@ extension CardViewController : UIScrollViewDelegate {
         targetContentOffset.pointee = offset
         
         currentPage = Int(roundedIndex)
-        print("Current Page: \(roundedIndex)")
+//        print("Current Page: \(roundedIndex)")
         
         // ProgressBar
         let progress = getProgressValue(currentPage: currentPage)

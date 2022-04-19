@@ -17,6 +17,7 @@ protocol AddCardDelegate {
 class AddCardViewController: UIViewController, UITextFieldDelegate {
     
     @IBOutlet weak var codeTextField: UITextField!
+    @IBOutlet weak var responseLabel: UILabel!
     
     var code: String = ""
     var cardItemData: [CardItemData] = []
@@ -42,11 +43,17 @@ class AddCardViewController: UIViewController, UITextFieldDelegate {
         self.code = codeTextField.text ?? ""
         
         if (checkValidCode(code: code)) {
-            cardItemData.append(CardItemData(name: "Added Card", description: "카드를 터치해주세요", cardImage: "purpleCard", sectorImage: "sectorDefault", code: "purple", sectorID: 0, numZones: 3, order: 0))
-            print("Card was added")
+            let addedCard = CardItemData(name: "Added Card", description: "카드를 터치해주세요", cardImage: "purpleCard", sectorImage: "sectorDefault", code: "purple", sectorID: 0, numZones: 3, order: 0)
+            cardItemData.append(addedCard)
+            
+            responseLabel.text = "\(addedCard.name) 카드가 정상적으로 추가 됐습니다."
+            responseLabel.textColor = UIColor.blue1
+            responseLabel.isHidden = false
+            
         } else {
-            // Dialog
-            print("Invalid Code !!")
+            responseLabel.text = "유효한 코드가 아닙니다."
+            responseLabel.textColor = UIColor.red1
+            responseLabel.isHidden = false
         }
     }
     
