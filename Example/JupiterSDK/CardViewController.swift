@@ -187,7 +187,7 @@ class CardViewController: UIViewController {
     
     @IBAction func tapAddCardButton(_ sender: UIButton) {
         guard let addCardVC = self.storyboard?.instantiateViewController(withIdentifier: "AddCardViewController") as? AddCardViewController else { return }
-        addCardVC.modalPresentationStyle = .fullScreen
+        addCardVC.modalPresentationStyle = .currentContext
         self.present(addCardVC, animated: true, completion: nil)
     }
     
@@ -236,10 +236,15 @@ extension CardViewController: UICollectionViewDataSource, UICollectionViewDelega
         //        cell.alpha = 0.5
         
         
-        // Image Card 설정 시 주석 풀기
         let cardCount = cardItemData.count
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "CardCollectionViewCell", for: indexPath) as! CardCollectionViewCell
         let mod = indexPath.item%cardCount
+        
+        // Sector Name & Description
+        cell.sectorName.text = cardItemData[mod].name
+        cell.sectorDescription.text = cardItemData[mod].description
+        
+        // Sector Image
         cell.cardImageView.image = cardImages[mod]
         cell.sectorImageView.image = sectorImages[mod]
         

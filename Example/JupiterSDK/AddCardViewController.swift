@@ -12,7 +12,9 @@ class AddCardViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
+//        navigationController?.navigationBar.isHidden = false
+//        navigationController?.navigationBar.barTintColor = UIColor.white
         // Do any additional setup after loading the view.
     }
 

@@ -44,6 +44,7 @@
 		B3BD69B827E9ABA300A32A7A /* DataModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3BD69B727E9ABA300A32A7A /* DataModel.swift */; };
 		B3BD69BA27E9ABB200A32A7A /* ZoneDataModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3BD69B927E9ABB200A32A7A /* ZoneDataModel.swift */; };
 		B3DE146D280E7146006DA43C /* AddCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3DE146C280E7146006DA43C /* AddCardViewController.swift */; };
+		B3DE146F280E7556006DA43C /* UIApplicationExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3DE146E280E7556006DA43C /* UIApplicationExtension.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -102,6 +103,7 @@
 		B3BD69B727E9ABA300A32A7A /* DataModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataModel.swift; sourceTree = "<group>"; };
 		B3BD69B927E9ABB200A32A7A /* ZoneDataModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoneDataModel.swift; sourceTree = "<group>"; };
 		B3DE146C280E7146006DA43C /* AddCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddCardViewController.swift; sourceTree = "<group>"; };
+		B3DE146E280E7556006DA43C /* UIApplicationExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIApplicationExtension.swift; sourceTree = "<group>"; };
 		D004876B84847F9E6841D160 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
 		DB77B350B78C4D6D3DA0D745 /* Pods_JupiterSDK_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_JupiterSDK_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F53652D9802675AD38E29753 /* Pods_JupiterSDK_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_JupiterSDK_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -261,6 +263,7 @@
 				B3BD69A727E9A56B00A32A7A /* UITableViewRegisterable.swift */,
 				B3BD69A927E9A57500A32A7A /* getClassName + UIViewController.swift */,
 				B3BD69AB27E9A57E00A32A7A /* UICollectionViewRegisterable.swift */,
+				B3DE146E280E7556006DA43C /* UIApplicationExtension.swift */,
 			);
 			name = Extensions;
 			sourceTree = "<group>";
@@ -491,6 +494,7 @@
 				B3844E8E28099EE3007A5215 /* CardCollectionViewCell.swift in Sources */,
 				B340EE3328093FB20096E404 /* CardViewController.swift in Sources */,
 				B3BD699D27E9A4FE00A32A7A /* setCharacterSpacing.swift in Sources */,
+				B3DE146F280E7556006DA43C /* UIApplicationExtension.swift in Sources */,
 				B340EE3D280965F90096E404 /* CollectionViewCell.swift in Sources */,
 				B3BD69A427E9A54700A32A7A /* StringExtension.swift in Sources */,
 				B3BD69B427E9A8AD00A32A7A /* ZoneCollectionViewCell.swift in Sources */,
