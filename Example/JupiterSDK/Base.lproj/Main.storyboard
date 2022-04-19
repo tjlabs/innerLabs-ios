@@ -10,6 +10,9 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <customFonts key="customFonts">
+        <array key="NotoSansKR-Bold.otf">
+            <string>NotoSansKR-Bold</string>
+        </array>
         <array key="NotoSansKR-Medium.otf">
             <string>NotoSansKR-Medium</string>
         </array>
@@ -30,7 +33,7 @@
                                 <rect key="frame" x="23.333333333333343" y="697.66666666666663" width="343.33333333333326" height="59"/>
                                 <fontDescription key="fontDescription" name="ChalkboardSE-Regular" family="Chalkboard SE" pointSize="18"/>
                                 <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                                <state key="normal" image="buttonLogin"/>
+                                <state key="normal" image="loginButton"/>
                                 <connections>
                                     <action selector="tapLoginButton:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="CEd-jZ-DQl"/>
                                 </connections>
@@ -77,7 +80,7 @@
                             </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="tJz-hP-2ob"/>
-                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <color key="backgroundColor" systemColor="systemGray6Color"/>
                         <constraints>
                             <constraint firstItem="zl8-wP-m6e" firstAttribute="leading" secondItem="tJz-hP-2ob" secondAttribute="leading" constant="74.299999999999997" id="0TH-6V-Zwl"/>
                             <constraint firstItem="I89-If-8y7" firstAttribute="leading" secondItem="tJz-hP-2ob" secondAttribute="leading" constant="23.300000000000001" id="0Zh-6P-Tm5"/>
@@ -119,14 +122,73 @@
                     <view key="view" contentMode="scaleToFill" id="5f8-F4-xuz">
                         <rect key="frame" x="0.0" y="0.0" width="390" height="844"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="fSZ-Ci-3wd">
+                                <rect key="frame" x="20" y="74" width="29" height="29"/>
+                                <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                <state key="normal" image="backButton"/>
+                                <connections>
+                                    <action selector="tapBackButton:" destination="xoA-3y-VN5" eventType="touchUpInside" id="Rrw-nI-aY5"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="WvC-dm-03O">
+                                <rect key="frame" x="336" y="69" width="34" height="39"/>
+                                <fontDescription key="fontDescription" name="NotoSansKR-Regular" family="Noto Sans KR" pointSize="18"/>
+                                <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                <state key="normal" title="완료">
+                                    <color key="titleColor" systemColor="tintColor"/>
+                                </state>
+                                <connections>
+                                    <action selector="tapConfirmButton:" destination="xoA-3y-VN5" eventType="touchUpInside" id="hpo-Q7-74I"/>
+                                </connections>
+                            </button>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="카드를 추가해주세요" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="BLG-y3-uDD">
+                                <rect key="frame" x="30" y="143" width="330" height="32"/>
+                                <fontDescription key="fontDescription" name="NotoSansKR-Bold" family="Noto Sans KR" pointSize="22"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="코드번호 입력" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="BcC-GB-O2X">
+                                <rect key="frame" x="30" y="205" width="330" height="26.333333333333343"/>
+                                <fontDescription key="fontDescription" name="NotoSansKR-Regular" family="Noto Sans KR" pointSize="18"/>
+                                <color key="textColor" systemColor="systemGray2Color"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="CM1-sH-9SI">
+                                <rect key="frame" x="30" y="251.33333333333337" width="330" height="60"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="60" id="wFI-jW-9I2"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" name="NotoSansKR-Regular" family="Noto Sans KR" pointSize="20"/>
+                                <textInputTraits key="textInputTraits"/>
+                            </textField>
+                        </subviews>
                         <viewLayoutGuide key="safeArea" id="JOV-Hw-mi2"/>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <color key="backgroundColor" systemColor="systemGray6Color"/>
                         <color key="tintColor" systemColor="tintColor"/>
+                        <constraints>
+                            <constraint firstItem="BcC-GB-O2X" firstAttribute="leading" secondItem="BLG-y3-uDD" secondAttribute="leading" id="0KV-7T-Uo5"/>
+                            <constraint firstItem="JOV-Hw-mi2" firstAttribute="trailing" secondItem="CM1-sH-9SI" secondAttribute="trailing" constant="30" id="193-uj-4px"/>
+                            <constraint firstItem="BLG-y3-uDD" firstAttribute="leading" secondItem="JOV-Hw-mi2" secondAttribute="leading" constant="30" id="1Zt-OX-bCX"/>
+                            <constraint firstItem="JOV-Hw-mi2" firstAttribute="trailing" secondItem="WvC-dm-03O" secondAttribute="trailing" constant="20" id="F1s-YO-ksM"/>
+                            <constraint firstItem="CM1-sH-9SI" firstAttribute="leading" secondItem="BcC-GB-O2X" secondAttribute="leading" id="SkC-kj-GnE"/>
+                            <constraint firstItem="CM1-sH-9SI" firstAttribute="top" secondItem="BcC-GB-O2X" secondAttribute="bottom" constant="20" id="U5q-PH-gHN"/>
+                            <constraint firstItem="JOV-Hw-mi2" firstAttribute="trailing" secondItem="BLG-y3-uDD" secondAttribute="trailing" constant="30" id="aK6-B0-dEb"/>
+                            <constraint firstItem="BcC-GB-O2X" firstAttribute="top" secondItem="BLG-y3-uDD" secondAttribute="bottom" constant="30" id="ckT-8F-2xl"/>
+                            <constraint firstItem="WvC-dm-03O" firstAttribute="centerY" secondItem="fSZ-Ci-3wd" secondAttribute="centerY" id="dj0-F2-gue"/>
+                            <constraint firstItem="JOV-Hw-mi2" firstAttribute="trailing" secondItem="BcC-GB-O2X" secondAttribute="trailing" constant="30" id="l58-Wq-jsA"/>
+                            <constraint firstItem="fSZ-Ci-3wd" firstAttribute="leading" secondItem="JOV-Hw-mi2" secondAttribute="leading" constant="20" id="p7A-Ts-qEo"/>
+                            <constraint firstItem="BLG-y3-uDD" firstAttribute="top" secondItem="fSZ-Ci-3wd" secondAttribute="bottom" constant="40" id="qNi-TS-ltD"/>
+                            <constraint firstItem="fSZ-Ci-3wd" firstAttribute="top" secondItem="JOV-Hw-mi2" secondAttribute="top" constant="30" id="vj5-pH-AYY"/>
+                        </constraints>
                     </view>
+                    <connections>
+                        <outlet property="codeTextField" destination="CM1-sH-9SI" id="Gx2-kg-6yL"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="3e4-UX-27b" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1828" y="905"/>
+            <point key="canvasLocation" x="1827.6923076923076" y="839.57345971563973"/>
         </scene>
         <!--Jupiter View Controller-->
         <scene sceneID="Cf6-wt-mlE">
@@ -307,7 +369,7 @@
                                 <subviews>
                                     <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="StD-CP-4oA">
                                         <rect key="frame" x="0.0" y="0.0" width="370" height="597"/>
-                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <color key="backgroundColor" systemColor="systemGray6Color"/>
                                         <collectionViewFlowLayout key="collectionViewLayout" scrollDirection="horizontal" minimumLineSpacing="10" minimumInteritemSpacing="10" id="gBa-2x-sLe">
                                             <size key="itemSize" width="50" height="50"/>
                                             <size key="headerReferenceSize" width="0.0" height="0.0"/>
@@ -333,7 +395,7 @@
                                         </constraints>
                                     </progressView>
                                 </subviews>
-                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <color key="backgroundColor" systemColor="systemGray6Color"/>
                                 <constraints>
                                     <constraint firstItem="StD-CP-4oA" firstAttribute="leading" secondItem="W9g-WD-hba" secondAttribute="leading" id="FZl-Rc-Sli"/>
                                     <constraint firstAttribute="bottom" secondItem="zG3-DH-fmo" secondAttribute="bottom" constant="10" id="QKn-Px-BhY"/>
@@ -346,7 +408,7 @@
                             </view>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="fqi-tX-EPG"/>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <color key="backgroundColor" systemColor="systemGray6Color"/>
                         <constraints>
                             <constraint firstItem="fqi-tX-EPG" firstAttribute="bottom" secondItem="MUW-dn-rmi" secondAttribute="bottom" constant="20" id="03v-kb-UyT"/>
                             <constraint firstItem="2Xj-Ao-iIB" firstAttribute="top" secondItem="fqi-tX-EPG" secondAttribute="top" constant="20" id="AOk-ke-YeF"/>
@@ -388,11 +450,12 @@
     </scenes>
     <resources>
         <image name="addCard" width="77.333335876464844" height="22"/>
-        <image name="buttonLogin" width="349.33334350585938" height="58.333332061767578"/>
+        <image name="backButton" width="29" height="29"/>
         <image name="checkedBox" width="24.666666030883789" height="25.333333969116211"/>
         <image name="fieldLogin" width="349.33334350585938" height="58.333332061767578"/>
         <image name="jupiterLogin" width="240.66667175292969" height="64.666664123535156"/>
         <image name="jupiterNameCard" width="390" height="53"/>
+        <image name="loginButton" width="349.33334350585938" height="58.333332061767578"/>
         <image name="showCard" width="78" height="22"/>
         <image name="unCheckedBox" width="24.666666030883789" height="25.333333969116211"/>
         <namedColor name="red1">

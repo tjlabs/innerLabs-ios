@@ -1,7 +1,11 @@
 import UIKit
 import JupiterSDK
 
-class CardViewController: UIViewController {
+class CardViewController: UIViewController, AddCardDelegate {
+    func sendCardItemData(data: [CardItemData]) {
+        cardItemData = data
+        initCardVC()
+    }
     
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var progressView: UIProgressView!
@@ -14,7 +18,6 @@ class CardViewController: UIViewController {
     var cardSize: [Double]?
     
     // Card
-//    let itemColors = [UIColor.red, UIColor.yellow, UIColor.blue, UIColor.green]
     var currentIndex: CGFloat = 0
     let lineSpacing: CGFloat = 20
     
@@ -22,9 +25,6 @@ class CardViewController: UIViewController {
     var previousIndex: Int = 0
     
     // Default : 0.7
-    //    let cellWidthRatio: CGFloat = 0.7
-    //    let cellheightRatio: CGFloat = 0.9
-    
     let cellWidthRatio: CGFloat = 0.8
     let cellheightRatio: CGFloat = 0.9
     
@@ -33,24 +33,29 @@ class CardViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(false)
         
-        setData(data: cardItemData)
-        setupCollectionView()
-        setupProgressView()
-        
-        let sizes = checkImageSize(cards: cardImages, sectors: sectorImages)
-        print("Size of Card : \(sizes.sizeCard)")
-        print("Size of Sector : \(sizes.sizeSector)")
-        
-        sectorImagesResized = changeSectorImageSize(sectors: sectorImages, size: sizes.sizeCard)
-        let afterSizes = checkImageSize(cards: cardImages, sectors: sectorImagesResized)
-        print("Size of Card : \(afterSizes.sizeCard)")
-        print("Size of Sector : \(afterSizes.sizeSector)")
-        
-        cardSize = afterSizes.sizeCard
+        initCardVC()
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
+    }
+    
+    func initCardVC() {
+        setData(data: cardItemData)
+        setupCollectionView()
+        setupProgressView()
+        moveToInitSectionFirstCard()
+        
+        let sizes = checkImageSize(cards: cardImages, sectors: sectorImages)
+//        print("Size of Card : \(sizes.sizeCard)")
+//        print("Size of Sector : \(sizes.sizeSector)")
+        
+        sectorImagesResized = changeSectorImageSize(sectors: sectorImages, size: sizes.sizeCard)
+        let afterSizes = checkImageSize(cards: cardImages, sectors: sectorImagesResized)
+//        print("Size of Card : \(afterSizes.sizeCard)")
+//        print("Size of Sector : \(afterSizes.sizeSector)")
+        
+        cardSize = afterSizes.sizeCard
     }
     
     func checkImageSize(cards: Array<UIImage>, sectors: Array<UIImage>) -> (sizeCard: Array<Double>, sizeSector: Array<Double>) {
@@ -70,6 +75,8 @@ class CardViewController: UIViewController {
     }
     
     func setData(data: Array<CardItemData>) {
+        cardImages = []
+        sectorImages = []
         for i in 0..<data.count {
             let cardImage = UIImage(named: data[i].cardImage)!
             cardImages.append(cardImage)
@@ -188,6 +195,10 @@ class CardViewController: UIViewController {
     @IBAction func tapAddCardButton(_ sender: UIButton) {
         guard let addCardVC = self.storyboard?.instantiateViewController(withIdentifier: "AddCardViewController") as? AddCardViewController else { return }
         addCardVC.modalPresentationStyle = .currentContext
+        
+        addCardVC.cardItemData = self.cardItemData
+        addCardVC.delegate = self
+        
         self.present(addCardVC, animated: true, completion: nil)
     }
     
@@ -247,12 +258,13 @@ extension CardViewController: UICollectionViewDataSource, UICollectionViewDelega
         // Sector Image
         cell.cardImageView.image = cardImages[mod]
         cell.sectorImageView.image = sectorImages[mod]
+        cell.cardView.backgroundColor = UIColor.systemGray6
         
 //        print(cardSize)
 //        print("Before : \(cell.sectorImageView.frame)")
 //        cell.sectorImageView.image = sectorImagesResized[mod]
 //        print("After : \(cell.sectorImageView.frame)")
-//        cell.cardView.backgroundColor = itemColors[mod]
+        
         
         return cell
     }
