@@ -28,6 +28,9 @@ class AddCardViewController: UIViewController, UITextFieldDelegate {
         super.viewDidLoad()
         
         codeTextField.delegate = self
+        
+        guard let presentingVC = self.presentingViewController else { return }
+        print("Storyboard : \(presentingVC)")
     }
 
     @IBAction func tapBackButton(_ sender: UIButton) {

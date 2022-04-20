@@ -13,11 +13,17 @@ class ShowCardViewController: UIViewController, AddCardDelegate {
     var cardItemData: [CardItemData] = []
 
     var delegate : ShowCardDelegate?
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(false)
+        
+        print(cardItemData)
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        print(cardItemData)
+//        print(cardItemData)
     }
     
     @IBAction func tapToCardButton(_ sender: UIButton) {
@@ -26,17 +32,28 @@ class ShowCardViewController: UIViewController, AddCardDelegate {
     
     
     @IBAction func tapAddCardButton(_ sender: UIButton) {
-        guard let presentingVC = self.presentingViewController else { return }
 
-        self.dismiss(animated: false) {
-            guard let addCardVC = self.storyboard?.instantiateViewController(withIdentifier: "AddCardViewController") as? AddCardViewController else { return }
-            addCardVC.modalPresentationStyle = .currentContext
-            
-            addCardVC.cardItemData = self.cardItemData
-            addCardVC.delegate = self
-            
-            presentingVC.present(addCardVC, animated: true, completion: nil)
-        }
+        // CardView로 이동한 후에 AddCard로 이동 //
+//        guard let presentingVC = self.presentingViewController else { return }
+//
+//        self.dismiss(animated: true) {
+//            guard let addCardVC = self.storyboard?.instantiateViewController(withIdentifier: "AddCardViewController") as? AddCardViewController else { return }
+//            addCardVC.modalPresentationStyle = .currentContext
+//
+//            addCardVC.cardItemData = self.cardItemData
+//            addCardVC.delegate = self
+//
+//            presentingVC.present(addCardVC, animated: true, completion: nil)
+//        }
+        
+        // 바로 AddCard로 이동 //
+        guard let addCardVC = self.storyboard?.instantiateViewController(withIdentifier: "AddCardViewController") as? AddCardViewController else { return }
+        addCardVC.modalPresentationStyle = .currentContext
+
+        addCardVC.cardItemData = self.cardItemData
+        addCardVC.delegate = self
+
+        self.present(addCardVC, animated: true, completion: nil)
     }
     
     

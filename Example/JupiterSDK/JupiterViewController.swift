@@ -23,13 +23,14 @@ class JupiterViewController: UIViewController {
     var elapsedTime: Double = 0
     
     @IBOutlet weak var timeLabel: UILabel!
+    @IBOutlet weak var flagLabel: UILabel!
     @IBOutlet weak var unitCountLabel: UILabel!
     @IBOutlet weak var unitLengthLabel: UILabel!
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(false)
         
-        print(uuid)
+//        print(uuid)
         jupiterService.uuid = uuid
         jupiterService.sector = "TJLABS"
         jupiterService.startService(parent: self)
@@ -85,14 +86,16 @@ class JupiterViewController: UIViewController {
         }
         self.timeLabel.text = String(format: "%.2f", elapsedTime)
         
-        let jupiterFlag = jupiterService.stepResult.isStepDetected
+        let isStepDetected = jupiterService.stepResult.isStepDetected
         let unitIdx = Int(jupiterService.stepResult.unit_idx)
         let unitLength = jupiterService.stepResult.step_length
+        let flag = jupiterService.stepResult.lookingFlag
         
-        if (jupiterFlag) {
+        if (isStepDetected) {
 //            print("\(elapsedTime) \\ \(unitIdx) \\ \(unitLength)")
             self.unitCountLabel.text = String(unitIdx)
             self.unitLengthLabel.text = String(format: "%.4f", unitLength)
+            self.flagLabel.text = String(flag)
         }
     }
     

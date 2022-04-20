@@ -38,6 +38,7 @@ class CardViewController: UIViewController, AddCardDelegate, ShowCardDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+
     }
     
     func initCardVC() {
