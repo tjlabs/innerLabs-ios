@@ -9,6 +9,8 @@ class ShowCardViewController: UIViewController, AddCardDelegate {
     
     @IBOutlet weak var editButton: UIButton!
     
+    var isEditMode: Bool = false
+    
     func sendCardItemData(data: [CardItemData]) {
         cardItemData = data
     }
@@ -61,6 +63,21 @@ class ShowCardViewController: UIViewController, AddCardDelegate {
     
     
     @IBAction func tapEditButton(_ sender: UIButton) {
-        editButton.alpha = 0.0
+        UIView.animate(withDuration: 0.2, delay: 0.0, options: .curveLinear, animations: {
+        }) { (success) in
+            sender.isSelected = !sender.isSelected
+            UIView.animate(withDuration: 0.2, delay: 0.0, options: .curveLinear, animations: {
+                sender.transform = .identity
+            }, completion: nil)
+        }
+        
+        if sender.isSelected == false {
+            isEditMode = true
+            print("여기는 EditMode 입니다")
+        }
+        else {
+            isEditMode = false
+            print("여기는 모아보기 입니다")
+        }
     }
 }

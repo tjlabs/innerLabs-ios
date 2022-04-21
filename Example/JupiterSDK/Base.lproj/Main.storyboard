@@ -151,6 +151,7 @@
                                 <rect key="frame" x="332" y="79.666666666666671" width="28" height="22"/>
                                 <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                                 <state key="normal" image="editButton"/>
+                                <state key="selected" image="confirmButton"/>
                                 <connections>
                                     <action selector="tapEditButton:" destination="44t-SH-dMq" eventType="touchUpInside" id="e1h-O4-9cQ"/>
                                     <action selector="tapShowCardButton:" destination="hKN-cI-aq7" eventType="touchUpInside" id="To0-op-3JB"/>
