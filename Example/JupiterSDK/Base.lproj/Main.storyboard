@@ -7,6 +7,7 @@
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="collection view cell content view" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <customFonts key="customFonts">
@@ -157,23 +158,48 @@
                                     <action selector="tapShowCardButton:" destination="hKN-cI-aq7" eventType="touchUpInside" id="To0-op-3JB"/>
                                 </connections>
                             </button>
+                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="qaa-l9-3Dl">
+                                <rect key="frame" x="0.0" y="117" width="390" height="633"/>
+                                <color key="backgroundColor" systemColor="systemGray6Color"/>
+                                <collectionViewFlowLayout key="collectionViewLayout" automaticEstimatedItemSize="YES" minimumLineSpacing="10" minimumInteritemSpacing="10" id="M9M-q7-DO3">
+                                    <size key="itemSize" width="128" height="128"/>
+                                    <size key="headerReferenceSize" width="0.0" height="0.0"/>
+                                    <size key="footerReferenceSize" width="0.0" height="0.0"/>
+                                    <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                                </collectionViewFlowLayout>
+                                <cells>
+                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="zbp-fq-PaC">
+                                        <rect key="frame" x="0.0" y="0.0" width="128" height="128"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <collectionViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="4d1-U0-Jqx">
+                                            <rect key="frame" x="0.0" y="0.0" width="128" height="128"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                        </collectionViewCellContentView>
+                                    </collectionViewCell>
+                                </cells>
+                            </collectionView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="I3Y-5a-cYb"/>
                         <color key="backgroundColor" systemColor="systemGray6Color"/>
                         <constraints>
                             <constraint firstItem="pBp-5f-4dS" firstAttribute="top" secondItem="I3Y-5a-cYb" secondAttribute="top" constant="20" id="9ff-cK-C4h"/>
+                            <constraint firstItem="qaa-l9-3Dl" firstAttribute="top" secondItem="pBp-5f-4dS" secondAttribute="top" constant="53" id="KLp-kz-vIo"/>
                             <constraint firstItem="AfR-kN-Sa2" firstAttribute="leading" secondItem="I3Y-5a-cYb" secondAttribute="leading" constant="30" id="Pcz-DR-wvB"/>
+                            <constraint firstItem="qaa-l9-3Dl" firstAttribute="leading" secondItem="I3Y-5a-cYb" secondAttribute="leading" id="RYX-8p-0zT"/>
                             <constraint firstItem="pBp-5f-4dS" firstAttribute="trailing" secondItem="I3Y-5a-cYb" secondAttribute="trailing" id="URs-O2-LjD"/>
                             <constraint firstItem="pBp-5f-4dS" firstAttribute="leading" secondItem="I3Y-5a-cYb" secondAttribute="leading" id="WAz-Qf-mYN"/>
                             <constraint firstItem="I3Y-5a-cYb" firstAttribute="bottom" secondItem="AfR-kN-Sa2" secondAttribute="bottom" constant="20" id="Xxm-Jw-G5y"/>
                             <constraint firstItem="I3Y-5a-cYb" firstAttribute="trailing" secondItem="Roy-K8-fGl" secondAttribute="trailing" constant="30" id="bzS-Nz-gjC"/>
                             <constraint firstItem="Roy-K8-fGl" firstAttribute="centerY" secondItem="pBp-5f-4dS" secondAttribute="centerY" id="g91-lz-mPp"/>
                             <constraint firstItem="I3Y-5a-cYb" firstAttribute="bottom" secondItem="8EU-Pm-XCs" secondAttribute="bottom" constant="20" id="hy7-5x-Khl"/>
+                            <constraint firstItem="I3Y-5a-cYb" firstAttribute="trailing" secondItem="qaa-l9-3Dl" secondAttribute="trailing" id="myw-bA-uxm"/>
                             <constraint firstItem="I3Y-5a-cYb" firstAttribute="trailing" secondItem="8EU-Pm-XCs" secondAttribute="trailing" constant="30" id="xJq-D6-EMh"/>
+                            <constraint firstItem="qaa-l9-3Dl" firstAttribute="bottom" secondItem="AfR-kN-Sa2" secondAttribute="bottom" constant="-40" id="zmM-xC-gMk"/>
                         </constraints>
                     </view>
                     <connections>
                         <outlet property="editButton" destination="Roy-K8-fGl" id="Rp0-4N-NpB"/>
+                        <outlet property="showCardCollectionView" destination="qaa-l9-3Dl" id="daI-As-HTZ"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="mY1-1W-7Q4" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>

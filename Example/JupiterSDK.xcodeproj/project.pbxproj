@@ -26,6 +26,8 @@
 		B360D89328090D6A0084FB22 /* NotoSansKR-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = B360D88D28090D6A0084FB22 /* NotoSansKR-Regular.otf */; };
 		B3844E8E28099EE3007A5215 /* CardCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3844E8C28099EE3007A5215 /* CardCollectionViewCell.swift */; };
 		B3844E8F28099EE3007A5215 /* CardCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B3844E8D28099EE3007A5215 /* CardCollectionViewCell.xib */; };
+		B3B4F85A28114EEB009F9E6C /* ShowCardCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3B4F85828114EEB009F9E6C /* ShowCardCollectionViewCell.swift */; };
+		B3B4F85B28114EEB009F9E6C /* ShowCardCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B3B4F85928114EEB009F9E6C /* ShowCardCollectionViewCell.xib */; };
 		B3BD699227E98E0E00A32A7A /* JupiterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3BD699127E98E0E00A32A7A /* JupiterViewController.swift */; };
 		B3BD699827E9A4A500A32A7A /* ColorPalette.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3BD699727E9A4A500A32A7A /* ColorPalette.swift */; };
 		B3BD699A27E9A4BE00A32A7A /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B3BD699927E9A4BE00A32A7A /* Colors.xcassets */; };
@@ -86,6 +88,8 @@
 		B360D88D28090D6A0084FB22 /* NotoSansKR-Regular.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "NotoSansKR-Regular.otf"; sourceTree = "<group>"; };
 		B3844E8C28099EE3007A5215 /* CardCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardCollectionViewCell.swift; sourceTree = "<group>"; };
 		B3844E8D28099EE3007A5215 /* CardCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CardCollectionViewCell.xib; sourceTree = "<group>"; };
+		B3B4F85828114EEB009F9E6C /* ShowCardCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowCardCollectionViewCell.swift; sourceTree = "<group>"; };
+		B3B4F85928114EEB009F9E6C /* ShowCardCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ShowCardCollectionViewCell.xib; sourceTree = "<group>"; };
 		B3BD699127E98E0E00A32A7A /* JupiterViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JupiterViewController.swift; sourceTree = "<group>"; };
 		B3BD699727E9A4A500A32A7A /* ColorPalette.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorPalette.swift; sourceTree = "<group>"; };
 		B3BD699927E9A4BE00A32A7A /* Colors.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Colors.xcassets; sourceTree = "<group>"; };
@@ -185,6 +189,8 @@
 				607FACDE1AFB9204008FA782 /* LaunchScreen.xib */,
 				607FACDC1AFB9204008FA782 /* Images.xcassets */,
 				607FACD31AFB9204008FA782 /* Supporting Files */,
+				B3B4F85828114EEB009F9E6C /* ShowCardCollectionViewCell.swift */,
+				B3B4F85928114EEB009F9E6C /* ShowCardCollectionViewCell.xib */,
 			);
 			name = "Example for JupiterSDK";
 			path = JupiterSDK;
@@ -395,6 +401,7 @@
 				B360D89128090D6A0084FB22 /* NotoSansKR-Black.otf in Resources */,
 				607FACDB1AFB9204008FA782 /* Main.storyboard in Resources */,
 				B360D88E28090D6A0084FB22 /* NotoSansKR-Bold.otf in Resources */,
+				B3B4F85B28114EEB009F9E6C /* ShowCardCollectionViewCell.xib in Resources */,
 				B3BD699A27E9A4BE00A32A7A /* Colors.xcassets in Resources */,
 				B360D89028090D6A0084FB22 /* NotoSansKR-Thin.otf in Resources */,
 				607FACE01AFB9204008FA782 /* LaunchScreen.xib in Resources */,
@@ -489,6 +496,7 @@
 				B3BD699227E98E0E00A32A7A /* JupiterViewController.swift in Sources */,
 				B3BD69AF27E9A78000A32A7A /* SectorContainerTableViewCell.swift in Sources */,
 				B3BD69A127E9A52500A32A7A /* applyShadow.swift in Sources */,
+				B3B4F85A28114EEB009F9E6C /* ShowCardCollectionViewCell.swift in Sources */,
 				B3DE146D280E7146006DA43C /* AddCardViewController.swift in Sources */,
 				B3C09C64280E941B00E6F55F /* ShowCardViewController.swift in Sources */,
 				B3BD69AC27E9A57E00A32A7A /* UICollectionViewRegisterable.swift in Sources */,
