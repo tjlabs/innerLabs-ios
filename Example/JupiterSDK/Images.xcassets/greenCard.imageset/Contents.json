@@ -1,17 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "cardGreen.png",
+      "filename" : "카드디자인(옐로우-그린)-1x.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "cardGreen-1.png",
+      "filename" : "카드디자인(옐로우-그린)-2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "cardGreen-2.png",
+      "filename" : "카드디자인(옐로우-그린)-3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }

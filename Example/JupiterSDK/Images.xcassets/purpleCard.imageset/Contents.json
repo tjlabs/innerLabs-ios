@@ -1,17 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "cardPurple.png",
+      "filename" : "카드디자인(보라)-1x.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "cardPurple-1.png",
+      "filename" : "카드디자인(보라)-2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "cardPurple-2.png",
+      "filename" : "카드디자인(보라)-3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }

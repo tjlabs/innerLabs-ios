@@ -14,8 +14,10 @@ class CardViewController: UIViewController, AddCardDelegate, ShowCardDelegate {
     var cardItemData: [CardItemData] = []
     var cardImages: [UIImage] = []
     var sectorImages: [UIImage] = []
+    var cardImagesResized: [UIImage] = []
     var sectorImagesResized: [UIImage] = []
     var cardSize: [Double]?
+    var collectionViewSize: [Double] = [0, 0]
     
     // Card
     var currentIndex: CGFloat = 0
@@ -29,10 +31,10 @@ class CardViewController: UIViewController, AddCardDelegate, ShowCardDelegate {
     let cellheightRatio: CGFloat = 0.9
     
     var isOneStepPaging = true
+    var isCardSmall = true
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(false)
-        
         initCardVC()
     }
     
@@ -43,31 +45,52 @@ class CardViewController: UIViewController, AddCardDelegate, ShowCardDelegate {
     
     func initCardVC() {
         setData(data: cardItemData)
-        setupCollectionView()
-        setupProgressView()
-        moveToInitSectionFirstCard()
         
         let sizes = checkImageSize(cards: cardImages, sectors: sectorImages)
-//        print("Size of Card : \(sizes.sizeCard)")
-//        print("Size of Sector : \(sizes.sizeSector)")
+        collectionViewSize = [collectionView.frame.width, collectionView.frame.height]
         
-        sectorImagesResized = changeSectorImageSize(sectors: sectorImages, size: sizes.sizeCard)
-        let afterSizes = checkImageSize(cards: cardImages, sectors: sectorImagesResized)
+        print("Size of CollectionView : \(collectionViewSize)")
+        print("Size of Card : \(sizes.sizeCard)")
+        print("Size of Sector : \(sizes.sizeSector)")
+
+//        cardImagesResized = changeImageSize(imagesToChange: cardImages, sizeToChange: collectionViewSize)
+//        sectorImagesResized = changeImageSize(imagesToChange: sectorImages, sizeToChange: sizes.sizeCard)
+//        let afterSizes = checkImageSize(cards: cardImagesResized, sectors: sectorImagesResized)
 //        print("Size of Card : \(afterSizes.sizeCard)")
 //        print("Size of Sector : \(afterSizes.sizeSector)")
         
-        cardSize = afterSizes.sizeCard
+        isCardSmall = checkRatio(collectionViewSize: collectionViewSize, sizeCard: sizes.sizeCard)
+        
+        setupCollectionView()
+        setupProgressView()
+        
+        currentPage = getInitSectionFisrtCardIndex()
+        currentIndex = CGFloat(currentPage)
+        
+        moveToInitSectionFirstCard()
+        
+        print(currentIndex)
+    }
+    
+    func checkRatio(collectionViewSize: Array<Double>, sizeCard: Array<Double>) -> Bool {
+//        let collectionViewSizeWidth = collectionViewSize[0]
+        let collectionViewSizeHeight = collectionViewSize[1]
+        
+//        let sizeCardWidth = sizeCard[0]
+        let sizeCardHeight = sizeCard[1]
+        
+        if (collectionViewSizeHeight < sizeCardHeight) {
+            // 카드가 더 크면
+            return false
+        } else {
+            // 카드가 더 작으면
+            return true
+        }
     }
     
     func checkImageSize(cards: Array<UIImage>, sectors: Array<UIImage>) -> (sizeCard: Array<Double>, sizeSector: Array<Double>) {
         let cardImage = cards[0]
         let sectorImage = sectors[0]
-        
-//        print(cardImage.size.width)
-//        print(cardImage.size.height)
-//
-//        print(sectorImage.size.width)
-//        print(sectorImage.size.height)
         
         let sizeCard: [Double] = [cardImage.size.width, cardImage.size.height]
         let sizeSector: [Double] = [sectorImage.size.width, sectorImage.size.height]
@@ -87,17 +110,17 @@ class CardViewController: UIViewController, AddCardDelegate, ShowCardDelegate {
         }
     }
     
-    func changeSectorImageSize(sectors: Array<UIImage>, size: Array<Double>) -> Array<UIImage> {
-        var sectorImages: [UIImage] = []
+    func changeImageSize(imagesToChange: Array<UIImage>, sizeToChange: Array<Double>) -> Array<UIImage> {
+        var changedImages: [UIImage] = []
         
-        for index in 0..<sectors.count {
-            let image = sectors[index]
-            let targetSize = CGSize(width: size[0] , height: size[1])
-            let newImage: UIImage = resizeImage(image: image, targetSize: targetSize) ?? sectors[index]
-            sectorImages.append(newImage)
+        for index in 0..<imagesToChange.count {
+            let image = imagesToChange[index]
+            let targetSize = CGSize(width: sizeToChange[0]*0.5 , height: sizeToChange[1]*0.5)
+            let newImage: UIImage = resizeImage(image: image, targetSize: targetSize) ?? imagesToChange[index]
+            changedImages.append(newImage)
         }
         
-        return sectorImages
+        return changedImages
     }
     
     func moveToInitSectionFirstCard() {
@@ -108,6 +131,10 @@ class CardViewController: UIViewController, AddCardDelegate, ShowCardDelegate {
     func moveToInitSectionLastCard() {
         let lastCard = getInitSectionLastCardIndex()
         collectionView.scrollToItem(at: IndexPath(item: lastCard, section: 0), at: .centeredHorizontally, animated: false)
+    }
+    
+    func moveToIndexCard(index: Int) {
+        collectionView.scrollToItem(at: IndexPath(item: index, section: 0), at: .centeredHorizontally, animated: false)
     }
     
     func getInitSectionFisrtCardIndex() -> Int {
@@ -125,12 +152,6 @@ class CardViewController: UIViewController, AddCardDelegate, ShowCardDelegate {
         
         return lastCard
     }
-    
-    // 수정 필요
-    // 최초 보여지는 카드
-//    override func viewWillLayoutSubviews() {
-//        moveToInitCard()
-//    }
     
     override func viewDidLayoutSubviews() {
         moveToInitSectionFirstCard()
@@ -177,7 +198,6 @@ class CardViewController: UIViewController, AddCardDelegate, ShowCardDelegate {
         collectionView.delegate = self
         collectionView.dataSource = self
         
-        // Color Card 설정 시 주석 풀기
         collectionView.register(UINib(nibName: "CardCollectionViewCell", bundle: .main), forCellWithReuseIdentifier: "CardCollectionViewCell")
         self.collectionView.reloadData()
         
@@ -250,14 +270,9 @@ extension CardViewController: UICollectionViewDataSource, UICollectionViewDelega
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
-        // Color Card 설정 시 주석 풀기
-        //        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "collectionViewCell", for: indexPath) as! CollectionViewCell
-        //        cell.backgroundColor = itemColors[indexPath.row]
-        //        cell.alpha = 0.5
-        
-        
         let cardCount = cardItemData.count
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "CardCollectionViewCell", for: indexPath) as! CardCollectionViewCell
+        
         let mod = indexPath.item%cardCount
         
         // Sector Name & Description
@@ -267,13 +282,28 @@ extension CardViewController: UICollectionViewDataSource, UICollectionViewDelega
         // Sector Image
         cell.cardImageView.image = cardImages[mod]
         cell.sectorImageView.image = sectorImages[mod]
-        cell.cardView.backgroundColor = UIColor.systemGray6
         
-//        print(cardSize)
-//        print("Before : \(cell.sectorImageView.frame)")
+//        cell.cardImageView.image = cardImagesResized[mod]
 //        cell.sectorImageView.image = sectorImagesResized[mod]
-//        print("After : \(cell.sectorImageView.frame)")
         
+        let cardRatio: Double = 2.18
+        let sectorRatio: Double = 1.53
+        
+        if (!isCardSmall) {
+//            cell.cardImageView.backgroundColor = .black
+            // [370, 594]
+            // [370, 597]
+            
+            let width = collectionViewSize[0] - 150 // -150
+            
+            cell.sectorImageFromTop.constant = 0
+            
+            cell.cardImageWidth.constant = width // 200
+            cell.cardImageHeight.constant = cell.cardImageWidth.constant * cardRatio
+            
+            cell.sectorImageWidth.constant = cell.cardImageWidth.constant - 50 // 150
+            cell.sectorImageHeight.constant = cell.cardImageWidth.constant * sectorRatio
+        }
         
         return cell
     }
@@ -281,7 +311,7 @@ extension CardViewController: UICollectionViewDataSource, UICollectionViewDelega
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let cardCount = cardItemData.count
         let mod = indexPath.item%cardCount
-        print(cardItemData[mod])
+//        print(cardItemData[mod])
         
         guard let jupiterVC = self.storyboard?.instantiateViewController(withIdentifier: "JupiterViewController") as? JupiterViewController else { return }
         jupiterVC.uuid = uuid
@@ -330,6 +360,7 @@ extension CardViewController : UIScrollViewDelegate {
         offset = CGPoint(x: roundedIndex * cellWidthIncludingSpacing - scrollView.contentInset.left, y: -scrollView.contentInset.top)
         targetContentOffset.pointee = offset
         
+        print("Current Index : \(currentIndex)")
         currentPage = Int(roundedIndex)
 //        print("Current Page: \(roundedIndex)")
         
@@ -361,8 +392,9 @@ extension CardViewController : UIScrollViewDelegate {
         let roundedIndex = round(index)
         let indexPath = IndexPath(item: Int(roundedIndex), section: 0)
         
-        //        let roundedIndex = currentPage
-        //        let indexPath = IndexPath(item: Int(roundedIndex), section: 0)
+//        print("roundedIndex : \(roundedIndex)")
+//        print("previousIndex : \(previousIndex)")
+        
         if let cell = collectionView.cellForItem(at: indexPath) {
             animateZoomforCell(zoomCell: cell)
         }

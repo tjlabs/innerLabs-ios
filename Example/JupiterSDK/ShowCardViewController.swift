@@ -6,6 +6,9 @@ protocol ShowCardDelegate {
 }
 
 class ShowCardViewController: UIViewController, AddCardDelegate {
+    
+    @IBOutlet weak var editButton: UIButton!
+    
     func sendCardItemData(data: [CardItemData]) {
         cardItemData = data
     }
@@ -58,6 +61,6 @@ class ShowCardViewController: UIViewController, AddCardDelegate {
     
     
     @IBAction func tapEditButton(_ sender: UIButton) {
+        editButton.alpha = 0.0
     }
-    
 }

@@ -1,17 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "cardOrange.png",
+      "filename" : "카드디자인(오렌지)-1x.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "cardOrange-1.png",
+      "filename" : "카드디자인(오렌지)-2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "cardOrange-2.png",
+      "filename" : "카드디자인(오렌지)-3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }

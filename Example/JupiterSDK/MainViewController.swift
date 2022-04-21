@@ -105,7 +105,7 @@ class MainViewController: UIViewController, UITextFieldDelegate {
         else {
             isSaveUuid = false
         }
-        print("Save UUID : \(isSaveUuid)")
+//        print("Save UUID : \(isSaveUuid)")
     }
     
 }

@@ -171,6 +171,9 @@
                             <constraint firstItem="I3Y-5a-cYb" firstAttribute="trailing" secondItem="8EU-Pm-XCs" secondAttribute="trailing" constant="30" id="xJq-D6-EMh"/>
                         </constraints>
                     </view>
+                    <connections>
+                        <outlet property="editButton" destination="Roy-K8-fGl" id="Rp0-4N-NpB"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="mY1-1W-7Q4" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
@@ -193,10 +196,10 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="WvC-dm-03O">
-                                <rect key="frame" x="336" y="69" width="34" height="39"/>
+                                <rect key="frame" x="338" y="75" width="32" height="27"/>
                                 <fontDescription key="fontDescription" name="NotoSansKR-Regular" family="Noto Sans KR" pointSize="18"/>
                                 <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                                <state key="normal" title="완료">
+                                <state key="normal" image="confirmButton">
                                     <color key="titleColor" systemColor="tintColor"/>
                                 </state>
                                 <connections>
@@ -524,6 +527,7 @@
         <image name="addCard" width="77.333335876464844" height="22"/>
         <image name="backButton" width="29" height="29"/>
         <image name="checkedBox" width="24.666666030883789" height="25.333333969116211"/>
+        <image name="confirmButton" width="31.333333969116211" height="25"/>
         <image name="editButton" width="28" height="22"/>
         <image name="fieldLogin" width="349.33334350585938" height="58.333332061767578"/>
         <image name="jupiterLogin" width="240.66667175292969" height="64.666664123535156"/>
