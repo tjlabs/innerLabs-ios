@@ -9,15 +9,25 @@
 import UIKit
 
 class ShowCardCollectionViewCell: UICollectionViewCell {
+    var delete : (() -> ()) = {}
 
+    @IBOutlet weak var nameLabel: UILabel!
+    
     @IBOutlet weak var deleteButton: UIButton!
-    @IBOutlet weak var showCardImage: UIImageView!
+    @IBOutlet weak var cardShowImage: UIImageView!
+    @IBOutlet weak var sectorShowImage: UIImageView!
+    
+    @IBOutlet weak var cardShowImageWidth: NSLayoutConstraint!
+    @IBOutlet weak var cardShowImageHeight: NSLayoutConstraint!
+    
+    @IBOutlet weak var sectorShowImageWidth: NSLayoutConstraint!
+    @IBOutlet weak var sectorShowImageHeight: NSLayoutConstraint!
     
     override func awakeFromNib() {
-        
         super.awakeFromNib()
-        deleteButton.alpha = 0.0
-        // Initialization code
     }
 
+    @IBAction func tapDeleteButton(_ sender: UIButton) {
+        delete()
+    }
 }

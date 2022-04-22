@@ -282,6 +282,7 @@ extension CardViewController: UICollectionViewDataSource, UICollectionViewDelega
         // Sector Image
         cell.cardImageView.image = cardImages[mod]
         cell.sectorImageView.image = sectorImages[mod]
+//        cell.cardImageView.backgroundColor = .black
         
 //        cell.cardImageView.image = cardImagesResized[mod]
 //        cell.sectorImageView.image = sectorImagesResized[mod]
@@ -290,7 +291,6 @@ extension CardViewController: UICollectionViewDataSource, UICollectionViewDelega
         let sectorRatio: Double = 1.53
         
         if (!isCardSmall) {
-//            cell.cardImageView.backgroundColor = .black
             // [370, 594]
             // [370, 597]
             

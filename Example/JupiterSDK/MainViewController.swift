@@ -61,11 +61,11 @@ class MainViewController: UIViewController, UITextFieldDelegate {
             cardDatas.append(CardItemData(name: "JUPITER\nService guide", description: "카드를 터치해주세요", cardImage: "purpleCard", cardShowImage: "purpleCardShow",
                                           sectorImage: "sectorDefault", sectorShowImage: "tjlabsShow", code: "purple", sectorID: 0, numZones: 3, order: 0))
             cardDatas.append(CardItemData(name: "Orange", description: "카드를 터치해주세요", cardImage: "orangeCard", cardShowImage: "orangeCardShow",
-                                          sectorImage: "sectorDefault", sectorShowImage: "tjlabsShow",code: "orange", sectorID: 0, numZones: 3, order: 1))
+                                          sectorImage: "sectorDefault", sectorShowImage: "tjlabsShow",code: "orange", sectorID: 1, numZones: 3, order: 1))
             cardDatas.append(CardItemData(name: "Green", description: "카드를 터치해주세요", cardImage: "greenCard", cardShowImage: "greenCardShow",
-                                          sectorImage: "sectorDefault", sectorShowImage: "tjlabsShow",code: "green", sectorID: 0, numZones: 3, order: 2))
+                                          sectorImage: "sectorDefault", sectorShowImage: "tjlabsShow",code: "green", sectorID: 2, numZones: 3, order: 2))
             cardDatas.append(CardItemData(name: "Gray", description: "카드를 터치해주세요", cardImage: "grayCard", cardShowImage: "grayCardShow",
-                                          sectorImage: "sectorDefault", sectorShowImage: "tjlabsShow",code: "gray", sectorID: 0, numZones: 3, order: 3))
+                                          sectorImage: "sectorDefault", sectorShowImage: "tjlabsShow",code: "gray", sectorID: 3, numZones: 3, order: 3))
             
             // Card 앞 뒤로 추가하기
 //            let firstCard = cardDatas[0]
