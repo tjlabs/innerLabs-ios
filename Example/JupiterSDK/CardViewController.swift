@@ -282,7 +282,6 @@ extension CardViewController: UICollectionViewDataSource, UICollectionViewDelega
         // Sector Image
         cell.cardImageView.image = cardImages[mod]
         cell.sectorImageView.image = sectorImages[mod]
-//        cell.cardImageView.backgroundColor = .black
         
 //        cell.cardImageView.image = cardImagesResized[mod]
 //        cell.sectorImageView.image = sectorImagesResized[mod]

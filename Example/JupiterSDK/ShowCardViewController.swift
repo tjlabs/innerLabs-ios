@@ -10,6 +10,8 @@ class ShowCardViewController: UIViewController, AddCardDelegate {
     @IBOutlet weak var editButton: UIButton!
     @IBOutlet weak var showCardCollectionView: UICollectionView!
     
+    var longPressGesture: UILongPressGestureRecognizer?
+    
     var isEditMode: Bool = false
     var cardShowImages: [UIImage] = []
     var sectorShowImages: [UIImage] = []
@@ -29,24 +31,26 @@ class ShowCardViewController: UIViewController, AddCardDelegate {
     
     
     //test
-//    let collectionView: UICollectionView = {
-//        let layout = UICollectionViewFlowLayout()
-//        layout.scrollDirection = .vertical
-//        let collection = UICollectionView(frame: CGRect(x: 50, y: 50, width: UIScreen.main.bounds.width-100, height: UIScreen.main.bounds.height-100), collectionViewLayout: layout)
-////        let collection = UICollectionView(frame: CGRect(x: 0, y: 0, width: 390, height: 633), collectionViewLayout: layout)
-//        return collection
-//    }()
+    //    let collectionView: UICollectionView = {
+    //        let layout = UICollectionViewFlowLayout()
+    //        layout.scrollDirection = .vertical
+    //        let collection = UICollectionView(frame: CGRect(x: 50, y: 50, width: UIScreen.main.bounds.width-100, height: UIScreen.main.bounds.height-100), collectionViewLayout: layout)
+    ////        let collection = UICollectionView(frame: CGRect(x: 0, y: 0, width: 390, height: 633), collectionViewLayout: layout)
+    //        return collection
+    //    }()
     
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(false)
+        
+        longPressGesture = UILongPressGestureRecognizer(target: self, action: #selector(self.longTap(_:)))
+        showCardCollectionView.addGestureRecognizer(longPressGesture!)
         
         initShowCardVC()
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
     }
     
     func initShowCardVC() {
@@ -112,6 +116,23 @@ class ShowCardViewController: UIViewController, AddCardDelegate {
         }
     }
     
+    @objc func longTap(_ gesture: UIGestureRecognizer){
+        switch(gesture.state) {
+        case .began:
+            guard let selectedIndexPath = showCardCollectionView.indexPathForItem(at: gesture.location(in: showCardCollectionView)) else {
+                return
+            }
+            showCardCollectionView.beginInteractiveMovementForItem(at: selectedIndexPath)
+        case .changed:
+            showCardCollectionView.updateInteractiveMovementTargetPosition(gesture.location(in: gesture.view!))
+        case .ended:
+            showCardCollectionView.endInteractiveMovement()
+            self.showCardCollectionView.reloadData()
+        default:
+            showCardCollectionView.cancelInteractiveMovement()
+        }
+    }
+    
     @IBAction func tapToCardButton(_ sender: UIButton) {
         self.delegate?.sendCardItemData(data: cardItemData)
         self.presentingViewController?.dismiss(animated: true)
@@ -169,7 +190,7 @@ class ShowCardViewController: UIViewController, AddCardDelegate {
 
 extension ShowCardViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-//        return CGSize(width: collectionView.bounds.width-32, height: 48)
+        //        return CGSize(width: collectionView.bounds.width-32, height: 48)
         return CGSize(width: collectionView.bounds.width-10, height: 80)
     }
 }
@@ -180,7 +201,7 @@ extension ShowCardViewController: UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-
+        
         return cardItemData.count
         
     }
@@ -195,35 +216,22 @@ extension ShowCardViewController: UICollectionViewDataSource {
         
         let width = showCardCollectionView.bounds.width
         cell.cardWidth.constant = width
-//        cell.cardShowImageWidth.constant = width
         
         cell.cardShowImage.image = cardShowImages[indexPath.item]
         cell.sectorShowImage.image = sectorShowImages[indexPath.item]
-//        cell.cardUIView.backgroundColor = .black
+        
         if (isEditMode) {
             if (sectorID != 0) {
                 cell.deleteButton.alpha = 1.0
                 cell.deleteButton.isEnabled = true
                 
-                /// Vibrating 애니메이션
-                let shakeAnimation = CABasicAnimation(keyPath: "position")
-                shakeAnimation.duration = 0.1
-                shakeAnimation.repeatCount = 20
-                shakeAnimation.autoreverses = true
-                shakeAnimation.fromValue = NSValue(cgPoint: CGPoint(x: cell.cardShowImage.center.x - 5, y: cell.cardShowImage.center.y))
-                shakeAnimation.toValue = NSValue(cgPoint: CGPoint(x: cell.cardShowImage.center.x + 5, y: cell.cardShowImage.center.y))
-//                shakeAnimation.fromValue = NSValue(cgPoint: CGPoint(x: cell.cardShowImage.center.x, y: cell.cardShowImage.center.y - 5))
-//                shakeAnimation.toValue = NSValue(cgPoint: CGPoint(x: cell.cardShowImage.center.x, y: cell.cardShowImage.center.y + 5))
-                
-//                shakeAnimation.fromValue = NSValue(cgPoint: CGPoint(x: cell.sectorShowImage.center.x - 5, y: cell.sectorShowImage.center.y))
-//                shakeAnimation.toValue = NSValue(cgPoint: CGPoint(x: cell.sectorShowImage.center.x + 5, y: cell.sectorShowImage.center.y))
-                
-//                cell.cardShowImage.layer.add(shakeAnimation, forKey: "position")
-                cell.cardUIView.layer.add(shakeAnimation, forKey: "position")
+                cell.startAnimate()
                 
             } else {
                 cell.deleteButton.alpha = 0.0
                 cell.deleteButton.isEnabled = false
+                
+                cell.stopAnimate()
             }
         } else {
             cell.deleteButton.alpha = 0.0
@@ -239,11 +247,28 @@ extension ShowCardViewController: UICollectionViewDataSource {
             // CollectionView Reload
             self.showCardCollectionView.reloadData()
         }
-
+        
         return cell
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-//        print("Want to delete : \(indexPath.item)")
+        //        print("Want to delete : \(indexPath.item)")
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, canMoveItemAt indexPath: IndexPath) -> Bool {
+        return true
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, moveItemAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
+//        print("Start index :- \(sourceIndexPath.item)")
+//        print("End index :- \(destinationIndexPath.item)")
+                
+        let tmp = cardItemData[sourceIndexPath.item]
+        cardItemData[sourceIndexPath.item] = cardItemData[destinationIndexPath.item]
+        cardItemData[destinationIndexPath.item] = tmp
+        
+        setData(data: cardItemData)
+                
+        showCardCollectionView.reloadData()
     }
 }

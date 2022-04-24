@@ -14,7 +14,7 @@ class CardCollectionViewCell: UICollectionViewCell {
     
     @IBOutlet weak var cardImageView: UIImageView!
     @IBOutlet weak var sectorImageView: UIImageView!
-
+    
     @IBOutlet weak var sectorName: UILabel!
     @IBOutlet weak var sectorDescription: UILabel!
     
