@@ -183,14 +183,14 @@
 				B3844E8C28099EE3007A5215 /* CardCollectionViewCell.swift */,
 				B3844E8D28099EE3007A5215 /* CardCollectionViewCell.xib */,
 				B3C09C63280E941B00E6F55F /* ShowCardViewController.swift */,
+				B3B4F85828114EEB009F9E6C /* ShowCardCollectionViewCell.swift */,
+				B3B4F85928114EEB009F9E6C /* ShowCardCollectionViewCell.xib */,
 				B3DE146C280E7146006DA43C /* AddCardViewController.swift */,
 				607FACD91AFB9204008FA782 /* Main.storyboard */,
 				607FACDE1AFB9204008FA782 /* LaunchScreen.xib */,
 				B340EE3C280965F90096E404 /* CollectionViewCell.swift */,
 				607FACDC1AFB9204008FA782 /* Images.xcassets */,
 				607FACD31AFB9204008FA782 /* Supporting Files */,
-				B3B4F85828114EEB009F9E6C /* ShowCardCollectionViewCell.swift */,
-				B3B4F85928114EEB009F9E6C /* ShowCardCollectionViewCell.xib */,
 			);
 			name = "Example for JupiterSDK";
 			path = JupiterSDK;
