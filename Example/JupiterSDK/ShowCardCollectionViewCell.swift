@@ -11,6 +11,10 @@ import UIKit
 class ShowCardCollectionViewCell: UICollectionViewCell {
     var delete : (() -> ()) = {}
 
+    @IBOutlet weak var cardUIView: UIView!
+    @IBOutlet weak var cardWidth: NSLayoutConstraint!
+    @IBOutlet weak var cardHeight: NSLayoutConstraint!
+    
     @IBOutlet weak var nameLabel: UILabel!
     
     @IBOutlet weak var deleteButton: UIButton!
@@ -22,6 +26,13 @@ class ShowCardCollectionViewCell: UICollectionViewCell {
     
     @IBOutlet weak var sectorShowImageWidth: NSLayoutConstraint!
     @IBOutlet weak var sectorShowImageHeight: NSLayoutConstraint!
+    
+    
+    //    @IBOutlet weak var cardShowImageWidth: NSLayoutConstraint!
+//    @IBOutlet weak var cardShowImageHeight: NSLayoutConstraint!
+//
+//    @IBOutlet weak var sectorShowImageWidth: NSLayoutConstraint!
+//    @IBOutlet weak var sectorShowImageHeight: NSLayoutConstraint!
     
     override func awakeFromNib() {
         super.awakeFromNib()

@@ -194,16 +194,18 @@ extension ShowCardViewController: UICollectionViewDataSource {
         cell.nameLabel.text = sectorName
         
         let width = showCardCollectionView.bounds.width
-        cell.cardShowImageWidth.constant = width
+        cell.cardWidth.constant = width
+//        cell.cardShowImageWidth.constant = width
         
         cell.cardShowImage.image = cardShowImages[indexPath.item]
         cell.sectorShowImage.image = sectorShowImages[indexPath.item]
-        
+//        cell.cardUIView.backgroundColor = .black
         if (isEditMode) {
             if (sectorID != 0) {
                 cell.deleteButton.alpha = 1.0
                 cell.deleteButton.isEnabled = true
                 
+                /// Vibrating 애니메이션
                 let shakeAnimation = CABasicAnimation(keyPath: "position")
                 shakeAnimation.duration = 0.1
                 shakeAnimation.repeatCount = 20
@@ -216,8 +218,12 @@ extension ShowCardViewController: UICollectionViewDataSource {
 //                shakeAnimation.fromValue = NSValue(cgPoint: CGPoint(x: cell.sectorShowImage.center.x - 5, y: cell.sectorShowImage.center.y))
 //                shakeAnimation.toValue = NSValue(cgPoint: CGPoint(x: cell.sectorShowImage.center.x + 5, y: cell.sectorShowImage.center.y))
                 
-                cell.cardShowImage.layer.add(shakeAnimation, forKey: "position")
+//                cell.cardShowImage.layer.add(shakeAnimation, forKey: "position")
+                cell.cardUIView.layer.add(shakeAnimation, forKey: "position")
                 
+            } else {
+                cell.deleteButton.alpha = 0.0
+                cell.deleteButton.isEnabled = false
             }
         } else {
             cell.deleteButton.alpha = 0.0
