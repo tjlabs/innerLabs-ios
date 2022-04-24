@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'JupiterSDK'
-  s.version          = '1.0.1'
+  s.version          = '1.0.3'
   s.summary          = 'JupiterSDK for iOS'
   s.swift_version    = '4.0'
   
