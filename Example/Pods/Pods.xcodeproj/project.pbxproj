@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 52;
+	objectVersion = 46;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -34,17 +34,6 @@
 		B360D8692807C81B0084FB22 /* BluetoothData.swift in Sources */ = {isa = PBXBuildFile; fileRef = B360D8682807C81B0084FB22 /* BluetoothData.swift */; };
 		B360D86B2807C9F70084FB22 /* NetworkProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = B360D86A2807C9F70084FB22 /* NetworkProtocol.swift */; };
 		B360D86D2807DDFA0084FB22 /* DeviceModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B360D86C2807DDFA0084FB22 /* DeviceModel.swift */; };
-		B360D8702807F5CC0084FB22 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = B360D86F2807F5CC0084FB22 /* FirebaseAnalytics */; };
-		B360D8722807F5CC0084FB22 /* FirebaseAnalyticsSwift-Beta in Frameworks */ = {isa = PBXBuildFile; productRef = B360D8712807F5CC0084FB22 /* FirebaseAnalyticsSwift-Beta */; };
-		B360D8742807F5CC0084FB22 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = B360D8732807F5CC0084FB22 /* FirebaseAuth */; };
-		B360D8762807F5CC0084FB22 /* FirebaseDatabase in Frameworks */ = {isa = PBXBuildFile; productRef = B360D8752807F5CC0084FB22 /* FirebaseDatabase */; };
-		B360D8782807F5CC0084FB22 /* FirebaseDatabaseSwift-Beta in Frameworks */ = {isa = PBXBuildFile; productRef = B360D8772807F5CC0084FB22 /* FirebaseDatabaseSwift-Beta */; };
-		B360D87A2807F5CC0084FB22 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = B360D8792807F5CC0084FB22 /* FirebaseFirestore */; };
-		B360D87C2807F5CC0084FB22 /* FirebaseFirestoreSwift-Beta in Frameworks */ = {isa = PBXBuildFile; productRef = B360D87B2807F5CC0084FB22 /* FirebaseFirestoreSwift-Beta */; };
-		B360D87E2807F5CC0084FB22 /* FirebaseFunctions in Frameworks */ = {isa = PBXBuildFile; productRef = B360D87D2807F5CC0084FB22 /* FirebaseFunctions */; };
-		B360D8802807F5CC0084FB22 /* FirebaseFunctionsSwift-Beta in Frameworks */ = {isa = PBXBuildFile; productRef = B360D87F2807F5CC0084FB22 /* FirebaseFunctionsSwift-Beta */; };
-		B360D8822807F5CC0084FB22 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = B360D8812807F5CC0084FB22 /* FirebaseStorage */; };
-		B360D8842807F5CC0084FB22 /* FirebaseStorageSwift-Beta in Frameworks */ = {isa = PBXBuildFile; productRef = B360D8832807F5CC0084FB22 /* FirebaseStorageSwift-Beta */; };
 		B360D8862807F84D0084FB22 /* NetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B360D8852807F84D0084FB22 /* NetworkManager.swift */; };
 		F0F3C36A115FA8259D7467F8404751DE /* Pods-JupiterSDK_Example-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = D09690B8CF21331896CF985BFFA13AE6 /* Pods-JupiterSDK_Example-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
 /* End PBXBuildFile section */
@@ -142,18 +131,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B360D8782807F5CC0084FB22 /* FirebaseDatabaseSwift-Beta in Frameworks */,
-				B360D8762807F5CC0084FB22 /* FirebaseDatabase in Frameworks */,
-				B360D8722807F5CC0084FB22 /* FirebaseAnalyticsSwift-Beta in Frameworks */,
-				B360D87E2807F5CC0084FB22 /* FirebaseFunctions in Frameworks */,
-				B360D8702807F5CC0084FB22 /* FirebaseAnalytics in Frameworks */,
-				B360D8842807F5CC0084FB22 /* FirebaseStorageSwift-Beta in Frameworks */,
 				447DDED30DF755659D745A1E68C1B29F /* Foundation.framework in Frameworks */,
-				B360D87C2807F5CC0084FB22 /* FirebaseFirestoreSwift-Beta in Frameworks */,
-				B360D8742807F5CC0084FB22 /* FirebaseAuth in Frameworks */,
-				B360D8822807F5CC0084FB22 /* FirebaseStorage in Frameworks */,
-				B360D87A2807F5CC0084FB22 /* FirebaseFirestore in Frameworks */,
-				B360D8802807F5CC0084FB22 /* FirebaseFunctionsSwift-Beta in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -347,17 +325,6 @@
 			);
 			name = JupiterSDK;
 			packageProductDependencies = (
-				B360D86F2807F5CC0084FB22 /* FirebaseAnalytics */,
-				B360D8712807F5CC0084FB22 /* FirebaseAnalyticsSwift-Beta */,
-				B360D8732807F5CC0084FB22 /* FirebaseAuth */,
-				B360D8752807F5CC0084FB22 /* FirebaseDatabase */,
-				B360D8772807F5CC0084FB22 /* FirebaseDatabaseSwift-Beta */,
-				B360D8792807F5CC0084FB22 /* FirebaseFirestore */,
-				B360D87B2807F5CC0084FB22 /* FirebaseFirestoreSwift-Beta */,
-				B360D87D2807F5CC0084FB22 /* FirebaseFunctions */,
-				B360D87F2807F5CC0084FB22 /* FirebaseFunctionsSwift-Beta */,
-				B360D8812807F5CC0084FB22 /* FirebaseStorage */,
-				B360D8832807F5CC0084FB22 /* FirebaseStorageSwift-Beta */,
 			);
 			productName = JupiterSDK;
 			productReference = 249D3629879889DAFD7B486C2E89F745 /* JupiterSDK.framework */;
@@ -420,7 +387,6 @@
 			);
 			mainGroup = CF1408CF629C7361332E53B88F7BD30C;
 			packageReferences = (
-				B360D86E2807F5CC0084FB22 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 			);
 			productRefGroup = D3BEAE69612D0E7992C98B8D352E99AE /* Products */;
 			projectDirPath = "";
@@ -536,11 +502,7 @@
 				INFOPLIST_FILE = "Target Support Files/JupiterSDK/JupiterSDK-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@loader_path/Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MODULEMAP_FILE = "Target Support Files/JupiterSDK/JupiterSDK.modulemap";
 				PRODUCT_MODULE_NAME = JupiterSDK;
 				PRODUCT_NAME = JupiterSDK;
@@ -610,7 +572,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
-				ONLY_ACTIVE_ARCH = YES;
+				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRIP_INSTALLED_PRODUCT = NO;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
@@ -636,11 +598,7 @@
 				INFOPLIST_FILE = "Target Support Files/Pods-JupiterSDK_Example/Pods-JupiterSDK_Example-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@loader_path/Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MACH_O_TYPE = staticlib;
 				MODULEMAP_FILE = "Target Support Files/Pods-JupiterSDK_Example/Pods-JupiterSDK_Example.modulemap";
 				OTHER_LDFLAGS = "";
@@ -673,11 +631,7 @@
 				INFOPLIST_FILE = "Target Support Files/Pods-JupiterSDK_Tests/Pods-JupiterSDK_Tests-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@loader_path/Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MACH_O_TYPE = staticlib;
 				MODULEMAP_FILE = "Target Support Files/Pods-JupiterSDK_Tests/Pods-JupiterSDK_Tests.modulemap";
 				OTHER_LDFLAGS = "";
@@ -709,11 +663,7 @@
 				INFOPLIST_FILE = "Target Support Files/Pods-JupiterSDK_Example/Pods-JupiterSDK_Example-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@loader_path/Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MACH_O_TYPE = staticlib;
 				MODULEMAP_FILE = "Target Support Files/Pods-JupiterSDK_Example/Pods-JupiterSDK_Example.modulemap";
 				OTHER_LDFLAGS = "";
@@ -782,10 +732,10 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRIP_INSTALLED_PRODUCT = NO;
-				SWIFT_COMPILATION_MODE = wholemodule;
-				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				SWIFT_VERSION = 5.0;
 				SYMROOT = "${SRCROOT}/../build";
 			};
@@ -807,11 +757,7 @@
 				INFOPLIST_FILE = "Target Support Files/Pods-JupiterSDK_Tests/Pods-JupiterSDK_Tests-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@loader_path/Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MACH_O_TYPE = staticlib;
 				MODULEMAP_FILE = "Target Support Files/Pods-JupiterSDK_Tests/Pods-JupiterSDK_Tests.modulemap";
 				OTHER_LDFLAGS = "";
@@ -844,11 +790,7 @@
 				INFOPLIST_FILE = "Target Support Files/JupiterSDK/JupiterSDK-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@loader_path/Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MODULEMAP_FILE = "Target Support Files/JupiterSDK/JupiterSDK.modulemap";
 				PRODUCT_MODULE_NAME = JupiterSDK;
 				PRODUCT_NAME = JupiterSDK;
@@ -903,75 +845,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCRemoteSwiftPackageReference section */
-		B360D86E2807F5CC0084FB22 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 8.0.0;
-			};
-		};
-/* End XCRemoteSwiftPackageReference section */
-
-/* Begin XCSwiftPackageProductDependency section */
-		B360D86F2807F5CC0084FB22 /* FirebaseAnalytics */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = B360D86E2807F5CC0084FB22 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = FirebaseAnalytics;
-		};
-		B360D8712807F5CC0084FB22 /* FirebaseAnalyticsSwift-Beta */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = B360D86E2807F5CC0084FB22 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = "FirebaseAnalyticsSwift-Beta";
-		};
-		B360D8732807F5CC0084FB22 /* FirebaseAuth */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = B360D86E2807F5CC0084FB22 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = FirebaseAuth;
-		};
-		B360D8752807F5CC0084FB22 /* FirebaseDatabase */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = B360D86E2807F5CC0084FB22 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = FirebaseDatabase;
-		};
-		B360D8772807F5CC0084FB22 /* FirebaseDatabaseSwift-Beta */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = B360D86E2807F5CC0084FB22 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = "FirebaseDatabaseSwift-Beta";
-		};
-		B360D8792807F5CC0084FB22 /* FirebaseFirestore */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = B360D86E2807F5CC0084FB22 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = FirebaseFirestore;
-		};
-		B360D87B2807F5CC0084FB22 /* FirebaseFirestoreSwift-Beta */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = B360D86E2807F5CC0084FB22 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = "FirebaseFirestoreSwift-Beta";
-		};
-		B360D87D2807F5CC0084FB22 /* FirebaseFunctions */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = B360D86E2807F5CC0084FB22 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = FirebaseFunctions;
-		};
-		B360D87F2807F5CC0084FB22 /* FirebaseFunctionsSwift-Beta */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = B360D86E2807F5CC0084FB22 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = "FirebaseFunctionsSwift-Beta";
-		};
-		B360D8812807F5CC0084FB22 /* FirebaseStorage */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = B360D86E2807F5CC0084FB22 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = FirebaseStorage;
-		};
-		B360D8832807F5CC0084FB22 /* FirebaseStorageSwift-Beta */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = B360D86E2807F5CC0084FB22 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = "FirebaseStorageSwift-Beta";
-		};
-/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = BFDFE7DC352907FC980B868725387E98 /* Project object */;
 }

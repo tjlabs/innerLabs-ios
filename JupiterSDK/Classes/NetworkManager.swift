@@ -6,26 +6,26 @@
 //
 
 import Foundation
-import FirebaseFirestore
-//import Alamofire
+//import FirebaseFirestore
+import Alamofire
 
 public class NetworkManager {
-    public var documentListener: ListenerRegistration?
+//    public var documentListener: ListenerRegistration?
     
-    func upload(_ input: Input, completion: ((Error?) -> Void)? = nil) {
-        let collectionPath = "users/\(input.user_id)/input"
-        let collectionListener = Firestore.firestore().collection(collectionPath)
-        
-        guard let dictionary = input.asDictionary else {
-            print("decode error")
-            return
-        }
-        //        print(dictionary)
-        
-        collectionListener.addDocument(data: dictionary) { error in
-            completion?(error)
-        }
-    }
+//    func upload(_ input: Input, completion: ((Error?) -> Void)? = nil) {
+//        let collectionPath = "users/\(input.user_id)/input"
+//        let collectionListener = Firestore.firestore().collection(collectionPath)
+//
+//        guard let dictionary = input.asDictionary else {
+//            print("decode error")
+//            return
+//        }
+//        //        print(dictionary)
+//
+//        collectionListener.addDocument(data: dictionary) { error in
+//            completion?(error)
+//        }
+//    }
     
 //    func postToServer(input: Input) {
 //        let url = "https://ptsv2.com/t/cbztm-1650853155/post"
@@ -83,9 +83,9 @@ public class NetworkManager {
     //            }
     //    }
     
-    func removeListener() {
-        documentListener?.remove()
-    }
+//    func removeListener() {
+//        documentListener?.remove()
+//    }
 }
 
 extension Encodable {
