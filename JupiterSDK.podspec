@@ -43,7 +43,6 @@ Pod::Spec.new do |s|
 #  s.dependency 'Charts', '~> 4.0.0'
   s.dependency 'Firebase/Core'
   s.dependency 'Firebase/Firestore'
-  s.dependency 'Firebase/FirestoreSwift'
 #  s.dependency 'Firebase/Analytics'
 
 end

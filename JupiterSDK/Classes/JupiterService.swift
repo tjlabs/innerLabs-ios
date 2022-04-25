@@ -2,7 +2,6 @@ import Foundation
 import CoreMotion
 import CoreLocation
 import FirebaseFirestore
-import FirebaseFirestoreSwiftTarget
 
 public class JupiterService: NSObject {
     
