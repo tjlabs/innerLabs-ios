@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'JupiterSDK'
-  s.version          = '1.0.3'
+  s.version          = '1.0.4'
   s.summary          = 'JupiterSDK for iOS'
   s.swift_version    = '4.0'
   
@@ -43,7 +43,7 @@ Pod::Spec.new do |s|
 #  s.dependency 'Charts', '~> 4.0.0'
   s.dependency 'Firebase/Core'
   s.dependency 'Firebase/Firestore'
-  s.dependency 'FirebaseFirestoreSwift'
+  s.dependency 'Firebase/FirestoreSwift'
 #  s.dependency 'Firebase/Analytics'
 
 end
