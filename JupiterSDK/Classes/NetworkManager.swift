@@ -7,7 +7,7 @@
 
 import Foundation
 //import FirebaseFirestore
-import Alamofire
+//import Alamofire
 
 public class NetworkManager {
 //    public var documentListener: ListenerRegistration?
