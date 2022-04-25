@@ -8,7 +8,6 @@
 import Foundation
 import Firebase
 import FirebaseFirestore
-import FirebaseFirestoreSwiftTarget
 
 public class NetworkManager {
     public var documentListener: ListenerRegistration?
