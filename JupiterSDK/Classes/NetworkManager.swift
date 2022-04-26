@@ -10,6 +10,7 @@ import Alamofire
 
 public class NetworkManager {
 
+    // URL Setting
     let url = "https://where-run-kr-6qjrrjlaga-an.a.run.app/calc"
     
     // MARK: - [Get 방식 http 요청 실시]
