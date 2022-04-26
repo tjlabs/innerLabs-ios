@@ -103,29 +103,3 @@ struct Output: Codable {
     var sector : String
     var sz_flag : Int
 }
-
-func encodeUploadDataToJson(data: UploadData) -> String {
-    let encoder = JSONEncoder()
-    var r:String = ""
-    
-    let jsonData = try? encoder.encode(data)
-    
-    if let jsonData = jsonData, let jsonString = String(data: jsonData, encoding: .utf8){
-        r = jsonString
-    }
-    
-    return r
-}
-
-func encodeInputToJson(data: Input) -> String {
-    let encoder = JSONEncoder()
-    var result:String = ""
-    
-    let jsonData = try? encoder.encode(data)
-    
-    if let jsonData = jsonData, let jsonString = String(data: jsonData, encoding: .utf8){
-        result = jsonString
-    }
-    
-    return result
-}
