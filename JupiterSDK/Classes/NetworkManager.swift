@@ -94,14 +94,6 @@ public class NetworkManager {
             "Content-Type" : "application/json"
         ]
         
-        
-        // [http 요청 파라미터 지정 실시]
-        let queryString : Parameters = [
-            "userId" : 1,
-            "id" : 1
-        ]
-        
-        
         // [http 요청 수행 실시]
         print("")
         print("====================================")
