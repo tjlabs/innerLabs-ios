@@ -9,7 +9,6 @@ target 'JupiterSDK_Example' do
 #  pod 'Alamofire', :git => 'https://github.com/Alamofire/Alamofire.git'
   pod 'JupiterSDK', :path => '../'
   pod 'Alamofire'
-  pod 'SwiftyJSON'
 
   target 'JupiterSDK_Tests' do
     inherit! :search_paths
