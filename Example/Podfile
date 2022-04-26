@@ -5,11 +5,13 @@ source 'https://github.com/tjlabs/jupiter-sdk-ios.git'
 
 target 'JupiterSDK_Example' do
   use_frameworks!
-  pod 'JupiterSDK'
+#  pod 'JupiterSDK'
 #  pod 'FirebaseCore', :git => 'https://github.com/firebase/firebase-ios-sdk.git', :branch => 'master'
 #  pod 'FirebaseFirestore', :git => 'https://github.com/firebase/firebase-ios-sdk.git', :branch => 'master'
 #  pod 'Alamofire', :git => 'https://github.com/Alamofire/Alamofire.git'
-#  pod 'JupiterSDK', :path => '../'
+  pod 'JupiterSDK', :path => '../'
+  pod 'Alamofire'
+  pod 'SwiftyJSON'
 
   target 'JupiterSDK_Tests' do
     inherit! :search_paths
