@@ -1,7 +1,6 @@
 import Foundation
 import CoreMotion
 import CoreLocation
-//import FirebaseFirestore
 
 public class JupiterService: NSObject {
     
@@ -233,6 +232,8 @@ public class JupiterService: NSObject {
             
             let data = Input(user_id: uuid, unit_idx: stepResult.unit_idx, step_length: stepResult.step_length, heading: stepResult.heading, pressure: stepResult.pressure, looking_flag: stepResult.lookingFlag,
                              ble: bleDictionary, time_mobile: timeStamp, device_model: deviceModel, os_version: osVersion)
+            
+            networkManager.postRequest(input: data)
             
             // Upload to Firestore
 //            networkManager.upload(data) { error in

@@ -6,86 +6,236 @@
 //
 
 import Foundation
-//import FirebaseFirestore
-//import Alamofire
+import Alamofire
 
 public class NetworkManager {
-//    public var documentListener: ListenerRegistration?
+
+    let url = "https://where-run-kr-6qjrrjlaga-an.a.run.app/calc"
     
-//    func upload(_ input: Input, completion: ((Error?) -> Void)? = nil) {
-//        let collectionPath = "users/\(input.user_id)/input"
-//        let collectionListener = Firestore.firestore().collection(collectionPath)
-//
-//        guard let dictionary = input.asDictionary else {
-//            print("decode error")
-//            return
-//        }
-//        //        print(dictionary)
-//
-//        collectionListener.addDocument(data: dictionary) { error in
-//            completion?(error)
-//        }
-//    }
+    // MARK: - [Get 방식 http 요청 실시]
+    func getRequest(){
+        
+        // [http 요청 헤더 지정]
+        let header : HTTPHeaders = [
+            "Content-Type" : "application/json"
+        ]
+        
+        
+        // [http 요청 파라미터 지정 실시]
+        let queryString : Parameters = [
+            "userId" : 1,
+            "id" : 1
+        ]
+        
+        
+        // [http 요청 수행 실시]
+        print("")
+        print("====================================")
+        print("주 소 :: ", url)
+        print("-------------------------------")
+        print("데이터 :: ", queryString.description)
+        print("====================================")
+        print("")
+        
+        AF.request(
+            url, // [주소]
+            method: .get, // [전송 타입]
+            parameters: queryString, // [전송 데이터]
+            encoding: URLEncoding.queryString, // [인코딩 스타일]
+            headers: header // [헤더 지정]
+        )
+        .validate(statusCode: 200..<300)
+        .responseData { response in
+            switch response.result {
+            case .success(let res):
+                do {
+                    print("")
+                    print("====================================")
+                    print("응답 코드 :: ", response.response?.statusCode ?? 0)
+                    print("-------------------------------")
+                    print("응답 데이터 :: ", String(data: res, encoding: .utf8) ?? "")
+                    print("====================================")
+                    print("")
+                    
+                    // [비동기 작업 수행]
+                    DispatchQueue.main.async {
+                        
+                    }
+                }
+                catch (let err){
+                    print("")
+                    print("====================================")
+                    print("catch :: ", err.localizedDescription)
+                    print("====================================")
+                    print("")
+                }
+                break
+            case .failure(let err):
+                print("")
+                print("====================================")
+                print("응답 코드 :: ", response.response?.statusCode ?? 0)
+                print("-------------------------------")
+                print("에 러 :: ", err.localizedDescription)
+                print("====================================")
+                print("")
+                break
+            }
+        }
+    }
     
-//    func postToServer(input: Input) {
-//        let url = "https://ptsv2.com/t/cbztm-1650853155/post"
-//        var request = URLRequest(url: URL(string: url)!)
-//        request.httpMethod = "POST"
-//        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-//        request.timeoutInterval = 10
-//
-//        // POST 로 보낼 정보
-//        let params = input
-//
-//        // httpBody 에 parameters 추가
-//        do {
-//            try request.httpBody = JSONSerialization.data(withJSONObject: params, options: [])
-//        } catch {
-//            print("http Body Error")
-//        }
-//
-//        AF.request(request).responseString { (response) in
-//            switch response.result {
-//            case .success:
-//                print("POST 성공")
-//            case .failure(let error):
-//                print("🚫 Alamofire Request Error\nCode:\(error._code), Message: \(error.errorDescription!)")
-//            }
-//        }
-//    }
     
-    //    func subscribe(id: String, completion: @escaping (Result<[Output], FirestoreError>) -> Void) {
-    //        let collectionPath = "users/\(id)/output"
-    //        removeListener()
-    //        let collectionListener = Firestore.firestore().collection(collectionPath)
-    //        documentListener = collectionListener
-    //            .addSnapshotListener { snapshot, error in
-    //                guard let snapshot = snapshot else {
-    //                    completion(.failure(FirestoreError.firestoreError(error)))
-    //                    return
-    //                }
-    //
-    //                var messages = [Output]()
-    //                snapshot.documentChanges.forEach { change in
-    //                    switch change.type {
-    //                    case .added, .modified:
-    //                        do {
-    //                            if let message = try change.document.data(as: Output.self) {
-    //                                messages.append(message)
-    //                            }
-    //                        } catch {
-    //                            completion(.failure(.decodedError(error)))
-    //                        }
-    //                    default: break
-    //                    }
-    //                }
-    //                completion(.success(messages))
-    //            }
-    //    }
     
-//    func removeListener() {
-//        documentListener?.remove()
-//    }
+    
+    
+    // MARK: - [Post 방식 http 요청 실시]
+    func postRequest(input: Input){
+        // [http 요청 헤더 지정]
+        let header : HTTPHeaders = [
+            "Content-Type" : "application/json"
+        ]
+        
+        
+        // [http 요청 파라미터 지정 실시]
+        let queryString : Parameters = [
+            "userId" : 1,
+            "id" : 1
+        ]
+        
+        
+        // [http 요청 수행 실시]
+        print("")
+        print("====================================")
+        print("주 소 :: ", url)
+        print("-------------------------------")
+        print("데이터 :: ", input)
+        print("====================================")
+        print("")
+        
+        AF.request(
+            url, // [주소]
+            method: .post, // [전송 타입]
+            parameters: input, // [전송 데이터]
+            encoder: JSONParameterEncoder.default,
+            headers: header // [헤더 지정]
+        )
+        .validate(statusCode: 200..<300)
+        .responseData { response in
+            switch response.result {
+            case .success(let res):
+                do {
+                    print("")
+                    print("====================================")
+                    print("응답 코드 :: ", response.response?.statusCode ?? 0)
+                    print("-------------------------------")
+                    print("응답 데이터 :: ", String(data: res, encoding: .utf8) ?? "")
+                    print("====================================")
+                    print("")
+                    
+                    // [비동기 작업 수행]
+                    DispatchQueue.main.async {
+                        
+                    }
+                }
+                catch (let err){
+                    print("")
+                    print("====================================")
+                    print("catch :: ", err.localizedDescription)
+                    print("====================================")
+                    print("")
+                }
+                break
+            case .failure(let err):
+                print("")
+                print("====================================")
+                print("응답 코드 :: ", response.response?.statusCode ?? 0)
+                print("-------------------------------")
+                print("에 러 :: ", err.localizedDescription)
+                print("====================================")
+                print("")
+                break
+            }
+        }
+    }
+    
+    
+    
+    
+    
+    // MARK: - [Post Body Json Request 방식 http 요청 실시]
+    func postBodyJsonRequest(){
+        // [http 요청 헤더 지정]
+        let header : HTTPHeaders = [
+            "Content-Type" : "application/json"
+        ]
+        
+        
+        // [http 요청 파라미터 지정 실시]
+        let bodyData : Parameters = [
+            "userId" : 1,
+            "id" : 1
+        ]
+        
+        
+        // [http 요청 수행 실시]
+        print("")
+        print("====================================")
+        print("주 소 :: ", url)
+        print("-------------------------------")
+        print("데이터 :: ", bodyData.description)
+        print("====================================")
+        print("")
+        
+        AF.request(
+            url, // [주소]
+            method: .post, // [전송 타입]
+            parameters: bodyData, // [전송 데이터]
+            encoding: JSONEncoding.default, // [인코딩 스타일]
+            headers: header // [헤더 지정]
+        )
+        .validate(statusCode: 200..<300)
+        .responseData { response in
+            switch response.result {
+            case .success(let res):
+                do {
+                    print("")
+                    print("====================================")
+                    print("[postBodyJsonRequest() :: Post Body Json 방식 http 응답 확인]")
+                    print("-------------------------------")
+                    print("응답 코드 :: ", response.response?.statusCode ?? 0)
+                    print("-------------------------------")
+                    print("응답 데이터 :: ", String(data: res, encoding: .utf8) ?? "")
+                    print("====================================")
+                    print("")
+                    
+                    // [비동기 작업 수행]
+                    DispatchQueue.main.async {
+                        
+                    }
+                }
+                catch (let err){
+                    print("")
+                    print("====================================")
+                    print("[postBodyJsonRequest() :: Post Body Json 방식 http 응답 확인]")
+                    print("-------------------------------")
+                    print("catch :: ", err.localizedDescription)
+                    print("====================================")
+                    print("")
+                }
+                break
+            case .failure(let err):
+                print("")
+                print("====================================")
+                print("[postBodyJsonRequest() :: Post Body Json 방식 http 요청 실패]")
+                print("-------------------------------")
+                print("응답 코드 :: ", response.response?.statusCode ?? 0)
+                print("-------------------------------")
+                print("에 러 :: ", err.localizedDescription)
+                print("====================================")
+                print("")
+                break
+            }
+        }
+    }
 }
 
 extension Encodable {
