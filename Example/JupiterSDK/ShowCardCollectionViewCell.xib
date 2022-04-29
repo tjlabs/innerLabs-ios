@@ -29,47 +29,47 @@
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="1hO-ZK-J6b">
                                 <rect key="frame" x="0.0" y="0.0" width="300" height="80"/>
                             </imageView>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Dfj-Wt-KTF">
-                                <rect key="frame" x="15" y="0.0" width="31.5" height="25.5"/>
-                                <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                                <state key="normal" image="confirmButton"/>
-                                <connections>
-                                    <action selector="tapDeleteButton:" destination="gTV-IL-0wX" eventType="touchUpInside" id="Jqb-Om-taz"/>
-                                </connections>
-                            </button>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="g7D-xP-5mk">
-                                <rect key="frame" x="50" y="27" width="33" height="26"/>
+                                <rect key="frame" x="51" y="27" width="33" height="26"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="26" id="FoN-1e-Mgh"/>
                                     <constraint firstAttribute="width" constant="33" id="eJz-4k-STG"/>
                                 </constraints>
                             </imageView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Empty" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="6ov-Ir-sM3">
-                                <rect key="frame" x="103" y="27" width="100" height="26.5"/>
+                                <rect key="frame" x="104" y="27" width="160" height="26.5"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" constant="100" id="5wG-uW-9r7"/>
+                                    <constraint firstAttribute="width" constant="160" id="5wG-uW-9r7"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" name="NotoSansKR-Medium" family="Noto Sans KR" pointSize="18"/>
                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Dfj-Wt-KTF">
+                                <rect key="frame" x="238.5" y="3" width="29.5" height="29.5"/>
+                                <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                <state key="normal" image="deleteCardButton"/>
+                                <connections>
+                                    <action selector="tapDeleteButton:" destination="gTV-IL-0wX" eventType="touchUpInside" id="Jqb-Om-taz"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" systemColor="systemGray6Color"/>
                         <constraints>
                             <constraint firstItem="1hO-ZK-J6b" firstAttribute="centerX" secondItem="Ouq-cO-BZM" secondAttribute="centerX" id="0nb-Rb-tm8"/>
                             <constraint firstAttribute="trailing" secondItem="1hO-ZK-J6b" secondAttribute="trailing" id="6H0-AN-yUI"/>
                             <constraint firstAttribute="bottom" secondItem="1hO-ZK-J6b" secondAttribute="bottom" id="9YK-o2-6nT"/>
+                            <constraint firstItem="Dfj-Wt-KTF" firstAttribute="top" secondItem="Ouq-cO-BZM" secondAttribute="top" constant="3" id="Fm9-10-EgH"/>
                             <constraint firstAttribute="width" constant="300" id="FoJ-ZG-lEO"/>
-                            <constraint firstItem="g7D-xP-5mk" firstAttribute="leading" secondItem="Ouq-cO-BZM" secondAttribute="leading" constant="50" id="GHs-0Q-QLh"/>
+                            <constraint firstItem="g7D-xP-5mk" firstAttribute="leading" secondItem="Ouq-cO-BZM" secondAttribute="leading" constant="51" id="GHs-0Q-QLh"/>
                             <constraint firstAttribute="height" constant="80" id="Jqx-nm-ezY"/>
                             <constraint firstItem="1hO-ZK-J6b" firstAttribute="centerY" secondItem="Ouq-cO-BZM" secondAttribute="centerY" id="Odg-7Z-ULE"/>
                             <constraint firstItem="g7D-xP-5mk" firstAttribute="centerY" secondItem="Ouq-cO-BZM" secondAttribute="centerY" id="Th6-xm-Umt"/>
-                            <constraint firstItem="Dfj-Wt-KTF" firstAttribute="leading" secondItem="Ouq-cO-BZM" secondAttribute="leading" constant="15" id="VuA-Au-SgV"/>
                             <constraint firstItem="1hO-ZK-J6b" firstAttribute="leading" secondItem="Ouq-cO-BZM" secondAttribute="leading" id="XQA-aL-nZR"/>
                             <constraint firstItem="6ov-Ir-sM3" firstAttribute="leading" secondItem="g7D-xP-5mk" secondAttribute="trailing" constant="20" id="bNp-jl-jpS"/>
                             <constraint firstItem="6ov-Ir-sM3" firstAttribute="centerY" secondItem="Ouq-cO-BZM" secondAttribute="centerY" id="c04-Wn-TGG"/>
+                            <constraint firstAttribute="trailing" secondItem="Dfj-Wt-KTF" secondAttribute="trailing" constant="32" id="emX-R5-Wfe"/>
                             <constraint firstItem="1hO-ZK-J6b" firstAttribute="top" secondItem="Ouq-cO-BZM" secondAttribute="top" id="fTO-90-D7r"/>
-                            <constraint firstItem="Dfj-Wt-KTF" firstAttribute="top" secondItem="Ouq-cO-BZM" secondAttribute="top" id="jXS-IA-apV"/>
                         </constraints>
                     </view>
                 </subviews>
@@ -94,7 +94,7 @@
         </collectionViewCell>
     </objects>
     <resources>
-        <image name="confirmButton" width="31.5" height="25.5"/>
+        <image name="deleteCardButton" width="29.5" height="29.5"/>
         <systemColor name="systemGray6Color">
             <color red="0.94901960784313721" green="0.94901960784313721" blue="0.96862745098039216" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>

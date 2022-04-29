@@ -1,10 +1,14 @@
 import UIKit
 import JupiterSDK
 
-class CardViewController: UIViewController, AddCardDelegate, ShowCardDelegate {
+class CardViewController: UIViewController, AddCardDelegate, ShowCardDelegate, SendPageDelegate {
     func sendCardItemData(data: [CardItemData]) {
         cardItemData = data
         initCardVC()
+    }
+    
+    func sendPage(data: Int) {
+        currentPage = data
     }
     
     @IBOutlet weak var collectionView: UICollectionView!
@@ -52,22 +56,19 @@ class CardViewController: UIViewController, AddCardDelegate, ShowCardDelegate {
         print("Size of CollectionView : \(collectionViewSize)")
         print("Size of Card : \(sizes.sizeCard)")
         print("Size of Sector : \(sizes.sizeSector)")
-
-//        cardImagesResized = changeImageSize(imagesToChange: cardImages, sizeToChange: collectionViewSize)
-//        sectorImagesResized = changeImageSize(imagesToChange: sectorImages, sizeToChange: sizes.sizeCard)
-//        let afterSizes = checkImageSize(cards: cardImagesResized, sectors: sectorImagesResized)
-//        print("Size of Card : \(afterSizes.sizeCard)")
-//        print("Size of Sector : \(afterSizes.sizeSector)")
         
         isCardSmall = checkRatio(collectionViewSize: collectionViewSize, sizeCard: sizes.sizeCard)
         
         setupCollectionView()
         setupProgressView()
         
-        currentPage = getInitSectionFisrtCardIndex()
-        currentIndex = CGFloat(currentPage)
-        
-        moveToInitSectionFirstCard()
+        if (currentPage == 0) {
+            currentPage = getInitSectionFisrtCardIndex()
+            currentIndex = CGFloat(currentPage)
+            moveToInitSectionFirstCard()
+        } else {
+            moveToIndexCard(index: currentPage)
+        }
         
         print(currentIndex)
     }
@@ -308,13 +309,21 @@ extension CardViewController: UICollectionViewDataSource, UICollectionViewDelega
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        // to JupiterViewController
         let cardCount = cardItemData.count
         let mod = indexPath.item%cardCount
 //        print(cardItemData[mod])
         
-        guard let jupiterVC = self.storyboard?.instantiateViewController(withIdentifier: "JupiterViewController") as? JupiterViewController else { return }
-        jupiterVC.uuid = uuid
-        self.navigationController?.pushViewController(jupiterVC, animated: true)
+//        guard let jupiterVC = self.storyboard?.instantiateViewController(withIdentifier: "JupiterViewController") as? JupiterViewController else { return }
+//        jupiterVC.uuid = uuid
+//        self.navigationController?.pushViewController(jupiterVC, animated: true)
+        
+        // to CardBackViewController
+        guard let cardBackVC = self.storyboard?.instantiateViewController(withIdentifier: "CardBackViewController") as? CardBackViewController else { return }
+        cardBackVC.cardData = cardItemData[mod]
+        cardBackVC.uuid = uuid
+        cardBackVC.page = currentPage
+        self.navigationController?.pushViewController(cardBackVC, animated: true)
     }
     
 }
@@ -359,9 +368,9 @@ extension CardViewController : UIScrollViewDelegate {
         offset = CGPoint(x: roundedIndex * cellWidthIncludingSpacing - scrollView.contentInset.left, y: -scrollView.contentInset.top)
         targetContentOffset.pointee = offset
         
-        print("Current Index : \(currentIndex)")
+//        print("Current Index : \(currentIndex)")
         currentPage = Int(roundedIndex)
-//        print("Current Page: \(roundedIndex)")
+        print("Current Page: \(currentPage)")
         
         // ProgressBar
         let progress = getProgressValue(currentPage: currentPage)

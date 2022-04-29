@@ -1,15 +1,29 @@
 PODS:
   - Alamofire (5.6.1)
+  - GoogleMaps (4.0.0):
+    - GoogleMaps/Maps (= 4.0.0)
+  - GoogleMaps/Base (4.0.0)
+  - GoogleMaps/Maps (4.0.0):
+    - GoogleMaps/Base
+  - GooglePlaces (4.0.0):
+    - GoogleMaps/Base (= 4.0.0)
   - JupiterSDK (1.1.4):
     - Alamofire
+  - SnapKit (5.6.0)
 
 DEPENDENCIES:
   - Alamofire
+  - GoogleMaps (= 4.0.0)
+  - GooglePlaces (= 4.0.0)
   - JupiterSDK (from `../`)
+  - SnapKit
 
 SPEC REPOS:
   trunk:
     - Alamofire
+    - GoogleMaps
+    - GooglePlaces
+    - SnapKit
 
 EXTERNAL SOURCES:
   JupiterSDK:
@@ -17,8 +31,11 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   Alamofire: 87bd8c952f9a4454320fce00d9cc3de57bcadaf5
+  GoogleMaps: b7f7fc569a9b354a3af0d9729dbec40957b7d41e
+  GooglePlaces: ca8d4aba09ba79e0a829cf1dca03a41de6a09016
   JupiterSDK: bd2b3f1b666ca10ab636c53c50c258321d8df0cc
+  SnapKit: e01d52ebb8ddbc333eefe2132acf85c8227d9c25
 
-PODFILE CHECKSUM: 8b0b07219bcba3db06abe01bc50f19afa2e1afa7
+PODFILE CHECKSUM: 401c20d8df90b5a50f3b6d9f029f39b1eda83a22
 
 COCOAPODS: 1.11.3

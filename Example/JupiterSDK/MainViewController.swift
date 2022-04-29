@@ -59,19 +59,15 @@ class MainViewController: UIViewController, UITextFieldDelegate {
             // Card 정보 가져오기
             var cardDatas = [CardItemData]()
             cardDatas.append(CardItemData(name: "JUPITER\nService guide", description: "카드를 터치해주세요", cardImage: "purpleCard", cardShowImage: "purpleCardShow",
-                                          sectorImage: "sectorDefault", sectorShowImage: "tjlabsShow", code: "purple", sectorID: 0, numZones: 3, order: 0))
-            cardDatas.append(CardItemData(name: "Orange", description: "카드를 터치해주세요", cardImage: "orangeCard", cardShowImage: "orangeCardShow",
-                                          sectorImage: "sectorDefault", sectorShowImage: "tjlabsShow",code: "orange", sectorID: 1, numZones: 3, order: 1))
-            cardDatas.append(CardItemData(name: "Green", description: "카드를 터치해주세요", cardImage: "greenCard", cardShowImage: "greenCardShow",
-                                          sectorImage: "sectorDefault", sectorShowImage: "tjlabsShow",code: "green", sectorID: 2, numZones: 3, order: 2))
-            cardDatas.append(CardItemData(name: "Gray", description: "카드를 터치해주세요", cardImage: "grayCard", cardShowImage: "grayCardShow",
-                                          sectorImage: "sectorDefault", sectorShowImage: "tjlabsShow",code: "gray", sectorID: 3, numZones: 3, order: 3))
-            
-            // Card 앞 뒤로 추가하기
-//            let firstCard = cardDatas[0]
-//            let lastCard = cardDatas[cardDatas.count-1]
-//            cardDatas.insert(lastCard, at: 0)
-//            cardDatas.append(firstCard)
+                                          sectorImage: "sectorDefault", sectorShowImage: "tjlabsShow", cardTopImage: "cardTopPurple", code: "purple", sectorID: 0, numZones: 3, order: 0))
+            cardDatas.append(CardItemData(name: "KIST", description: "한국과학기술연구원 L8", cardImage: "orangeCard", cardShowImage: "orangeCardShow",
+                                          sectorImage: "sectorKist", sectorShowImage: "kistShow", cardTopImage: "cardTopOrange", code: "orange", sectorID: 1, numZones: 3, order: 1))
+            cardDatas.append(CardItemData(name: "오토웨이타워(V)", description: "For Vehicle", cardImage: "grayCard", cardShowImage: "grayCardShow",
+                                          sectorImage: "sectorParkingCar", sectorShowImage: "parkingCarShow", cardTopImage: "cardTopGray", code: "gray", sectorID: 2, numZones: 3, order: 2))
+            cardDatas.append(CardItemData(name: "오토웨이타워(P)", description: "For Pedestrian", cardImage: "grayCard", cardShowImage: "grayCardShow",
+                                          sectorImage: "sectorParkingPed", sectorShowImage: "parkingPedShow", cardTopImage: "cardTopGray", code: "gray", sectorID: 3, numZones: 3, order: 3))
+            cardDatas.append(CardItemData(name: "COEX", description: "지하주차장", cardImage: "pinkCard", cardShowImage: "pinkCardShow",
+                                          sectorImage: "sectorCoex", sectorShowImage: "coexShow", cardTopImage: "cardTopPink", code: "pink", sectorID: 4, numZones: 3, order: 4))
             
             cardVC.cardItemData = cardDatas
             
