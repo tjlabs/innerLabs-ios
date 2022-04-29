@@ -45,13 +45,15 @@ class CardBackViewController: UIViewController {
     @IBOutlet weak var mobileStatusLabel: UILabel!
     
     
-    let sectionSpacing: Double = 40
+    let sectionSpacing: Double = 42
     let firstSectionHeight: Double = 240
     let secondSectionHeight: Double = 220
+    let thirdSectionHeight: Double = 220
     
     var isShow: Bool = false
     var isFirstOpen: Bool = false
     var isSecondOpen: Bool = false
+    var isThirdOpen: Bool = false
     
     let lat: Double = 37.60044253771222
     let lon: Double = 127.04522864626479
@@ -66,7 +68,7 @@ class CardBackViewController: UIViewController {
     
     // 드래그 하기 전에 containerOutputView 의 top Constraint value를 저장하기 위한 프로퍼티
     private lazy var containerOutputViewPanStartingTopConstant: CGFloat = containerOutputViewMinTopConstant
-    var defaultHeight: CGFloat = 200
+    var defaultHeight: CGFloat = 300
     private var containerViewTopConstraint: NSLayoutConstraint!
     
     // Jupiter Service
@@ -192,27 +194,62 @@ class CardBackViewController: UIViewController {
         robotView.containerViewHeight.constant = 0
         containerOutputScrollView.addSubview(robotView)
         
+        // OverlayCustomView
+        let overlayCustomViewidentifier = String(describing: OverlayCustomView.self)
+        guard let overlayCustomView = Bundle.main.loadNibNamed(overlayCustomViewidentifier, owner: self, options: nil)?.first as? OverlayCustomView else { return }
+        overlayCustomView.frame = CGRect(x: 0, y: sectionSpacing*2, width: containerOutputScrollView.bounds.width, height: containerOutputScrollView.bounds.height)
+        overlayCustomView.containerViewHeight.constant = 0
+        containerOutputScrollView.addSubview(overlayCustomView)
+        
         
         // Show & Hide Detail
+        // --------------------- //
         outputView.showDetail = {
             [unowned self] in
-            var positionY: Double = 0
-            positionY = sectionSpacing + firstSectionHeight
             
+            var robotViewPositionY: Double = 0
+            var overlayCustomViewPositionY: Double = 0
             var scrollHeight: Double = 0
-            if (isSecondOpen) {
-                scrollHeight = sectionSpacing + firstSectionHeight + sectionSpacing + secondSectionHeight
+            
+            if (isSecondOpen && isThirdOpen) {
+                // Done
+                robotViewPositionY = sectionSpacing + firstSectionHeight
+                overlayCustomViewPositionY = sectionSpacing + firstSectionHeight + sectionSpacing + secondSectionHeight
+                
+                scrollHeight = sectionSpacing + firstSectionHeight + sectionSpacing + secondSectionHeight + sectionSpacing + thirdSectionHeight
+            } else if (isSecondOpen) {
+                // Done
+                robotViewPositionY = sectionSpacing + firstSectionHeight
+                overlayCustomViewPositionY = sectionSpacing + firstSectionHeight + sectionSpacing + secondSectionHeight
+                
+                scrollHeight = sectionSpacing + firstSectionHeight + sectionSpacing + secondSectionHeight + sectionSpacing
+            } else if (isThirdOpen) {
+                // Done
+                robotViewPositionY = sectionSpacing + firstSectionHeight
+                overlayCustomViewPositionY = sectionSpacing + firstSectionHeight + sectionSpacing
+                
+                scrollHeight = sectionSpacing*3 + firstSectionHeight + thirdSectionHeight
             } else {
-                scrollHeight = sectionSpacing + firstSectionHeight + sectionSpacing
+                // Done
+                robotViewPositionY = sectionSpacing + firstSectionHeight
+                overlayCustomViewPositionY = sectionSpacing + firstSectionHeight + sectionSpacing
+                
+                scrollHeight = sectionSpacing*3 + firstSectionHeight
             }
             
+//            if (isSecondOpen) {
+//                scrollHeight = sectionSpacing + firstSectionHeight + sectionSpacing + secondSectionHeight
+//            } else {
+//                scrollHeight = sectionSpacing + firstSectionHeight + sectionSpacing
+//            }
             
             outputView.stackViewHeight.constant = 100
             outputView.infoViewHeight.constant = 120
             
             UIView.animate(withDuration: 0.5) {
                 self.view.layoutIfNeeded()
-                robotView.frame = CGRect(x: 0, y: positionY, width: containerOutputScrollView.bounds.width, height: containerOutputScrollView.bounds.height)
+                robotView.frame = CGRect(x: 0, y: robotViewPositionY, width: containerOutputScrollView.bounds.width, height: containerOutputScrollView.bounds.height)
+                overlayCustomView.frame = CGRect(x: 0, y: overlayCustomViewPositionY, width: containerOutputScrollView.bounds.width, height: containerOutputScrollView.bounds.height)
                 changeScrollViewHeight(height: scrollHeight)
             }
             isFirstOpen = true
@@ -220,14 +257,35 @@ class CardBackViewController: UIViewController {
         
         outputView.hideDetail = {
             [unowned self] in
-            var positionY: Double = 0
-            positionY = sectionSpacing
             
+            var robotViewPositionY: Double = 0
+            var overlayCustomViewPositionY: Double = 0
             var scrollHeight: Double = 0
-            if (isSecondOpen) {
-                scrollHeight = sectionSpacing + secondSectionHeight
+            
+            if (isSecondOpen && isThirdOpen) {
+                // Done
+                robotViewPositionY = sectionSpacing
+                overlayCustomViewPositionY = sectionSpacing + secondSectionHeight
+                
+                scrollHeight = sectionSpacing*3 + secondSectionHeight + thirdSectionHeight
+            } else if (isSecondOpen) {
+                // Done
+                robotViewPositionY = sectionSpacing
+                overlayCustomViewPositionY = sectionSpacing + secondSectionHeight
+                
+                scrollHeight = sectionSpacing + secondSectionHeight + sectionSpacing
+            } else if (isThirdOpen) {
+                // Done
+                robotViewPositionY = sectionSpacing
+                overlayCustomViewPositionY = sectionSpacing + sectionSpacing
+                
+                scrollHeight = sectionSpacing + sectionSpacing + thirdSectionHeight
             } else {
-                scrollHeight = sectionSpacing*3
+                // Done
+                robotViewPositionY = sectionSpacing
+                overlayCustomViewPositionY = sectionSpacing + sectionSpacing
+                
+                scrollHeight = sectionSpacing + sectionSpacing + sectionSpacing
             }
             
             outputView.stackViewHeight.constant = 0
@@ -235,30 +293,54 @@ class CardBackViewController: UIViewController {
             
             UIView.animate(withDuration: 0.5) {
                 self.view.layoutIfNeeded()
-                robotView.frame = CGRect(x: 0, y: positionY, width: containerOutputScrollView.bounds.width, height: containerOutputScrollView.bounds.height)
+                robotView.frame = CGRect(x: 0, y: robotViewPositionY, width: containerOutputScrollView.bounds.width, height: containerOutputScrollView.bounds.height)
+                overlayCustomView.frame = CGRect(x: 0, y: overlayCustomViewPositionY, width: containerOutputScrollView.bounds.width, height: containerOutputScrollView.bounds.height)
                 changeScrollViewHeight(height: scrollHeight)
             }
             isFirstOpen = false
         }
+        // --------------------- //
         
+        // --------------------- //
         robotView.showDetail = {
             [unowned self] in
-            var positionY: Double = 0
+            
+            var robotViewPositionY: Double = 0
+            var overlayCustomViewPositionY: Double = 0
             var scrollHeight: Double = 0
             
-            if (isFirstOpen) {
-                positionY = sectionSpacing + firstSectionHeight
+            if (isFirstOpen && isThirdOpen) {
+                // Done
+                robotViewPositionY = sectionSpacing + firstSectionHeight
+                overlayCustomViewPositionY = sectionSpacing + firstSectionHeight + sectionSpacing + secondSectionHeight
+                
+                scrollHeight = sectionSpacing + firstSectionHeight + sectionSpacing + secondSectionHeight + sectionSpacing + thirdSectionHeight
+            } else if (isFirstOpen) {
+                // Done
+                robotViewPositionY = sectionSpacing + firstSectionHeight
+                overlayCustomViewPositionY = sectionSpacing + firstSectionHeight + sectionSpacing + secondSectionHeight
+                
                 scrollHeight = sectionSpacing + firstSectionHeight + sectionSpacing + secondSectionHeight + sectionSpacing
+            } else if (isThirdOpen) {
+                // Done
+                robotViewPositionY = sectionSpacing
+                overlayCustomViewPositionY = sectionSpacing + secondSectionHeight + sectionSpacing
+                
+                scrollHeight = sectionSpacing + secondSectionHeight + sectionSpacing + thirdSectionHeight + sectionSpacing
             } else {
-                positionY = sectionSpacing
-                scrollHeight = sectionSpacing + secondSectionHeight
+                // Done
+                robotViewPositionY = sectionSpacing
+                overlayCustomViewPositionY = sectionSpacing + sectionSpacing + secondSectionHeight
+                
+                scrollHeight = sectionSpacing + sectionSpacing + secondSectionHeight + sectionSpacing
             }
             
             robotView.containerViewHeight.constant = 200
             
             UIView.animate(withDuration: 0.5) {
                 self.view.layoutIfNeeded()
-                robotView.frame = CGRect(x: 0, y: positionY, width: containerOutputScrollView.bounds.width, height: containerOutputScrollView.bounds.height)
+                robotView.frame = CGRect(x: 0, y: robotViewPositionY, width: containerOutputScrollView.bounds.width, height: containerOutputScrollView.bounds.height)
+                overlayCustomView.frame = CGRect(x: 0, y: overlayCustomViewPositionY, width: containerOutputScrollView.bounds.width, height: containerOutputScrollView.bounds.height)
                 changeScrollViewHeight(height: scrollHeight)
             }
             isSecondOpen = true
@@ -266,27 +348,137 @@ class CardBackViewController: UIViewController {
         
         robotView.hideDetail = {
             [unowned self] in
-            var positionY: Double = 0
             
+            var robotViewPositionY: Double = 0
+            var overlayCustomViewPositionY: Double = 0
             var scrollHeight: Double = 0
             
-            if (isFirstOpen) {
-                positionY = sectionSpacing + firstSectionHeight
-                scrollHeight = sectionSpacing + firstSectionHeight
+            if (isFirstOpen && isThirdOpen) {
+                // Done
+                robotViewPositionY = sectionSpacing + firstSectionHeight
+                overlayCustomViewPositionY = sectionSpacing + firstSectionHeight + sectionSpacing
+                
+                scrollHeight = sectionSpacing + firstSectionHeight + sectionSpacing + thirdSectionHeight + sectionSpacing + sectionSpacing
+            } else if (isFirstOpen) {
+                // Done
+                robotViewPositionY = sectionSpacing + firstSectionHeight
+                overlayCustomViewPositionY = sectionSpacing + firstSectionHeight + sectionSpacing
+                
+                scrollHeight = sectionSpacing + firstSectionHeight + sectionSpacing + sectionSpacing
+            } else if (isThirdOpen) {
+                // Done
+                robotViewPositionY = sectionSpacing
+                overlayCustomViewPositionY = sectionSpacing + sectionSpacing
+                
+                scrollHeight = sectionSpacing + sectionSpacing + thirdSectionHeight + sectionSpacing + sectionSpacing
             } else {
-                positionY = sectionSpacing
-                scrollHeight = sectionSpacing*3
+                // Done
+                robotViewPositionY = sectionSpacing
+                overlayCustomViewPositionY = sectionSpacing + sectionSpacing
+                
+                scrollHeight = sectionSpacing + sectionSpacing + sectionSpacing
             }
             
             robotView.containerViewHeight.constant = 0
             
             UIView.animate(withDuration: 0.5) {
                 self.view.layoutIfNeeded()
-                robotView.frame = CGRect(x: 0, y: positionY, width: containerOutputScrollView.bounds.width, height: containerOutputScrollView.bounds.height)
+                robotView.frame = CGRect(x: 0, y: robotViewPositionY, width: containerOutputScrollView.bounds.width, height: containerOutputScrollView.bounds.height)
+                overlayCustomView.frame = CGRect(x: 0, y: overlayCustomViewPositionY, width: containerOutputScrollView.bounds.width, height: containerOutputScrollView.bounds.height)
                 changeScrollViewHeight(height: scrollHeight)
             }
             isSecondOpen = false
         }
+        // --------------------- //
+        
+        // --------------------- //
+        overlayCustomView.showDetail = {
+            [unowned self] in
+            
+            var robotViewPositionY: Double = 0
+            var overlayCustomViewPositionY: Double = 0
+            var scrollHeight: Double = 0
+            
+            if (isFirstOpen && isSecondOpen) {
+                // Done
+                robotViewPositionY = sectionSpacing + firstSectionHeight
+                overlayCustomViewPositionY = sectionSpacing + firstSectionHeight + sectionSpacing + secondSectionHeight
+                
+                scrollHeight = sectionSpacing + firstSectionHeight + sectionSpacing + secondSectionHeight + sectionSpacing + thirdSectionHeight
+            } else if (isFirstOpen) {
+                // Done
+                robotViewPositionY = sectionSpacing + firstSectionHeight
+                overlayCustomViewPositionY = sectionSpacing + firstSectionHeight + sectionSpacing
+                
+                scrollHeight = sectionSpacing + firstSectionHeight + sectionSpacing + thirdSectionHeight + sectionSpacing
+            } else if (isSecondOpen) {
+                // Done
+                robotViewPositionY = sectionSpacing
+                overlayCustomViewPositionY = sectionSpacing + secondSectionHeight + sectionSpacing
+                
+                scrollHeight = sectionSpacing + secondSectionHeight + sectionSpacing + thirdSectionHeight + sectionSpacing
+            } else {
+                // Done
+                robotViewPositionY = sectionSpacing
+                overlayCustomViewPositionY = sectionSpacing + sectionSpacing
+                
+                scrollHeight = sectionSpacing + sectionSpacing + thirdSectionHeight + sectionSpacing
+            }
+            
+            overlayCustomView.containerViewHeight.constant = 200
+            
+            UIView.animate(withDuration: 0.5) {
+                self.view.layoutIfNeeded()
+                robotView.frame = CGRect(x: 0, y: robotViewPositionY, width: containerOutputScrollView.bounds.width, height: containerOutputScrollView.bounds.height)
+                overlayCustomView.frame = CGRect(x: 0, y: overlayCustomViewPositionY, width: containerOutputScrollView.bounds.width, height: containerOutputScrollView.bounds.height)
+                changeScrollViewHeight(height: scrollHeight)
+            }
+            isThirdOpen = true
+        }
+        
+        overlayCustomView.hideDetail = {
+            [unowned self] in
+            var robotViewPositionY: Double = 0
+            var overlayCustomViewPositionY: Double = 0
+            var scrollHeight: Double = 0
+            
+            if (isFirstOpen && isSecondOpen) {
+                // Done
+                robotViewPositionY = sectionSpacing + firstSectionHeight
+                overlayCustomViewPositionY = sectionSpacing + firstSectionHeight + sectionSpacing + secondSectionHeight
+                
+                scrollHeight = sectionSpacing + firstSectionHeight + sectionSpacing + secondSectionHeight + sectionSpacing + sectionSpacing
+            } else if (isFirstOpen) {
+                // Done
+                robotViewPositionY = sectionSpacing + firstSectionHeight
+                overlayCustomViewPositionY = sectionSpacing + firstSectionHeight + sectionSpacing
+                
+                scrollHeight = sectionSpacing + firstSectionHeight + sectionSpacing + sectionSpacing + sectionSpacing/2
+            } else if (isSecondOpen) {
+                // Done
+                robotViewPositionY = sectionSpacing
+                overlayCustomViewPositionY = sectionSpacing + secondSectionHeight + sectionSpacing
+                
+                scrollHeight = sectionSpacing + secondSectionHeight + sectionSpacing + sectionSpacing
+            } else {
+                // Done
+                robotViewPositionY = sectionSpacing
+                overlayCustomViewPositionY = sectionSpacing + sectionSpacing
+                
+                scrollHeight = sectionSpacing + sectionSpacing + sectionSpacing
+            }
+            
+            overlayCustomView.containerViewHeight.constant = 0
+            
+            UIView.animate(withDuration: 0.5) {
+                self.view.layoutIfNeeded()
+                robotView.frame = CGRect(x: 0, y: robotViewPositionY, width: containerOutputScrollView.bounds.width, height: containerOutputScrollView.bounds.height)
+                overlayCustomView.frame = CGRect(x: 0, y: overlayCustomViewPositionY, width: containerOutputScrollView.bounds.width, height: containerOutputScrollView.bounds.height)
+                changeScrollViewHeight(height: scrollHeight)
+            }
+            isThirdOpen = false
+        }
+        // --------------------- //
     }
     
     func configureMapView() {
@@ -295,11 +487,11 @@ class CardBackViewController: UIViewController {
         self.view.addSubview(mapView)
 
         // Creates a marker in the center of the map.
-        let marker = GMSMarker()
-        marker.position = CLLocationCoordinate2D(latitude: lat, longitude: lon)
-        marker.title = "KIST"
-        marker.snippet = "Korea Institute of Science Technology"
-        marker.map = mapView
+//        let marker = GMSMarker()
+//        marker.position = CLLocationCoordinate2D(latitude: lat, longitude: lon)
+//        marker.title = "KIST"
+//        marker.snippet = "Korea Institute of Science Technology"
+//        marker.map = mapView
     }
     
     func configureContainerOutputView() {

@@ -35,8 +35,9 @@
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
             <subviews>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text=" Service Information" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="jyV-CK-coc">
-                    <rect key="frame" x="10" y="10" width="300" height="26.5"/>
+                    <rect key="frame" x="10" y="10" width="300" height="25"/>
                     <constraints>
+                        <constraint firstAttribute="height" constant="25" id="TjQ-5c-9Xo"/>
                         <constraint firstAttribute="width" constant="300" id="fkf-oY-2PW"/>
                     </constraints>
                     <fontDescription key="fontDescription" name="NotoSansKR-Bold" family="Noto Sans KR" pointSize="18"/>
@@ -44,7 +45,7 @@
                     <nil key="highlightedColor"/>
                 </label>
                 <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillProportionally" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="Rc4-rj-J1g">
-                    <rect key="frame" x="10" y="46.5" width="394" height="220"/>
+                    <rect key="frame" x="10" y="45" width="394" height="220"/>
                     <subviews>
                         <stackView opaque="NO" contentMode="scaleToFill" distribution="fillProportionally" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="4fQ-3o-eYy">
                             <rect key="frame" x="0.0" y="0.0" width="394" height="90"/>
@@ -277,9 +278,9 @@
                     </constraints>
                 </stackView>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jZP-38-1zG">
-                    <rect key="frame" x="364" y="10" width="40" height="26.5"/>
+                    <rect key="frame" x="364" y="10" width="40" height="25"/>
                     <constraints>
-                        <constraint firstAttribute="height" constant="26.5" id="czV-f8-oNJ"/>
+                        <constraint firstAttribute="height" constant="25" id="czV-f8-oNJ"/>
                         <constraint firstAttribute="width" constant="40" id="xD2-9R-9bt"/>
                     </constraints>
                     <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
