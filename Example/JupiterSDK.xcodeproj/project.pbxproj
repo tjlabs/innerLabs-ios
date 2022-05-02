@@ -19,6 +19,7 @@
 		B3037A94281C07060058D025 /* OverlayCustomView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3037A93281C07060058D025 /* OverlayCustomView.swift */; };
 		B340EE3328093FB20096E404 /* CardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B340EE3228093FB20096E404 /* CardViewController.swift */; };
 		B340EE3D280965F90096E404 /* CollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B340EE3C280965F90096E404 /* CollectionViewCell.swift */; };
+		B35272B2281F8DC300321CC6 /* SplashScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B35272B1281F8DC300321CC6 /* SplashScreen.storyboard */; };
 		B360D8652807C6090084FB22 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = B360D8642807C6090084FB22 /* GoogleService-Info.plist */; };
 		B360D88E28090D6A0084FB22 /* NotoSansKR-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = B360D88828090D680084FB22 /* NotoSansKR-Bold.otf */; };
 		B360D88F28090D6A0084FB22 /* NotoSansKR-Light.otf in Resources */ = {isa = PBXBuildFile; fileRef = B360D88928090D680084FB22 /* NotoSansKR-Light.otf */; };
@@ -88,6 +89,7 @@
 		B3037A93281C07060058D025 /* OverlayCustomView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverlayCustomView.swift; sourceTree = "<group>"; };
 		B340EE3228093FB20096E404 /* CardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardViewController.swift; sourceTree = "<group>"; };
 		B340EE3C280965F90096E404 /* CollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionViewCell.swift; sourceTree = "<group>"; };
+		B35272B1281F8DC300321CC6 /* SplashScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = SplashScreen.storyboard; sourceTree = "<group>"; };
 		B360D8642807C6090084FB22 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../../Downloads/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		B360D88828090D680084FB22 /* NotoSansKR-Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "NotoSansKR-Bold.otf"; sourceTree = "<group>"; };
 		B360D88928090D680084FB22 /* NotoSansKR-Light.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "NotoSansKR-Light.otf"; sourceTree = "<group>"; };
@@ -202,6 +204,7 @@
 				B3DE146C280E7146006DA43C /* AddCardViewController.swift */,
 				B367526E2817CB3C00E4FA6C /* CardBackViewController.swift */,
 				607FACD91AFB9204008FA782 /* Main.storyboard */,
+				B35272B1281F8DC300321CC6 /* SplashScreen.storyboard */,
 				607FACDE1AFB9204008FA782 /* LaunchScreen.xib */,
 				B340EE3C280965F90096E404 /* CollectionViewCell.swift */,
 				B3F370D5281B9DC5003A427F /* OutputView.swift */,
@@ -428,6 +431,7 @@
 				B3B4F85B28114EEB009F9E6C /* ShowCardCollectionViewCell.xib in Resources */,
 				B3BD699A27E9A4BE00A32A7A /* Colors.xcassets in Resources */,
 				B360D89028090D6A0084FB22 /* NotoSansKR-Thin.otf in Resources */,
+				B35272B2281F8DC300321CC6 /* SplashScreen.storyboard in Resources */,
 				607FACE01AFB9204008FA782 /* LaunchScreen.xib in Resources */,
 				607FACDD1AFB9204008FA782 /* Images.xcassets in Resources */,
 				B360D88F28090D6A0084FB22 /* NotoSansKR-Light.otf in Resources */,

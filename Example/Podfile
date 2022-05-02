@@ -5,8 +5,6 @@ platform :ios, '13.2'
 
 target 'JupiterSDK_Example' do
   use_frameworks!
-#  pod 'JupiterSDK'
-#  pod 'Alamofire', :git => 'https://github.com/Alamofire/Alamofire.git'
   pod 'JupiterSDK', :path => '../'
   pod 'Alamofire'
   pod 'GoogleMaps', '4.0.0'
