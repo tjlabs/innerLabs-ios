@@ -434,7 +434,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="w9j-Ov-66O" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1828" y="102"/>
+            <point key="canvasLocation" x="2495" y="102"/>
         </scene>
         <!--Card Back View Controller-->
         <scene sceneID="TMd-YZ-aGP">
@@ -550,7 +550,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="03j-gt-8Uf" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2644.6153846153843" y="101.65876777251184"/>
+            <point key="canvasLocation" x="1771" y="102"/>
         </scene>
         <!--Card View Controller-->
         <scene sceneID="VxW-1E-WNp">

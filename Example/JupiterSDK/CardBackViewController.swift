@@ -484,6 +484,7 @@ class CardBackViewController: UIViewController {
     func configureMapView() {
         let camera = GMSCameraPosition.camera(withLatitude: lat, longitude: lon, zoom: 16)
         let mapView = GMSMapView.map(withFrame: self.containerMapView.frame, camera: camera)
+        mapView.mapType = GMSMapViewType.satellite
         self.view.addSubview(mapView)
 
         // Creates a marker in the center of the map.

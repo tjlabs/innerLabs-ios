@@ -5,11 +5,11 @@
       "scale" : "1x"
     },
     {
+      "filename" : "kistParking.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "kistParkingLot.jpg",
       "idiom" : "universal",
       "scale" : "3x"
     }
