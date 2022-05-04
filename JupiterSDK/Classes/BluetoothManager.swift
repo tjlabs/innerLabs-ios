@@ -66,6 +66,9 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
     
     let oneServiceUUID   = CBUUID(string: TJLABS_UUID)
     
+    var bleDictionary = [String: [[Double]]]()
+    var bleFinal = [String: Double]()
+    
     override init() {
         super.init()
         
@@ -156,7 +159,29 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
                 userInfo["DeviceID"] = deviceIDString
                 userInfo["RSSI"] = String(format: "%d", RSSI.intValue )
                 
+                let bleTime = getCurrentTimeInMilliseconds()
+                
                 if RSSI.intValue != 127 {
+                    NotificationCenter.default.post(name: .scanInfo, object: nil, userInfo: userInfo)
+                    
+                    let condition: ((String, [[Double]])) -> Bool = {
+                        $0.0.contains(deviceIDString)
+                    }
+                    
+                    if (bleDictionary.contains(where: condition)) {
+                        let data = bleDictionary.filter(condition)
+                        var value:[[Double]] = data[deviceIDString]!
+                        let dataToAdd: [Double] = [RSSI.doubleValue, bleTime]
+                        value.append(dataToAdd)
+                        
+                        bleDictionary.updateValue(value, forKey: deviceIDString)
+                    } else {
+                        bleDictionary.updateValue([[RSSI.doubleValue, bleTime]], forKey: deviceIDString)
+                    }
+                    
+                    trimBleData()
+                    bleFinal = avgBleData(bleDictionary: bleDictionary)
+                    
                     NotificationCenter.default.post(name: .scanInfo, object: nil, userInfo: userInfo)
                 }
             }
@@ -229,6 +254,51 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
     }
     
     // MARK: - functions
+    
+    func trimBleData() {
+        // 최근 1.5s 동안의 데이터만 list에 저장해둠
+        let nowTime = getCurrentTimeInMilliseconds()
+        
+        let keys: [String] = Array(bleDictionary.keys.sorted())
+        for index in 0..<keys.count {
+            let bleID: String = keys[index]
+            let bleData: [[Double]] = bleDictionary[bleID]!
+//            print(bleID,":",bleData,":",bleData.count)
+            
+            var newValue = [[Double]]()
+            for i in 0..<bleData.count {
+                let rssi = bleData[i][0]
+                let time = bleData[i][1]
+                
+                if (nowTime - time <= 1500) {
+                    let dataToAdd: [Double] = [rssi, time]
+                    newValue.append(dataToAdd)
+                }
+            }
+            bleDictionary.updateValue(newValue, forKey: bleID)
+        }
+    }
+    
+    func avgBleData(bleDictionary: Dictionary<String, [[Double]]>) -> Dictionary<String, Double> {
+        var ble = [String: Double]()
+        
+        let keys: [String] = Array(bleDictionary.keys)
+        for index in 0..<keys.count {
+            let bleID: String = keys[index]
+            let bleData: [[Double]] = bleDictionary[bleID]!
+            
+            var rssiSum: Double = 0
+            for i in 0..<bleData.count {
+                let rssi = bleData[i][0]
+                rssiSum += rssi
+            }
+            let rssiFinal: Double = rssiSum/Double(bleData.count)
+            
+            ble.updateValue(rssiFinal, forKey: bleID)
+        }
+        return ble
+    }
+    
     func isConnected() -> Bool {
         return connected
     }
@@ -245,13 +315,6 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
         }
         
         if bluetoothReady {
-//            if option == .Foreground {
-//                self.centralManager.scanForPeripherals(withServices: [oneServiceUUID], options: [CBCentralManagerScanOptionAllowDuplicatesKey : NSNumber(value: true as Bool)])
-//            }
-//            else {
-//                self.centralManager.scanForPeripherals(withServices: [oneServiceUUID], options: [CBCentralManagerScanOptionAllowDuplicatesKey : NSNumber(value: true as Bool)])
-//            }
-            
             self.centralManager.scanForPeripherals(withServices: [oneServiceUUID], options: [CBCentralManagerScanOptionAllowDuplicatesKey : NSNumber(value: true as Bool)])
             self.isScanning = true
             
@@ -284,6 +347,11 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
         stopScan()
         
         startScan(option: .Background)
+    }
+    
+    func getCurrentTimeInMilliseconds() -> Double
+    {
+        return Double(Date().timeIntervalSince1970 * 1000)
     }
     
     // Eddystone parsing
