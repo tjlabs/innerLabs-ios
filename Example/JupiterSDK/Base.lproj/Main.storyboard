@@ -474,8 +474,8 @@
                                             <constraint firstAttribute="width" constant="50" id="hgm-BX-NLx"/>
                                         </constraints>
                                         <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                                        <state key="normal" image="coexShow"/>
-                                        <state key="selected" image="kistShow"/>
+                                        <state key="normal" image="showInfoButton"/>
+                                        <state key="selected" image="closeInfoButton"/>
                                         <connections>
                                             <action selector="tapShowOutputViewButton:" destination="zYG-kF-5hn" eventType="touchUpInside" id="Ucp-c3-Gv3"/>
                                         </connections>
@@ -672,15 +672,15 @@
         <image name="backButtonWhite" width="13.333333015441895" height="25"/>
         <image name="cardTopPurple" width="390" height="95"/>
         <image name="checkedBox" width="24.666666030883789" height="25.333333969116211"/>
-        <image name="coexShow" width="35.333332061767578" height="12.666666984558105"/>
+        <image name="closeInfoButton" width="42" height="15.666666984558105"/>
         <image name="confirmButton" width="31.333333969116211" height="25"/>
         <image name="editButton" width="28" height="22"/>
         <image name="fieldLogin" width="349.33334350585938" height="58.333332061767578"/>
         <image name="innerLabsBI" width="341.33334350585938" height="176.66667175292969"/>
         <image name="innerLabsNameCard" width="389.66665649414062" height="53"/>
-        <image name="kistShow" width="32.333332061767578" height="32.333332061767578"/>
         <image name="loginButton" width="349.33334350585938" height="58.333332061767578"/>
         <image name="showCard" width="78" height="22"/>
+        <image name="showInfoButton" width="42" height="15.666666984558105"/>
         <image name="toCard" width="78" height="22"/>
         <image name="unCheckedBox" width="24.666666030883789" height="25.333333969116211"/>
         <namedColor name="red1">

@@ -284,8 +284,8 @@
                         <constraint firstAttribute="width" constant="40" id="xD2-9R-9bt"/>
                     </constraints>
                     <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                    <state key="normal" image="arrow.down.app" catalog="system"/>
-                    <state key="selected" image="arrow.up.square" catalog="system"/>
+                    <state key="normal" image="showInfoToggle"/>
+                    <state key="selected" image="closeInfoToggle"/>
                     <connections>
                         <action selector="tapDetailButton:" destination="wIX-bZ-Gqt" eventType="touchUpInside" id="97e-ai-ahG"/>
                     </connections>
@@ -315,8 +315,8 @@
         </view>
     </objects>
     <resources>
-        <image name="arrow.down.app" catalog="system" width="128" height="114"/>
-        <image name="arrow.up.square" catalog="system" width="128" height="114"/>
+        <image name="closeInfoToggle" width="17" height="11"/>
+        <image name="showInfoToggle" width="17" height="10.5"/>
         <systemColor name="linkColor">
             <color red="0.0" green="0.47843137254901963" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>

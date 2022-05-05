@@ -60,8 +60,8 @@
                         <constraint firstAttribute="height" constant="25" id="bWi-Df-gx6"/>
                     </constraints>
                     <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                    <state key="normal" image="arrow.down.app" catalog="system"/>
-                    <state key="selected" image="arrow.up.square" catalog="system"/>
+                    <state key="normal" image="showInfoToggle"/>
+                    <state key="selected" image="closeInfoToggle"/>
                     <connections>
                         <action selector="tapDetailButton:" destination="iN0-l3-epB" eventType="touchUpInside" id="JHR-EJ-be2"/>
                     </connections>
@@ -89,8 +89,8 @@
         </view>
     </objects>
     <resources>
-        <image name="arrow.down.app" catalog="system" width="128" height="114"/>
-        <image name="arrow.up.square" catalog="system" width="128" height="114"/>
+        <image name="closeInfoToggle" width="17" height="11"/>
+        <image name="showInfoToggle" width="17" height="10.5"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
