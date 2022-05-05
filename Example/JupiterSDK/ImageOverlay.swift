@@ -30,7 +30,7 @@ class ImageOverlay: NSObject {
         
         let delP: Double = sqrt(pow(pixelBx - pixelAx, 2) + pow(pixelBy - pixelAy, 2))
 //        let delD: Double = sqrt(pow(meterBx - meterAx, 2) + pow(meterBy - meterAy, 2))
-        let delD: Double = 130
+        let delD: Double = 120
         
         p2d = delD/delP
         
@@ -63,10 +63,10 @@ class ImageOverlay: NSObject {
         
         let R: Double = 6371000
         
-        let lonA: Double = originPoint[0] + (LxLy[0]/R) * (180/Double.pi)
-        let latB: Double = originPoint[1] + (LxLy[1]/R) * (180/Double.pi)
+        let latB: Double = originPoint[0] + (LxLy[1]/R) * (180/Double.pi)
+        let lonA: Double = originPoint[1] + (LxLy[0]/R) * (180/Double.pi)
         
-        nortEast = [lonA, latB]
+        nortEast = [latB, lonA]
         
         return nortEast
     }
