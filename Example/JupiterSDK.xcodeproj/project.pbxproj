@@ -30,6 +30,7 @@
 		B367526F2817CB3C00E4FA6C /* CardBackViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B367526E2817CB3C00E4FA6C /* CardBackViewController.swift */; };
 		B3844E8E28099EE3007A5215 /* CardCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3844E8C28099EE3007A5215 /* CardCollectionViewCell.swift */; };
 		B3844E8F28099EE3007A5215 /* CardCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B3844E8D28099EE3007A5215 /* CardCollectionViewCell.xib */; };
+		B3B156DE282397AF0058B538 /* ImageOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3B156DD282397AF0058B538 /* ImageOverlay.swift */; };
 		B3B4F85A28114EEB009F9E6C /* ShowCardCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3B4F85828114EEB009F9E6C /* ShowCardCollectionViewCell.swift */; };
 		B3B4F85B28114EEB009F9E6C /* ShowCardCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B3B4F85928114EEB009F9E6C /* ShowCardCollectionViewCell.xib */; };
 		B3BD699227E98E0E00A32A7A /* JupiterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3BD699127E98E0E00A32A7A /* JupiterViewController.swift */; };
@@ -100,6 +101,7 @@
 		B367526E2817CB3C00E4FA6C /* CardBackViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardBackViewController.swift; sourceTree = "<group>"; };
 		B3844E8C28099EE3007A5215 /* CardCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardCollectionViewCell.swift; sourceTree = "<group>"; };
 		B3844E8D28099EE3007A5215 /* CardCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CardCollectionViewCell.xib; sourceTree = "<group>"; };
+		B3B156DD282397AF0058B538 /* ImageOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageOverlay.swift; sourceTree = "<group>"; };
 		B3B4F85828114EEB009F9E6C /* ShowCardCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowCardCollectionViewCell.swift; sourceTree = "<group>"; };
 		B3B4F85928114EEB009F9E6C /* ShowCardCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ShowCardCollectionViewCell.xib; sourceTree = "<group>"; };
 		B3BD699127E98E0E00A32A7A /* JupiterViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JupiterViewController.swift; sourceTree = "<group>"; };
@@ -213,6 +215,7 @@
 				B3F370D7281BA1CC003A427F /* RobotView.xib */,
 				B3037A93281C07060058D025 /* OverlayCustomView.swift */,
 				B3037A91281C06D50058D025 /* OverlayCustomView.xib */,
+				B3B156DD282397AF0058B538 /* ImageOverlay.swift */,
 				607FACDC1AFB9204008FA782 /* Images.xcassets */,
 				607FACD31AFB9204008FA782 /* Supporting Files */,
 			);
@@ -545,6 +548,7 @@
 			files = (
 				B3BD69AA27E9A57500A32A7A /* getClassName + UIViewController.swift in Sources */,
 				B367526F2817CB3C00E4FA6C /* CardBackViewController.swift in Sources */,
+				B3B156DE282397AF0058B538 /* ImageOverlay.swift in Sources */,
 				B3BD699227E98E0E00A32A7A /* JupiterViewController.swift in Sources */,
 				B3BD69AF27E9A78000A32A7A /* SectorContainerTableViewCell.swift in Sources */,
 				B3BD69A127E9A52500A32A7A /* applyShadow.swift in Sources */,

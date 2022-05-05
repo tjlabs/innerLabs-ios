@@ -55,8 +55,17 @@ class CardBackViewController: UIViewController {
     var isSecondOpen: Bool = false
     var isThirdOpen: Bool = false
     
-    let lat: Double = 37.60044253771222
-    let lon: Double = 127.04522864626479
+    let lat: Double = 37.5984295123542
+    let lon: Double = 127.04339296529642
+    
+    // Overlay
+    var imageOverlay = ImageOverlay()
+    let originPoint: [Double] = [37.59782394493181, 127.04243292577281]
+    let coordInPixel: [[Double]] = [[183.2412, 385.6785], [118.6556, 603.2496]]
+    let coordInMeter: [[Double]] = [[183.2412, 385.6785], [118.6556, 603.2496]]
+    
+    let coordInPixelOrigin: [Double] = [27.995, 729.9308]
+    let coordInPixelEdges: [[Double]] = [[368.0934, 729.9308], [27.995, 319.6594]]
     
     var delegate : SendPageDelegate?
     
@@ -482,9 +491,28 @@ class CardBackViewController: UIViewController {
     }
     
     func configureMapView() {
-        let camera = GMSCameraPosition.camera(withLatitude: lat, longitude: lon, zoom: 16)
+        let camera = GMSCameraPosition.camera(withLatitude: lat, longitude: lon, zoom: 18)
         let mapView = GMSMapView.map(withFrame: self.containerMapView.frame, camera: camera)
-        mapView.mapType = GMSMapViewType.satellite
+//        mapView.mapType = GMSMapViewType.satellite
+        
+        // Overlay //
+        let p2d = imageOverlay.calP2D(coordInPixel: coordInPixel, coordInMeter: coordInMeter)
+        let LxLy = imageOverlay.calLxLy(coordInPixelOrigin: coordInPixelOrigin, coordInPixelEdges: coordInPixelEdges, p2d: p2d)
+        let coordC = imageOverlay.calNorthEast(originPoint: originPoint, LxLy: LxLy)
+        print("Origin Point :", originPoint)
+        print("NorthEast :", coordC)
+        
+        let southWest = CLLocationCoordinate2D(latitude: originPoint[0], longitude: originPoint[1])
+        let northEast = CLLocationCoordinate2D(latitude: coordC[0], longitude: coordC[1])
+        let overlayBounds = GMSCoordinateBounds(coordinate: southWest, coordinate: northEast)
+        let overlayImage = UIImage(named: "kistParking")
+        let overlay = GMSGroundOverlay(bounds: overlayBounds, icon: overlayImage)
+        overlay.bearing = 0
+        overlay.map = mapView
+        
+//        let location = GMSCameraPosition.camera(withLatitude: originPoint[0], longitude: originPoint[1], zoom: 20.0)
+//        mapView.camera = location
+        
         self.view.addSubview(mapView)
 
         // Creates a marker in the center of the map.
@@ -627,5 +655,9 @@ class CardBackViewController: UIViewController {
     func getCurrentTimeInMilliseconds() -> Double
     {
         return Double(Date().timeIntervalSince1970 * 1000)
+    }
+    
+    func moveCameraPosition(to: [Double]) {
+        
     }
 }
