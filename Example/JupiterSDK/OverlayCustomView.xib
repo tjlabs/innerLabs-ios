@@ -31,7 +31,7 @@
                         </userDefinedRuntimeAttribute>
                     </userDefinedRuntimeAttributes>
                 </view>
-                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Overlay Custom" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="YNB-hI-yqA">
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Drone" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="YNB-hI-yqA">
                     <rect key="frame" x="10" y="22" width="300" height="25"/>
                     <constraints>
                         <constraint firstAttribute="width" constant="300" id="Q3Y-am-MXV"/>
@@ -89,7 +89,7 @@
         </view>
     </objects>
     <resources>
-        <image name="closeInfoToggle" width="17" height="11"/>
+        <image name="closeInfoToggle" width="17" height="10.5"/>
         <image name="showInfoToggle" width="17" height="10.5"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
