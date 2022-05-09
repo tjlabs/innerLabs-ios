@@ -1,7 +1,7 @@
 import UIKit
 import JupiterSDK
 
-class CardViewController: UIViewController, AddCardDelegate, ShowCardDelegate, SendPageDelegate {
+class CardViewController: UIViewController, AddCardDelegate, ShowCardDelegate, SendPageDelegate, PageDelegate {
     func sendCardItemData(data: [CardItemData]) {
         cardItemData = data
         initCardVC()
@@ -314,16 +314,18 @@ extension CardViewController: UICollectionViewDataSource, UICollectionViewDelega
         let mod = indexPath.item%cardCount
 //        print(cardItemData[mod])
         
-//        guard let jupiterVC = self.storyboard?.instantiateViewController(withIdentifier: "JupiterViewController") as? JupiterViewController else { return }
-//        jupiterVC.uuid = uuid
-//        self.navigationController?.pushViewController(jupiterVC, animated: true)
+        guard let mapVC = self.storyboard?.instantiateViewController(withIdentifier: "MapViewController") as? MapViewController else { return }
+        mapVC.cardData = cardItemData[mod]
+        mapVC.uuid = uuid
+        mapVC.page = currentPage
+        self.navigationController?.pushViewController(mapVC, animated: true)
         
         // to CardBackViewController
-        guard let cardBackVC = self.storyboard?.instantiateViewController(withIdentifier: "CardBackViewController") as? CardBackViewController else { return }
-        cardBackVC.cardData = cardItemData[mod]
-        cardBackVC.uuid = uuid
-        cardBackVC.page = currentPage
-        self.navigationController?.pushViewController(cardBackVC, animated: true)
+//        guard let cardBackVC = self.storyboard?.instantiateViewController(withIdentifier: "CardBackViewController") as? CardBackViewController else { return }
+//        cardBackVC.cardData = cardItemData[mod]
+//        cardBackVC.uuid = uuid
+//        cardBackVC.page = currentPage
+//        self.navigationController?.pushViewController(cardBackVC, animated: true)
     }
     
 }

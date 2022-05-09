@@ -1,5 +1,9 @@
 PODS:
   - Alamofire (5.6.1)
+  - Charts (4.0.2):
+    - Charts/Core (= 4.0.2)
+  - Charts/Core (4.0.2):
+    - SwiftAlgorithms (~> 1.0)
   - GoogleMaps (4.0.0):
     - GoogleMaps/Maps (= 4.0.0)
   - GoogleMaps/Base (4.0.0)
@@ -10,9 +14,11 @@ PODS:
   - JupiterSDK (1.1.4):
     - Alamofire
   - SnapKit (5.6.0)
+  - SwiftAlgorithms (1.0.0)
 
 DEPENDENCIES:
   - Alamofire
+  - Charts
   - GoogleMaps (= 4.0.0)
   - GooglePlaces (= 4.0.0)
   - JupiterSDK (from `../`)
@@ -21,9 +27,11 @@ DEPENDENCIES:
 SPEC REPOS:
   trunk:
     - Alamofire
+    - Charts
     - GoogleMaps
     - GooglePlaces
     - SnapKit
+    - SwiftAlgorithms
 
 EXTERNAL SOURCES:
   JupiterSDK:
@@ -31,11 +39,13 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   Alamofire: 87bd8c952f9a4454320fce00d9cc3de57bcadaf5
+  Charts: cfa4e911e6dc289582c2fe011a0e87c03d96727f
   GoogleMaps: b7f7fc569a9b354a3af0d9729dbec40957b7d41e
   GooglePlaces: ca8d4aba09ba79e0a829cf1dca03a41de6a09016
   JupiterSDK: bd2b3f1b666ca10ab636c53c50c258321d8df0cc
   SnapKit: e01d52ebb8ddbc333eefe2132acf85c8227d9c25
+  SwiftAlgorithms: 38dda4731d19027fdeee1125f973111bf3386b53
 
-PODFILE CHECKSUM: 401c20d8df90b5a50f3b6d9f029f39b1eda83a22
+PODFILE CHECKSUM: a9f41704e43a96f943c7ff25335eb13ed012d68e
 
 COCOAPODS: 1.11.3

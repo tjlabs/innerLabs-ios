@@ -8,7 +8,7 @@
 
 import UIKit
 
-class ZoneCollectionViewCell: UICollectionViewCell, UICollectionViewRegisterable {
+class LevelCollectionViewCell: UICollectionViewCell, UICollectionViewRegisterable {
     
     static var isFromNib = true
 

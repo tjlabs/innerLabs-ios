@@ -9,6 +9,7 @@ target 'JupiterSDK_Example' do
   pod 'Alamofire'
   pod 'GoogleMaps', '4.0.0'
   pod 'GooglePlaces', '4.0.0'
+  pod 'Charts' 
   pod 'SnapKit' 
 
   target 'JupiterSDK_Tests' do
