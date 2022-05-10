@@ -16,7 +16,6 @@ protocol SendPageDelegate {
     func sendPage(data: Int)
 }
 
-
 class CardBackViewController: UIViewController {
     
     enum ContainerViewState {

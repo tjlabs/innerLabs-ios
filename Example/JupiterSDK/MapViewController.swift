@@ -14,6 +14,10 @@ protocol PageDelegate {
     func sendPage(data: Int)
 }
 
+protocol ReferencePointsDelegate {
+    func sendRP(X: [Double], Y: [Double])
+}
+
 class MapViewController: UIViewController {
     
     @IBOutlet weak var jupiterTableView: UITableView!
@@ -35,23 +39,23 @@ class MapViewController: UIViewController {
     var elapsedTime: Double = 0
     
     var delegate : PageDelegate?
+    var rpDeleagte : ReferencePointsDelegate?
     
     var cardData: CardItemData?
     var page: Int = 0
     
-    var referencePoints: [[Double]] = []
-    var rpX: [Double] = []
-    var rpY: [Double] = []
+    var referencePoints = [[Double]]()
+    var rpX = [Double]()
+    var rpY = [Double]()
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(false)
         
-        setCardData(cardData: cardData!)
-        
-        makeDelegate()
-        registerXib()
-        
         loadRP(fileName: "Autoway_RP_B3F")
+        setCardData(cardData: cardData!)
+        makeDelegate()
+        
+        registerXib()
     }
 
     override func viewDidLoad() {
@@ -79,6 +83,7 @@ class MapViewController: UIViewController {
     func makeDelegate() {
         jupiterTableView.dataSource = self
         jupiterTableView.delegate = self
+        self.rpDeleagte?.sendRP(X: rpX, Y: rpY)
     }
     
     func setTableView() {
@@ -94,15 +99,12 @@ class MapViewController: UIViewController {
             if let dataArr = dataEncoded?.components(separatedBy: "\n").map({$0.components(separatedBy: ",")}) {
                 for item in dataArr {
                     let rp: [String] = item
-//                    var xy = [Double]()
                     if(rp.count == 2) {
                         let x = rp[0]
                         let y = rp[1].components(separatedBy: "\r")
                         
-//                        xy = [Double(x)!, Double(y[0])!]
                         rpX.append(Double(x)!)
                         rpY.append(Double(y[0])!)
-//                        referencePoints.append(xy)
                     }
                 }
             }
@@ -141,6 +143,7 @@ extension MapViewController: UITableViewDataSource {
             guard let sectorContainerTVC = tableView.dequeueReusableCell(withIdentifier: SectorContainerTableViewCell.identifier) as?
                     SectorContainerTableViewCell else {return UITableViewCell()}
             sectorContainerTVC.selectionStyle = .none
+            
             return sectorContainerTVC
         }
     }

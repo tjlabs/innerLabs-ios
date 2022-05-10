@@ -7,18 +7,26 @@
 //
 
 import UIKit
+import JupiterSDK
 import Charts
 
-class SectorContainerTableViewCell: UITableViewCell {
-    static let identifier = "SectorContainerTableViewCell"
+class SectorContainerTableViewCell: UITableViewCell, ReferencePointsDelegate {
     
+    func sendRP(X: [Double], Y: [Double]) {
+        rpX = X
+        rpY = Y
+    }
+    
+    static let identifier = "SectorContainerTableViewCell"
     
     @IBOutlet weak var levelCollectionView: UICollectionView!
     @IBOutlet weak var zoneImage: UIImageView!
     @IBOutlet weak var scatterChart: ScatterChartView!
     
-    var rpX: [Double] = []
-    var rpY: [Double] = []
+    var cardData: CardItemData?
+    
+    var rpX = [Double]()
+    var rpY = [Double]()
     
     private let levelList = DataModel.Zone.getZoneList()
     private var currentZone : DataModel.ZoneList = .first{
@@ -34,13 +42,14 @@ class SectorContainerTableViewCell: UITableViewCell {
         setZoneCollectionView()
         fetchZone(zone: currentZone)
         
-        configureChartView()
+        print(rpX)
+        drawRP(X: rpX, Y: rpY)
+    
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
 
-        // Configure the view for the selected state
     }
     
     private func setCells() {
@@ -66,19 +75,17 @@ class SectorContainerTableViewCell: UITableViewCell {
 //            zoneImage.image = UIImage(named: "floor3")
         }
 //        zoneImage.alpha = 0.5
-//        configureChartView()
+        drawRP(X: rpX, Y: rpY)
     }
     
     private func drawRP(X: [Double], Y: [Double]) {
-//        var entries: [BarChartDataEntry]
-        
-        let len = X.count
-    }
-    
-    private func configureChartView() {
         let randomNum = Double.random(in: 0...20)
-        let xAxisValue: [Double] = [21.7 + randomNum, 22.2 - randomNum]
-        let yAxisValue: [Double] = [15.5 + randomNum, 15.2 - randomNum]
+        
+        let xAxisValue: [Double] = X
+        let yAxisValue: [Double] = Y
+        
+//        let xAxisValue: [Double] = [21.7 + randomNum, 22.2 - randomNum]
+//        let yAxisValue: [Double] = [15.5 + randomNum, 15.2 - randomNum]
         
         let xAxisValue2: [Double] = [10 + randomNum, 24 - randomNum]
         let yAxisValue2: [Double] = [7 + randomNum, 11 - randomNum]
@@ -91,12 +98,12 @@ class SectorContainerTableViewCell: UITableViewCell {
             return ChartDataEntry(x: yAxisValue2[i], y: xAxisValue2[i])
         }
         
-        let set1 = ScatterChartDataSet(entries: values1, label: "DS 1")
+        let set1 = ScatterChartDataSet(entries: values1, label: "RP")
         set1.setScatterShape(.square)
         set1.setColor(ChartColorTemplates.colorful()[0])
         set1.scatterShapeSize = 8
         
-        let set2 = ScatterChartDataSet(entries: values2, label: "DS 2")
+        let set2 = ScatterChartDataSet(entries: values2, label: "Random")
         set2.setScatterShape(.square)
         set2.setColor(ChartColorTemplates.colorful()[1])
         set2.scatterShapeSize = 8
@@ -108,13 +115,14 @@ class SectorContainerTableViewCell: UITableViewCell {
         
         scatterChart.data = chartData
     }
-    
 }
 
 extension SectorContainerTableViewCell : UICollectionViewDelegate{
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         makeVibrate()
         currentZone = levelList[indexPath.row].case
+        fetchZone(zone: currentZone)
+        
         levelCollectionView.reloadData()
     }
     

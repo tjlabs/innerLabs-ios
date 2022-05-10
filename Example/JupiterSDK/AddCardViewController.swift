@@ -43,9 +43,8 @@ class AddCardViewController: UIViewController, UITextFieldDelegate {
         self.code = codeTextField.text ?? ""
         
         if (checkValidCode(code: code)) {
-            let lastCardOrder = cardItemData[cardItemData.count-1].order
             let addedCard = CardItemData(name: "Added Card", description: "카드를 터치해주세요", cardImage: "purpleCard", cardShowImage: "purpleCardShow",
-                                         sectorImage: "sectorDefault", sectorShowImage: "tjlabsShow", cardTopImage: "cardTopPurple", code: "purple", sectorID: 10, numZones: 3, order: lastCardOrder+1)
+                                         sectorImage: "sectorDefault", sectorShowImage: "tjlabsShow", cardTopImage: "cardTopPurple", code: "purple", sectorID: 10, infoLevel: ["1F","2F"])
             cardItemData.append(addedCard)
             
             responseLabel.text = "\(addedCard.name) 카드가 정상적으로 추가 됐습니다."
