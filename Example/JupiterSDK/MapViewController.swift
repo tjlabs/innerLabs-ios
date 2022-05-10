@@ -60,16 +60,15 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(false)
         
-        
         setCardData(cardData: cardData!)
         
         if (cardData?.sectorID == 2) {
             let numLevels: Int = (cardData?.infoLevel.count)!
             for idx in 0..<numLevels {
                 if (idx == 0) {
-                    loadRP(fileName: "Autoway_RP_B3F")
-                } else {
                     loadRP(fileName: "Autoway_RP_B4F")
+                } else {
+                    loadRP(fileName: "Autoway_RP_B3F")
                 }
                 let nameLevel: String = (cardData?.infoLevel[idx])!
                 RP[nameLevel] = [rpX, rpY]
@@ -100,6 +99,9 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
     func registerXib() {
         let sectorContainerTVC = UINib(nibName: SectorContainerTableViewCell.identifier, bundle: nil)
         jupiterTableView.register(sectorContainerTVC, forCellReuseIdentifier: SectorContainerTableViewCell.identifier)
+        jupiterTableView.backgroundColor = .systemGray6
+        
+        jupiterTableViewHeight.constant = 480
     }
     
     func makeDelegate() {
@@ -170,16 +172,16 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
     
     func tableView(_ tableView: ExpyTableView, expandableCellForSection section: Int) -> UITableViewCell {
         let cell = UITableViewCell()
-        cell.backgroundColor = .systemGray6 //백그라운드 컬러
+//        cell.backgroundColor = .systemGray6 //백그라운드 컬러
+        cell.backgroundColor = .white
         cell.selectionStyle = .none //선택했을 때 회색되는거 없애기
+        cell.separatorInset = UIEdgeInsets(top: 5, left: 10, bottom: 0, right: 10)
         if section == 0 {
-//            cell.textLabel?.text = arraySection0[0]
             cell.textLabel?.text = "Service Information"
-            cell.textLabel?.font = UIFont(name: AppFontName.medium, size: 14)
+            cell.textLabel?.font = UIFont(name: AppFontName.bold, size: 16)
         } else {
-//            cell.textLabel?.text = arraySection1[0]
             cell.textLabel?.text = "Robot"
-            cell.textLabel?.font = UIFont(name: AppFontName.medium, size: 14)
+            cell.textLabel?.font = UIFont(name: AppFontName.bold, size: 16)
             
         }
         return cell
@@ -225,7 +227,8 @@ extension MapViewController: UITableViewDataSource {
             return tableList.count
         } else {
             if section == 0 {
-                return arraySection0.count
+//                return arraySection0.count
+                return 1
             } else {
                 return arraySection1.count
             }
@@ -235,9 +238,7 @@ extension MapViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if (tableView == jupiterTableView) {
             let tableList = tableList[indexPath.row]
-            
             switch(tableList) {
-                
             case .sector:
                 guard let sectorContainerTVC = tableView.dequeueReusableCell(withIdentifier: SectorContainerTableViewCell.identifier) as?
                         SectorContainerTableViewCell else {return UITableViewCell()}
@@ -247,15 +248,17 @@ extension MapViewController: UITableViewDataSource {
                 return sectorContainerTVC
             }
         } else {
-            let cell = UITableViewCell()
             if indexPath.section == 0 {
-                cell.textLabel?.text = arraySection0[indexPath.row]
-//                cell.textLabel?.text = "Service Information"
+//                cell.textLabel?.text = arraySection0[indexPath.row]
+                
+                guard let serviceInfoTVC = tableView.dequeueReusableCell(withIdentifier: ServiceInfoTableViewCell.identifier) as?
+                        ServiceInfoTableViewCell else { return UITableViewCell() }
+                return serviceInfoTVC
             } else {
+                let cell = UITableViewCell()
                 cell.textLabel?.text = arraySection1[indexPath.row]
-//                cell.textLabel?.text = "Robot"
+                return cell
             }
-            return cell
         }
     }
 }

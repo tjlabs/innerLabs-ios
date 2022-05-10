@@ -22,13 +22,6 @@ class SectorContainerTableViewCell: UITableViewCell {
     var cardData: CardItemData?
     var RP: [String: [[Double]]]?
 
-//    private let levelList = DataModel.Zone.getZoneList()
-//    private var currentZone : DataModel.ZoneList = .first{
-//        didSet {
-//            fetchZone(zone: currentZone)
-//        }
-//    }
-    
     private var levelList = [String]()
     private var currentLevel: String = ""
     
@@ -37,7 +30,6 @@ class SectorContainerTableViewCell: UITableViewCell {
         
         setCells()
         setZoneCollectionView()
-//        fetchZone(zone: currentZone)
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
@@ -52,6 +44,7 @@ class SectorContainerTableViewCell: UITableViewCell {
     private func setZoneCollectionView() {
         levelCollectionView.delegate = self
         levelCollectionView.dataSource = self
+//        levelCollectionView.
         levelCollectionView.reloadData()
     }
     
@@ -159,8 +152,6 @@ extension SectorContainerTableViewCell : UICollectionViewDelegate{
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         makeVibrate()
         currentLevel = levelList[indexPath.row]
-//        currentZone = levelList[indexPath.row].case
-//        fetchZone(zone: currentZone)
         
         let rp: [[Double]] = RP?[currentLevel] ?? [[Double]]()
         if (rp.isEmpty) {
@@ -182,8 +173,7 @@ extension SectorContainerTableViewCell : UICollectionViewDataSource{
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let levelCollectionView = collectionView.dequeueReusableCell(withReuseIdentifier: LevelCollectionViewCell.className, for: indexPath)
                 as? LevelCollectionViewCell else {return UICollectionViewCell()}
-//        levelCollectionView.setName(level: levelList[indexPath.row].case.rawValue,
-//                                    isClicked: currentZone == levelList[indexPath.row].case ? true : false)
+
         levelCollectionView.setName(level: levelList[indexPath.row],
                                     isClicked: currentLevel == levelList[indexPath.row] ? true : false)
         levelCollectionView.layer.cornerRadius = 15
@@ -198,7 +188,6 @@ extension SectorContainerTableViewCell : UICollectionViewDelegateFlowLayout{
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let label = UILabel()
         label.font = .systemFont(ofSize: 14)
-//        label.text = levelList[indexPath.row].case.rawValue
         label.text = levelList[indexPath.row]
         label.sizeToFit()
         

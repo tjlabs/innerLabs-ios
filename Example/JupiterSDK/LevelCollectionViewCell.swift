@@ -20,11 +20,7 @@ class LevelCollectionViewCell: UICollectionViewCell, UICollectionViewRegisterabl
     
     override func awakeFromNib() {
         super.awakeFromNib()
-        // Initialization code
     }
-    
-    
-    // MARK: - Custom Method Parts
     
     func setName(level : String, isClicked : Bool){
         levelLabel.text = level
