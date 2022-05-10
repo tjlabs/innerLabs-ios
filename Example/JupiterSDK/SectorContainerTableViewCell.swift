@@ -10,12 +10,7 @@ import UIKit
 import JupiterSDK
 import Charts
 
-class SectorContainerTableViewCell: UITableViewCell, ReferencePointsDelegate {
-    
-    func sendRP(X: [Double], Y: [Double]) {
-        rpX = X
-        rpY = Y
-    }
+class SectorContainerTableViewCell: UITableViewCell {
     
     static let identifier = "SectorContainerTableViewCell"
     
@@ -23,7 +18,18 @@ class SectorContainerTableViewCell: UITableViewCell, ReferencePointsDelegate {
     @IBOutlet weak var zoneImage: UIImageView!
     @IBOutlet weak var scatterChart: ScatterChartView!
     
-    var cardData: CardItemData?
+    var cardData: CardItemData? {
+        didSet {
+            let infoLevel = cardData?.infoLevel
+        }
+    }
+    
+    var RP: [String: [[Double]]]? {
+        didSet {
+//            RP[]
+//            drawRP(X: <#T##[Double]#>, Y: <#T##[Double]#>)
+        }
+    }
     
     var rpX = [Double]()
     var rpY = [Double]()
@@ -41,10 +47,6 @@ class SectorContainerTableViewCell: UITableViewCell, ReferencePointsDelegate {
         setCells()
         setZoneCollectionView()
         fetchZone(zone: currentZone)
-        
-        print(rpX)
-        drawRP(X: rpX, Y: rpY)
-    
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {

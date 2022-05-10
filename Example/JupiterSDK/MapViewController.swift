@@ -14,10 +14,6 @@ protocol PageDelegate {
     func sendPage(data: Int)
 }
 
-protocol ReferencePointsDelegate {
-    func sendRP(X: [Double], Y: [Double])
-}
-
 class MapViewController: UIViewController {
     
     @IBOutlet weak var jupiterTableView: UITableView!
@@ -39,7 +35,6 @@ class MapViewController: UIViewController {
     var elapsedTime: Double = 0
     
     var delegate : PageDelegate?
-    var rpDeleagte : ReferencePointsDelegate?
     
     var cardData: CardItemData?
     var page: Int = 0
@@ -48,13 +43,24 @@ class MapViewController: UIViewController {
     var rpX = [Double]()
     var rpY = [Double]()
     
+    var RP = [String: [[Double]]]()
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(false)
         
-        loadRP(fileName: "Autoway_RP_B3F")
-        setCardData(cardData: cardData!)
-        makeDelegate()
         
+        setCardData(cardData: cardData!)
+        
+        if (cardData?.sectorID == 2) {
+            let numLevels: Int = (cardData?.infoLevel.count)!
+            for idx in 0..<numLevels {
+                loadRP(fileName: "Autoway_RP_B3F")
+                let nameLevel: String = (cardData?.infoLevel[idx])!
+                RP[nameLevel] = [rpX, rpY]
+            }
+        }
+        
+        makeDelegate()
         registerXib()
     }
 
@@ -83,7 +89,6 @@ class MapViewController: UIViewController {
     func makeDelegate() {
         jupiterTableView.dataSource = self
         jupiterTableView.delegate = self
-        self.rpDeleagte?.sendRP(X: rpX, Y: rpY)
     }
     
     func setTableView() {
@@ -142,6 +147,8 @@ extension MapViewController: UITableViewDataSource {
         case .sector:
             guard let sectorContainerTVC = tableView.dequeueReusableCell(withIdentifier: SectorContainerTableViewCell.identifier) as?
                     SectorContainerTableViewCell else {return UITableViewCell()}
+            sectorContainerTVC.cardData = cardData
+            sectorContainerTVC.RP = RP
             sectorContainerTVC.selectionStyle = .none
             
             return sectorContainerTVC

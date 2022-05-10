@@ -4,6 +4,8 @@ import CoreLocation
 
 public class JupiterService: NSObject {
     
+    let url = "https://where-run-kr-6qjrrjlaga-an.a.run.app/calc"
+    
     // Sensor //
     let motionManager = CMMotionManager()
     let motionAltimeter = CMAltimeter()
@@ -233,7 +235,7 @@ public class JupiterService: NSObject {
             let data = Input(user_id: uuid, unit_idx: stepResult.unit_idx, step_length: stepResult.step_length, heading: stepResult.heading, pressure: stepResult.pressure, looking_flag: stepResult.lookingFlag,
                              ble: bleDictionary, time_mobile: timeStamp, device_model: deviceModel, os_version: osVersion)
             
-            networkManager.postRequest(input: data)
+            networkManager.postRequest(url: url, input: data)
             
             // Upload to Firestore
 //            networkManager.upload(data) { error in
