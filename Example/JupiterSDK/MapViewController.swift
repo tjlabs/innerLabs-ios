@@ -54,7 +54,11 @@ class MapViewController: UIViewController {
         if (cardData?.sectorID == 2) {
             let numLevels: Int = (cardData?.infoLevel.count)!
             for idx in 0..<numLevels {
-                loadRP(fileName: "Autoway_RP_B3F")
+                if (idx == 0) {
+                    loadRP(fileName: "Autoway_RP_B3F")
+                } else {
+                    loadRP(fileName: "Autoway_RP_B4F")
+                }
                 let nameLevel: String = (cardData?.infoLevel[idx])!
                 RP[nameLevel] = [rpX, rpY]
             }

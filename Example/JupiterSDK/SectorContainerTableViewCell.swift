@@ -104,16 +104,24 @@ class SectorContainerTableViewCell: UITableViewCell {
         let chartData = ScatterChartData(dataSet: set1)
         chartData.append(set2)
         
+        // Configure
+//        scatterChart.xAxis.axisMinimum =
+        
         scatterChart.data = chartData
     }
     
     internal func configure(cardData: CardItemData, RP: [String: [[Double]]]) {
         self.cardData = cardData
         self.levelList = (cardData.infoLevel)
+        currentLevel = levelList[0]
         
         self.RP = RP
-        let rp: [[Double]] = RP[(self.cardData?.infoLevel[0])!]!
-        drawRP(X: rp[0], Y: rp[1])
+        let rp: [[Double]] = RP[currentLevel] ?? [[Double]]()
+        if (rp.isEmpty) {
+            // RP가 없어서 그리지 않음
+        } else {
+            drawRP(X: rp[0], Y: rp[1])
+        }
     }
 }
 
@@ -123,6 +131,13 @@ extension SectorContainerTableViewCell : UICollectionViewDelegate{
         currentLevel = levelList[indexPath.row]
 //        currentZone = levelList[indexPath.row].case
 //        fetchZone(zone: currentZone)
+        
+        let rp: [[Double]] = RP?[currentLevel] ?? [[Double]]()
+        if (rp.isEmpty) {
+            // RP가 없어서 그리지 않음
+        } else {
+            drawRP(X: rp[0], Y: rp[1])
+        }
         
         levelCollectionView.reloadData()
     }
