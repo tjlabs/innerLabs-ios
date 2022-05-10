@@ -15,7 +15,8 @@ class SectorContainerTableViewCell: UITableViewCell {
     static let identifier = "SectorContainerTableViewCell"
     
     @IBOutlet weak var levelCollectionView: UICollectionView!
-    @IBOutlet weak var zoneImage: UIImageView!
+
+    @IBOutlet weak var imageLevel: UIImageView!
     @IBOutlet weak var scatterChart: ScatterChartView!
     
     var cardData: CardItemData?
@@ -104,8 +105,37 @@ class SectorContainerTableViewCell: UITableViewCell {
         let chartData = ScatterChartData(dataSet: set1)
         chartData.append(set2)
         
-        // Configure
-//        scatterChart.xAxis.axisMinimum =
+        let xMin = xAxisValue.min()!
+        let xMax = xAxisValue.max()!
+        let yMin = yAxisValue.min()!
+        let yMax = yAxisValue.max()!
+        
+        // Configure Chart
+        scatterChart.xAxis.axisMinimum = yMin-5
+        scatterChart.xAxis.axisMaximum = yMax+5
+        scatterChart.leftAxis.axisMinimum = xMin-5
+        scatterChart.leftAxis.axisMaximum = xMax+5
+        
+        scatterChart.xAxis.drawGridLinesEnabled = false
+        scatterChart.leftAxis.drawGridLinesEnabled = false
+        scatterChart.rightAxis.drawGridLinesEnabled = false
+        
+        scatterChart.xAxis.drawAxisLineEnabled = false
+        scatterChart.leftAxis.drawAxisLineEnabled = false
+        scatterChart.rightAxis.drawAxisLineEnabled = false
+        
+        scatterChart.xAxis.centerAxisLabelsEnabled = false
+        scatterChart.xAxis.drawLabelsEnabled = false
+        
+        scatterChart.leftAxis.centerAxisLabelsEnabled = false
+        scatterChart.leftAxis.drawLabelsEnabled = false
+        
+        scatterChart.rightAxis.centerAxisLabelsEnabled = false
+        scatterChart.rightAxis.drawLabelsEnabled = false
+        
+        scatterChart.legend.enabled = false
+        
+        scatterChart.backgroundColor = .clear
         
         scatterChart.data = chartData
     }

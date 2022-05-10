@@ -10,6 +10,10 @@ import UIKit
 import JupiterSDK
 import Charts
 
+enum TableList{
+    case sector
+}
+
 protocol PageDelegate {
     func sendPage(data: Int)
 }
@@ -17,6 +21,8 @@ protocol PageDelegate {
 class MapViewController: UIViewController {
     
     @IBOutlet weak var jupiterTableView: UITableView!
+    @IBOutlet weak var jupiterTableViewHeight: NSLayoutConstraint!
+    @IBOutlet weak var containerViewHeight: NSLayoutConstraint!
     
     private let tableList: [TableList] = [.sector]
     

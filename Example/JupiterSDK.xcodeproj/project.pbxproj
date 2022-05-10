@@ -36,7 +36,6 @@
 		B3B3610B28295E1D00B8E876 /* Autoway_RP_B4F.csv in Resources */ = {isa = PBXBuildFile; fileRef = B3B3610A28295E1D00B8E876 /* Autoway_RP_B4F.csv */; };
 		B3B4F85A28114EEB009F9E6C /* ShowCardCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3B4F85828114EEB009F9E6C /* ShowCardCollectionViewCell.swift */; };
 		B3B4F85B28114EEB009F9E6C /* ShowCardCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B3B4F85928114EEB009F9E6C /* ShowCardCollectionViewCell.xib */; };
-		B3BD699227E98E0E00A32A7A /* JupiterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3BD699127E98E0E00A32A7A /* JupiterViewController.swift */; };
 		B3BD699827E9A4A500A32A7A /* ColorPalette.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3BD699727E9A4A500A32A7A /* ColorPalette.swift */; };
 		B3BD699A27E9A4BE00A32A7A /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B3BD699927E9A4BE00A32A7A /* Colors.xcassets */; };
 		B3BD699D27E9A4FE00A32A7A /* setCharacterSpacing.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3BD699C27E9A4FE00A32A7A /* setCharacterSpacing.swift */; };
@@ -51,8 +50,6 @@
 		B3BD69B027E9A78000A32A7A /* SectorContainerTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B3BD69AE27E9A78000A32A7A /* SectorContainerTableViewCell.xib */; };
 		B3BD69B427E9A8AD00A32A7A /* LevelCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3BD69B227E9A8AD00A32A7A /* LevelCollectionViewCell.swift */; };
 		B3BD69B527E9A8AD00A32A7A /* LevelCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B3BD69B327E9A8AD00A32A7A /* LevelCollectionViewCell.xib */; };
-		B3BD69B827E9ABA300A32A7A /* DataModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3BD69B727E9ABA300A32A7A /* DataModel.swift */; };
-		B3BD69BA27E9ABB200A32A7A /* ZoneDataModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3BD69B927E9ABB200A32A7A /* ZoneDataModel.swift */; };
 		B3C09C64280E941B00E6F55F /* ShowCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3C09C63280E941B00E6F55F /* ShowCardViewController.swift */; };
 		B3DE146D280E7146006DA43C /* AddCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3DE146C280E7146006DA43C /* AddCardViewController.swift */; };
 		B3DE146F280E7556006DA43C /* UIApplicationExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3DE146E280E7556006DA43C /* UIApplicationExtension.swift */; };
@@ -112,7 +109,6 @@
 		B3B3610A28295E1D00B8E876 /* Autoway_RP_B4F.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Autoway_RP_B4F.csv; sourceTree = "<group>"; };
 		B3B4F85828114EEB009F9E6C /* ShowCardCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowCardCollectionViewCell.swift; sourceTree = "<group>"; };
 		B3B4F85928114EEB009F9E6C /* ShowCardCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ShowCardCollectionViewCell.xib; sourceTree = "<group>"; };
-		B3BD699127E98E0E00A32A7A /* JupiterViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JupiterViewController.swift; sourceTree = "<group>"; };
 		B3BD699727E9A4A500A32A7A /* ColorPalette.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorPalette.swift; sourceTree = "<group>"; };
 		B3BD699927E9A4BE00A32A7A /* Colors.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Colors.xcassets; sourceTree = "<group>"; };
 		B3BD699C27E9A4FE00A32A7A /* setCharacterSpacing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = setCharacterSpacing.swift; sourceTree = "<group>"; };
@@ -127,8 +123,6 @@
 		B3BD69AE27E9A78000A32A7A /* SectorContainerTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SectorContainerTableViewCell.xib; sourceTree = "<group>"; };
 		B3BD69B227E9A8AD00A32A7A /* LevelCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LevelCollectionViewCell.swift; sourceTree = "<group>"; };
 		B3BD69B327E9A8AD00A32A7A /* LevelCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = LevelCollectionViewCell.xib; sourceTree = "<group>"; };
-		B3BD69B727E9ABA300A32A7A /* DataModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataModel.swift; sourceTree = "<group>"; };
-		B3BD69B927E9ABB200A32A7A /* ZoneDataModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoneDataModel.swift; sourceTree = "<group>"; };
 		B3C09C63280E941B00E6F55F /* ShowCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowCardViewController.swift; sourceTree = "<group>"; };
 		B3DE146C280E7146006DA43C /* AddCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddCardViewController.swift; sourceTree = "<group>"; };
 		B3DE146E280E7556006DA43C /* UIApplicationExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIApplicationExtension.swift; sourceTree = "<group>"; };
@@ -198,15 +192,14 @@
 		607FACD21AFB9204008FA782 /* Example for JupiterSDK */ = {
 			isa = PBXGroup;
 			children = (
+				B345527F282AA00700F0DD3E /* Network */,
 				B360D88728090D400084FB22 /* Fonts */,
-				B3BD69B627E9AB9400A32A7A /* DataModel */,
 				B3BD69B127E9A88B00A32A7A /* Sector */,
 				B3BD69A227E9A53C00A32A7A /* Extensions */,
 				B3BD699B27E9A4D100A32A7A /* Utils */,
 				B3BD699627E9A48E00A32A7A /* Color */,
 				607FACD51AFB9204008FA782 /* AppDelegate.swift */,
 				607FACD71AFB9204008FA782 /* MainViewController.swift */,
-				B3BD699127E98E0E00A32A7A /* JupiterViewController.swift */,
 				B3B361052829522A00B8E876 /* MapViewController.swift */,
 				B340EE3228093FB20096E404 /* CardViewController.swift */,
 				B3844E8C28099EE3007A5215 /* CardCollectionViewCell.swift */,
@@ -227,8 +220,6 @@
 				B3037A93281C07060058D025 /* OverlayCustomView.swift */,
 				B3037A91281C06D50058D025 /* OverlayCustomView.xib */,
 				B3B156DD282397AF0058B538 /* ImageOverlay.swift */,
-				B3F5C77D282A5408009BEDB9 /* Network.swift */,
-				B3F5C77F282A5519009BEDB9 /* Protocol.swift */,
 				B3B3610828295E1400B8E876 /* Autoway_RP_B3F.csv */,
 				B3B3610A28295E1D00B8E876 /* Autoway_RP_B4F.csv */,
 				607FACDC1AFB9204008FA782 /* Images.xcassets */,
@@ -272,6 +263,15 @@
 				33536F035F43D878561B6254 /* LICENSE */,
 			);
 			name = "Podspec Metadata";
+			sourceTree = "<group>";
+		};
+		B345527F282AA00700F0DD3E /* Network */ = {
+			isa = PBXGroup;
+			children = (
+				B3F5C77D282A5408009BEDB9 /* Network.swift */,
+				B3F5C77F282A5519009BEDB9 /* Protocol.swift */,
+			);
+			name = Network;
 			sourceTree = "<group>";
 		};
 		B360D88728090D400084FB22 /* Fonts */ = {
@@ -328,15 +328,6 @@
 				B3BD69B327E9A8AD00A32A7A /* LevelCollectionViewCell.xib */,
 			);
 			name = Sector;
-			sourceTree = "<group>";
-		};
-		B3BD69B627E9AB9400A32A7A /* DataModel */ = {
-			isa = PBXGroup;
-			children = (
-				B3BD69B727E9ABA300A32A7A /* DataModel.swift */,
-				B3BD69B927E9ABB200A32A7A /* ZoneDataModel.swift */,
-			);
-			name = DataModel;
 			sourceTree = "<group>";
 		};
 		FF4C89D2434460AC285975FD /* Frameworks */ = {
@@ -570,7 +561,6 @@
 				B3BD69AA27E9A57500A32A7A /* getClassName + UIViewController.swift in Sources */,
 				B367526F2817CB3C00E4FA6C /* CardBackViewController.swift in Sources */,
 				B3B156DE282397AF0058B538 /* ImageOverlay.swift in Sources */,
-				B3BD699227E98E0E00A32A7A /* JupiterViewController.swift in Sources */,
 				B3BD69AF27E9A78000A32A7A /* SectorContainerTableViewCell.swift in Sources */,
 				B3BD69A127E9A52500A32A7A /* applyShadow.swift in Sources */,
 				B3F370DA281BA1DD003A427F /* RobotView.swift in Sources */,
@@ -579,8 +569,6 @@
 				B3DE146D280E7146006DA43C /* AddCardViewController.swift in Sources */,
 				B3C09C64280E941B00E6F55F /* ShowCardViewController.swift in Sources */,
 				B3BD69AC27E9A57E00A32A7A /* UICollectionViewRegisterable.swift in Sources */,
-				B3BD69BA27E9ABB200A32A7A /* ZoneDataModel.swift in Sources */,
-				B3BD69B827E9ABA300A32A7A /* DataModel.swift in Sources */,
 				607FACD81AFB9204008FA782 /* MainViewController.swift in Sources */,
 				B3844E8E28099EE3007A5215 /* CardCollectionViewCell.swift in Sources */,
 				B340EE3328093FB20096E404 /* CardViewController.swift in Sources */,
