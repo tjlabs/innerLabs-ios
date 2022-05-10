@@ -18,35 +18,25 @@ class SectorContainerTableViewCell: UITableViewCell {
     @IBOutlet weak var zoneImage: UIImageView!
     @IBOutlet weak var scatterChart: ScatterChartView!
     
-    var cardData: CardItemData? {
-        didSet {
-            let infoLevel = cardData?.infoLevel
-        }
-    }
+    var cardData: CardItemData?
+    var RP: [String: [[Double]]]?
+
+//    private let levelList = DataModel.Zone.getZoneList()
+//    private var currentZone : DataModel.ZoneList = .first{
+//        didSet {
+//            fetchZone(zone: currentZone)
+//        }
+//    }
     
-    var RP: [String: [[Double]]]? {
-        didSet {
-//            RP[]
-//            drawRP(X: <#T##[Double]#>, Y: <#T##[Double]#>)
-        }
-    }
-    
-    var rpX = [Double]()
-    var rpY = [Double]()
-    
-    private let levelList = DataModel.Zone.getZoneList()
-    private var currentZone : DataModel.ZoneList = .first{
-        didSet {
-            fetchZone(zone: currentZone)
-        }
-    }
+    private var levelList = [String]()
+    private var currentLevel: String = ""
     
     override func awakeFromNib() {
         super.awakeFromNib()
         
         setCells()
         setZoneCollectionView()
-        fetchZone(zone: currentZone)
+//        fetchZone(zone: currentZone)
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
@@ -64,21 +54,20 @@ class SectorContainerTableViewCell: UITableViewCell {
         levelCollectionView.reloadData()
     }
     
-    private func fetchZone(zone : DataModel.ZoneList) -> Void {
-        switch(zone) {
-        case .first:
-            print("1st floor")
-//            zoneImage.image = UIImage(named: "floor1")
-        case .second:
-            print("2nd floor")
-//            zoneImage.image = UIImage(named: "floor2")
-        case .third:
-            print("3rd floor")
-//            zoneImage.image = UIImage(named: "floor3")
-        }
-//        zoneImage.alpha = 0.5
-        drawRP(X: rpX, Y: rpY)
-    }
+//    private func fetchZone(zone : DataModel.ZoneList) -> Void {
+//        switch(zone) {
+//        case .first:
+//            print("1st floor")
+////            zoneImage.image = UIImage(named: "floor1")
+//        case .second:
+//            print("2nd floor")
+////            zoneImage.image = UIImage(named: "floor2")
+//        case .third:
+//            print("3rd floor")
+////            zoneImage.image = UIImage(named: "floor3")
+//        }
+////        zoneImage.alpha = 0.5
+//    }
     
     private func drawRP(X: [Double], Y: [Double]) {
         let randomNum = Double.random(in: 0...20)
@@ -102,7 +91,7 @@ class SectorContainerTableViewCell: UITableViewCell {
         
         let set1 = ScatterChartDataSet(entries: values1, label: "RP")
         set1.setScatterShape(.square)
-        set1.setColor(ChartColorTemplates.colorful()[0])
+        set1.setColor(ChartColorTemplates.joyful()[4])
         set1.scatterShapeSize = 8
         
         let set2 = ScatterChartDataSet(entries: values2, label: "Random")
@@ -117,13 +106,23 @@ class SectorContainerTableViewCell: UITableViewCell {
         
         scatterChart.data = chartData
     }
+    
+    internal func configure(cardData: CardItemData, RP: [String: [[Double]]]) {
+        self.cardData = cardData
+        self.levelList = (cardData.infoLevel)
+        
+        self.RP = RP
+        let rp: [[Double]] = RP[(self.cardData?.infoLevel[0])!]!
+        drawRP(X: rp[0], Y: rp[1])
+    }
 }
 
 extension SectorContainerTableViewCell : UICollectionViewDelegate{
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         makeVibrate()
-        currentZone = levelList[indexPath.row].case
-        fetchZone(zone: currentZone)
+        currentLevel = levelList[indexPath.row]
+//        currentZone = levelList[indexPath.row].case
+//        fetchZone(zone: currentZone)
         
         levelCollectionView.reloadData()
     }
@@ -138,8 +137,10 @@ extension SectorContainerTableViewCell : UICollectionViewDataSource{
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let levelCollectionView = collectionView.dequeueReusableCell(withReuseIdentifier: LevelCollectionViewCell.className, for: indexPath)
                 as? LevelCollectionViewCell else {return UICollectionViewCell()}
-        levelCollectionView.setName(floor: levelList[indexPath.row].case.rawValue,
-                                    isClicked: currentZone == levelList[indexPath.row].case ? true : false)
+//        levelCollectionView.setName(level: levelList[indexPath.row].case.rawValue,
+//                                    isClicked: currentZone == levelList[indexPath.row].case ? true : false)
+        levelCollectionView.setName(level: levelList[indexPath.row],
+                                    isClicked: currentLevel == levelList[indexPath.row] ? true : false)
         levelCollectionView.layer.cornerRadius = 15
         levelCollectionView.layer.borderColor = UIColor.blue1.cgColor
         levelCollectionView.layer.borderWidth = 1
@@ -152,7 +153,8 @@ extension SectorContainerTableViewCell : UICollectionViewDelegateFlowLayout{
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let label = UILabel()
         label.font = .systemFont(ofSize: 14)
-        label.text = levelList[indexPath.row].case.rawValue
+//        label.text = levelList[indexPath.row].case.rawValue
+        label.text = levelList[indexPath.row]
         label.sizeToFit()
         
         return CGSize(width: label.frame.width + 30, height: 30)

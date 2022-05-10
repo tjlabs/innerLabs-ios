@@ -12,9 +12,9 @@ class LevelCollectionViewCell: UICollectionViewCell, UICollectionViewRegisterabl
     
     static var isFromNib = true
 
-    @IBOutlet weak var zoneLabel: UILabel! {
+    @IBOutlet weak var levelLabel: UILabel! {
         didSet {
-            zoneLabel.setCharacterSpacing()
+            levelLabel.setCharacterSpacing()
         }
     }
     
@@ -26,11 +26,11 @@ class LevelCollectionViewCell: UICollectionViewCell, UICollectionViewRegisterabl
     
     // MARK: - Custom Method Parts
     
-    func setName(floor : String, isClicked : Bool){
-        zoneLabel.text = floor
+    func setName(level : String, isClicked : Bool){
+        levelLabel.text = level
       self.contentView.backgroundColor = isClicked ? .blue1 : .white
-      self.zoneLabel.font = isClicked ? .boldSystemFont(ofSize: 14) : .systemFont(ofSize: 14)
-      self.zoneLabel.textColor = isClicked ? .white : .blue1
+      self.levelLabel.font = isClicked ? .boldSystemFont(ofSize: 14) : .systemFont(ofSize: 14)
+      self.levelLabel.textColor = isClicked ? .white : .blue1
     }
 
 }

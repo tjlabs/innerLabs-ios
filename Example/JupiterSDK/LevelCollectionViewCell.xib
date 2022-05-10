@@ -17,8 +17,8 @@
                 <rect key="frame" x="0.0" y="0.0" width="120" height="100"/>
                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                 <subviews>
-                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Zone" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="oHT-xb-rsq">
-                        <rect key="frame" x="40.5" y="39.5" width="39" height="21"/>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Level" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="oHT-xb-rsq">
+                        <rect key="frame" x="40" y="39.5" width="40" height="21"/>
                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                         <nil key="textColor"/>
                         <nil key="highlightedColor"/>
@@ -31,7 +31,7 @@
                 <constraint firstItem="oHT-xb-rsq" firstAttribute="centerX" secondItem="gTV-IL-0wX" secondAttribute="centerX" id="gzw-fA-f3d"/>
             </constraints>
             <connections>
-                <outlet property="zoneLabel" destination="oHT-xb-rsq" id="LTU-zP-Tav"/>
+                <outlet property="levelLabel" destination="oHT-xb-rsq" id="qDW-Fo-YvU"/>
             </connections>
             <point key="canvasLocation" x="131.8840579710145" y="116.51785714285714"/>
         </collectionViewCell>

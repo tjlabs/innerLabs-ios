@@ -147,8 +147,7 @@ extension MapViewController: UITableViewDataSource {
         case .sector:
             guard let sectorContainerTVC = tableView.dequeueReusableCell(withIdentifier: SectorContainerTableViewCell.identifier) as?
                     SectorContainerTableViewCell else {return UITableViewCell()}
-            sectorContainerTVC.cardData = cardData
-            sectorContainerTVC.RP = RP
+            sectorContainerTVC.configure(cardData: cardData!, RP: RP)
             sectorContainerTVC.selectionStyle = .none
             
             return sectorContainerTVC
