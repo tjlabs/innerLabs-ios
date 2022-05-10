@@ -354,10 +354,30 @@
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="fII-7b-eZC">
                                 <rect key="frame" x="0.0" y="690" width="390" height="120"/>
+                                <subviews>
+                                    <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="Qaf-qC-h3g" customClass="ExpyTableView" customModule="ExpyTableView">
+                                        <rect key="frame" x="0.0" y="5" width="390" height="115"/>
+                                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                        <userDefinedRuntimeAttributes>
+                                            <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                                                <real key="value" value="15"/>
+                                            </userDefinedRuntimeAttribute>
+                                        </userDefinedRuntimeAttributes>
+                                    </tableView>
+                                </subviews>
                                 <color key="backgroundColor" systemColor="systemGray6Color"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="120" id="8lb-66-EAY"/>
+                                    <constraint firstItem="Qaf-qC-h3g" firstAttribute="top" secondItem="fII-7b-eZC" secondAttribute="top" constant="5" id="IwT-qv-FEl"/>
+                                    <constraint firstItem="Qaf-qC-h3g" firstAttribute="leading" secondItem="fII-7b-eZC" secondAttribute="leading" id="J14-Xf-SlA"/>
+                                    <constraint firstAttribute="bottom" secondItem="Qaf-qC-h3g" secondAttribute="bottom" id="KfR-4c-RLG"/>
+                                    <constraint firstAttribute="trailing" secondItem="Qaf-qC-h3g" secondAttribute="trailing" id="Lb5-ZT-V79"/>
                                 </constraints>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                                        <real key="value" value="15"/>
+                                    </userDefinedRuntimeAttribute>
+                                </userDefinedRuntimeAttributes>
                             </view>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="Dag-Ay-eUz">
                                 <rect key="frame" x="0.0" y="120" width="390" height="570"/>
@@ -383,6 +403,7 @@
                     </view>
                     <connections>
                         <outlet property="cardTopImage" destination="byw-n3-gmk" id="kJe-S1-q2F"/>
+                        <outlet property="containerTableView" destination="Qaf-qC-h3g" id="f6Z-VF-SRp"/>
                         <outlet property="containerViewHeight" destination="8lb-66-EAY" id="W9D-o4-c8K"/>
                         <outlet property="jupiterTableView" destination="Dag-Ay-eUz" id="0uI-ln-Isi"/>
                         <outlet property="jupiterTableViewHeight" destination="hSh-zS-a0Y" id="pfz-QE-ph7"/>

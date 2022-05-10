@@ -8,6 +8,7 @@
 
 import UIKit
 import JupiterSDK
+import ExpyTableView
 import Charts
 
 enum TableList{
@@ -18,11 +19,12 @@ protocol PageDelegate {
     func sendPage(data: Int)
 }
 
-class MapViewController: UIViewController {
+class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewDataSource {
     
     @IBOutlet weak var jupiterTableView: UITableView!
     @IBOutlet weak var jupiterTableViewHeight: NSLayoutConstraint!
     @IBOutlet weak var containerViewHeight: NSLayoutConstraint!
+    @IBOutlet weak var containerTableView: ExpyTableView!
     
     private let tableList: [TableList] = [.sector]
     
@@ -51,6 +53,10 @@ class MapViewController: UIViewController {
     
     var RP = [String: [[Double]]]()
     
+    // Test
+    let arraySection0: Array<String> = ["section0_row0","section0_row1","section0_row2"]
+    let arraySection1: Array<String> = ["section1_row0","section1_row1","section1_row2","section1_row3"]
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(false)
         
@@ -73,10 +79,10 @@ class MapViewController: UIViewController {
         makeDelegate()
         registerXib()
     }
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         jupiterService.uuid = uuid
         jupiterService.startService(parent: self)
     }
@@ -99,18 +105,24 @@ class MapViewController: UIViewController {
     func makeDelegate() {
         jupiterTableView.dataSource = self
         jupiterTableView.delegate = self
+        jupiterTableView.bounces = false
+        
+        containerTableView.dataSource = self
+        containerTableView.delegate = self
+        containerTableView.bounces = false
     }
     
     func setTableView() {
         //테이블 뷰 셀 사이의 회색 선 없애기
         jupiterTableView.separatorStyle = UITableViewCell.SeparatorStyle.none
+        containerTableView.separatorStyle = UITableViewCell.SeparatorStyle.none
     }
     
     private func parseCSV(url:URL) {
         do {
             let data = try Data(contentsOf: url)
             let dataEncoded = String(data: data, encoding: .utf8)
-                
+            
             if let dataArr = dataEncoded?.components(separatedBy: "\n").map({$0.components(separatedBy: ",")}) {
                 for item in dataArr {
                     let rp: [String] = item
@@ -133,35 +145,117 @@ class MapViewController: UIViewController {
         let path = Bundle.main.path(forResource: fileName, ofType: "csv")!
         parseCSV(url: URL(fileURLWithPath: path))
     }
+    
+    func tableView(_ tableView: ExpyTableView, expyState state: ExpyState, changeForSection section: Int) {
+        print("\(section)섹션")
+        
+        switch state {
+        case .willExpand:
+            print("WILL EXPAND")
+            
+        case .willCollapse:
+            print("WILL COLLAPSE")
+            
+        case .didExpand:
+            print("DID EXPAND")
+            
+        case .didCollapse:
+            print("DID COLLAPSE")
+        }
+    }
+    
+    func tableView(_ tableView: ExpyTableView, canExpandSection section: Int) -> Bool {
+        return true
+    }
+    
+    func tableView(_ tableView: ExpyTableView, expandableCellForSection section: Int) -> UITableViewCell {
+        let cell = UITableViewCell()
+        cell.backgroundColor = .systemGray6 //백그라운드 컬러
+        cell.selectionStyle = .none //선택했을 때 회색되는거 없애기
+        if section == 0 {
+//            cell.textLabel?.text = arraySection0[0]
+            cell.textLabel?.text = "Service Information"
+            cell.textLabel?.font = UIFont(name: AppFontName.medium, size: 14)
+        } else {
+//            cell.textLabel?.text = arraySection1[0]
+            cell.textLabel?.text = "Robot"
+            cell.textLabel?.font = UIFont(name: AppFontName.medium, size: 14)
+            
+        }
+        return cell
+    }
 }
 
 
 extension MapViewController: UITableViewDelegate {
     // 높이 지정 index별
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return jupiterTableView.frame.height
-//        return UITableView.automaticDimension
+        if (tableView == jupiterTableView) {
+            return jupiterTableView.frame.height
+            //        return UITableView.automaticDimension
+        } else {
+            if indexPath.row == 0 {
+                return 40
+            } else {
+                return 60
+            }
+        }
+    }
+    
+    func numberOfSections(in tableView: UITableView) -> Int {
+        if (tableView == jupiterTableView) {
+            return 1
+        } else {
+            return 2
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if (tableView == jupiterTableView) {
+            
+        } else {
+            print("\(indexPath.section)섹션 \(indexPath.row)로우 선택됨")
+        }
     }
 }
 
 extension MapViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return tableList.count
-    }
-    
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let tableList = tableList[indexPath.row]
-        
-        switch(tableList) {
-            
-        case .sector:
-            guard let sectorContainerTVC = tableView.dequeueReusableCell(withIdentifier: SectorContainerTableViewCell.identifier) as?
-                    SectorContainerTableViewCell else {return UITableViewCell()}
-            sectorContainerTVC.configure(cardData: cardData!, RP: RP)
-            sectorContainerTVC.selectionStyle = .none
-            
-            return sectorContainerTVC
+        if (tableView == jupiterTableView) {
+            return tableList.count
+        } else {
+            if section == 0 {
+                return arraySection0.count
+            } else {
+                return arraySection1.count
+            }
         }
     }
     
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        if (tableView == jupiterTableView) {
+            let tableList = tableList[indexPath.row]
+            
+            switch(tableList) {
+                
+            case .sector:
+                guard let sectorContainerTVC = tableView.dequeueReusableCell(withIdentifier: SectorContainerTableViewCell.identifier) as?
+                        SectorContainerTableViewCell else {return UITableViewCell()}
+                sectorContainerTVC.configure(cardData: cardData!, RP: RP)
+                sectorContainerTVC.selectionStyle = .none
+                
+                return sectorContainerTVC
+            }
+        } else {
+            let cell = UITableViewCell()
+            if indexPath.section == 0 {
+                cell.textLabel?.text = arraySection0[indexPath.row]
+//                cell.textLabel?.text = "Service Information"
+            } else {
+                cell.textLabel?.text = arraySection1[indexPath.row]
+//                cell.textLabel?.text = "Robot"
+            }
+            return cell
+        }
+    }
 }

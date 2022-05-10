@@ -19,6 +19,8 @@
 		B3037A94281C07060058D025 /* OverlayCustomView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3037A93281C07060058D025 /* OverlayCustomView.swift */; };
 		B340EE3328093FB20096E404 /* CardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B340EE3228093FB20096E404 /* CardViewController.swift */; };
 		B340EE3D280965F90096E404 /* CollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B340EE3C280965F90096E404 /* CollectionViewCell.swift */; };
+		B3455283282AB7B400F0DD3E /* ServiceInfoTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3455281282AB7B400F0DD3E /* ServiceInfoTableViewCell.swift */; };
+		B3455284282AB7B400F0DD3E /* ServiceInfoTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B3455282282AB7B400F0DD3E /* ServiceInfoTableViewCell.xib */; };
 		B35272B2281F8DC300321CC6 /* SplashScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B35272B1281F8DC300321CC6 /* SplashScreen.storyboard */; };
 		B360D8652807C6090084FB22 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = B360D8642807C6090084FB22 /* GoogleService-Info.plist */; };
 		B360D88E28090D6A0084FB22 /* NotoSansKR-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = B360D88828090D680084FB22 /* NotoSansKR-Bold.otf */; };
@@ -92,6 +94,8 @@
 		B3037A93281C07060058D025 /* OverlayCustomView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverlayCustomView.swift; sourceTree = "<group>"; };
 		B340EE3228093FB20096E404 /* CardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardViewController.swift; sourceTree = "<group>"; };
 		B340EE3C280965F90096E404 /* CollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionViewCell.swift; sourceTree = "<group>"; };
+		B3455281282AB7B400F0DD3E /* ServiceInfoTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceInfoTableViewCell.swift; sourceTree = "<group>"; };
+		B3455282282AB7B400F0DD3E /* ServiceInfoTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ServiceInfoTableViewCell.xib; sourceTree = "<group>"; };
 		B35272B1281F8DC300321CC6 /* SplashScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = SplashScreen.storyboard; sourceTree = "<group>"; };
 		B360D8642807C6090084FB22 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../../Downloads/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		B360D88828090D680084FB22 /* NotoSansKR-Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "NotoSansKR-Bold.otf"; sourceTree = "<group>"; };
@@ -192,6 +196,7 @@
 		607FACD21AFB9204008FA782 /* Example for JupiterSDK */ = {
 			isa = PBXGroup;
 			children = (
+				B3455280282AACD000F0DD3E /* Output */,
 				B345527F282AA00700F0DD3E /* Network */,
 				B360D88728090D400084FB22 /* Fonts */,
 				B3BD69B127E9A88B00A32A7A /* Sector */,
@@ -272,6 +277,15 @@
 				B3F5C77F282A5519009BEDB9 /* Protocol.swift */,
 			);
 			name = Network;
+			sourceTree = "<group>";
+		};
+		B3455280282AACD000F0DD3E /* Output */ = {
+			isa = PBXGroup;
+			children = (
+				B3455281282AB7B400F0DD3E /* ServiceInfoTableViewCell.swift */,
+				B3455282282AB7B400F0DD3E /* ServiceInfoTableViewCell.xib */,
+			);
+			name = Output;
 			sourceTree = "<group>";
 		};
 		B360D88728090D400084FB22 /* Fonts */ = {
@@ -442,6 +456,7 @@
 				B3B3610B28295E1D00B8E876 /* Autoway_RP_B4F.csv in Resources */,
 				B3BD699A27E9A4BE00A32A7A /* Colors.xcassets in Resources */,
 				B360D89028090D6A0084FB22 /* NotoSansKR-Thin.otf in Resources */,
+				B3455284282AB7B400F0DD3E /* ServiceInfoTableViewCell.xib in Resources */,
 				B35272B2281F8DC300321CC6 /* SplashScreen.storyboard in Resources */,
 				607FACE01AFB9204008FA782 /* LaunchScreen.xib in Resources */,
 				607FACDD1AFB9204008FA782 /* Images.xcassets in Resources */,
@@ -516,6 +531,7 @@
 				"${PODS_ROOT}/Target Support Files/Pods-JupiterSDK_Example/Pods-JupiterSDK_Example-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/Alamofire/Alamofire.framework",
 				"${BUILT_PRODUCTS_DIR}/Charts/Charts.framework",
+				"${BUILT_PRODUCTS_DIR}/ExpyTableView/ExpyTableView.framework",
 				"${BUILT_PRODUCTS_DIR}/SnapKit/SnapKit.framework",
 				"${BUILT_PRODUCTS_DIR}/SwiftAlgorithms/Algorithms.framework",
 			);
@@ -523,6 +539,7 @@
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Alamofire.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Charts.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ExpyTableView.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SnapKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Algorithms.framework",
 			);
@@ -567,6 +584,7 @@
 				B3037A94281C07060058D025 /* OverlayCustomView.swift in Sources */,
 				B3B4F85A28114EEB009F9E6C /* ShowCardCollectionViewCell.swift in Sources */,
 				B3DE146D280E7146006DA43C /* AddCardViewController.swift in Sources */,
+				B3455283282AB7B400F0DD3E /* ServiceInfoTableViewCell.swift in Sources */,
 				B3C09C64280E941B00E6F55F /* ShowCardViewController.swift in Sources */,
 				B3BD69AC27E9A57E00A32A7A /* UICollectionViewRegisterable.swift in Sources */,
 				607FACD81AFB9204008FA782 /* MainViewController.swift in Sources */,

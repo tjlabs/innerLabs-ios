@@ -10,6 +10,13 @@ import UIKit
 import Alamofire
 import JupiterSDK
 
+struct AppFontName {
+    static let bold = "NotoSansKR-Bold"
+    static let medium = "NotoSansKR-Medium"
+    static let regular = "NotoSansKR-Regular"
+    static let light = "NotoSansKR-Light"
+}
+
 class MainViewController: UIViewController, UITextFieldDelegate {
     
     @IBOutlet weak var codeTextField: UITextField!

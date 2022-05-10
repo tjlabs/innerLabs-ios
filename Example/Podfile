@@ -10,7 +10,8 @@ target 'JupiterSDK_Example' do
   pod 'GoogleMaps', '4.0.0'
   pod 'GooglePlaces', '4.0.0'
   pod 'Charts' 
-  pod 'SnapKit' 
+  pod 'SnapKit'
+  pod 'ExpyTableView' 
 
   target 'JupiterSDK_Tests' do
     inherit! :search_paths
