@@ -150,7 +150,7 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
             let window = UIApplication.shared.keyWindow
             let bottomPadding = window?.safeAreaInsets.bottom ?? 0.0
             
-            defaultHeight = MapView.bounds.height - 120 - jupiterTableViewHeight.constant - bottomPadding
+            defaultHeight = MapView.bounds.height - 100 - jupiterTableViewHeight.constant - bottomPadding
             
             containerViewHeight.constant = defaultHeight
         } else {
@@ -163,6 +163,9 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
         let sectorContainerTVC = UINib(nibName: SectorContainerTableViewCell.identifier, bundle: nil)
         jupiterTableView.register(sectorContainerTVC, forCellReuseIdentifier: SectorContainerTableViewCell.identifier)
         jupiterTableView.backgroundColor = .systemGray6
+        
+        let serviceInfoNib = UINib(nibName: "ServiceInfoTableViewCell", bundle: nil)
+        containerTableView.register(serviceInfoNib, forCellReuseIdentifier: "ServiceInfoTableViewCell")
     }
     
     func makeDelegate() {
@@ -233,7 +236,6 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
     
     func tableView(_ tableView: ExpyTableView, expandableCellForSection section: Int) -> UITableViewCell {
         let cell = UITableViewCell()
-//        cell.backgroundColor = .systemGray6 //백그라운드 컬러
         cell.backgroundColor = .white
         cell.selectionStyle = .none //선택했을 때 회색되는거 없애기
         cell.separatorInset = UIEdgeInsets(top: 5, left: 10, bottom: 0, right: 10)
@@ -260,7 +262,7 @@ extension MapViewController: UITableViewDelegate {
             if indexPath.row == 0 {
                 return 40
             } else {
-                return 60
+                return 320
             }
         }
     }
@@ -289,7 +291,7 @@ extension MapViewController: UITableViewDataSource {
         } else {
             if section == 0 {
 //                return arraySection0.count
-                return 1
+                return 2
             } else {
                 return arraySection1.count
             }
@@ -311,9 +313,10 @@ extension MapViewController: UITableViewDataSource {
         } else {
             if indexPath.section == 0 {
 //                cell.textLabel?.text = arraySection0[indexPath.row]
+//                let serviceInfoTVC = tableView.dequeueReusableCell(withIdentifier: "ServiceInfoTableViewCell", for: indexPath) as! ServiceInfoTableViewCell
+                let serviceInfoTVC = tableView.dequeueReusableCell(withIdentifier: ServiceInfoTableViewCell.identifier) as!
+                ServiceInfoTableViewCell
                 
-                guard let serviceInfoTVC = tableView.dequeueReusableCell(withIdentifier: ServiceInfoTableViewCell.identifier) as?
-                        ServiceInfoTableViewCell else { return UITableViewCell() }
                 return serviceInfoTVC
             } else {
                 let cell = UITableViewCell()
