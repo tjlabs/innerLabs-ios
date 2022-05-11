@@ -11,7 +11,7 @@ import UIKit
 class ServiceInfoTableViewCell: UITableViewCell {
     
     static let identifier = "ServiceInfoTableViewCell"
-
+    
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code

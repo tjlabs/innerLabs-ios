@@ -333,6 +333,7 @@
                                         <state key="normal" image="showInfoButton"/>
                                         <state key="selected" image="closeInfoButton"/>
                                         <connections>
+                                            <action selector="tapShowButton:" destination="1nM-eT-fBa" eventType="touchUpInside" id="vc2-yW-gn3"/>
                                             <action selector="tapShowOutputViewButton:" destination="zYG-kF-5hn" eventType="touchUpInside" id="hZo-Gf-y7u"/>
                                         </connections>
                                     </button>
@@ -353,17 +354,17 @@
                                 </constraints>
                             </view>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="Dag-Ay-eUz">
-                                <rect key="frame" x="0.0" y="120" width="390" height="570"/>
+                                <rect key="frame" x="0.0" y="120" width="390" height="400"/>
                                 <color key="backgroundColor" systemColor="systemGray6Color"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="570" id="hSh-zS-a0Y"/>
+                                    <constraint firstAttribute="height" constant="400" id="hSh-zS-a0Y"/>
                                 </constraints>
                             </tableView>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="fII-7b-eZC">
-                                <rect key="frame" x="0.0" y="690" width="390" height="120"/>
+                                <rect key="frame" x="0.0" y="790" width="390" height="20"/>
                                 <subviews>
                                     <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="Qaf-qC-h3g" customClass="ExpyTableView" customModule="ExpyTableView">
-                                        <rect key="frame" x="0.0" y="5" width="390" height="115"/>
+                                        <rect key="frame" x="0.0" y="5" width="390" height="15"/>
                                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                         <userDefinedRuntimeAttributes>
                                             <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
@@ -378,6 +379,7 @@
                                     <constraint firstItem="Qaf-qC-h3g" firstAttribute="leading" secondItem="fII-7b-eZC" secondAttribute="leading" id="J14-Xf-SlA"/>
                                     <constraint firstAttribute="bottom" secondItem="Qaf-qC-h3g" secondAttribute="bottom" id="KfR-4c-RLG"/>
                                     <constraint firstAttribute="trailing" secondItem="Qaf-qC-h3g" secondAttribute="trailing" id="Lb5-ZT-V79"/>
+                                    <constraint firstAttribute="height" constant="20" id="ub0-aA-qSa"/>
                                 </constraints>
                                 <userDefinedRuntimeAttributes>
                                     <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
@@ -403,13 +405,14 @@
                             <constraint firstItem="I5y-00-m4y" firstAttribute="trailing" secondItem="Dag-Ay-eUz" secondAttribute="trailing" id="bCl-Bu-kaO"/>
                             <constraint firstItem="I5y-00-m4y" firstAttribute="trailing" secondItem="fII-7b-eZC" secondAttribute="trailing" id="c24-HU-tWD"/>
                             <constraint firstItem="Dag-Ay-eUz" firstAttribute="top" secondItem="qpb-Ci-WlG" secondAttribute="bottom" id="cML-nb-cPi"/>
-                            <constraint firstItem="fII-7b-eZC" firstAttribute="top" secondItem="Dag-Ay-eUz" secondAttribute="bottom" id="dbj-1f-67f"/>
                             <constraint firstItem="I5y-00-m4y" firstAttribute="bottom" secondItem="fII-7b-eZC" secondAttribute="bottom" id="o1n-2s-FHy"/>
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="MapView" destination="QmQ-fY-X5r" id="yWh-Gi-jdh"/>
                         <outlet property="cardTopImage" destination="byw-n3-gmk" id="kJe-S1-q2F"/>
                         <outlet property="containerTableView" destination="Qaf-qC-h3g" id="f6Z-VF-SRp"/>
+                        <outlet property="containerViewHeight" destination="ub0-aA-qSa" id="Lid-eM-8lQ"/>
                         <outlet property="jupiterTableView" destination="Dag-Ay-eUz" id="0uI-ln-Isi"/>
                         <outlet property="jupiterTableViewHeight" destination="hSh-zS-a0Y" id="pfz-QE-ph7"/>
                         <outlet property="sectorNameLabel" destination="fYW-Vg-Xr6" id="zY2-kd-aDJ"/>

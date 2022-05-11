@@ -76,7 +76,8 @@ class SectorContainerTableViewCell: UITableViewCell {
         let yAxisValue2: [Double] = [7 + randomNum, 11 - randomNum]
 
         let values1 = (0..<xAxisValue.count).map { (i) -> ChartDataEntry in
-            return ChartDataEntry(x: yAxisValue[i], y: xAxisValue[i])
+//            return ChartDataEntry(x: yAxisValue[i], y: xAxisValue[i])
+            return ChartDataEntry(x: xAxisValue[i], y: yAxisValue[i])
         }
         
         let values2 = (0..<xAxisValue2.count).map { (i) -> ChartDataEntry in
@@ -104,10 +105,10 @@ class SectorContainerTableViewCell: UITableViewCell {
         let yMax = yAxisValue.max()!
         
         // Configure Chart
-        scatterChart.xAxis.axisMinimum = yMin-5
-        scatterChart.xAxis.axisMaximum = yMax+5
-        scatterChart.leftAxis.axisMinimum = xMin-5
-        scatterChart.leftAxis.axisMaximum = xMax+5
+        scatterChart.xAxis.axisMinimum = xMin-5
+        scatterChart.xAxis.axisMaximum = xMax+5
+        scatterChart.leftAxis.axisMinimum = yMin-20
+        scatterChart.leftAxis.axisMaximum = yMax+20
         
         scatterChart.xAxis.drawGridLinesEnabled = false
         scatterChart.leftAxis.drawGridLinesEnabled = false

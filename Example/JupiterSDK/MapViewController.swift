@@ -19,12 +19,19 @@ protocol PageDelegate {
     func sendPage(data: Int)
 }
 
+enum ContainerTableViewState {
+    case expanded
+    case normal
+}
+
 class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewDataSource {
+    
+    @IBOutlet var MapView: UIView!
     
     @IBOutlet weak var jupiterTableView: UITableView!
     @IBOutlet weak var jupiterTableViewHeight: NSLayoutConstraint!
-    @IBOutlet weak var containerViewHeight: NSLayoutConstraint!
     @IBOutlet weak var containerTableView: ExpyTableView!
+    @IBOutlet weak var containerViewHeight: NSLayoutConstraint!
     
     private let tableList: [TableList] = [.sector]
     
@@ -53,6 +60,12 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
     
     var RP = [String: [[Double]]]()
     
+    var isShow: Bool = false
+    var isRadioMap: Bool = false
+    
+    // View
+    var defaultHeight: CGFloat = 100
+    
     // Test
     let arraySection0: Array<String> = ["section0_row0","section0_row1","section0_row2"]
     let arraySection1: Array<String> = ["section1_row0","section1_row1","section1_row2","section1_row3"]
@@ -73,10 +86,12 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
                 let nameLevel: String = (cardData?.infoLevel[idx])!
                 RP[nameLevel] = [rpX, rpY]
             }
+            isRadioMap = true
         }
         
         makeDelegate()
         registerXib()
+        fixChartHeight(flag: isRadioMap)
     }
     
     override func viewDidLoad() {
@@ -86,22 +101,68 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
         jupiterService.startService(parent: self)
     }
     
+    @IBAction func tapBackButton(_ sender: UIButton) {
+        self.delegate?.sendPage(data: page)
+        self.navigationController?.popViewController(animated: true)
+    }
+    @IBAction func tapShowButton(_ sender: UIButton) {
+        UIView.animate(withDuration: 0.5, delay: 0.0, options: .curveLinear, animations: {
+        }) { (success) in
+            sender.isSelected = !sender.isSelected
+            UIView.animate(withDuration: 0.5, delay: 0.0, options: .curveLinear, animations: {
+                sender.transform = .identity
+            }, completion: nil)
+        }
+        
+        if sender.isSelected == false {
+            isShow = true
+            showContainerTableView()
+        }
+        else {
+            isShow = false
+            hideContainerTableView()
+        }
+    }
+    
     func setCardData(cardData: CardItemData) {
         self.sectorNameLabel.text = cardData.name
         self.cardTopImage.image = UIImage(named: cardData.cardTopImage)!
     }
     
-    @IBAction func tapBackButton(_ sender: UIButton) {
-        self.delegate?.sendPage(data: page)
-        self.navigationController?.popViewController(animated: true)
+    func showContainerTableView() {
+        containerViewHeight.constant = 220
+    }
+    
+    func hideContainerTableView() {
+        containerViewHeight.constant = defaultHeight
+    }
+    
+    func fixChartHeight(flag: Bool) {
+        if (flag) {
+            let xMin = rpX.min()!
+            let xMax = rpX.max()!
+            let yMin = rpY.min()!
+            let yMax = rpY.max()!
+            
+            let ratio = (yMax - yMin) / (xMax - xMin)
+            jupiterTableViewHeight.constant = jupiterTableView.bounds.width * ratio
+
+            let window = UIApplication.shared.keyWindow
+            let bottomPadding = window?.safeAreaInsets.bottom ?? 0.0
+            
+            defaultHeight = MapView.bounds.height - 120 - jupiterTableViewHeight.constant - bottomPadding
+            
+            containerViewHeight.constant = defaultHeight
+        } else {
+            jupiterTableViewHeight.constant = 480
+            containerViewHeight.constant = 150
+        }
     }
     
     func registerXib() {
         let sectorContainerTVC = UINib(nibName: SectorContainerTableViewCell.identifier, bundle: nil)
         jupiterTableView.register(sectorContainerTVC, forCellReuseIdentifier: SectorContainerTableViewCell.identifier)
         jupiterTableView.backgroundColor = .systemGray6
-        
-        jupiterTableViewHeight.constant = 480
     }
     
     func makeDelegate() {
