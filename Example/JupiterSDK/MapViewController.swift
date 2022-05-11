@@ -66,10 +66,6 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
     // View
     var defaultHeight: CGFloat = 100
     
-    // Test
-    let arraySection0: Array<String> = ["section0_row0","section0_row1","section0_row2"]
-    let arraySection1: Array<String> = ["section1_row0","section1_row1","section1_row2","section1_row3"]
-    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(false)
         
@@ -166,6 +162,9 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
         
         let serviceInfoNib = UINib(nibName: "ServiceInfoTableViewCell", bundle: nil)
         containerTableView.register(serviceInfoNib, forCellReuseIdentifier: "ServiceInfoTableViewCell")
+        
+        let robotNib = UINib(nibName: "RobotTableViewCell", bundle: nil)
+        containerTableView.register(robotNib, forCellReuseIdentifier: "RobotTableViewCell")
     }
     
     func makeDelegate() {
@@ -210,6 +209,11 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
     private func loadRP(fileName: String) {
         let path = Bundle.main.path(forResource: fileName, ofType: "csv")!
         parseCSV(url: URL(fileURLWithPath: path))
+    }
+    
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        jupiterTableView.endEditing(true)
+        self.view.endEditing(true)
     }
     
     func tableView(_ tableView: ExpyTableView, expyState state: ExpyState, changeForSection section: Int) {
@@ -262,7 +266,12 @@ extension MapViewController: UITableViewDelegate {
             if indexPath.row == 0 {
                 return 40
             } else {
-                return 320
+                if (indexPath.section == 0) {
+                    return 300 + 20
+                } else {
+                    return 120 + 20
+                }
+                
             }
         }
     }
@@ -290,10 +299,9 @@ extension MapViewController: UITableViewDataSource {
             return tableList.count
         } else {
             if section == 0 {
-//                return arraySection0.count
                 return 2
             } else {
-                return arraySection1.count
+                return 2
             }
         }
     }
@@ -312,16 +320,15 @@ extension MapViewController: UITableViewDataSource {
             }
         } else {
             if indexPath.section == 0 {
-//                cell.textLabel?.text = arraySection0[indexPath.row]
-//                let serviceInfoTVC = tableView.dequeueReusableCell(withIdentifier: "ServiceInfoTableViewCell", for: indexPath) as! ServiceInfoTableViewCell
                 let serviceInfoTVC = tableView.dequeueReusableCell(withIdentifier: ServiceInfoTableViewCell.identifier) as!
                 ServiceInfoTableViewCell
                 
                 return serviceInfoTVC
             } else {
-                let cell = UITableViewCell()
-                cell.textLabel?.text = arraySection1[indexPath.row]
-                return cell
+                let robotTVC = tableView.dequeueReusableCell(withIdentifier: RobotTableViewCell.identifier) as!
+                RobotTableViewCell
+                
+                return robotTVC
             }
         }
     }

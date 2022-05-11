@@ -32,6 +32,8 @@
 		B367526F2817CB3C00E4FA6C /* CardBackViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B367526E2817CB3C00E4FA6C /* CardBackViewController.swift */; };
 		B3844E8E28099EE3007A5215 /* CardCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3844E8C28099EE3007A5215 /* CardCollectionViewCell.swift */; };
 		B3844E8F28099EE3007A5215 /* CardCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B3844E8D28099EE3007A5215 /* CardCollectionViewCell.xib */; };
+		B388AC31282BF6A3001C3D71 /* RobotTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B388AC2F282BF6A3001C3D71 /* RobotTableViewCell.swift */; };
+		B388AC32282BF6A3001C3D71 /* RobotTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B388AC30282BF6A3001C3D71 /* RobotTableViewCell.xib */; };
 		B3B156DE282397AF0058B538 /* ImageOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3B156DD282397AF0058B538 /* ImageOverlay.swift */; };
 		B3B361062829522A00B8E876 /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3B361052829522A00B8E876 /* MapViewController.swift */; };
 		B3B3610928295E1400B8E876 /* Autoway_RP_B3F.csv in Resources */ = {isa = PBXBuildFile; fileRef = B3B3610828295E1400B8E876 /* Autoway_RP_B3F.csv */; };
@@ -107,6 +109,8 @@
 		B367526E2817CB3C00E4FA6C /* CardBackViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardBackViewController.swift; sourceTree = "<group>"; };
 		B3844E8C28099EE3007A5215 /* CardCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardCollectionViewCell.swift; sourceTree = "<group>"; };
 		B3844E8D28099EE3007A5215 /* CardCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CardCollectionViewCell.xib; sourceTree = "<group>"; };
+		B388AC2F282BF6A3001C3D71 /* RobotTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RobotTableViewCell.swift; sourceTree = "<group>"; };
+		B388AC30282BF6A3001C3D71 /* RobotTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = RobotTableViewCell.xib; sourceTree = "<group>"; };
 		B3B156DD282397AF0058B538 /* ImageOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageOverlay.swift; sourceTree = "<group>"; };
 		B3B361052829522A00B8E876 /* MapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
 		B3B3610828295E1400B8E876 /* Autoway_RP_B3F.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Autoway_RP_B3F.csv; sourceTree = "<group>"; };
@@ -284,6 +288,8 @@
 			children = (
 				B3455281282AB7B400F0DD3E /* ServiceInfoTableViewCell.swift */,
 				B3455282282AB7B400F0DD3E /* ServiceInfoTableViewCell.xib */,
+				B388AC2F282BF6A3001C3D71 /* RobotTableViewCell.swift */,
+				B388AC30282BF6A3001C3D71 /* RobotTableViewCell.xib */,
 			);
 			name = Output;
 			sourceTree = "<group>";
@@ -446,6 +452,7 @@
 				B360D89228090D6A0084FB22 /* NotoSansKR-Medium.otf in Resources */,
 				B3B3610928295E1400B8E876 /* Autoway_RP_B3F.csv in Resources */,
 				B360D89328090D6A0084FB22 /* NotoSansKR-Regular.otf in Resources */,
+				B388AC32282BF6A3001C3D71 /* RobotTableViewCell.xib in Resources */,
 				B3F370D8281BA1CC003A427F /* RobotView.xib in Resources */,
 				B3BD69B527E9A8AD00A32A7A /* LevelCollectionViewCell.xib in Resources */,
 				B3F370D4281B9B85003A427F /* OutputView.xib in Resources */,
@@ -597,6 +604,7 @@
 				B3F5C77E282A5408009BEDB9 /* Network.swift in Sources */,
 				B340EE3D280965F90096E404 /* CollectionViewCell.swift in Sources */,
 				B3BD69A427E9A54700A32A7A /* StringExtension.swift in Sources */,
+				B388AC31282BF6A3001C3D71 /* RobotTableViewCell.swift in Sources */,
 				B3BD69B427E9A8AD00A32A7A /* LevelCollectionViewCell.swift in Sources */,
 				607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */,
 				B3BD69A627E9A55400A32A7A /* UIViewExtension.swift in Sources */,

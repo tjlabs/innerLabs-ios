@@ -36,7 +36,7 @@
                         <rect key="frame" x="16" y="10" width="288" height="380"/>
                         <color key="backgroundColor" name="darkgrey4"/>
                     </imageView>
-                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="QSA-Kx-Yvk" customClass="ScatterChartView" customModule="Charts">
+                    <view userInteractionEnabled="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="QSA-Kx-Yvk" customClass="ScatterChartView" customModule="Charts">
                         <rect key="frame" x="26" y="10" width="268" height="380"/>
                         <color key="backgroundColor" name="blue4"/>
                     </view>
