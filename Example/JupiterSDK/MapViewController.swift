@@ -79,15 +79,15 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
         makeDelegate()
         registerXib()
         
-        if (cardData?.id == 2) {
-            let numLevels: Int = (cardData?.infolevel.count)!
+        if (cardData?.sector_id == 3 || cardData?.sector_id == 4) {
+            let numLevels: Int = (cardData?.infoLevel.count)!
             for idx in 0..<numLevels {
                 if (idx == 0) {
                     loadRP(fileName: "Autoway_RP_B4F")
                 } else {
                     loadRP(fileName: "Autoway_RP_B3F")
                 }
-                let nameLevel: String = (cardData?.infolevel[idx])!
+                let nameLevel: String = (cardData?.infoLevel[idx])!
                 RP[nameLevel] = [rpX, rpY]
             }
             isRadioMap = true
@@ -147,9 +147,9 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
     }
     
     func setCardData(cardData: CardItemData) {
-        self.sectorNameLabel.text = cardData.name
+        self.sectorNameLabel.text = cardData.sector_name
         
-        let imageName: String = cardData.cardcolor + "CardTop"
+        let imageName: String = cardData.cardColor + "CardTop"
         self.cardTopImage.image = UIImage(named: imageName)!
     }
     
@@ -309,7 +309,10 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
     func tableView(_ tableView: ExpyTableView, expandableCellForSection section: Int) -> UITableViewCell {
         let cell = UITableViewCell()
         cell.backgroundColor = .white
-        cell.selectionStyle = .none //선택했을 때 회색되는거 없애기
+//        cell.selectionStyle = .none //선택했을 때 회색되는거 없애기
+//        var bgColorView = UIView()
+//        bgColorView.backgroundColor = .blue
+//        cell.selectedBackgroundView = bgColorView
         cell.separatorInset = UIEdgeInsets(top: 5, left: 10, bottom: 0, right: 10)
         if section == 0 {
             cell.textLabel?.text = "Service Information"

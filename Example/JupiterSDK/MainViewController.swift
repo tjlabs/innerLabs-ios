@@ -63,34 +63,8 @@ class MainViewController: UIViewController, UITextFieldDelegate {
             }
             defaults.synchronize()
             
-            let url = "https://where-run-card-skrgq3jc5a-du.a.run.app/cards"
             let login = Login(user_id: uuid)
-            postLogin(url: url, input: login)
-            
-            
-//            if (cards.isEmpty) {
-//                // 최초 사용자
-//                print("최초 로그인 입니다")
-//
-//                // Card 정보 가져오기
-//                cardDatas.append(CardItemData(name: "JUPITER\nService guide", description: "카드를 터치해주세요", cardImage: "purpleCard", cardShowImage: "purpleCardShow",
-//                                              sectorImage: "sectorDefault", sectorShowImage: "tjlabsShow", cardTopImage: "cardTopPurple", code: "purple", sectorID: 0, infoLevel: ["1F","2F","3F","4F"]))
-//                cardDatas.append(CardItemData(name: "KIST", description: "한국과학기술연구원 L8", cardImage: "orangeCard", cardShowImage: "orangeCardShow",
-//                                              sectorImage: "sectorKist", sectorShowImage: "kistShow", cardTopImage: "cardTopOrange", code: "orange", sectorID: 1, infoLevel: ["B1F"]))
-//                cardDatas.append(CardItemData(name: "오토웨이타워(V)", description: "For Vehicle", cardImage: "grayCard", cardShowImage: "grayCardShow",
-//                                              sectorImage: "sectorParkingCar", sectorShowImage: "parkingCarShow", cardTopImage: "cardTopGray", code: "gray", sectorID: 2, infoLevel: ["B4F","B3F"]))
-//                cardDatas.append(CardItemData(name: "오토웨이타워(P)", description: "For Pedestrian", cardImage: "grayCard", cardShowImage: "grayCardShow",
-//                                              sectorImage: "sectorParkingPed", sectorShowImage: "parkingPedShow", cardTopImage: "cardTopGray", code: "gray", sectorID: 2, infoLevel: ["B4F","B3F"]))
-//                cardDatas.append(CardItemData(name: "COEX", description: "지하주차장", cardImage: "pinkCard", cardShowImage: "pinkCardShow",
-//                                              sectorImage: "sectorCoex", sectorShowImage: "coexShow", cardTopImage: "cardTopPink", code: "pink", sectorID: 3, infoLevel: ["B2F","B1F","1F","2F"]))
-//
-////                let addCard = AddCard(user_id: uuid, sector_code: "KIST!1966")
-////                let result = networkManager.putAddCard(url: url, input: addCard)
-////                print(result)
-//            } else {
-//                print("최초 사용자가 아닙니다")
-//                print(cards)
-//            }
+            postLogin(url: JUPITER_URL, input: login)
         }
     }
     
@@ -163,34 +137,29 @@ class MainViewController: UIViewController, UITextFieldDelegate {
                     let list = jsonToCardList(json: returnedString)
                     let myCard = list.sectors
                     
+                    print("Sector List :", myCard)
+                    
                     var cardDatas = [CardItemData]()
                     
                     if (myCard.isEmpty) {
                         print("최초 사용자 입니다")
-                        cardDatas.append(CardItemData(id: 0, name: "JUPITER\nService guide", code: "JUPITER!", description: "카드를 터치해주세요", cardcolor: "purple", mode: 0, infolevel: ["3F","4F","5F","6F","7F"]))
-//                        cardDatas.append(CardItemData(name: "JUPITER\nService guide", description: "카드를 터치해주세요", cardImage: "purpleCard", cardShowImage: "purpleCardShow",
-//                                                      sectorImage: "sectorDefault", sectorShowImage: "tjlabsShow", cardTopImage: "cardTopPurple", code: "purple", sectorID: 0, infoLevel: ["1F","2F","3F","4F"]))
-//                        cardDatas.append(CardItemData(name: "KIST", description: "한국과학기술연구원 L8", cardImage: "orangeCard", cardShowImage: "orangeCardShow",
-//                                                      sectorImage: "sectorKist", sectorShowImage: "kistShow", cardTopImage: "cardTopOrange", code: "orange", sectorID: 1, infoLevel: ["B1F"]))
-//                        cardDatas.append(CardItemData(name: "오토웨이타워(V)", description: "For Vehicle", cardImage: "grayCard", cardShowImage: "grayCardShow",
-//                                                      sectorImage: "sectorParkingCar", sectorShowImage: "parkingCarShow", cardTopImage: "cardTopGray", code: "gray", sectorID: 2, infoLevel: ["B4F","B3F"]))
-//                        cardDatas.append(CardItemData(name: "오토웨이타워(P)", description: "For Pedestrian", cardImage: "grayCard", cardShowImage: "grayCardShow",
-//                                                      sectorImage: "sectorParkingPed", sectorShowImage: "parkingPedShow", cardTopImage: "cardTopGray", code: "gray", sectorID: 2, infoLevel: ["B4F","B3F"]))
-//                        cardDatas.append(CardItemData(name: "COEX", description: "지하주차장", cardImage: "pinkCard", cardShowImage: "pinkCardShow",
-//                                                      sectorImage: "sectorCoex", sectorShowImage: "coexShow", cardTopImage: "cardTopPink", code: "pink", sectorID: 3, infoLevel: ["B2F","B1F","1F","2F"]))
-                        
+                        cardDatas.append(CardItemData(sector_id: 0, sector_name: "JUPITER\nService guide", description: "카드를 터치해주세요", cardColor: "purple", mode: 0, infoLevel: ["3F","4F","5F","6F","7F"]))
                     } else {
                         print("최초 사용자가 아닙니다")
-//                        cardDatas.append(CardItemData(name: "JUPITER\nService guide", description: "카드를 터치해주세요", cardImage: "purpleCard", cardShowImage: "purpleCardShow",
-//                                                      sectorImage: "sectorDefault", sectorShowImage: "tjlabsShow", cardTopImage: "cardTopPurple", code: "purple", sectorID: 0, infoLevel: ["1F","2F","3F","4F"]))
-//                        cardDatas.append(CardItemData(name: "KIST", description: "한국과학기술연구원 L8", cardImage: "orangeCard", cardShowImage: "orangeCardShow",
-//                                                      sectorImage: "sectorKist", sectorShowImage: "kistShow", cardTopImage: "cardTopOrange", code: "orange", sectorID: 1, infoLevel: ["B1F"]))
-//                        cardDatas.append(CardItemData(name: "오토웨이타워(V)", description: "For Vehicle", cardImage: "grayCard", cardShowImage: "grayCardShow",
-//                                                      sectorImage: "sectorParkingCar", sectorShowImage: "parkingCarShow", cardTopImage: "cardTopGray", code: "gray", sectorID: 2, infoLevel: ["B4F","B3F"]))
-//                        cardDatas.append(CardItemData(name: "오토웨이타워(P)", description: "For Pedestrian", cardImage: "grayCard", cardShowImage: "grayCardShow",
-//                                                      sectorImage: "sectorParkingPed", sectorShowImage: "parkingPedShow", cardTopImage: "cardTopGray", code: "gray", sectorID: 2, infoLevel: ["B4F","B3F"]))
-//                        cardDatas.append(CardItemData(name: "COEX", description: "지하주차장", cardImage: "pinkCard", cardShowImage: "pinkCardShow",
-//                                                      sectorImage: "sectorCoex", sectorShowImage: "coexShow", cardTopImage: "cardTopPink", code: "pink", sectorID: 3, infoLevel: ["B2F","B1F","1F","2F"]))
+                        cardDatas.append(CardItemData(sector_id: 0, sector_name: "JUPITER\nService guide", description: "카드를 터치해주세요", cardColor: "purple", mode: 0, infoLevel: ["3F","4F","5F","6F","7F"]))
+                        
+                        print("Sector List :", myCard)
+                        for card in 0..<myCard.count {
+                            let cardInfo: CardInfo = myCard[card]
+                            let id: Int = cardInfo.sector_id
+                            let name: String = cardInfo.sector_name
+                            let description: String = cardInfo.description
+                            let cardColor: String = cardInfo.cardColor
+                            let mode: Int = cardInfo.mode
+                            let infoLevel: [String] = cardInfo.infoLevel.components(separatedBy: " ")
+                            
+                            cardDatas.append(CardItemData(sector_id: id, sector_name: name, description: description, cardColor: cardColor, mode: mode, infoLevel: infoLevel))
+                        }
                     }
                     
                     goToCardVC(cardDatas: cardDatas)
@@ -232,11 +201,9 @@ class MainViewController: UIViewController, UITextFieldDelegate {
     
     func jsonToCardList(json: String) -> CardList {
         let result = CardList(sectors: [])
-//        let result = CardInfo()
         let decoder = JSONDecoder()
         
         let jsonString = json
-        print("JSON :", jsonString)
         
         if let data = jsonString.data(using: .utf8), let decoded = try? decoder.decode(CardList.self, from: data) {
             

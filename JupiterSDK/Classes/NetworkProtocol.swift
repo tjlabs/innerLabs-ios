@@ -1,42 +1,20 @@
 import Foundation
 
 public struct CardItemData: Codable {
-    public var id: Int
-    public var name: String
-    public var code: String
+    public var sector_id: Int
+    public var sector_name: String
     public var description: String
-    public var cardcolor: String
+    public var cardColor: String
     public var mode: Int
-    public var infolevel: [String]
+    public var infoLevel: [String]
     
-//    public var cardImage: String
-//    public var cardShowImage: String
-//    public var sectorImage: String
-//    public var sectorShowImage: String
-//    public var cardTopImage: String
-//    public var infoLevel: [String]
-    
-//    public init(name: String, description: String, cardImage: String, cardShowImage: String, sectorImage: String, sectorShowImage: String, cardTopImage: String, code: String, id: Int, infoLevel: [String]) {
-//        self.name = name
-//        self.description = description
-//        self.cardImage = cardImage
-//        self.cardShowImage = cardShowImage
-//        self.sectorImage = sectorImage
-//        self.sectorShowImage = sectorShowImage
-//        self.cardTopImage = cardTopImage
-//        self.code = code
-//        self.id = id
-//        self.infoLevel = infoLevel
-//    }
-    
-    public init(id: Int, name: String, code: String, description: String, cardcolor: String, mode: Int, infolevel: [String]) {
-        self.id = id
-        self.name = name
-        self.code = code
+    public init(sector_id: Int, sector_name: String, description: String, cardColor: String, mode: Int, infoLevel: [String]) {
+        self.sector_id = sector_id
+        self.sector_name = sector_name
         self.description = description
-        self.cardcolor = cardcolor
+        self.cardColor = cardColor
         self.mode = mode
-        self.infolevel = infolevel
+        self.infoLevel = infoLevel
     }
 }
 

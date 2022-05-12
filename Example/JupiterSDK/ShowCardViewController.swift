@@ -25,6 +25,7 @@ class ShowCardViewController: UIViewController, AddCardDelegate {
         cardItemData = data
     }
     
+    var uuid: String = ""
     var cardItemData: [CardItemData] = []
     
     var delegate : ShowCardDelegate?
@@ -72,11 +73,11 @@ class ShowCardViewController: UIViewController, AddCardDelegate {
         cardShowImages = []
         sectorShowImages = []
         for i in 0..<data.count {
-            let imageName: String = data[i].cardcolor + "CardShow"
+            let imageName: String = data[i].cardColor + "CardShow"
             let cardImage = UIImage(named: imageName)!
             cardShowImages.append(cardImage)
             
-            let id = data[i].id
+            let id = data[i].sector_id
             var sectorImage = UIImage(named: "tjlabsShow")!
             
             switch(id) {
@@ -186,6 +187,7 @@ class ShowCardViewController: UIViewController, AddCardDelegate {
         guard let addCardVC = self.storyboard?.instantiateViewController(withIdentifier: "AddCardViewController") as? AddCardViewController else { return }
         addCardVC.modalPresentationStyle = .currentContext
         
+        addCardVC.uuid = self.uuid
         addCardVC.cardItemData = self.cardItemData
         addCardVC.delegate = self
         
@@ -238,8 +240,8 @@ extension ShowCardViewController: UICollectionViewDataSource {
         
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "ShowCardCollectionViewCell", for: indexPath) as! ShowCardCollectionViewCell
         
-        let sectorName = cardItemData[indexPath.item].name
-        let sectorID = cardItemData[indexPath.item].id
+        let sectorName = cardItemData[indexPath.item].sector_name
+        let sectorID = cardItemData[indexPath.item].sector_id
         cell.nameLabel.text = sectorName
         
         let width = showCardCollectionView.bounds.width
@@ -271,6 +273,13 @@ extension ShowCardViewController: UICollectionViewDataSource {
             // 내가 선택한 카드 삭제
             self.cardItemData.remove(at: indexPath.item)
             setData(data: cardItemData)
+            
+            let uuid = self.uuid
+            let sector_id = self.cardItemData[indexPath.item].sector_id
+            
+            let input = DeleteCard(user_id: uuid, sector_id: sector_id)
+            let result = Network.shared.deleteCard(url: JUPITER_URL, input: input)
+            print("Delete :", result)
             
             // CollectionView Reload
             self.showCardCollectionView.reloadData()

@@ -52,7 +52,7 @@ class SectorContainerTableViewCell: UITableViewCell {
         let arr = levelList
         let idx = (arr.firstIndex(where: {$0 == currentLevel}) ?? nil)
         
-        let level: String = levelList[idx!] ?? ""
+        let level: String = levelList[idx!]
         imageLevel.image = UIImage(named: level)
     }
     
@@ -133,7 +133,7 @@ class SectorContainerTableViewCell: UITableViewCell {
     
     internal func configure(cardData: CardItemData, RP: [String: [[Double]]]) {
         self.cardData = cardData
-        self.levelList = (cardData.infolevel)
+        self.levelList = (cardData.infoLevel)
         currentLevel = levelList[0]
         
         self.RP = RP

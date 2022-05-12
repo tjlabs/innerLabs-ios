@@ -1,5 +1,6 @@
 import Foundation
 
+let JUPITER_URL = "https://where-run-card-skrgq3jc5a-du.a.run.app/cards"
 
 struct Login: Codable {
     var user_id: String
@@ -12,7 +13,21 @@ struct AddCard: Codable {
 
 struct DeleteCard: Codable {
     var user_id: String
-    var id: Int
+    var sector_id: Int
+}
+
+struct AddCardResponse: Codable {
+    var message: String
+    var sector_id: Int
+    var sector_name: String
+    var description: String
+    var cardColor: String
+    var mode: Int
+    var infoLevel: String
+}
+
+struct DeleteCardResponse: Codable {
+    var message: String
 }
 
 
@@ -21,7 +36,10 @@ struct CardList: Codable {
 }
 
 struct CardInfo: Codable {
-    var id: Int
-    var name: String
+    var sector_id: Int
+    var sector_name: String
     var description: String
+    var cardColor: String
+    var mode: Int
+    var infoLevel: String
 }

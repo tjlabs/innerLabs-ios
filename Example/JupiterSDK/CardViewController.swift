@@ -103,11 +103,11 @@ class CardViewController: UIViewController, AddCardDelegate, ShowCardDelegate, S
         cardImages = []
         sectorImages = []
         for i in 0..<data.count {
-            let imageName: String = data[i].cardcolor + "Card"
+            let imageName: String = data[i].cardColor + "Card"
             let cardImage = UIImage(named: imageName)!
             cardImages.append(cardImage)
             
-            let id = data[i].id
+            let id = data[i].sector_id
             var sectorImage = UIImage(named: "sectorDefault")!
             
             switch(id) {
@@ -243,6 +243,7 @@ class CardViewController: UIViewController, AddCardDelegate, ShowCardDelegate, S
         guard let showCardVC = self.storyboard?.instantiateViewController(withIdentifier: "ShowCardViewController") as? ShowCardViewController else { return }
         showCardVC.modalPresentationStyle = .currentContext
         
+        showCardVC.uuid = self.uuid
         showCardVC.cardItemData = self.cardItemData
         showCardVC.delegate = self
         
@@ -254,6 +255,7 @@ class CardViewController: UIViewController, AddCardDelegate, ShowCardDelegate, S
         guard let addCardVC = self.storyboard?.instantiateViewController(withIdentifier: "AddCardViewController") as? AddCardViewController else { return }
         addCardVC.modalPresentationStyle = .currentContext
         
+        addCardVC.uuid = uuid
         addCardVC.cardItemData = self.cardItemData
         addCardVC.delegate = self
         
@@ -305,7 +307,7 @@ extension CardViewController: UICollectionViewDataSource, UICollectionViewDelega
         let mod = indexPath.item%cardCount
         
         // Sector Name & Description
-        cell.sectorName.text = cardItemData[mod].name
+        cell.sectorName.text = cardItemData[mod].sector_name
         cell.sectorDescription.text = cardItemData[mod].description
         
         // Sector Image

@@ -212,9 +212,6 @@ public class NetworkManager {
     }
     
     
-    
-    
-    
     // MARK: - [Post Body Json Request 방식 http 요청 실시]
     func postBodyJsonRequest(){
         // [http 요청 헤더 지정]
