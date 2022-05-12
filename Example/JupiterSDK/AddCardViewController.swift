@@ -90,8 +90,8 @@ class AddCardViewController: UIViewController, UITextFieldDelegate {
                     
                     if (addedCard.message == "Update Success") {
                         self.responseLabel.text = "\(addedCard.sector_name) 카드가 정상적으로 추가됐습니다"
-                        self.responseLabel.alpha = 1.0
-                        
+                        self.responseLabel.textColor = .systemBlue
+                        self.responseLabel.isHidden = false
                         
                         let id: Int = addedCard.sector_id
                         let name: String = addedCard.sector_name
@@ -103,7 +103,8 @@ class AddCardViewController: UIViewController, UITextFieldDelegate {
                         self.cardItemData.append(CardItemData(sector_id: id, sector_name: name, description: description, cardColor: cardColor, mode: mode, infoLevel: infoLevel))
                     } else {
                         self.responseLabel.text = "유효한 코드를 입력해주세요 !!"
-                        self.responseLabel.alpha = 1.0
+                        self.responseLabel.textColor = .systemRed
+                        self.responseLabel.isHidden = false
                     }
                     
                     

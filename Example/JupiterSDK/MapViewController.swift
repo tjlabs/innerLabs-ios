@@ -68,6 +68,7 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
     
     var isShow: Bool = false
     var isRadioMap: Bool = false
+    var isOpen: Bool = false
     
     // View
     var defaultHeight: CGFloat = 100
@@ -309,10 +310,19 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
     func tableView(_ tableView: ExpyTableView, expandableCellForSection section: Int) -> UITableViewCell {
         let cell = UITableViewCell()
         cell.backgroundColor = .white
-//        cell.selectionStyle = .none //선택했을 때 회색되는거 없애기
-//        var bgColorView = UIView()
-//        bgColorView.backgroundColor = .blue
-//        cell.selectedBackgroundView = bgColorView
+        cell.selectionStyle = .none //선택했을 때 회색되는거 없애기
+//        if (!isOpen) {
+//            var bgColorView = UIView()
+//            bgColorView.backgroundColor = .blue4
+//            cell.selectedBackgroundView = bgColorView
+//
+//            isOpen = true
+//        } else {
+//            var bgColorView = UIView()
+//            bgColorView.backgroundColor = .white
+//            cell.selectedBackgroundView = bgColorView
+//        }
+        
         cell.separatorInset = UIEdgeInsets(top: 5, left: 10, bottom: 0, right: 10)
         if section == 0 {
             cell.textLabel?.text = "Service Information"

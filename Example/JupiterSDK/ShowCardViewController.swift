@@ -5,6 +5,10 @@ protocol ShowCardDelegate {
     func sendCardItemData(data: [CardItemData])
 }
 
+protocol ShowCardPageDelegate {
+    func sendPage(data: Int)
+}
+
 class ShowCardViewController: UIViewController, AddCardDelegate {
     
     @IBOutlet weak var editButton: UIButton!
@@ -29,7 +33,7 @@ class ShowCardViewController: UIViewController, AddCardDelegate {
     var cardItemData: [CardItemData] = []
     
     var delegate : ShowCardDelegate?
-    
+    var pageDelegate : ShowCardPageDelegate?
     
     //test
     //    let collectionView: UICollectionView = {
@@ -271,8 +275,8 @@ extension ShowCardViewController: UICollectionViewDataSource {
         cell.delete = {
             [unowned self] in
             // 내가 선택한 카드 삭제
-            self.cardItemData.remove(at: indexPath.item)
-            setData(data: cardItemData)
+            print(self.cardItemData)
+            print("Index : ", indexPath.item)
             
             let uuid = self.uuid
             let sector_id = self.cardItemData[indexPath.item].sector_id
@@ -281,8 +285,13 @@ extension ShowCardViewController: UICollectionViewDataSource {
             let result = Network.shared.deleteCard(url: JUPITER_URL, input: input)
             print("Delete :", result)
             
+            self.cardItemData.remove(at: indexPath.item)
+            setData(data: cardItemData)
+            
             // CollectionView Reload
             self.showCardCollectionView.reloadData()
+            
+            self.pageDelegate?.sendPage(data: 0)
         }
         
         return cell

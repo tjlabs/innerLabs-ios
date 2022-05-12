@@ -1,7 +1,7 @@
 import UIKit
 import JupiterSDK
 
-class CardViewController: UIViewController, AddCardDelegate, ShowCardDelegate, SendPageDelegate, PageDelegate {
+class CardViewController: UIViewController, AddCardDelegate, ShowCardDelegate, SendPageDelegate, PageDelegate, ShowCardPageDelegate {
     func sendCardItemData(data: [CardItemData]) {
         cardItemData = data
         initCardVC()
@@ -342,20 +342,24 @@ extension CardViewController: UICollectionViewDataSource, UICollectionViewDelega
         // to JupiterViewController
         let cardCount = cardItemData.count
         let mod = indexPath.item%cardCount
-//        print(cardItemData[mod])
         
-        guard let mapVC = self.storyboard?.instantiateViewController(withIdentifier: "MapViewController") as? MapViewController else { return }
-        mapVC.cardData = cardItemData[mod]
-        mapVC.uuid = uuid
-        mapVC.page = currentPage
-        self.navigationController?.pushViewController(mapVC, animated: true)
+        let sector_id = cardItemData[mod].sector_id
+        print("Selected Sector ID :", sector_id)
         
-        // to CardBackViewController
-//        guard let cardBackVC = self.storyboard?.instantiateViewController(withIdentifier: "CardBackViewController") as? CardBackViewController else { return }
-//        cardBackVC.cardData = cardItemData[mod]
-//        cardBackVC.uuid = uuid
-//        cardBackVC.page = currentPage
-//        self.navigationController?.pushViewController(cardBackVC, animated: true)
+        if (sector_id == 0) {
+           // to CardBackViewController
+           guard let cardBackVC = self.storyboard?.instantiateViewController(withIdentifier: "CardBackViewController") as? CardBackViewController else { return }
+           cardBackVC.cardData = cardItemData[mod]
+           cardBackVC.uuid = uuid
+           cardBackVC.page = currentPage
+           self.navigationController?.pushViewController(cardBackVC, animated: true)
+        } else {
+            guard let mapVC = self.storyboard?.instantiateViewController(withIdentifier: "MapViewController") as? MapViewController else { return }
+            mapVC.cardData = cardItemData[mod]
+            mapVC.uuid = uuid
+            mapVC.page = currentPage
+            self.navigationController?.pushViewController(mapVC, animated: true)
+        }
     }
     
 }

@@ -116,7 +116,16 @@ class CardBackViewController: UIViewController {
         setupCustomView()
         
         // Start Jupiter Service
+        
+        var runMode: String = ""
+        if (cardData!.mode == 0) {
+            runMode = "PDR"
+        } else {
+            runMode = "DR"
+        }
+        
         jupiterService.uuid = uuid
+        jupiterService.mode = runMode
         jupiterService.startService(parent: self)
         startTimer()
     }
