@@ -79,15 +79,15 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
         makeDelegate()
         registerXib()
         
-        if (cardData?.sectorID == 2) {
-            let numLevels: Int = (cardData?.infoLevel.count)!
+        if (cardData?.id == 2) {
+            let numLevels: Int = (cardData?.infolevel.count)!
             for idx in 0..<numLevels {
                 if (idx == 0) {
                     loadRP(fileName: "Autoway_RP_B4F")
                 } else {
                     loadRP(fileName: "Autoway_RP_B3F")
                 }
-                let nameLevel: String = (cardData?.infoLevel[idx])!
+                let nameLevel: String = (cardData?.infolevel[idx])!
                 RP[nameLevel] = [rpX, rpY]
             }
             isRadioMap = true
@@ -109,8 +109,15 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        var runMode: String = ""
+        if (cardData!.mode == 0) {
+            runMode = "PDR"
+        } else {
+            runMode = "DR"
+        }
+        
         jupiterService.uuid = uuid
-        jupiterService.mode = "DR"
+        jupiterService.mode = runMode
         jupiterService.startService(parent: self)
         startTimer()
     }
@@ -141,7 +148,9 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
     
     func setCardData(cardData: CardItemData) {
         self.sectorNameLabel.text = cardData.name
-        self.cardTopImage.image = UIImage(named: cardData.cardTopImage)!
+        
+        let imageName: String = cardData.cardcolor + "CardTop"
+        self.cardTopImage.image = UIImage(named: imageName)!
     }
     
     func showContainerTableView() {

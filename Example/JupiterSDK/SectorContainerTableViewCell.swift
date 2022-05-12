@@ -133,7 +133,7 @@ class SectorContainerTableViewCell: UITableViewCell {
     
     internal func configure(cardData: CardItemData, RP: [String: [[Double]]]) {
         self.cardData = cardData
-        self.levelList = (cardData.infoLevel)
+        self.levelList = (cardData.infolevel)
         currentLevel = levelList[0]
         
         self.RP = RP

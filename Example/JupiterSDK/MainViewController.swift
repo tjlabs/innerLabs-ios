@@ -157,41 +157,40 @@ class MainViewController: UIViewController, UITextFieldDelegate {
                     print("====================================")
                     print("")
                     
-                    let result = String(data: res, encoding: .utf8) ?? ""
+//                    let result = String(data: res, encoding: .utf8) ?? ""
                     
                     let returnedString = String(decoding: response.data!, as: UTF8.self)
                     let list = jsonToCardList(json: returnedString)
-                    
-                    print("CARD!!")
-                    print(list)
+                    let myCard = list.sectors
                     
                     var cardDatas = [CardItemData]()
                     
-                    if (result.isEmpty) {
+                    if (myCard.isEmpty) {
                         print("최초 사용자 입니다")
-                        cardDatas.append(CardItemData(name: "JUPITER\nService guide", description: "카드를 터치해주세요", cardImage: "purpleCard", cardShowImage: "purpleCardShow",
-                                                      sectorImage: "sectorDefault", sectorShowImage: "tjlabsShow", cardTopImage: "cardTopPurple", code: "purple", sectorID: 0, infoLevel: ["1F","2F","3F","4F"]))
-                        cardDatas.append(CardItemData(name: "KIST", description: "한국과학기술연구원 L8", cardImage: "orangeCard", cardShowImage: "orangeCardShow",
-                                                      sectorImage: "sectorKist", sectorShowImage: "kistShow", cardTopImage: "cardTopOrange", code: "orange", sectorID: 1, infoLevel: ["B1F"]))
-                        cardDatas.append(CardItemData(name: "오토웨이타워(V)", description: "For Vehicle", cardImage: "grayCard", cardShowImage: "grayCardShow",
-                                                      sectorImage: "sectorParkingCar", sectorShowImage: "parkingCarShow", cardTopImage: "cardTopGray", code: "gray", sectorID: 2, infoLevel: ["B4F","B3F"]))
-                        cardDatas.append(CardItemData(name: "오토웨이타워(P)", description: "For Pedestrian", cardImage: "grayCard", cardShowImage: "grayCardShow",
-                                                      sectorImage: "sectorParkingPed", sectorShowImage: "parkingPedShow", cardTopImage: "cardTopGray", code: "gray", sectorID: 2, infoLevel: ["B4F","B3F"]))
-                        cardDatas.append(CardItemData(name: "COEX", description: "지하주차장", cardImage: "pinkCard", cardShowImage: "pinkCardShow",
-                                                      sectorImage: "sectorCoex", sectorShowImage: "coexShow", cardTopImage: "cardTopPink", code: "pink", sectorID: 3, infoLevel: ["B2F","B1F","1F","2F"]))
+                        cardDatas.append(CardItemData(id: 0, name: "JUPITER\nService guide", code: "JUPITER!", description: "카드를 터치해주세요", cardcolor: "purple", mode: 0, infolevel: ["3F","4F","5F","6F","7F"]))
+//                        cardDatas.append(CardItemData(name: "JUPITER\nService guide", description: "카드를 터치해주세요", cardImage: "purpleCard", cardShowImage: "purpleCardShow",
+//                                                      sectorImage: "sectorDefault", sectorShowImage: "tjlabsShow", cardTopImage: "cardTopPurple", code: "purple", sectorID: 0, infoLevel: ["1F","2F","3F","4F"]))
+//                        cardDatas.append(CardItemData(name: "KIST", description: "한국과학기술연구원 L8", cardImage: "orangeCard", cardShowImage: "orangeCardShow",
+//                                                      sectorImage: "sectorKist", sectorShowImage: "kistShow", cardTopImage: "cardTopOrange", code: "orange", sectorID: 1, infoLevel: ["B1F"]))
+//                        cardDatas.append(CardItemData(name: "오토웨이타워(V)", description: "For Vehicle", cardImage: "grayCard", cardShowImage: "grayCardShow",
+//                                                      sectorImage: "sectorParkingCar", sectorShowImage: "parkingCarShow", cardTopImage: "cardTopGray", code: "gray", sectorID: 2, infoLevel: ["B4F","B3F"]))
+//                        cardDatas.append(CardItemData(name: "오토웨이타워(P)", description: "For Pedestrian", cardImage: "grayCard", cardShowImage: "grayCardShow",
+//                                                      sectorImage: "sectorParkingPed", sectorShowImage: "parkingPedShow", cardTopImage: "cardTopGray", code: "gray", sectorID: 2, infoLevel: ["B4F","B3F"]))
+//                        cardDatas.append(CardItemData(name: "COEX", description: "지하주차장", cardImage: "pinkCard", cardShowImage: "pinkCardShow",
+//                                                      sectorImage: "sectorCoex", sectorShowImage: "coexShow", cardTopImage: "cardTopPink", code: "pink", sectorID: 3, infoLevel: ["B2F","B1F","1F","2F"]))
                         
                     } else {
                         print("최초 사용자가 아닙니다")
-                        cardDatas.append(CardItemData(name: "JUPITER\nService guide", description: "카드를 터치해주세요", cardImage: "purpleCard", cardShowImage: "purpleCardShow",
-                                                      sectorImage: "sectorDefault", sectorShowImage: "tjlabsShow", cardTopImage: "cardTopPurple", code: "purple", sectorID: 0, infoLevel: ["1F","2F","3F","4F"]))
-                        cardDatas.append(CardItemData(name: "KIST", description: "한국과학기술연구원 L8", cardImage: "orangeCard", cardShowImage: "orangeCardShow",
-                                                      sectorImage: "sectorKist", sectorShowImage: "kistShow", cardTopImage: "cardTopOrange", code: "orange", sectorID: 1, infoLevel: ["B1F"]))
-                        cardDatas.append(CardItemData(name: "오토웨이타워(V)", description: "For Vehicle", cardImage: "grayCard", cardShowImage: "grayCardShow",
-                                                      sectorImage: "sectorParkingCar", sectorShowImage: "parkingCarShow", cardTopImage: "cardTopGray", code: "gray", sectorID: 2, infoLevel: ["B4F","B3F"]))
-                        cardDatas.append(CardItemData(name: "오토웨이타워(P)", description: "For Pedestrian", cardImage: "grayCard", cardShowImage: "grayCardShow",
-                                                      sectorImage: "sectorParkingPed", sectorShowImage: "parkingPedShow", cardTopImage: "cardTopGray", code: "gray", sectorID: 2, infoLevel: ["B4F","B3F"]))
-                        cardDatas.append(CardItemData(name: "COEX", description: "지하주차장", cardImage: "pinkCard", cardShowImage: "pinkCardShow",
-                                                      sectorImage: "sectorCoex", sectorShowImage: "coexShow", cardTopImage: "cardTopPink", code: "pink", sectorID: 3, infoLevel: ["B2F","B1F","1F","2F"]))
+//                        cardDatas.append(CardItemData(name: "JUPITER\nService guide", description: "카드를 터치해주세요", cardImage: "purpleCard", cardShowImage: "purpleCardShow",
+//                                                      sectorImage: "sectorDefault", sectorShowImage: "tjlabsShow", cardTopImage: "cardTopPurple", code: "purple", sectorID: 0, infoLevel: ["1F","2F","3F","4F"]))
+//                        cardDatas.append(CardItemData(name: "KIST", description: "한국과학기술연구원 L8", cardImage: "orangeCard", cardShowImage: "orangeCardShow",
+//                                                      sectorImage: "sectorKist", sectorShowImage: "kistShow", cardTopImage: "cardTopOrange", code: "orange", sectorID: 1, infoLevel: ["B1F"]))
+//                        cardDatas.append(CardItemData(name: "오토웨이타워(V)", description: "For Vehicle", cardImage: "grayCard", cardShowImage: "grayCardShow",
+//                                                      sectorImage: "sectorParkingCar", sectorShowImage: "parkingCarShow", cardTopImage: "cardTopGray", code: "gray", sectorID: 2, infoLevel: ["B4F","B3F"]))
+//                        cardDatas.append(CardItemData(name: "오토웨이타워(P)", description: "For Pedestrian", cardImage: "grayCard", cardShowImage: "grayCardShow",
+//                                                      sectorImage: "sectorParkingPed", sectorShowImage: "parkingPedShow", cardTopImage: "cardTopGray", code: "gray", sectorID: 2, infoLevel: ["B4F","B3F"]))
+//                        cardDatas.append(CardItemData(name: "COEX", description: "지하주차장", cardImage: "pinkCard", cardShowImage: "pinkCardShow",
+//                                                      sectorImage: "sectorCoex", sectorShowImage: "coexShow", cardTopImage: "cardTopPink", code: "pink", sectorID: 3, infoLevel: ["B2F","B1F","1F","2F"]))
                     }
                     
                     goToCardVC(cardDatas: cardDatas)
@@ -232,7 +231,7 @@ class MainViewController: UIViewController, UITextFieldDelegate {
     }
     
     func jsonToCardList(json: String) -> CardList {
-        let result = CardList(cards: [])
+        let result = CardList(sectors: [])
 //        let result = CardInfo()
         let decoder = JSONDecoder()
         

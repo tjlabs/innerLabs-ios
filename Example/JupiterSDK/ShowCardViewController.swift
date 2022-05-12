@@ -72,11 +72,39 @@ class ShowCardViewController: UIViewController, AddCardDelegate {
         cardShowImages = []
         sectorShowImages = []
         for i in 0..<data.count {
-            let cardImage = UIImage(named: data[i].cardShowImage)!
+            let imageName: String = data[i].cardcolor + "CardShow"
+            let cardImage = UIImage(named: imageName)!
             cardShowImages.append(cardImage)
             
-            let sectorImage = UIImage(named: data[i].sectorShowImage)!
-            sectorShowImages.append(sectorImage)
+            let id = data[i].id
+            var sectorImage = UIImage(named: "tjlabsShow")!
+            
+            switch(id) {
+            case 0:
+                sectorImage = UIImage(named: "tjlabsShow")!
+                sectorShowImages.append(sectorImage)
+            case 1:
+                sectorImage = UIImage(named: "kistShow")!
+                sectorShowImages.append(sectorImage)
+            case 2:
+                sectorImage = UIImage(named: "kistShow")!
+                sectorShowImages.append(sectorImage)
+            case 3:
+                sectorImage = UIImage(named: "parkingPedShow")!
+                sectorShowImages.append(sectorImage)
+            case 4:
+                sectorImage = UIImage(named: "parkingCarShow")!
+                sectorShowImages.append(sectorImage)
+            case 5:
+                sectorImage = UIImage(named: "coexShow")!
+                sectorShowImages.append(sectorImage)
+            case 6:
+                sectorImage = UIImage(named: "coexShow")!
+                sectorShowImages.append(sectorImage)
+            default:
+                sectorImage = UIImage(named: "tjlabsShow")!
+                sectorShowImages.append(sectorImage)
+            }
         }
     }
     
@@ -211,7 +239,7 @@ extension ShowCardViewController: UICollectionViewDataSource {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "ShowCardCollectionViewCell", for: indexPath) as! ShowCardCollectionViewCell
         
         let sectorName = cardItemData[indexPath.item].name
-        let sectorID = cardItemData[indexPath.item].sectorID
+        let sectorID = cardItemData[indexPath.item].id
         cell.nameLabel.text = sectorName
         
         let width = showCardCollectionView.bounds.width

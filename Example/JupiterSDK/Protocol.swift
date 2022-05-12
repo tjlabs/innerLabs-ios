@@ -17,7 +17,7 @@ struct DeleteCard: Codable {
 
 
 struct CardList: Codable {
-    var cards: [CardInfo]
+    var sectors: [CardInfo]
 }
 
 struct CardInfo: Codable {

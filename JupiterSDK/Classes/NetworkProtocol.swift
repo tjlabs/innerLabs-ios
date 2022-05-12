@@ -1,33 +1,47 @@
 import Foundation
 
 public struct CardItemData: Codable {
+    public var id: Int
     public var name: String
-    public var description: String
-    public var cardImage: String
-    public var cardShowImage: String
-    public var sectorImage: String
-    public var sectorShowImage: String
-    public var cardTopImage: String
     public var code: String
-    public var sectorID: Int
-    public var infoLevel: [String]
+    public var description: String
+    public var cardcolor: String
+    public var mode: Int
+    public var infolevel: [String]
     
-    public init(name: String, description: String, cardImage: String, cardShowImage: String, sectorImage: String, sectorShowImage: String, cardTopImage: String, code: String, sectorID: Int, infoLevel: [String]) {
+//    public var cardImage: String
+//    public var cardShowImage: String
+//    public var sectorImage: String
+//    public var sectorShowImage: String
+//    public var cardTopImage: String
+//    public var infoLevel: [String]
+    
+//    public init(name: String, description: String, cardImage: String, cardShowImage: String, sectorImage: String, sectorShowImage: String, cardTopImage: String, code: String, id: Int, infoLevel: [String]) {
+//        self.name = name
+//        self.description = description
+//        self.cardImage = cardImage
+//        self.cardShowImage = cardShowImage
+//        self.sectorImage = sectorImage
+//        self.sectorShowImage = sectorShowImage
+//        self.cardTopImage = cardTopImage
+//        self.code = code
+//        self.id = id
+//        self.infoLevel = infoLevel
+//    }
+    
+    public init(id: Int, name: String, code: String, description: String, cardcolor: String, mode: Int, infolevel: [String]) {
+        self.id = id
         self.name = name
-        self.description = description
-        self.cardImage = cardImage
-        self.cardShowImage = cardShowImage
-        self.sectorImage = sectorImage
-        self.sectorShowImage = sectorShowImage
-        self.cardTopImage = cardTopImage
         self.code = code
-        self.sectorID = sectorID
-        self.infoLevel = infoLevel
+        self.description = description
+        self.cardcolor = cardcolor
+        self.mode = mode
+        self.infolevel = infolevel
     }
 }
 
 public struct CardList: Codable {
-    var cards = [CardItemData]()
+    var sectors = [CardItemData]()
     
     public init() {}
 }

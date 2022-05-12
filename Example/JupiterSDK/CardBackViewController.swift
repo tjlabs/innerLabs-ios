@@ -147,7 +147,9 @@ class CardBackViewController: UIViewController {
     
     func setCardData(cardData: CardItemData) {
         self.sectorNameLabel.text = cardData.name
-        self.cardTopImage.image = UIImage(named: cardData.cardTopImage)!
+        
+        let imageName: String = cardData.cardcolor + "CardTop"
+        self.cardTopImage.image = UIImage(named: imageName)!
     }
     
     func showOutputView() {

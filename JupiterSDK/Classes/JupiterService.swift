@@ -71,9 +71,6 @@ public class JupiterService: NSObject {
     let SCAN_INTERVAL: TimeInterval = 30
     
     var parent: UIViewController?
-    
-//    let TJ = TjAlgorithm()
-    
     let unitDRGenerator = UnitDRGenerator()
     
     // To Server //
@@ -106,6 +103,7 @@ public class JupiterService: NSObject {
             startTimer()
             startBLE()
             
+            print("JupiterServcie Mode :", mode)
             unitDRGenerator.setMode(mode: mode)
             unitDRGenerator.setDRModel()
             onStartFlag = true

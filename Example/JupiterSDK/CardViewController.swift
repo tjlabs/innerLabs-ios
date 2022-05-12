@@ -103,11 +103,39 @@ class CardViewController: UIViewController, AddCardDelegate, ShowCardDelegate, S
         cardImages = []
         sectorImages = []
         for i in 0..<data.count {
-            let cardImage = UIImage(named: data[i].cardImage)!
+            let imageName: String = data[i].cardcolor + "Card"
+            let cardImage = UIImage(named: imageName)!
             cardImages.append(cardImage)
             
-            let sectorImage = UIImage(named: data[i].sectorImage)!
-            sectorImages.append(sectorImage)
+            let id = data[i].id
+            var sectorImage = UIImage(named: "sectorDefault")!
+            
+            switch(id) {
+            case 0:
+                sectorImage = UIImage(named: "sectorDefault")!
+                sectorImages.append(sectorImage)
+            case 1:
+                sectorImage = UIImage(named: "sectorKist")!
+                sectorImages.append(sectorImage)
+            case 2:
+                sectorImage = UIImage(named: "sectorKist")!
+                sectorImages.append(sectorImage)
+            case 3:
+                sectorImage = UIImage(named: "sectorParkingPed")!
+                sectorImages.append(sectorImage)
+            case 4:
+                sectorImage = UIImage(named: "sectorParkingCar")!
+                sectorImages.append(sectorImage)
+            case 5:
+                sectorImage = UIImage(named: "sectorCoex")!
+                sectorImages.append(sectorImage)
+            case 6:
+                sectorImage = UIImage(named: "sectorCoex")!
+                sectorImages.append(sectorImage)
+            default:
+                sectorImage = UIImage(named: "sectorDefault")!
+                sectorImages.append(sectorImage)
+            }
         }
     }
     

@@ -31,7 +31,7 @@ public class DRDistanceEstimator: NSObject {
     public var epoch = 0
     public var index = 0
     public var finalUnitResult = UnitDistance()
-    public var output: [Float32] = [0,0,0]
+    public var output: [Float] = [0,0,0]
     public var accYQue = [Double]()
     public var accZQue = [Double]()
     public var accNormQue = [Double]()
@@ -57,7 +57,7 @@ public class DRDistanceEstimator: NSObject {
         
     }
     
-    public func argmax(array: [Double]) -> Int {
+    public func argmax(array: [Float]) -> Int {
         let output1 = array[0]
         let output2 = array[1]
         let output3 = array[2]
@@ -68,6 +68,57 @@ public class DRDistanceEstimator: NSObject {
             return 1
         } else{
             return 2
+        }
+    }
+    
+    public func modelRunTest() {
+        var inputData = Data()
+        var a = Float32(0.2)
+        var b = Float32(0.33)
+        var c = Float32(1.0)
+        
+        var testArr: [Float32] = [0.2, 0.33, 1.0]
+        
+        for i in 0..<3 {
+            var v = testArr[i]
+            let elementSize = MemoryLayout.size(ofValue: v)
+            var bytes = [UInt8](repeating: 0, count: elementSize)
+            memcpy(&bytes, &v, elementSize)
+            inputData.append(&bytes, count: elementSize)
+        }
+        
+        var inputs = ModelInputs()
+        
+        do {
+          try inputs.addInput(inputData)
+        } catch let error {
+          print("add input failure: \(error)")
+        }
+
+        interpreter.run(inputs: inputs, options: ioOptions) {
+            outputs, error in
+            guard error == nil, let outputs = outputs else {
+                print("interpreter error")
+                if (error != nil) {
+                    print(error!)
+                }
+                return
+            }
+
+            do {
+                let result = try outputs.output(index: 0) as! [[NSNumber]]
+//                print("Model Result :", result[0])
+//                self.output[0] = Float32(result[0][0].doubleValue)
+//                self.output[1] = Float32(result[0][1].doubleValue)
+//                self.output[2] = Float32(result[0][2].doubleValue)
+                let floatArray = result[0].map {
+                    a in
+                    a.floatValue
+                }
+                print("Model Result :", floatArray)
+            } catch {
+                //error
+            }
         }
     }
     
@@ -117,7 +168,12 @@ public class DRDistanceEstimator: NSObject {
 
             do {
                 let result = try outputs.output(index: 0) as! [[NSNumber]]
-                print("Model Result :", result[0])
+                let floatArray = result[0].map {
+                    a in
+                    a.floatValue
+                }
+//                print("Model Result :", floatArray)
+                self.output = floatArray
             } catch {
                 //error
             }
@@ -128,14 +184,18 @@ public class DRDistanceEstimator: NSObject {
         
         if (epoch == 0) {
             index+=1
-//            var argMaxIndex: Int = argmax(array: output[0])
-//            var velocity = 0
-//
-//            if (argMaxIndex ==  1) {
-//                velocity = 4
-//            } else if (argMaxIndex == 2) {
-//                velocity = -2
-//            }
+            let argMaxIndex: Int = argmax(array: output)
+            var velocity: Double = 0
+
+            if (argMaxIndex ==  1) {
+                velocity = 4
+            } else if (argMaxIndex == 2) {
+                velocity = -2
+            }
+            
+            finalUnitResult.length = velocity * Double(SEND_INTERVAL_SECOND)
+            finalUnitResult.index = index
+            finalUnitResult.isIndexChanged = true
         }
         
         epoch+=1
