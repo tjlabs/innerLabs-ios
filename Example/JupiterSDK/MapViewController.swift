@@ -76,6 +76,8 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
         super.viewWillAppear(false)
         
         setCardData(cardData: cardData!)
+        makeDelegate()
+        registerXib()
         
         if (cardData?.sectorID == 2) {
             let numLevels: Int = (cardData?.infoLevel.count)!
@@ -89,21 +91,20 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
                 RP[nameLevel] = [rpX, rpY]
             }
             isRadioMap = true
+            
+//            numberOfLevelsLabel.text = String(numLevels)
+//            
+//            if (numLevels == 1) {
+//                let first: String = (cardData?.infoLevel[0])!
+//                leveListLabel.text = "( " + first + " )"
+//            } else {
+//                let first: String = (cardData?.infoLevel[0])!
+//                let last: String = (cardData?.infoLevel[numLevels-1])!
+//                leveListLabel.text = "( " + first + "~" + last + " )"
+//            }
         }
-        
-        makeDelegate()
-        registerXib()
         fixChartHeight(flag: isRadioMap)
     }
-    
-    // ServiceInfo Result
-//    @IBOutlet weak var levelListLabel: UILabel!
-//    @IBOutlet weak var numberOfLevelsLabel: UILabel!
-//    @IBOutlet weak var detectedLevelLabel: UILabel!
-//
-//    @IBOutlet weak var stepLengthLabel: UILabel!
-//    @IBOutlet weak var sccLabel: UILabel!
-
     
     override func viewDidLoad() {
         super.viewDidLoad()
