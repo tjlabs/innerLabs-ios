@@ -24,6 +24,12 @@ enum ContainerTableViewState {
     case normal
 }
 
+struct ResultToDisplay {
+    var cardData: CardItemData
+    var stepLength: Double = 0
+    var scc: Double = 0
+}
+
 class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewDataSource {
     
     @IBOutlet var MapView: UIView!
@@ -90,11 +96,21 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
         fixChartHeight(flag: isRadioMap)
     }
     
+    // ServiceInfo Result
+//    @IBOutlet weak var levelListLabel: UILabel!
+//    @IBOutlet weak var numberOfLevelsLabel: UILabel!
+//    @IBOutlet weak var detectedLevelLabel: UILabel!
+//
+//    @IBOutlet weak var stepLengthLabel: UILabel!
+//    @IBOutlet weak var sccLabel: UILabel!
+
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         jupiterService.uuid = uuid
         jupiterService.startService(parent: self)
+        startTimer()
     }
     
     @IBAction func tapBackButton(_ sender: UIButton) {
@@ -216,6 +232,44 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
         jupiterTableView.endEditing(true)
         self.view.endEditing(true)
     }
+    
+    // Display Outputs
+    func startTimer() {
+        self.timer = Timer.scheduledTimer(timeInterval: TIMER_INTERVAL, target: self, selector: #selector(self.timerUpdate), userInfo: nil, repeats: true)
+        
+        timerCounter = 0
+    }
+    
+    func stopTimer() {
+        self.timer.invalidate()
+    }
+    
+    @objc func timerUpdate() {
+        let timeStamp = getCurrentTimeInMilliseconds()
+        let dt = timeStamp - pastTime
+        pastTime = timeStamp
+        
+        if (dt < 100) {
+            elapsedTime += (dt*1e-3)
+        }
+        
+        let isStepDetected = jupiterService.stepResult.isStepDetected
+        let unitIdx = Int(jupiterService.stepResult.unit_idx)
+        let unitLength = jupiterService.stepResult.step_length
+        let flag = jupiterService.stepResult.lookingFlag
+        
+        if (isStepDetected) {
+            let resultToDisplay = ResultToDisplay(cardData: cardData!, stepLength: unitLength, scc: 0)
+//            let serviceInfoTVC = tableView.dequeueReusableCell(withIdentifier: ServiceInfoTableViewCell.identifier) as!
+//            ServiceInfoTableViewCell
+        }
+    }
+    
+    func getCurrentTimeInMilliseconds() -> Double
+    {
+        return Double(Date().timeIntervalSince1970 * 1000)
+    }
+    
     
     func tableView(_ tableView: ExpyTableView, expyState state: ExpyState, changeForSection section: Int) {
         print("\(section)섹션")

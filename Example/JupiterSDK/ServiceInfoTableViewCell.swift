@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import JupiterSDK
 
 class ServiceInfoTableViewCell: UITableViewCell {
     
