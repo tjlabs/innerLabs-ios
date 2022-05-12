@@ -12,6 +12,8 @@ target 'JupiterSDK_Example' do
   pod 'Charts' 
   pod 'SnapKit'
   pod 'ExpyTableView' 
+  pod 'Firebase/Core'
+  pod 'Firebase/MLModelInterpreter'
 
   target 'JupiterSDK_Tests' do
     inherit! :search_paths

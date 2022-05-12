@@ -24,6 +24,12 @@
   "dependencies": {
     "Alamofire": [
 
+    ],
+    "Firebase/Core": [
+
+    ],
+    "Firebase/MLModelInterpreter": [
+
     ]
   },
   "swift_version": "4.0"

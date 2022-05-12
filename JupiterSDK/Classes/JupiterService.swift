@@ -66,7 +66,7 @@ public class JupiterService: NSObject {
     
     var parent: UIViewController?
     
-    let TJ = TjAlgorithm()
+//    let TJ = TjAlgorithm()
     
     // To Server //
     let networkManager = NetworkManager()
@@ -227,25 +227,16 @@ public class JupiterService: NSObject {
 //        print(testQueue.count)
 //        print(testQueue.showList())
         
-        stepResult = TJ.runAlgorithm(sensorData: sensorData)
-        if (stepResult.isStepDetected) {
-            let bleTest = bleList.bleList.devices
-            let bleDictionary = Dictionary(uniqueKeysWithValues: bleTest.map { ($0.ward_id, $0.rssi) })
-            
-            let data = Input(user_id: uuid, unit_idx: stepResult.unit_idx, step_length: stepResult.step_length, heading: stepResult.heading, pressure: stepResult.pressure, looking_flag: stepResult.lookingFlag,
-                             ble: bleDictionary, time_mobile: timeStamp, device_model: deviceModel, os_version: osVersion)
-            
-            networkManager.postRequest(url: url, input: data)
-            
-            // Upload to Firestore
-//            networkManager.upload(data) { error in
-//                if error == nil {
-//                    print("Firestore Upload Success")
-//                } else {
-//                    print(error as Any)
-//                }
-//            }
-        }
+//        stepResult = TJ.runAlgorithm(sensorData: sensorData)
+//        if (stepResult.isStepDetected) {
+//            let bleTest = bleList.bleList.devices
+//            let bleDictionary = Dictionary(uniqueKeysWithValues: bleTest.map { ($0.ward_id, $0.rssi) })
+//
+//            let data = Input(user_id: uuid, unit_idx: stepResult.unit_idx, step_length: stepResult.step_length, heading: stepResult.heading, pressure: stepResult.pressure, looking_flag: stepResult.lookingFlag,
+//                             ble: bleDictionary, time_mobile: timeStamp, device_model: deviceModel, os_version: osVersion)
+//
+//            networkManager.postRequest(url: url, input: data)
+//        }
     }
     
     func startBLE() {
