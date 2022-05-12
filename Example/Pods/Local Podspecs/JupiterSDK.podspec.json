@@ -20,6 +20,11 @@
     "tag": "1.1.4"
   },
   "source_files": "JupiterSDK/Classes/**/*",
+  "resource_bundles": {
+    "JupiterSDK": [
+      "JupiterSDK/Assets/*.tflite"
+    ]
+  },
   "static_framework": true,
   "dependencies": {
     "Alamofire": [
@@ -29,7 +34,7 @@
 
     ],
     "Firebase/MLModelInterpreter": [
-
+      "6.25.0"
     ]
   },
   "swift_version": "4.0"

@@ -40,18 +40,18 @@ public struct StepLengthWithTimestamp: Equatable {
 
 }
 
-public struct Step {
-    public var heading: Double = 0
-    public var lookingFlag: Bool = false
-    public var pressure : Double = 0
-    public var step_length: Double = 0
-    public var unit_idx: Int = 0
-    public var isStepDetected: Bool = false
-    
-    public func toString() -> String {
-        return "{heading : \(heading), lookingFlag : \(lookingFlag), pressure : \(pressure), step_length : \(step_length), unit_idx : \(unit_idx), isStepDetected : \(isStepDetected)}"
-    }
-}
+//public struct Step {
+//    public var heading: Double = 0
+//    public var lookingFlag: Bool = false
+//    public var pressure : Double = 0
+//    public var step_length: Double = 0
+//    public var unit_idx: Int = 0
+//    public var isStepDetected: Bool = false
+//
+//    public func toString() -> String {
+//        return "{heading : \(heading), lookingFlag : \(lookingFlag), pressure : \(pressure), step_length : \(step_length), unit_idx : \(unit_idx), isStepDetected : \(isStepDetected)}"
+//    }
+//}
 
 public struct UnitDRInfo {
     public var index: Int = 0

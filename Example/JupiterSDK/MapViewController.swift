@@ -110,12 +110,14 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
         super.viewDidLoad()
         
         jupiterService.uuid = uuid
+        jupiterService.mode = "DR"
         jupiterService.startService(parent: self)
         startTimer()
     }
     
     @IBAction func tapBackButton(_ sender: UIButton) {
         self.delegate?.sendPage(data: page)
+        jupiterService.stopService()
         self.navigationController?.popViewController(animated: true)
     }
     @IBAction func tapShowButton(_ sender: UIButton) {
@@ -254,12 +256,13 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
             elapsedTime += (dt*1e-3)
         }
         
-        let isStepDetected = jupiterService.stepResult.isStepDetected
-        let unitIdx = Int(jupiterService.stepResult.unit_idx)
-        let unitLength = jupiterService.stepResult.step_length
-        let flag = jupiterService.stepResult.lookingFlag
+        let isStepDetected = jupiterService.unitDRInfo.isIndexChanged
+        let unitIdx = Int(jupiterService.unitDRInfo.index)
+        let unitLength = jupiterService.unitDRInfo.length
+        let flag = jupiterService.unitDRInfo.lookingFlag
         
         if (isStepDetected) {
+            print(jupiterService.unitDRInfo.toString())
             let resultToDisplay = ResultToDisplay(cardData: cardData!, stepLength: unitLength, scc: 0)
 //            let serviceInfoTVC = tableView.dequeueReusableCell(withIdentifier: ServiceInfoTableViewCell.identifier) as!
 //            ServiceInfoTableViewCell

@@ -81,25 +81,30 @@ struct UploadData: Codable {
 
 struct Input: Codable {
     var user_id : String
-    var unit_idx: Int = 0
-    var step_length: Double
+    var index: Int = 0
+    var length: Double
     var heading: Double
     var pressure: Double = 0
     var looking_flag: Bool = false
     var ble: [String: Int]
-    var time_mobile: Double
+    var mobile_time: Double
     var device_model: String
     var os_version: Int
 }
 
-struct Output: Codable {
-    var x: Int
-    var y: Int
-    var time_mobile: Double
-    var scc: Double
-    var scr: Double
-    var unit_idx: Int
-    var zone : String
-    var sector : String
-    var sz_flag : Int
+public struct Output: Codable {
+    public var x: Int
+    public var y: Int
+    public var mobile_time: Double
+    public var scc: Double
+    public var scr: Double
+    public var index: Int
+    public var level : String
+    public var building : String
+    public var phase : Int
+    public var calculated_time: Double
+    
+    public func toString() -> String {
+        return "{x : \(x), y : \(y), mobile_time : \(mobile_time), scc : \(scc), unit_idx : \(scr), scr : \(index), index : \(index), level : \(level), building : \(building), phase : \(phase), calculated_time : \(calculated_time)}"
+    }
 }

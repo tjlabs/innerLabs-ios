@@ -79,7 +79,6 @@ class SectorContainerTableViewCell: UITableViewCell {
         
         let set1 = ScatterChartDataSet(entries: values1, label: "RP")
         set1.setScatterShape(.square)
-//        set1.setColor(ChartColorTemplates.joyful()[4])
         set1.setColor(UIColor.yellow)
         set1.scatterShapeSize = 2
         
@@ -87,8 +86,6 @@ class SectorContainerTableViewCell: UITableViewCell {
         set2.setScatterShape(.square)
         set2.setColor(ChartColorTemplates.colorful()[1])
         set2.scatterShapeSize = 8
-//        set2.scatterShapeHoleColor = ChartColorTemplates.colorful()[3]
-//        set2.scatterShapeHoleRadius = 3.5
         
         let chartData = ScatterChartData(dataSet: set1)
         chartData.append(set2)
@@ -99,10 +96,17 @@ class SectorContainerTableViewCell: UITableViewCell {
         let yMax = yAxisValue.max()!
         
         // Configure Chart
-        scatterChart.xAxis.axisMinimum = xMin-15
-        scatterChart.xAxis.axisMaximum = xMax+4.5
-        scatterChart.leftAxis.axisMinimum = yMin-22
-        scatterChart.leftAxis.axisMaximum = yMax+34
+        if (currentLevel == "B3F") {
+            scatterChart.xAxis.axisMinimum = xMin-4.5
+            scatterChart.xAxis.axisMaximum = xMax+4.5
+            scatterChart.leftAxis.axisMinimum = yMin-11
+            scatterChart.leftAxis.axisMaximum = yMax+2
+        } else {
+            scatterChart.xAxis.axisMinimum = xMin-15
+            scatterChart.xAxis.axisMaximum = xMax+4.5
+            scatterChart.leftAxis.axisMinimum = yMin-22
+            scatterChart.leftAxis.axisMaximum = yMax+34
+        }
         
         scatterChart.xAxis.drawGridLinesEnabled = false
         scatterChart.leftAxis.drawGridLinesEnabled = false

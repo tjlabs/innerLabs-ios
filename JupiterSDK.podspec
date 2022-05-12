@@ -32,15 +32,15 @@ Pod::Spec.new do |s|
   
   s.source_files = 'JupiterSDK/Classes/**/*'
   
-  # s.resource_bundles = {
-  #   'JupiterSDK' => ['JupiterSDK/Assets/*.png']
-  # }
+   s.resource_bundles = {
+     'JupiterSDK' => ['JupiterSDK/Assets/*.tflite']
+   }
   
   # s.public_header_files = 'Pod/Classes/**/*.h'
   # s.frameworks = 'UIKit', 'MapKit'
   s.static_framework = true
   s.dependency 'Alamofire'
   s.dependency 'Firebase/Core'
-  s.dependency 'Firebase/MLModelInterpreter'
+  s.dependency 'Firebase/MLModelInterpreter', '6.25.0'
 
 end

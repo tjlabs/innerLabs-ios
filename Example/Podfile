@@ -13,7 +13,7 @@ target 'JupiterSDK_Example' do
   pod 'SnapKit'
   pod 'ExpyTableView' 
   pod 'Firebase/Core'
-  pod 'Firebase/MLModelInterpreter'
+  pod 'Firebase/MLModelInterpreter', '6.25.0'
 
   target 'JupiterSDK_Tests' do
     inherit! :search_paths

@@ -638,10 +638,10 @@ class CardBackViewController: UIViewController {
         }
 //        self.timeLabel.text = String(format: "%.2f", elapsedTime)
         
-        let isStepDetected = jupiterService.stepResult.isStepDetected
-        let unitIdx = Int(jupiterService.stepResult.unit_idx)
-        let unitLength = jupiterService.stepResult.step_length
-        let flag = jupiterService.stepResult.lookingFlag
+        let isStepDetected = jupiterService.unitDRInfo.isIndexChanged
+        let unitIdx = Int(jupiterService.unitDRInfo.index)
+        let unitLength = jupiterService.unitDRInfo.length
+        let flag = jupiterService.unitDRInfo.lookingFlag
         
         if (isStepDetected) {
             self.stepCountTxLabel.text = String(unitIdx)

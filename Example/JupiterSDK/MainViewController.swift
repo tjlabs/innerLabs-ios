@@ -63,7 +63,7 @@ class MainViewController: UIViewController, UITextFieldDelegate {
             }
             defaults.synchronize()
             
-            let url = "https://where-card-skrgq3jc5a-du.a.run.app/sectors"
+            let url = "https://where-run-card-skrgq3jc5a-du.a.run.app/cards"
             let login = Login(user_id: uuid)
             postLogin(url: url, input: login)
             

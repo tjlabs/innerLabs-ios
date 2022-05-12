@@ -8,6 +8,11 @@
 import Foundation
 import FirebaseCore
 import FirebaseMLCommon
+import FirebaseMLModelInterpreter
+import TFLTensorFlowLite
+
+let MODE_PDR = "PDR"
+let MODE_DR = "DR"
 
 public class UnitDRGenerator: NSObject {
     
@@ -15,32 +20,54 @@ public class UnitDRGenerator: NSObject {
         
     }
     
-    var model: LocalModel!
-    //    var interpreter: ModelIn
+    public var unitMode = String()
     
-//    public func loadModel() {
-//        let conditions = ModelDownloadConditions(allowsCellularAccess: false, allowsBackgroundDownloading: true)
-//        ModelDownloader.modelDownloader()
-//            .getModel(name: "your_model",
-//                      downloadType: .localModelUpdateInBackground,
-//                      conditions: conditions) { result in
-//                switch (result) {
-//                case .success(let customModel):
-//                    do {
-//                        // Download complete. Depending on your app, you could enable the ML
-//                        // feature, or switch from the local model to the remote model, etc.
-//
-//                        // The CustomModel object contains the local path of the model file,
-//                        // which you can use to instantiate a TensorFlow Lite interpreter.
-//                        let interpreter = try Interpreter(modelPath: customModel.path)
-//                    } catch {
-//                        // Error. Bad model file?
-//                    }
-//                case .failure(let error):
-//                    // Download was unsuccessful. Don't enable ML features.
-//                    print(error)
-//                }
-//            }
-//
-//    }
+    public let HF = HeadingFunctions()
+    public let unitAttitudeEstimator = UnitAttitudeEstimator()
+    public let unitStatusEstimator = UnitStatusEstimator()
+    public let pdrDistanceEstimator = PDRDistanceEstimator()
+    public let drDistanceEstimator = DRDistanceEstimator()
+    
+    
+    public func setMode(mode: String) {
+        unitMode = mode
+    }
+    
+    public func setDRModel() {
+        drDistanceEstimator.loadModel()
+    }
+    
+    public func generateDRInfo(sensorData: SensorData) -> UnitDRInfo {
+        if (unitMode != MODE_PDR && unitMode != MODE_DR) {
+            fatalError("Please check unitMode .. (PDR or DR")
+        }
+        
+        var currentTime = getCurrentTimeInMilliseconds()
+        
+        let sensorAtt = sensorData.att
+        let curAttitude = Attitude(Roll: sensorAtt[0], Pitch: sensorAtt[1], Yaw: sensorAtt[2])
+        
+        var unitDistance = UnitDistance()
+        
+        switch (unitMode) {
+        case MODE_PDR:
+            unitDistance = pdrDistanceEstimator.estimateDistanceInfo(time: currentTime, sensorData: sensorData)
+        case MODE_DR:
+            unitDistance = drDistanceEstimator.estimateDistanceInfo(time: currentTime, sensorData: sensorData)
+        default:
+            unitDistance = pdrDistanceEstimator.estimateDistanceInfo(time: currentTime, sensorData: sensorData)
+        }
+        
+        var unitStatus = unitStatusEstimator.estimateStatus(Attitude: curAttitude, isIndexChanged: unitDistance.isIndexChanged)
+        if (!unitStatus && unitMode == MODE_PDR) {
+            unitDistance.length = 0.7
+        }
+        
+        return UnitDRInfo(index: unitDistance.index, length: unitDistance.length, heading: HF.radian2degree(radian: curAttitude.Yaw), lookingFlag: unitStatus, isIndexChanged: unitDistance.isIndexChanged)
+    }
+    
+    func getCurrentTimeInMilliseconds() -> Double
+    {
+        return Double(Date().timeIntervalSince1970 * 1000)
+    }
 }

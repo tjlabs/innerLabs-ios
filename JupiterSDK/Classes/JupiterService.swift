@@ -2,9 +2,15 @@ import Foundation
 import CoreMotion
 import CoreLocation
 
+import FirebaseCore
+import FirebaseMLCommon
+import FirebaseMLModelInterpreter
+import TFLTensorFlowLite
+
 public class JupiterService: NSObject {
     
-    let url = "https://where-run-kr-6qjrrjlaga-an.a.run.app/calc"
+//    let url = "https://where-run-kr-6qjrrjlaga-an.a.run.app/calc"
+    let url = "https://where-run-fire-skrgq3jc5a-du.a.run.app/calc"
     
     // Sensor //
     let motionManager = CMMotionManager()
@@ -43,7 +49,7 @@ public class JupiterService: NSObject {
     var elapsedTime: Double = 0
     
     public var sensorData = SensorData()
-    public var stepResult = Step()
+    public var unitDRInfo = UnitDRInfo()
     
     public var testQueue = LinkedList<TimestampDouble>()
     
@@ -68,6 +74,8 @@ public class JupiterService: NSObject {
     
 //    let TJ = TjAlgorithm()
     
+    let unitDRGenerator = UnitDRGenerator()
+    
     // To Server //
     let networkManager = NetworkManager()
     
@@ -76,6 +84,8 @@ public class JupiterService: NSObject {
     public var deviceModel: String = ""
     public var os: String = ""
     public var osVersion: Int = 0
+    public var mode: String = ""
+    var onStartFlag: Bool = false
     
     public override init() {
         super.init()
@@ -92,16 +102,25 @@ public class JupiterService: NSObject {
     public func startService(parent: UIViewController) {
         self.parent = parent
         if motionManager.isDeviceMotionAvailable {
-            initialzeSenseors()
+            initialzeSensors()
             startTimer()
             startBLE()
+            
+            unitDRGenerator.setMode(mode: mode)
+            unitDRGenerator.setDRModel()
+            onStartFlag = true
         }
         else {
             print("DeviceMotion unavailable")
         }
     }
     
-    public func initialzeSenseors() {
+    public func stopService() {
+        unitDRInfo = UnitDRInfo()
+        onStartFlag = false
+    }
+    
+    public func initialzeSensors() {
         if motionManager.isAccelerometerAvailable {
             motionManager.accelerometerUpdateInterval = SENSOR_INTERVAL
             motionManager.startAccelerometerUpdates(to: .main) { [self] (data, error) in
@@ -214,18 +233,19 @@ public class JupiterService: NSObject {
         let dt = timeStamp - pastTime
         pastTime = timeStamp
         elapsedTime += dt
-//        print(timeStamp, "\\", sensor)
         
-//        var value1 = Double.random(in: 2.71...3.14)
-//        var value2 = Double.random(in: 2.71...3.14)
-//        testQueue.append(TimestampDouble(timestamp: value1, valuestamp: value2))
-//
-//        if (testQueue.count > 5) {
-//            testQueue.pop()
-//        }
-//
-//        print(testQueue.count)
-//        print(testQueue.showList())
+        if (onStartFlag) {
+            unitDRInfo = unitDRGenerator.generateDRInfo(sensorData: sensorData)
+        }
+        
+        if (unitDRInfo.isIndexChanged) {
+            let bleTest = bleList.bleList.devices
+            let bleDictionary = Dictionary(uniqueKeysWithValues: bleTest.map { ($0.ward_id, $0.rssi) })
+            
+            var data = Input(user_id: uuid, index: unitDRInfo.index, length: unitDRInfo.length, heading: unitDRInfo.heading, pressure: sensorData.pressure[0], looking_flag: unitDRInfo.lookingFlag, ble: bleDictionary, mobile_time: timeStamp, device_model: deviceModel, os_version: osVersion)
+            
+            networkManager.postRequest(url: url, input: data)
+        }
         
 //        stepResult = TJ.runAlgorithm(sensorData: sensorData)
 //        if (stepResult.isStepDetected) {
