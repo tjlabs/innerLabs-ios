@@ -44,24 +44,17 @@ class SectorContainerTableViewCell: UITableViewCell {
     private func setZoneCollectionView() {
         levelCollectionView.delegate = self
         levelCollectionView.dataSource = self
-//        levelCollectionView.
+
         levelCollectionView.reloadData()
     }
     
-//    private func fetchZone(zone : DataModel.ZoneList) -> Void {
-//        switch(zone) {
-//        case .first:
-//            print("1st floor")
-////            zoneImage.image = UIImage(named: "floor1")
-//        case .second:
-//            print("2nd floor")
-////            zoneImage.image = UIImage(named: "floor2")
-//        case .third:
-//            print("3rd floor")
-////            zoneImage.image = UIImage(named: "floor3")
-//        }
-////        zoneImage.alpha = 0.5
-//    }
+    private func fetchLevel(currentLevel: String, levelList: [String]) -> Void {
+        let arr = levelList
+        let idx = (arr.firstIndex(where: {$0 == currentLevel}) ?? nil)
+        
+        let level: String = levelList[idx!] ?? ""
+        imageLevel.image = UIImage(named: level)
+    }
     
     private func drawRP(X: [Double], Y: [Double]) {
         let randomNum = Double.random(in: 0...20)
@@ -86,8 +79,9 @@ class SectorContainerTableViewCell: UITableViewCell {
         
         let set1 = ScatterChartDataSet(entries: values1, label: "RP")
         set1.setScatterShape(.square)
-        set1.setColor(ChartColorTemplates.joyful()[4])
-        set1.scatterShapeSize = 8
+//        set1.setColor(ChartColorTemplates.joyful()[4])
+        set1.setColor(UIColor.yellow)
+        set1.scatterShapeSize = 2
         
         let set2 = ScatterChartDataSet(entries: values2, label: "Random")
         set2.setScatterShape(.square)
@@ -105,10 +99,10 @@ class SectorContainerTableViewCell: UITableViewCell {
         let yMax = yAxisValue.max()!
         
         // Configure Chart
-        scatterChart.xAxis.axisMinimum = xMin-5
-        scatterChart.xAxis.axisMaximum = xMax+5
-        scatterChart.leftAxis.axisMinimum = yMin-20
-        scatterChart.leftAxis.axisMaximum = yMax+20
+        scatterChart.xAxis.axisMinimum = xMin-15
+        scatterChart.xAxis.axisMaximum = xMax+4.5
+        scatterChart.leftAxis.axisMinimum = yMin-22
+        scatterChart.leftAxis.axisMaximum = yMax+34
         
         scatterChart.xAxis.drawGridLinesEnabled = false
         scatterChart.leftAxis.drawGridLinesEnabled = false
@@ -119,12 +113,11 @@ class SectorContainerTableViewCell: UITableViewCell {
         scatterChart.rightAxis.drawAxisLineEnabled = false
         
         scatterChart.xAxis.centerAxisLabelsEnabled = false
-        scatterChart.xAxis.drawLabelsEnabled = false
-        
         scatterChart.leftAxis.centerAxisLabelsEnabled = false
-        scatterChart.leftAxis.drawLabelsEnabled = false
-        
         scatterChart.rightAxis.centerAxisLabelsEnabled = false
+
+        scatterChart.xAxis.drawLabelsEnabled = false
+        scatterChart.leftAxis.drawLabelsEnabled = false
         scatterChart.rightAxis.drawLabelsEnabled = false
         
         scatterChart.legend.enabled = false
@@ -159,6 +152,7 @@ extension SectorContainerTableViewCell : UICollectionViewDelegate{
             // RP가 없어서 그리지 않음
         } else {
             drawRP(X: rp[0], Y: rp[1])
+            fetchLevel(currentLevel: currentLevel, levelList: levelList)
         }
         
         levelCollectionView.reloadData()
@@ -177,6 +171,8 @@ extension SectorContainerTableViewCell : UICollectionViewDataSource{
 
         levelCollectionView.setName(level: levelList[indexPath.row],
                                     isClicked: currentLevel == levelList[indexPath.row] ? true : false)
+        fetchLevel(currentLevel: currentLevel, levelList: levelList)
+        
         levelCollectionView.layer.cornerRadius = 15
         levelCollectionView.layer.borderColor = UIColor.blue1.cgColor
         levelCollectionView.layer.borderWidth = 1

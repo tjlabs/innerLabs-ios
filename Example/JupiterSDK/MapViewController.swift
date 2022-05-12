@@ -140,7 +140,8 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
             let yMin = rpY.min()!
             let yMax = rpY.max()!
             
-            let ratio = (yMax - yMin) / (xMax - xMin)
+//            let ratio = (yMax - yMin) / (xMax - xMin)
+            let ratio: Double = 114900 / 68700
             jupiterTableViewHeight.constant = jupiterTableView.bounds.width * ratio
 
             let window = UIApplication.shared.keyWindow
