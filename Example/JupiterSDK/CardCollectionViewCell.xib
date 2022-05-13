@@ -4,6 +4,7 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="20020"/>
+        <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -27,6 +28,7 @@
                 <subviews>
                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="gnf-ds-0wk">
                         <rect key="frame" x="13.5" y="18" width="313" height="684"/>
+                        <color key="backgroundColor" name="blue1"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="313" id="Mjc-Eb-8Gp"/>
                             <constraint firstAttribute="height" constant="684" id="qp7-Dk-7D5"/>
@@ -93,4 +95,9 @@
             <point key="canvasLocation" x="132" y="84"/>
         </collectionViewCell>
     </objects>
+    <resources>
+        <namedColor name="blue1">
+            <color red="0.16099999845027924" green="0.38400000333786011" blue="0.9649999737739563" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+    </resources>
 </document>

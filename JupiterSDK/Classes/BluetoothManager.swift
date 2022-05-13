@@ -176,8 +176,8 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
                         value.append(dataToAdd)
                         
                         bleDictionary.updateValue(value, forKey: bleName)
-                        print("BLE NAME :", bleName)
-                        print("Num of Scan Info :", value.count)
+//                        print("BLE NAME :", bleName)
+//                        print("Num of Scan Info :", value.count)
                     } else {
                         bleDictionary.updateValue([[RSSI.doubleValue, bleTime]], forKey: bleName)
                     }

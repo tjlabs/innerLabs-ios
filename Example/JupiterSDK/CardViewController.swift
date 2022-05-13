@@ -236,10 +236,6 @@ class CardViewController: UIViewController, AddCardDelegate, ShowCardDelegate, S
     
     
     @IBAction func tapShowCardButton(_ sender: UIButton) {
-//        guard let jupiterVC = self.storyboard?.instantiateViewController(withIdentifier: "JupiterViewController") as? JupiterViewController else { return }
-//        jupiterVC.uuid = uuid
-//        self.navigationController?.pushViewController(jupiterVC, animated: true)
-        
         guard let showCardVC = self.storyboard?.instantiateViewController(withIdentifier: "ShowCardViewController") as? ShowCardViewController else { return }
         showCardVC.modalPresentationStyle = .currentContext
         
@@ -306,11 +302,15 @@ extension CardViewController: UICollectionViewDataSource, UICollectionViewDelega
         
         let mod = indexPath.item%cardCount
         
+        cell.backgroundColor = .black
         // Sector Name & Description
         cell.sectorName.text = cardItemData[mod].sector_name
         cell.sectorDescription.text = cardItemData[mod].description
         
         // Sector Image
+//        cell.cardImageHeight.constant = collectionViewSize[1]
+        cell.cardImageView.contentMode = .scaleAspectFit
+        
         cell.cardImageView.image = cardImages[mod]
         cell.sectorImageView.image = sectorImages[mod]
         
