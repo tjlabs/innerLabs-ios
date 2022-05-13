@@ -68,6 +68,7 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
     
     var bleDictionary = [String: [[Double]]]()
     var bleFinal = [String: Double]()
+    var scanCount: Double = 0
     
     override init() {
         super.init()
@@ -155,7 +156,6 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
                 
                 var userInfo = [String:String]()
                 userInfo["Identifier"] = peripheral.identifier.uuidString
-//                userInfo["URL"] = "URLString"
                 userInfo["DeviceID"] = deviceIDString
                 userInfo["RSSI"] = String(format: "%d", RSSI.intValue )
                 
@@ -163,23 +163,27 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
                 
                 if RSSI.intValue != 127 {
                     NotificationCenter.default.post(name: .scanInfo, object: nil, userInfo: userInfo)
+//                    print("BLE Name :", bleName)
                     
                     let condition: ((String, [[Double]])) -> Bool = {
-                        $0.0.contains(deviceIDString)
+                        $0.0.contains(bleName)
                     }
                     
                     if (bleDictionary.contains(where: condition)) {
                         let data = bleDictionary.filter(condition)
-                        var value:[[Double]] = data[deviceIDString]!
+                        var value:[[Double]] = data[bleName]!
                         let dataToAdd: [Double] = [RSSI.doubleValue, bleTime]
                         value.append(dataToAdd)
                         
-                        bleDictionary.updateValue(value, forKey: deviceIDString)
+                        bleDictionary.updateValue(value, forKey: bleName)
+                        print("BLE NAME :", bleName)
+                        print("Num of Scan Info :", value.count)
                     } else {
-                        bleDictionary.updateValue([[RSSI.doubleValue, bleTime]], forKey: deviceIDString)
+                        bleDictionary.updateValue([[RSSI.doubleValue, bleTime]], forKey: bleName)
                     }
                     
                     trimBleData()
+//                    print(bleDictionary)
                     bleFinal = avgBleData(bleDictionary: bleDictionary)
                     
                     NotificationCenter.default.post(name: .scanInfo, object: nil, userInfo: userInfo)

@@ -54,8 +54,11 @@ class CardBackViewController: UIViewController {
     var isSecondOpen: Bool = false
     var isThirdOpen: Bool = false
     
-    let lat: Double = 37.5984295123542
-    let lon: Double = 127.04339296529642
+//    let lat: Double = 37.5984295123542
+//    let lon: Double = 127.04339296529642
+    
+    let lat: Double = 37.49575119345803
+    let lon: Double = 127.03829280268539
     
     // Overlay
     var imageOverlay = ImageOverlay()
@@ -526,11 +529,11 @@ class CardBackViewController: UIViewController {
         self.view.addSubview(mapView)
 
         // Creates a marker in the center of the map.
-//        let marker = GMSMarker()
-//        marker.position = CLLocationCoordinate2D(latitude: lat, longitude: lon)
-//        marker.title = "KIST"
-//        marker.snippet = "Korea Institute of Science Technology"
-//        marker.map = mapView
+        let marker = GMSMarker()
+        marker.position = CLLocationCoordinate2D(latitude: lat, longitude: lon)
+        marker.title = "TJLABS"
+        marker.snippet = "Location opens universe"
+        marker.map = mapView
     }
     
     func configureContainerOutputView() {

@@ -143,10 +143,10 @@ class MainViewController: UIViewController, UITextFieldDelegate {
                     
                     if (myCard.isEmpty) {
                         print("최초 사용자 입니다")
-                        cardDatas.append(CardItemData(sector_id: 0, sector_name: "JUPITER\nService guide", description: "카드를 터치해주세요", cardColor: "purple", mode: 0, infoLevel: ["3F","4F","5F","6F","7F"]))
+                        cardDatas.append(CardItemData(sector_id: 0, sector_name: "JUPITER", description: "카드를 터치해주세요", cardColor: "purple", mode: 0, infoLevel: ["7F"]))
                     } else {
                         print("최초 사용자가 아닙니다")
-                        cardDatas.append(CardItemData(sector_id: 0, sector_name: "JUPITER\nService guide", description: "카드를 터치해주세요", cardColor: "purple", mode: 0, infoLevel: ["3F","4F","5F","6F","7F"]))
+                        cardDatas.append(CardItemData(sector_id: 0, sector_name: "JUPITER", description: "카드를 터치해주세요", cardColor: "purple", mode: 0, infoLevel: ["7F"]))
                         
                         print("Sector List :", myCard)
                         for card in 0..<myCard.count {

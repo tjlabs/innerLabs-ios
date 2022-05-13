@@ -65,9 +65,9 @@ class ShowCardViewController: UIViewController, AddCardDelegate {
         let sizes = checkImageSize(cards: cardShowImages, sectors: sectorShowImages)
         collectionViewSize = [showCardCollectionView.bounds.width, showCardCollectionView.bounds.height]
         
-        print("Size of CollectionView : \(collectionViewSize)")
-        print("Size of Card : \(sizes.sizeCard)")
-        print("Size of Sector : \(sizes.sizeSector)")
+        print("Show Card -> Size of CollectionView : \(collectionViewSize)")
+        print("Show Card -> Size of Card : \(sizes.sizeCard)")
+        print("Show Card -> Size of Sector : \(sizes.sizeSector)")
         isCardSmall = checkRatio(collectionViewSize: collectionViewSize, sizeCard: sizes.sizeCard)
         
         setupCollectionView()
@@ -248,8 +248,10 @@ extension ShowCardViewController: UICollectionViewDataSource {
         let sectorID = cardItemData[indexPath.item].sector_id
         cell.nameLabel.text = sectorName
         
-        let width = showCardCollectionView.bounds.width
-        cell.cardWidth.constant = width
+        let ratio: Double = 7.6470
+        let width = collectionViewSize[0]
+        cell.cardWidth.constant = collectionViewSize[0]
+        cell.sectorShowImageLeading.constant = (width/ratio)
         
         cell.cardShowImage.image = cardShowImages[indexPath.item]
         cell.sectorShowImage.image = sectorShowImages[indexPath.item]
