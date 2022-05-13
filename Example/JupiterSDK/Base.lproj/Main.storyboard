@@ -569,10 +569,10 @@
                                 </connections>
                             </button>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="W9g-WD-hba" customClass="CardCollectionView" customModule="JupiterSDK_Example" customModuleProvider="target">
-                                <rect key="frame" x="10" y="127" width="370" height="631"/>
+                                <rect key="frame" x="10" y="127" width="370" height="607"/>
                                 <subviews>
                                     <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="StD-CP-4oA">
-                                        <rect key="frame" x="0.0" y="0.0" width="370" height="597"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="370" height="607"/>
                                         <color key="backgroundColor" systemColor="systemGray6Color"/>
                                         <collectionViewFlowLayout key="collectionViewLayout" scrollDirection="horizontal" minimumLineSpacing="10" minimumInteritemSpacing="10" id="gBa-2x-sLe">
                                             <size key="itemSize" width="50" height="50"/>
@@ -591,40 +591,40 @@
                                             </collectionViewCell>
                                         </cells>
                                     </collectionView>
-                                    <progressView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" progress="0.10000000000000001" translatesAutoresizingMaskIntoConstraints="NO" id="zG3-DH-fmo">
-                                        <rect key="frame" x="40" y="617" width="290" height="4"/>
-                                        <color key="tintColor" systemColor="systemGray2Color"/>
-                                        <constraints>
-                                            <constraint firstAttribute="height" constant="4" id="XNT-Ri-MMu"/>
-                                        </constraints>
-                                    </progressView>
                                 </subviews>
                                 <color key="backgroundColor" systemColor="systemGray6Color"/>
                                 <constraints>
+                                    <constraint firstAttribute="bottom" secondItem="StD-CP-4oA" secondAttribute="bottom" id="CeM-bM-RYw"/>
                                     <constraint firstItem="StD-CP-4oA" firstAttribute="leading" secondItem="W9g-WD-hba" secondAttribute="leading" id="FZl-Rc-Sli"/>
-                                    <constraint firstAttribute="bottom" secondItem="zG3-DH-fmo" secondAttribute="bottom" constant="10" id="QKn-Px-BhY"/>
                                     <constraint firstItem="StD-CP-4oA" firstAttribute="top" secondItem="W9g-WD-hba" secondAttribute="top" id="eCv-bI-V1V"/>
-                                    <constraint firstItem="zG3-DH-fmo" firstAttribute="leading" secondItem="W9g-WD-hba" secondAttribute="leading" constant="40" id="oA2-3y-6V4"/>
-                                    <constraint firstItem="zG3-DH-fmo" firstAttribute="top" secondItem="StD-CP-4oA" secondAttribute="bottom" constant="20" id="xkS-am-j5y"/>
-                                    <constraint firstAttribute="trailing" secondItem="zG3-DH-fmo" secondAttribute="trailing" constant="40" id="zIc-er-Y7u"/>
                                     <constraint firstAttribute="trailing" secondItem="StD-CP-4oA" secondAttribute="trailing" id="zda-1F-vDb"/>
                                 </constraints>
                             </view>
+                            <progressView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" progress="0.10000000000000001" translatesAutoresizingMaskIntoConstraints="NO" id="zG3-DH-fmo">
+                                <rect key="frame" x="40" y="754" width="310" height="4"/>
+                                <color key="tintColor" systemColor="systemGray2Color"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="4" id="XNT-Ri-MMu"/>
+                                </constraints>
+                            </progressView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="fqi-tX-EPG"/>
                         <color key="backgroundColor" systemColor="systemGray6Color"/>
                         <constraints>
                             <constraint firstItem="fqi-tX-EPG" firstAttribute="bottom" secondItem="MUW-dn-rmi" secondAttribute="bottom" constant="20" id="03v-kb-UyT"/>
+                            <constraint firstItem="zG3-DH-fmo" firstAttribute="top" secondItem="W9g-WD-hba" secondAttribute="bottom" constant="20" id="9DW-cc-NJt"/>
                             <constraint firstItem="2Xj-Ao-iIB" firstAttribute="top" secondItem="fqi-tX-EPG" secondAttribute="top" constant="20" id="AOk-ke-YeF"/>
                             <constraint firstItem="fqi-tX-EPG" firstAttribute="bottom" secondItem="gSy-dk-oxB" secondAttribute="bottom" constant="20" id="Pz8-NS-rY2"/>
                             <constraint firstItem="W9g-WD-hba" firstAttribute="top" secondItem="2Xj-Ao-iIB" secondAttribute="bottom" constant="10" id="U0W-3u-bZa"/>
                             <constraint firstItem="fqi-tX-EPG" firstAttribute="trailing" secondItem="2Xj-Ao-iIB" secondAttribute="trailing" id="Vtm-aO-Wr1"/>
                             <constraint firstItem="fqi-tX-EPG" firstAttribute="trailing" secondItem="gSy-dk-oxB" secondAttribute="trailing" constant="30" id="bN1-je-urI"/>
                             <constraint firstItem="fqi-tX-EPG" firstAttribute="trailing" secondItem="W9g-WD-hba" secondAttribute="trailing" constant="10" id="bYI-LO-bBd"/>
-                            <constraint firstItem="MUW-dn-rmi" firstAttribute="top" secondItem="W9g-WD-hba" secondAttribute="bottom" constant="10" id="fAv-yy-C2f"/>
                             <constraint firstItem="W9g-WD-hba" firstAttribute="leading" secondItem="fqi-tX-EPG" secondAttribute="leading" constant="10" id="g6b-we-7gH"/>
                             <constraint firstItem="2Xj-Ao-iIB" firstAttribute="leading" secondItem="fqi-tX-EPG" secondAttribute="leading" id="gA0-x8-dU1"/>
                             <constraint firstItem="MUW-dn-rmi" firstAttribute="leading" secondItem="fqi-tX-EPG" secondAttribute="leading" constant="30" id="ggm-RQ-aNc"/>
+                            <constraint firstItem="fqi-tX-EPG" firstAttribute="trailing" secondItem="zG3-DH-fmo" secondAttribute="trailing" constant="40" id="i0t-RT-7P8"/>
+                            <constraint firstItem="MUW-dn-rmi" firstAttribute="top" secondItem="zG3-DH-fmo" secondAttribute="bottom" constant="10" id="nhD-mX-Tie"/>
+                            <constraint firstItem="zG3-DH-fmo" firstAttribute="leading" secondItem="fqi-tX-EPG" secondAttribute="leading" constant="40" id="tMo-gw-O0v"/>
                         </constraints>
                     </view>
                     <connections>
@@ -634,7 +634,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="0Ja-XC-Run" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1046" y="102"/>
+            <point key="canvasLocation" x="1044.6153846153845" y="101.65876777251184"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="vRG-l6-FfN">

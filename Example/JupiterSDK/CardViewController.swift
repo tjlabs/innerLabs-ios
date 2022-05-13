@@ -53,9 +53,9 @@ class CardViewController: UIViewController, AddCardDelegate, ShowCardDelegate, S
         let sizes = checkImageSize(cards: cardImages, sectors: sectorImages)
         collectionViewSize = [collectionView.frame.width, collectionView.frame.height]
         
-        print("Size of CollectionView : \(collectionViewSize)")
-        print("Size of Card : \(sizes.sizeCard)")
-        print("Size of Sector : \(sizes.sizeSector)")
+        print("Card -> Size of CollectionView : \(collectionViewSize)")
+        print("Card -> Size of Card : \(sizes.sizeCard)")
+        print("Card -> Size of Sector : \(sizes.sizeSector)")
         
         isCardSmall = checkRatio(collectionViewSize: collectionViewSize, sizeCard: sizes.sizeCard)
         
