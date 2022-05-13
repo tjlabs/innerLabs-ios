@@ -43,7 +43,6 @@ class CardBackViewController: UIViewController {
     @IBOutlet weak var sccLabel: UILabel!
     @IBOutlet weak var mobileStatusLabel: UILabel!
     
-    
     let sectionSpacing: Double = 42
     let firstSectionHeight: Double = 240
     let secondSectionHeight: Double = 220

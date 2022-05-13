@@ -44,7 +44,6 @@ class AddCardViewController: UIViewController, UITextFieldDelegate {
         
         self.code = codeTextField.text ?? ""
 
-        
         // Add Card
         let url = JUPITER_URL
         

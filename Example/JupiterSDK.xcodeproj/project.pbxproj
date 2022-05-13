@@ -55,6 +55,11 @@
 		B3BD69B427E9A8AD00A32A7A /* LevelCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3BD69B227E9A8AD00A32A7A /* LevelCollectionViewCell.swift */; };
 		B3BD69B527E9A8AD00A32A7A /* LevelCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B3BD69B327E9A8AD00A32A7A /* LevelCollectionViewCell.xib */; };
 		B3C09C64280E941B00E6F55F /* ShowCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3C09C63280E941B00E6F55F /* ShowCardViewController.swift */; };
+		B3D194DC282E2726004E6F9A /* JupiterGuideTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3D194DA282E2726004E6F9A /* JupiterGuideTableViewCell.swift */; };
+		B3D194DD282E2726004E6F9A /* JupiterGuideTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B3D194DB282E2726004E6F9A /* JupiterGuideTableViewCell.xib */; };
+		B3D194DF282E2782004E6F9A /* GuideViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3D194DE282E2782004E6F9A /* GuideViewController.swift */; };
+		B3D194E2282E2B2B004E6F9A /* LocationTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3D194E0282E2B2B004E6F9A /* LocationTableViewCell.swift */; };
+		B3D194E3282E2B2B004E6F9A /* LocationTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B3D194E1282E2B2B004E6F9A /* LocationTableViewCell.xib */; };
 		B3DE146D280E7146006DA43C /* AddCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3DE146C280E7146006DA43C /* AddCardViewController.swift */; };
 		B3DE146F280E7556006DA43C /* UIApplicationExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3DE146E280E7556006DA43C /* UIApplicationExtension.swift */; };
 		B3F370D4281B9B85003A427F /* OutputView.xib in Resources */ = {isa = PBXBuildFile; fileRef = B3F370D3281B9B85003A427F /* OutputView.xib */; };
@@ -132,6 +137,11 @@
 		B3BD69B227E9A8AD00A32A7A /* LevelCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LevelCollectionViewCell.swift; sourceTree = "<group>"; };
 		B3BD69B327E9A8AD00A32A7A /* LevelCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = LevelCollectionViewCell.xib; sourceTree = "<group>"; };
 		B3C09C63280E941B00E6F55F /* ShowCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowCardViewController.swift; sourceTree = "<group>"; };
+		B3D194DA282E2726004E6F9A /* JupiterGuideTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JupiterGuideTableViewCell.swift; sourceTree = "<group>"; };
+		B3D194DB282E2726004E6F9A /* JupiterGuideTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = JupiterGuideTableViewCell.xib; sourceTree = "<group>"; };
+		B3D194DE282E2782004E6F9A /* GuideViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GuideViewController.swift; sourceTree = "<group>"; };
+		B3D194E0282E2B2B004E6F9A /* LocationTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationTableViewCell.swift; sourceTree = "<group>"; };
+		B3D194E1282E2B2B004E6F9A /* LocationTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = LocationTableViewCell.xib; sourceTree = "<group>"; };
 		B3DE146C280E7146006DA43C /* AddCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddCardViewController.swift; sourceTree = "<group>"; };
 		B3DE146E280E7556006DA43C /* UIApplicationExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIApplicationExtension.swift; sourceTree = "<group>"; };
 		B3F370D3281B9B85003A427F /* OutputView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = OutputView.xib; sourceTree = "<group>"; };
@@ -200,6 +210,7 @@
 		607FACD21AFB9204008FA782 /* Example for JupiterSDK */ = {
 			isa = PBXGroup;
 			children = (
+				B3D194D9282E270C004E6F9A /* Guide */,
 				B3455280282AACD000F0DD3E /* Output */,
 				B345527F282AA00700F0DD3E /* Network */,
 				B360D88728090D400084FB22 /* Fonts */,
@@ -218,6 +229,7 @@
 				B3B4F85928114EEB009F9E6C /* ShowCardCollectionViewCell.xib */,
 				B3DE146C280E7146006DA43C /* AddCardViewController.swift */,
 				B367526E2817CB3C00E4FA6C /* CardBackViewController.swift */,
+				B3D194DE282E2782004E6F9A /* GuideViewController.swift */,
 				607FACD91AFB9204008FA782 /* Main.storyboard */,
 				B35272B1281F8DC300321CC6 /* SplashScreen.storyboard */,
 				607FACDE1AFB9204008FA782 /* LaunchScreen.xib */,
@@ -350,6 +362,17 @@
 			name = Sector;
 			sourceTree = "<group>";
 		};
+		B3D194D9282E270C004E6F9A /* Guide */ = {
+			isa = PBXGroup;
+			children = (
+				B3D194DA282E2726004E6F9A /* JupiterGuideTableViewCell.swift */,
+				B3D194DB282E2726004E6F9A /* JupiterGuideTableViewCell.xib */,
+				B3D194E0282E2B2B004E6F9A /* LocationTableViewCell.swift */,
+				B3D194E1282E2B2B004E6F9A /* LocationTableViewCell.xib */,
+			);
+			name = Guide;
+			sourceTree = "<group>";
+		};
 		FF4C89D2434460AC285975FD /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -459,6 +482,8 @@
 				B360D89128090D6A0084FB22 /* NotoSansKR-Black.otf in Resources */,
 				607FACDB1AFB9204008FA782 /* Main.storyboard in Resources */,
 				B360D88E28090D6A0084FB22 /* NotoSansKR-Bold.otf in Resources */,
+				B3D194DD282E2726004E6F9A /* JupiterGuideTableViewCell.xib in Resources */,
+				B3D194E3282E2B2B004E6F9A /* LocationTableViewCell.xib in Resources */,
 				B3B4F85B28114EEB009F9E6C /* ShowCardCollectionViewCell.xib in Resources */,
 				B3B3610B28295E1D00B8E876 /* Autoway_RP_B4F.csv in Resources */,
 				B3BD699A27E9A4BE00A32A7A /* Colors.xcassets in Resources */,
@@ -597,6 +622,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				B3BD69AA27E9A57500A32A7A /* getClassName + UIViewController.swift in Sources */,
+				B3D194DF282E2782004E6F9A /* GuideViewController.swift in Sources */,
 				B367526F2817CB3C00E4FA6C /* CardBackViewController.swift in Sources */,
 				B3B156DE282397AF0058B538 /* ImageOverlay.swift in Sources */,
 				B3BD69AF27E9A78000A32A7A /* SectorContainerTableViewCell.swift in Sources */,
@@ -611,8 +637,10 @@
 				607FACD81AFB9204008FA782 /* MainViewController.swift in Sources */,
 				B3844E8E28099EE3007A5215 /* CardCollectionViewCell.swift in Sources */,
 				B340EE3328093FB20096E404 /* CardViewController.swift in Sources */,
+				B3D194E2282E2B2B004E6F9A /* LocationTableViewCell.swift in Sources */,
 				B3BD699D27E9A4FE00A32A7A /* setCharacterSpacing.swift in Sources */,
 				B3DE146F280E7556006DA43C /* UIApplicationExtension.swift in Sources */,
+				B3D194DC282E2726004E6F9A /* JupiterGuideTableViewCell.swift in Sources */,
 				B3F370D6281B9DC5003A427F /* OutputView.swift in Sources */,
 				B3F5C780282A5519009BEDB9 /* Protocol.swift in Sources */,
 				B3F5C77E282A5408009BEDB9 /* Network.swift in Sources */,

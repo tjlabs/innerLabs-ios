@@ -285,11 +285,15 @@ extension CardViewController: UICollectionViewDataSource, UICollectionViewDelega
         
         if (sector_id == 0) {
            // to CardBackViewController
-           guard let cardBackVC = self.storyboard?.instantiateViewController(withIdentifier: "CardBackViewController") as? CardBackViewController else { return }
-           cardBackVC.cardData = cardItemData[mod]
-           cardBackVC.uuid = uuid
-           cardBackVC.page = currentPage
-           self.navigationController?.pushViewController(cardBackVC, animated: true)
+//           guard let cardBackVC = self.storyboard?.instantiateViewController(withIdentifier: "CardBackViewController") as? CardBackViewController else { return }
+//           cardBackVC.cardData = cardItemData[mod]
+//           cardBackVC.uuid = uuid
+//           cardBackVC.page = currentPage
+//           self.navigationController?.pushViewController(cardBackVC, animated: true)
+            
+            guard let guideVC = self.storyboard?.instantiateViewController(withIdentifier: "GuideViewController") as? GuideViewController else { return }
+            guideVC.page = currentPage
+            self.navigationController?.pushViewController(guideVC, animated: true)
         } else {
             guard let mapVC = self.storyboard?.instantiateViewController(withIdentifier: "MapViewController") as? MapViewController else { return }
             mapVC.cardData = cardItemData[mod]
