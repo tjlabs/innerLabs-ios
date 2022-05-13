@@ -4,7 +4,6 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="20020"/>
-        <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -27,15 +26,10 @@
                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                 <subviews>
                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="gnf-ds-0wk">
-                        <rect key="frame" x="13.5" y="18" width="313" height="684"/>
-                        <color key="backgroundColor" name="blue1"/>
-                        <constraints>
-                            <constraint firstAttribute="width" constant="313" id="Mjc-Eb-8Gp"/>
-                            <constraint firstAttribute="height" constant="684" id="qp7-Dk-7D5"/>
-                        </constraints>
+                        <rect key="frame" x="0.0" y="0.0" width="340" height="720"/>
                     </imageView>
                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="v9w-0l-YAR">
-                        <rect key="frame" x="75" y="18" width="190" height="300"/>
+                        <rect key="frame" x="75" y="20" width="190" height="300"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="190" id="Bni-k5-DwE"/>
                             <constraint firstAttribute="height" constant="300" id="KFe-LI-ny7"/>
@@ -70,20 +64,22 @@
             <viewLayoutGuide key="safeArea" id="ZTg-uK-7eu"/>
             <constraints>
                 <constraint firstItem="Sig-cP-Ypg" firstAttribute="centerX" secondItem="gnf-ds-0wk" secondAttribute="centerX" id="0wA-67-TDE"/>
-                <constraint firstItem="v9w-0l-YAR" firstAttribute="top" secondItem="gnf-ds-0wk" secondAttribute="top" id="9Oc-j4-LrX"/>
+                <constraint firstAttribute="trailing" secondItem="gnf-ds-0wk" secondAttribute="trailing" id="1hx-q7-7WM"/>
+                <constraint firstItem="v9w-0l-YAR" firstAttribute="top" secondItem="gnf-ds-0wk" secondAttribute="top" constant="20" id="9Oc-j4-LrX"/>
                 <constraint firstItem="e0U-8C-aHT" firstAttribute="leading" secondItem="v9w-0l-YAR" secondAttribute="leading" id="Abb-LJ-oMc"/>
                 <constraint firstItem="gnf-ds-0wk" firstAttribute="centerY" secondItem="gTV-IL-0wX" secondAttribute="centerY" id="BmE-H7-MZh"/>
                 <constraint firstItem="gnf-ds-0wk" firstAttribute="centerX" secondItem="gTV-IL-0wX" secondAttribute="centerX" id="CdE-QK-ybs"/>
                 <constraint firstItem="pwo-rE-Cp2" firstAttribute="top" secondItem="e0U-8C-aHT" secondAttribute="bottom" constant="15" id="NOk-ul-0jw"/>
+                <constraint firstItem="gnf-ds-0wk" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" id="Nwf-uf-i3Y"/>
                 <constraint firstItem="pwo-rE-Cp2" firstAttribute="leading" secondItem="e0U-8C-aHT" secondAttribute="leading" id="dlw-bc-YkN"/>
+                <constraint firstAttribute="bottom" secondItem="gnf-ds-0wk" secondAttribute="bottom" id="gcd-XU-i3Z"/>
                 <constraint firstItem="v9w-0l-YAR" firstAttribute="centerX" secondItem="gnf-ds-0wk" secondAttribute="centerX" id="hKZ-gV-NO5"/>
                 <constraint firstItem="Sig-cP-Ypg" firstAttribute="centerY" secondItem="gTV-IL-0wX" secondAttribute="centerY" id="iQj-a7-CER"/>
+                <constraint firstItem="gnf-ds-0wk" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" id="jFD-K2-EF6"/>
                 <constraint firstItem="e0U-8C-aHT" firstAttribute="top" secondItem="Sig-cP-Ypg" secondAttribute="bottom" constant="80" id="qqG-1g-hcT"/>
             </constraints>
             <connections>
-                <outlet property="cardImageHeight" destination="qp7-Dk-7D5" id="pT5-5a-d5R"/>
                 <outlet property="cardImageView" destination="gnf-ds-0wk" id="Ndl-RJ-PvK"/>
-                <outlet property="cardImageWidth" destination="Mjc-Eb-8Gp" id="FVD-t2-qgG"/>
                 <outlet property="centerLabel" destination="Sig-cP-Ypg" id="v5A-he-aPh"/>
                 <outlet property="sectorDescription" destination="pwo-rE-Cp2" id="2BZ-jc-cDD"/>
                 <outlet property="sectorImageFromTop" destination="9Oc-j4-LrX" id="bXD-gK-0g1"/>
@@ -95,9 +91,4 @@
             <point key="canvasLocation" x="132" y="84"/>
         </collectionViewCell>
     </objects>
-    <resources>
-        <namedColor name="blue1">
-            <color red="0.16099999845027924" green="0.38400000333786011" blue="0.9649999737739563" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-        </namedColor>
-    </resources>
 </document>

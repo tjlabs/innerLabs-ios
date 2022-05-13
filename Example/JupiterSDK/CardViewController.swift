@@ -18,14 +18,12 @@ class CardViewController: UIViewController, AddCardDelegate, ShowCardDelegate, S
     var cardItemData: [CardItemData] = []
     var cardImages: [UIImage] = []
     var sectorImages: [UIImage] = []
-    var cardImagesResized: [UIImage] = []
-    var sectorImagesResized: [UIImage] = []
     var cardSize: [Double]?
     var collectionViewSize: [Double] = [0, 0]
     
     // Card
     var currentIndex: CGFloat = 0
-    let lineSpacing: CGFloat = 20
+    let lineSpacing: CGFloat = 0
     
     var currentPage: Int = 0
     var previousIndex: Int = 0
@@ -56,8 +54,6 @@ class CardViewController: UIViewController, AddCardDelegate, ShowCardDelegate, S
         print("Card -> Size of CollectionView : \(collectionViewSize)")
         print("Card -> Size of Card : \(sizes.sizeCard)")
         print("Card -> Size of Sector : \(sizes.sizeSector)")
-        
-        isCardSmall = checkRatio(collectionViewSize: collectionViewSize, sizeCard: sizes.sizeCard)
         
         setupCollectionView()
         setupProgressView()
@@ -137,19 +133,6 @@ class CardViewController: UIViewController, AddCardDelegate, ShowCardDelegate, S
                 sectorImages.append(sectorImage)
             }
         }
-    }
-    
-    func changeImageSize(imagesToChange: Array<UIImage>, sizeToChange: Array<Double>) -> Array<UIImage> {
-        var changedImages: [UIImage] = []
-        
-        for index in 0..<imagesToChange.count {
-            let image = imagesToChange[index]
-            let targetSize = CGSize(width: sizeToChange[0]*0.5 , height: sizeToChange[1]*0.5)
-            let newImage: UIImage = resizeImage(image: image, targetSize: targetSize) ?? imagesToChange[index]
-            changedImages.append(newImage)
-        }
-        
-        return changedImages
     }
     
     func moveToInitSectionFirstCard() {
@@ -258,32 +241,6 @@ class CardViewController: UIViewController, AddCardDelegate, ShowCardDelegate, S
         self.present(addCardVC, animated: true, completion: nil)
     }
     
-    func resizeImage(image: UIImage, targetSize: CGSize) -> UIImage? {
-        let size = image.size
-        
-        let widthRatio  = targetSize.width  / size.width
-        let heightRatio = targetSize.height / size.height
-        
-        // Figure out what our orientation is, and use that to form the rectangle
-        var newSize: CGSize
-        if(widthRatio > heightRatio) {
-            newSize = CGSize(width: size.width * heightRatio, height: size.height * heightRatio)
-        } else {
-            newSize = CGSize(width: size.width * widthRatio, height: size.height * widthRatio)
-        }
-        
-        // This is the rect that we've calculated out and this is what is actually used below
-        let rect = CGRect(origin: .zero, size: newSize)
-        
-        // Actually do the resizing to the rect using the ImageContext stuff
-        UIGraphicsBeginImageContextWithOptions(newSize, false, 1.0)
-        image.draw(in: rect)
-        let newImage = UIGraphicsGetImageFromCurrentImageContext()
-        UIGraphicsEndImageContext()
-        
-        return newImage
-    }
-    
 }
 
 extension CardViewController: UICollectionViewDataSource, UICollectionViewDelegate {
@@ -302,38 +259,18 @@ extension CardViewController: UICollectionViewDataSource, UICollectionViewDelega
         
         let mod = indexPath.item%cardCount
         
-        cell.backgroundColor = .black
+        cell.backgroundColor = .clear
+//        cell.backgroundColor = .black
         // Sector Name & Description
         cell.sectorName.text = cardItemData[mod].sector_name
         cell.sectorDescription.text = cardItemData[mod].description
         
         // Sector Image
-//        cell.cardImageHeight.constant = collectionViewSize[1]
         cell.cardImageView.contentMode = .scaleAspectFit
         
         cell.cardImageView.image = cardImages[mod]
         cell.sectorImageView.image = sectorImages[mod]
         
-//        cell.cardImageView.image = cardImagesResized[mod]
-//        cell.sectorImageView.image = sectorImagesResized[mod]
-        
-        let cardRatio: Double = 2.18
-        let sectorRatio: Double = 1.53
-        
-        if (!isCardSmall) {
-            // [370, 594]
-            // [370, 597]
-            
-            let width = collectionViewSize[0] - 150 // -150
-            
-            cell.sectorImageFromTop.constant = 0
-            
-            cell.cardImageWidth.constant = width // 200
-            cell.cardImageHeight.constant = cell.cardImageWidth.constant * cardRatio
-            
-            cell.sectorImageWidth.constant = cell.cardImageWidth.constant - 50 // 150
-            cell.sectorImageHeight.constant = cell.cardImageWidth.constant * sectorRatio
-        }
         
         return cell
     }
@@ -406,7 +343,7 @@ extension CardViewController : UIScrollViewDelegate {
         
 //        print("Current Index : \(currentIndex)")
         currentPage = Int(roundedIndex)
-        print("Current Page: \(currentPage)")
+//        print("Current Page: \(currentPage)")
         
         // ProgressBar
         let progress = getProgressValue(currentPage: currentPage)
@@ -436,17 +373,21 @@ extension CardViewController : UIScrollViewDelegate {
         let roundedIndex = round(index)
         let indexPath = IndexPath(item: Int(roundedIndex), section: 0)
         
+//        print("indexPath :", indexPath)
+        
 //        print("roundedIndex : \(roundedIndex)")
 //        print("previousIndex : \(previousIndex)")
         
         if let cell = collectionView.cellForItem(at: indexPath) {
-            animateZoomforCell(zoomCell: cell)
+//            print("This Cell will be Original Size :", indexPath)
+//            animateZoomforCell(zoomCell: cell)
         }
         if Int(roundedIndex) != previousIndex {
             let preIndexPath = IndexPath(item: previousIndex, section: 0)
             if let preCell = collectionView.cellForItem(at: preIndexPath)
             {
-                animateZoomforCellremove(zoomCell: preCell)
+//                print("This Cell will be Smaller Size :", preIndexPath)
+//                animateZoomforCellremove(zoomCell: preCell)
                 
             }
             previousIndex = indexPath.item
