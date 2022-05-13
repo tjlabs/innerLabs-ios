@@ -354,15 +354,20 @@
                                 </constraints>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="bbl-7Y-k9p">
-                                <rect key="frame" x="0.0" y="100" width="390" height="410"/>
-                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <rect key="frame" x="0.0" y="100" width="390" height="610"/>
+                                <color key="backgroundColor" systemColor="systemGray6Color"/>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ci4-iz-LFH">
                                 <rect key="frame" x="0.0" y="710" width="390" height="100"/>
                                 <subviews>
                                     <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="buo-5o-tfb" customClass="ExpyTableView" customModule="ExpyTableView">
                                         <rect key="frame" x="0.0" y="0.0" width="390" height="100"/>
-                                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                        <color key="backgroundColor" systemColor="systemGray6Color"/>
+                                        <userDefinedRuntimeAttributes>
+                                            <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                                                <real key="value" value="20"/>
+                                            </userDefinedRuntimeAttribute>
+                                        </userDefinedRuntimeAttributes>
                                     </tableView>
                                 </subviews>
                                 <color key="backgroundColor" systemColor="systemGray6Color"/>
@@ -396,7 +401,7 @@
                             <constraint firstItem="ci4-iz-LFH" firstAttribute="leading" secondItem="iHp-Ig-6Rj" secondAttribute="leading" id="XFT-IE-y0C"/>
                             <constraint firstItem="iHp-Ig-6Rj" firstAttribute="trailing" secondItem="bbl-7Y-k9p" secondAttribute="trailing" id="lzp-Hp-Wxl"/>
                             <constraint firstItem="bbl-7Y-k9p" firstAttribute="leading" secondItem="iHp-Ig-6Rj" secondAttribute="leading" id="m4Q-y5-i8q"/>
-                            <constraint firstItem="iHp-Ig-6Rj" firstAttribute="bottom" secondItem="bbl-7Y-k9p" secondAttribute="bottom" constant="300" id="mmo-jC-fuI"/>
+                            <constraint firstItem="iHp-Ig-6Rj" firstAttribute="bottom" secondItem="bbl-7Y-k9p" secondAttribute="bottom" constant="100" id="mmo-jC-fuI"/>
                             <constraint firstItem="bbl-7Y-k9p" firstAttribute="top" secondItem="y7l-bL-aus" secondAttribute="bottom" id="ssF-cF-fmy"/>
                             <constraint firstItem="iHp-Ig-6Rj" firstAttribute="bottom" secondItem="ci4-iz-LFH" secondAttribute="bottom" id="usb-ge-iTH"/>
                         </constraints>

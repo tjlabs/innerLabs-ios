@@ -325,10 +325,10 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
         
         cell.separatorInset = UIEdgeInsets(top: 5, left: 10, bottom: 0, right: 10)
         if section == 0 {
-            cell.textLabel?.text = "Service Information"
+            cell.textLabel?.text = "  🧑🏻‍🔧 Service Information"
             cell.textLabel?.font = UIFont(name: AppFontName.bold, size: 16)
         } else {
-            cell.textLabel?.text = "Robot"
+            cell.textLabel?.text = "  🤖 Robot"
             cell.textLabel?.font = UIFont(name: AppFontName.bold, size: 16)
             
         }

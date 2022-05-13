@@ -188,11 +188,12 @@ class CardBackViewController: UIViewController {
         
         view.addSubview(dragIndicatorView)
         dragIndicatorView.translatesAutoresizingMaskIntoConstraints = false
+        dragIndicatorView.backgroundColor = .darkblack
         NSLayoutConstraint.activate([
             dragIndicatorView.widthAnchor.constraint(equalToConstant: 60),
             dragIndicatorView.heightAnchor.constraint(equalToConstant: dragIndicatorView.layer.cornerRadius * 2),
             dragIndicatorView.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor),
-            dragIndicatorView.bottomAnchor.constraint(equalTo: containerOutputScrollView.topAnchor, constant: -10)
+            dragIndicatorView.bottomAnchor.constraint(equalTo: containerOutputScrollView.topAnchor, constant: 10)
         ])
     }
     

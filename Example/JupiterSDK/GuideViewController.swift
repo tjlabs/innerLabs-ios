@@ -31,7 +31,7 @@ class GuideViewController: UIViewController, ExpyTableViewDelegate, ExpyTableVie
     
     var isShow: Bool = false
     
-    var defaultHeight: CGFloat = 200
+    var defaultHeight: CGFloat = 100
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(false)
@@ -43,6 +43,7 @@ class GuideViewController: UIViewController, ExpyTableViewDelegate, ExpyTableVie
         configureMapView()
         makeDelegate()
         registerXib()
+        self.view.sendSubviewToBack(containerMapView)
     }
     
     
@@ -52,6 +53,7 @@ class GuideViewController: UIViewController, ExpyTableViewDelegate, ExpyTableVie
         //        mapView.mapType = GMSMapViewType.satellite
         
         self.view.addSubview(mapView)
+        self.view.sendSubviewToBack(mapView)
         
         // Creates a marker in the center of the map.
         let marker = GMSMarker()
@@ -102,7 +104,7 @@ class GuideViewController: UIViewController, ExpyTableViewDelegate, ExpyTableVie
     }
     
     func showContainerTableView() {
-        containerTableViewHeight.constant = 220
+        containerTableViewHeight.constant = 350
     }
     
     func hideContainerTableView() {
@@ -133,15 +135,15 @@ class GuideViewController: UIViewController, ExpyTableViewDelegate, ExpyTableVie
     
     func tableView(_ tableView: ExpyTableView, expandableCellForSection section: Int) -> UITableViewCell {
         let cell = UITableViewCell()
-        cell.backgroundColor = .white
+        cell.backgroundColor = .systemGray6
         cell.selectionStyle = .none //선택했을 때 회색되는거 없애기
         
         cell.separatorInset = UIEdgeInsets(top: 5, left: 10, bottom: 0, right: 10)
         if section == 0 {
-            cell.textLabel?.text = "Service Guide"
+            cell.textLabel?.text = "  💡 Service Guide"
             cell.textLabel?.font = UIFont(name: AppFontName.bold, size: 16)
         } else {
-            cell.textLabel?.text = "Location"
+            cell.textLabel?.text = "  📌 About TJLABS"
             cell.textLabel?.font = UIFont(name: AppFontName.bold, size: 16)
             
         }
@@ -150,8 +152,8 @@ class GuideViewController: UIViewController, ExpyTableViewDelegate, ExpyTableVie
     
 }
 
-extension GuideViewController: UITableViewDataSource {
-    
+extension GuideViewController: UITableViewDelegate {
+    // 높이 지정 index별
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         if indexPath.row == 0 {
             return 40
@@ -165,6 +167,18 @@ extension GuideViewController: UITableViewDataSource {
         }
     }
     
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return 2
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        print("\(indexPath.section)섹션 \(indexPath.row)로우 선택됨")
+    }
+}
+
+
+extension GuideViewController: UITableViewDataSource {
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return 2
     }
@@ -175,10 +189,15 @@ extension GuideViewController: UITableViewDataSource {
             let jupiterGuideTVC = tableView.dequeueReusableCell(withIdentifier: JupiterGuideTableViewCell.identifier) as!
             JupiterGuideTableViewCell
             
+            
+            jupiterGuideTVC.backgroundColor = .systemGray6
+            
             return jupiterGuideTVC
         } else {
             let locationTVC = tableView.dequeueReusableCell(withIdentifier: LocationTableViewCell.identifier) as!
             LocationTableViewCell
+            
+            locationTVC.backgroundColor = .systemGray6
             
             return locationTVC
         }
