@@ -86,9 +86,10 @@ class AddCardViewController: UIViewController, UITextFieldDelegate {
                     
                     let returnedString = String(decoding: response.data!, as: UTF8.self)
                     let addedCard = self.jsonToCard(json: returnedString)
-                    print(addedCard.message)
+                    let message: String = addedCard.message
+                    print("Response Message :", message)
                     
-                    if (addedCard.message == "Update Success") {
+                    if (message == "Update Success") {
                         self.responseLabel.text = "\(addedCard.sector_name) 카드가 정상적으로 추가됐습니다"
                         self.responseLabel.textColor = .systemBlue
                         self.responseLabel.isHidden = false
@@ -131,7 +132,8 @@ class AddCardViewController: UIViewController, UITextFieldDelegate {
                 print("")
                 
                 self.responseLabel.text = "유효한 코드를 입력해주세요 !!"
-                self.responseLabel.alpha = 1.0
+                self.responseLabel.textColor = .systemRed
+                self.responseLabel.isHidden = false
                 
                 break
             }
