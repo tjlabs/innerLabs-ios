@@ -101,7 +101,8 @@ class AddCardViewController: UIViewController, UITextFieldDelegate {
                         let mode: Int = addedCard.mode
                         let infoLevel: [String] = addedCard.infoLevel.components(separatedBy: " ")
                         
-                        self.cardItemData.append(CardItemData(sector_id: id, sector_name: name, description: description, cardColor: cardColor, mode: mode, infoLevel: infoLevel))
+                        self.cardItemData.append(CardItemData(sector_id: id, sector_name: name, description: description,
+                                                              cardColor: cardColor, mode: mode, infoLevel: infoLevel))
                     } else {
                         self.responseLabel.text = "유효한 코드를 입력해주세요 !!"
                         self.responseLabel.textColor = .systemRed
@@ -147,7 +148,6 @@ class AddCardViewController: UIViewController, UITextFieldDelegate {
         let jsonString = json
         
         if let data = jsonString.data(using: .utf8), let decoded = try? decoder.decode(AddCardResponse.self, from: data) {
-            
             return decoded
         }
         
