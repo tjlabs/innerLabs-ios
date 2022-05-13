@@ -96,16 +96,26 @@ class SectorContainerTableViewCell: UITableViewCell {
         let yMax = yAxisValue.max()!
         
         // Configure Chart
-        if (currentLevel == "B3F") {
-            scatterChart.xAxis.axisMinimum = xMin-4.5
-            scatterChart.xAxis.axisMaximum = xMax+4.5
-            scatterChart.leftAxis.axisMinimum = yMin-11
-            scatterChart.leftAxis.axisMaximum = yMax+2
+        if (currentLevel == "B3") {
+//            scatterChart.xAxis.axisMinimum = xMin-4.5
+//            scatterChart.xAxis.axisMaximum = xMax+4.5
+//            scatterChart.leftAxis.axisMinimum = yMin-11
+//            scatterChart.leftAxis.axisMaximum = yMax+2
+            
+            scatterChart.xAxis.axisMinimum = xMin-4.2
+            scatterChart.xAxis.axisMaximum = xMax+1.4
+            scatterChart.leftAxis.axisMinimum = yMin-15
+            scatterChart.leftAxis.axisMaximum = yMax+3.2
         } else {
-            scatterChart.xAxis.axisMinimum = xMin-15
-            scatterChart.xAxis.axisMaximum = xMax+4.5
-            scatterChart.leftAxis.axisMinimum = yMin-22
-            scatterChart.leftAxis.axisMaximum = yMax+34
+//            scatterChart.xAxis.axisMinimum = xMin-15
+//            scatterChart.xAxis.axisMaximum = xMax+4.5
+//            scatterChart.leftAxis.axisMinimum = yMin-22
+//            scatterChart.leftAxis.axisMaximum = yMax+34
+            
+            scatterChart.xAxis.axisMinimum = xMin-10
+            scatterChart.xAxis.axisMaximum = xMax
+            scatterChart.leftAxis.axisMinimum = yMin-15
+            scatterChart.leftAxis.axisMaximum = yMax+25.5
         }
         
         scatterChart.xAxis.drawGridLinesEnabled = false
