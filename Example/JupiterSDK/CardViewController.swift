@@ -69,22 +69,6 @@ class CardViewController: UIViewController, AddCardDelegate, ShowCardDelegate, S
         print(currentIndex)
     }
     
-    func checkRatio(collectionViewSize: Array<Double>, sizeCard: Array<Double>) -> Bool {
-//        let collectionViewSizeWidth = collectionViewSize[0]
-        let collectionViewSizeHeight = collectionViewSize[1]
-        
-//        let sizeCardWidth = sizeCard[0]
-        let sizeCardHeight = sizeCard[1]
-        
-        if (collectionViewSizeHeight < sizeCardHeight) {
-            // 카드가 더 크면
-            return false
-        } else {
-            // 카드가 더 작으면
-            return true
-        }
-    }
-    
     func checkImageSize(cards: Array<UIImage>, sectors: Array<UIImage>) -> (sizeCard: Array<Double>, sizeSector: Array<Double>) {
         let cardImage = cards[0]
         let sectorImage = sectors[0]

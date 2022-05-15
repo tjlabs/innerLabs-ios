@@ -11,23 +11,18 @@ import JupiterSDK
 import ExpyTableView
 import Charts
 
-enum TableList{
-    case sector
-}
 
 protocol PageDelegate {
     func sendPage(data: Int)
 }
 
+enum TableList{
+    case sector
+}
+
 enum ContainerTableViewState {
     case expanded
     case normal
-}
-
-struct ResultToDisplay {
-    var cardData: CardItemData
-    var stepLength: Double = 0
-    var scc: Double = 0
 }
 
 class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewDataSource {
@@ -66,9 +61,16 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
     
     var RP = [String: [[Double]]]()
     
+    var numLevels: Int = 0
+    var infoOfLevels: String = ""
+    var runMode: String = ""
+    
     var isShow: Bool = false
     var isRadioMap: Bool = false
     var isOpen: Bool = false
+    
+    var coordToDisplay = CoordToDisplay()
+    var resultToDisplay = ResultToDisplay()
     
     // View
     var defaultHeight: CGFloat = 100
@@ -81,7 +83,7 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
         registerXib()
         
         if (cardData?.sector_id == 3 || cardData?.sector_id == 4) {
-            let numLevels: Int = (cardData?.infoLevel.count)!
+            numLevels = (cardData?.infoLevel.count)!
             for idx in 0..<numLevels {
                 if (idx == 0) {
                     loadRP(fileName: "Autoway_RP_B4F")
@@ -93,16 +95,14 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
             }
             isRadioMap = true
             
-//            numberOfLevelsLabel.text = String(numLevels)
-//            
-//            if (numLevels == 1) {
-//                let first: String = (cardData?.infoLevel[0])!
-//                leveListLabel.text = "( " + first + " )"
-//            } else {
-//                let first: String = (cardData?.infoLevel[0])!
-//                let last: String = (cardData?.infoLevel[numLevels-1])!
-//                leveListLabel.text = "( " + first + "~" + last + " )"
-//            }
+            if (numLevels == 1) {
+                let first: String = (cardData?.infoLevel[0])!
+                infoOfLevels = "( " + first + " )"
+            } else {
+                let first: String = (cardData?.infoLevel[0])!
+                let last: String = (cardData?.infoLevel[numLevels-1])!
+                infoOfLevels = "( " + first + "~" + last + " )"
+            }
         }
         fixChartHeight(flag: isRadioMap)
     }
@@ -110,7 +110,6 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        var runMode: String = ""
         if (cardData!.mode == 0) {
             runMode = "PDR"
         } else {
@@ -266,16 +265,44 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
             elapsedTime += (dt*1e-3)
         }
         
+        // length, scc, status, mode, idx Tx, idx Rx, level
         let isStepDetected = jupiterService.unitDRInfo.isIndexChanged
-        let unitIdx = Int(jupiterService.unitDRInfo.index)
+        
+        let unitIdxTx = Int(jupiterService.unitDRInfo.index)
         let unitLength = jupiterService.unitDRInfo.length
-        let flag = jupiterService.unitDRInfo.lookingFlag
+        let status = jupiterService.unitDRInfo.lookingFlag
         
         if (isStepDetected) {
-            print(jupiterService.unitDRInfo.toString())
-            let resultToDisplay = ResultToDisplay(cardData: cardData!, stepLength: unitLength, scc: 0)
-//            let serviceInfoTVC = tableView.dequeueReusableCell(withIdentifier: ServiceInfoTableViewCell.identifier) as!
-//            ServiceInfoTableViewCell
+            resultToDisplay.unitIndexTx = unitIdxTx
+            resultToDisplay.unitLength = unitLength
+            resultToDisplay.status = status
+            
+            let x = jupiterService.jupiterOutput.x
+            let y = jupiterService.jupiterOutput.y
+            let level = jupiterService.jupiterOutput.level
+            let unitIdxRx = jupiterService.jupiterOutput.index
+            let scc = jupiterService.jupiterOutput.scc
+            
+            let randomNumX = Double.random(in: 0...20)
+            let randomNumY = Double.random(in: -10...10)
+            
+            coordToDisplay.x = 30 + randomNumX
+            coordToDisplay.y = 50 + randomNumY
+            
+            coordToDisplay.level = level
+            
+            resultToDisplay.level = level
+            resultToDisplay.unitIndexRx = unitIdxRx
+            resultToDisplay.scc = scc
+            
+            UIView.performWithoutAnimation {
+                    self.jupiterTableView.reloadSections(IndexSet(0...0), with: .none)
+            }
+            if (isOpen) {
+                UIView.performWithoutAnimation {
+                        self.containerTableView.reloadSections(IndexSet(0...0), with: .none)
+                }
+            }
         }
     }
     
@@ -291,9 +318,15 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
         switch state {
         case .willExpand:
             print("WILL EXPAND")
+            if (section == 0) {
+               isOpen = true
+            }
             
         case .willCollapse:
             print("WILL COLLAPSE")
+            if (section == 0) {
+                isOpen = false
+            }
             
         case .didExpand:
             print("DID EXPAND")
@@ -311,17 +344,6 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
         let cell = UITableViewCell()
         cell.backgroundColor = .white
         cell.selectionStyle = .none //선택했을 때 회색되는거 없애기
-//        if (!isOpen) {
-//            var bgColorView = UIView()
-//            bgColorView.backgroundColor = .blue4
-//            cell.selectedBackgroundView = bgColorView
-//
-//            isOpen = true
-//        } else {
-//            var bgColorView = UIView()
-//            bgColorView.backgroundColor = .white
-//            cell.selectedBackgroundView = bgColorView
-//        }
         
         cell.separatorInset = UIEdgeInsets(top: 5, left: 10, bottom: 0, right: 10)
         if section == 0 {
@@ -395,6 +417,7 @@ extension MapViewController: UITableViewDataSource {
                 guard let sectorContainerTVC = tableView.dequeueReusableCell(withIdentifier: SectorContainerTableViewCell.identifier) as?
                         SectorContainerTableViewCell else {return UITableViewCell()}
                 sectorContainerTVC.configure(cardData: cardData!, RP: RP)
+                sectorContainerTVC.updateCoord(data: coordToDisplay)
                 sectorContainerTVC.selectionStyle = .none
                 
                 return sectorContainerTVC
@@ -403,6 +426,12 @@ extension MapViewController: UITableViewDataSource {
             if indexPath.section == 0 {
                 let serviceInfoTVC = tableView.dequeueReusableCell(withIdentifier: ServiceInfoTableViewCell.identifier) as!
                 ServiceInfoTableViewCell
+    
+                serviceInfoTVC.infoOfLevelsLabel.text = infoOfLevels
+                serviceInfoTVC.numberOfLevelsLabel.text = String(numLevels)
+                serviceInfoTVC.modeLabel.text = runMode
+                
+                serviceInfoTVC.updateResult(data: resultToDisplay)
                 
                 return serviceInfoTVC
             } else {

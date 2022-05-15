@@ -43,3 +43,18 @@ struct CardInfo: Codable {
     var mode: Int
     var infoLevel: String
 }
+
+struct ResultToDisplay {
+    var unitIndexTx: Int = 0
+    var unitIndexRx: Int = 0
+    var unitLength: Double = 0
+    var status: Bool = false
+    var level: String = ""
+    var scc: Double = 0
+}
+
+struct CoordToDisplay {
+    var x: Double = 0
+    var y: Double = 0
+    var level: String = ""
+}

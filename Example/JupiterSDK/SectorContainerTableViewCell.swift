@@ -21,6 +21,7 @@ class SectorContainerTableViewCell: UITableViewCell {
     
     var cardData: CardItemData?
     var RP: [String: [[Double]]]?
+    var XY: [Double] = [60, 60]
 
     private var levelList = [String]()
     private var currentLevel: String = ""
@@ -56,25 +57,16 @@ class SectorContainerTableViewCell: UITableViewCell {
         imageLevel.image = UIImage(named: level)
     }
     
-    private func drawRP(X: [Double], Y: [Double]) {
-        let randomNum = Double.random(in: 0...20)
-        
-        let xAxisValue: [Double] = X
-        let yAxisValue: [Double] = Y
-        
-//        let xAxisValue: [Double] = [21.7 + randomNum, 22.2 - randomNum]
-//        let yAxisValue: [Double] = [15.5 + randomNum, 15.2 - randomNum]
-        
-        let xAxisValue2: [Double] = [10 + randomNum, 24 - randomNum]
-        let yAxisValue2: [Double] = [7 + randomNum, 11 - randomNum]
+    private func drawRP(RP_X: [Double], RP_Y: [Double], XY: [Double]) {
+        let xAxisValue: [Double] = RP_X
+        let yAxisValue: [Double] = RP_Y
 
         let values1 = (0..<xAxisValue.count).map { (i) -> ChartDataEntry in
-//            return ChartDataEntry(x: yAxisValue[i], y: xAxisValue[i])
             return ChartDataEntry(x: xAxisValue[i], y: yAxisValue[i])
         }
         
-        let values2 = (0..<xAxisValue2.count).map { (i) -> ChartDataEntry in
-            return ChartDataEntry(x: yAxisValue2[i], y: xAxisValue2[i])
+        let values2 = (0..<1).map { (i) -> ChartDataEntry in
+            return ChartDataEntry(x: XY[0], y: XY[1])
         }
         
         let set1 = ScatterChartDataSet(entries: values1, label: "RP")
@@ -82,7 +74,7 @@ class SectorContainerTableViewCell: UITableViewCell {
         set1.setColor(UIColor.yellow)
         set1.scatterShapeSize = 2
         
-        let set2 = ScatterChartDataSet(entries: values2, label: "Random")
+        let set2 = ScatterChartDataSet(entries: values2, label: "User")
         set2.setScatterShape(.square)
         set2.setColor(ChartColorTemplates.colorful()[1])
         set2.scatterShapeSize = 8
@@ -151,8 +143,18 @@ class SectorContainerTableViewCell: UITableViewCell {
         if (rp.isEmpty) {
             // RP가 없어서 그리지 않음
         } else {
-            drawRP(X: rp[0], Y: rp[1])
+            drawRP(RP_X: rp[0], RP_Y: rp[1], XY: XY)
         }
+    }
+    
+    func updateCoord(data: CoordToDisplay) {
+        self.XY[0] = data.x
+        self.XY[1] = data.y
+        
+        currentLevel = "B4"
+        let rp: [[Double]] = RP?[currentLevel] ?? [[Double]]()
+        
+        drawRP(RP_X: rp[0], RP_Y: rp[1], XY: XY)
     }
 }
 
@@ -165,7 +167,7 @@ extension SectorContainerTableViewCell : UICollectionViewDelegate{
         if (rp.isEmpty) {
             // RP가 없어서 그리지 않음
         } else {
-            drawRP(X: rp[0], Y: rp[1])
+            drawRP(RP_X: rp[0], RP_Y: rp[1], XY: XY)
             fetchLevel(currentLevel: currentLevel, levelList: levelList)
         }
         

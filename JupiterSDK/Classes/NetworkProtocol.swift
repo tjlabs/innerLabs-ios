@@ -85,14 +85,14 @@ struct Input: Codable {
 }
 
 public struct Output: Codable {
-    public var x: Int
-    public var y: Int
     public var mobile_time: Double
+    public var index: Int
+    public var building : String
+    public var level : String
+    public var x: Double
+    public var y: Double
     public var scc: Double
     public var scr: Double
-    public var index: Int
-    public var level : String
-    public var building : String
     public var phase : Int
     public var calculated_time: Double
     

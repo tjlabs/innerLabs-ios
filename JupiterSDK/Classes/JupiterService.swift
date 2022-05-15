@@ -50,6 +50,7 @@ public class JupiterService: NSObject {
     
     public var sensorData = SensorData()
     public var unitDRInfo = UnitDRInfo()
+    public var jupiterOutput = Output(mobile_time: 0, index: 0, building: "", level: "", x: 0, y: 0, scc: 0, scr: 0, phase: 0, calculated_time: 0)
     
     public var testQueue = LinkedList<TimestampDouble>()
     
@@ -74,7 +75,8 @@ public class JupiterService: NSObject {
     let unitDRGenerator = UnitDRGenerator()
     
     // To Server //
-    let networkManager = NetworkManager()
+//    let networkManager = NetworkManager()
+//    public var jupiterResult: Output = Output(mobile_time: 0, index: 0, building: "", level: "", x: 0, y: 0, scc: 0, scr: 0, phase: 0, calculated_time: 0)
     
     public var sector: String = ""
     public var uuid: String = ""
@@ -242,19 +244,9 @@ public class JupiterService: NSObject {
             
             var data = Input(user_id: uuid, index: unitDRInfo.index, length: unitDRInfo.length, heading: unitDRInfo.heading, pressure: sensorData.pressure[0], looking_flag: unitDRInfo.lookingFlag, ble: bleDictionary, mobile_time: timeStamp, device_model: deviceModel, os_version: osVersion)
             
-            networkManager.postRequest(url: url, input: data)
+            NetworkManager.shared.postRequest(url: url, input: data)
         }
-        
-//        stepResult = TJ.runAlgorithm(sensorData: sensorData)
-//        if (stepResult.isStepDetected) {
-//            let bleTest = bleList.bleList.devices
-//            let bleDictionary = Dictionary(uniqueKeysWithValues: bleTest.map { ($0.ward_id, $0.rssi) })
-//
-//            let data = Input(user_id: uuid, unit_idx: stepResult.unit_idx, step_length: stepResult.step_length, heading: stepResult.heading, pressure: stepResult.pressure, looking_flag: stepResult.lookingFlag,
-//                             ble: bleDictionary, time_mobile: timeStamp, device_model: deviceModel, os_version: osVersion)
-//
-//            networkManager.postRequest(url: url, input: data)
-//        }
+        jupiterOutput = NetworkManager.shared.jupiterResult
     }
     
     func startBLE() {
