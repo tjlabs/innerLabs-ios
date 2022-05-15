@@ -8,13 +8,19 @@
 
 import UIKit
 
-class RobotTableViewCell: UITableViewCell {
+class RobotTableViewCell: UITableViewCell, UITextFieldDelegate {
     
     static let identifier = "RobotTableViewCell"
 
+    @IBOutlet weak var xTextField: UITextField!
+    @IBOutlet weak var yTextField: UITextField!
+    
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
+        
+        xTextField.delegate = self
+        yTextField.delegate = self
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
@@ -22,5 +28,11 @@ class RobotTableViewCell: UITableViewCell {
 
         // Configure the view for the selected state
     }
-
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        self.endEditing(true)
+        textField.resignFirstResponder()
+        
+        return false
+    }
 }

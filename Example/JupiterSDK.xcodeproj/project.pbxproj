@@ -34,6 +34,9 @@
 		B3844E8F28099EE3007A5215 /* CardCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B3844E8D28099EE3007A5215 /* CardCollectionViewCell.xib */; };
 		B388AC31282BF6A3001C3D71 /* RobotTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B388AC2F282BF6A3001C3D71 /* RobotTableViewCell.swift */; };
 		B388AC32282BF6A3001C3D71 /* RobotTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B388AC30282BF6A3001C3D71 /* RobotTableViewCell.xib */; };
+		B3AA004928313C97007CD284 /* UILabelExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3AA004828313C97007CD284 /* UILabelExtension.swift */; };
+		B3AA004B28313CDF007CD284 /* UITextFieldExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3AA004A28313CDF007CD284 /* UITextFieldExtension.swift */; };
+		B3AA004D28313CEA007CD284 /* UITextViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3AA004C28313CEA007CD284 /* UITextViewExtension.swift */; };
 		B3B156DE282397AF0058B538 /* ImageOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3B156DD282397AF0058B538 /* ImageOverlay.swift */; };
 		B3B361062829522A00B8E876 /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3B361052829522A00B8E876 /* MapViewController.swift */; };
 		B3B3610928295E1400B8E876 /* Autoway_RP_B3F.csv in Resources */ = {isa = PBXBuildFile; fileRef = B3B3610828295E1400B8E876 /* Autoway_RP_B3F.csv */; };
@@ -42,13 +45,11 @@
 		B3B4F85B28114EEB009F9E6C /* ShowCardCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B3B4F85928114EEB009F9E6C /* ShowCardCollectionViewCell.xib */; };
 		B3BD699827E9A4A500A32A7A /* ColorPalette.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3BD699727E9A4A500A32A7A /* ColorPalette.swift */; };
 		B3BD699A27E9A4BE00A32A7A /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B3BD699927E9A4BE00A32A7A /* Colors.xcassets */; };
-		B3BD699D27E9A4FE00A32A7A /* setCharacterSpacing.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3BD699C27E9A4FE00A32A7A /* setCharacterSpacing.swift */; };
-		B3BD699F27E9A51100A32A7A /* makeVibrate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3BD699E27E9A51100A32A7A /* makeVibrate.swift */; };
+		B3BD699F27E9A51100A32A7A /* UIViewControllerExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3BD699E27E9A51100A32A7A /* UIViewControllerExtension.swift */; };
 		B3BD69A127E9A52500A32A7A /* applyShadow.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3BD69A027E9A52500A32A7A /* applyShadow.swift */; };
 		B3BD69A427E9A54700A32A7A /* StringExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3BD69A327E9A54700A32A7A /* StringExtension.swift */; };
 		B3BD69A627E9A55400A32A7A /* UIViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3BD69A527E9A55400A32A7A /* UIViewExtension.swift */; };
 		B3BD69A827E9A56B00A32A7A /* UITableViewRegisterable.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3BD69A727E9A56B00A32A7A /* UITableViewRegisterable.swift */; };
-		B3BD69AA27E9A57500A32A7A /* getClassName + UIViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3BD69A927E9A57500A32A7A /* getClassName + UIViewController.swift */; };
 		B3BD69AC27E9A57E00A32A7A /* UICollectionViewRegisterable.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3BD69AB27E9A57E00A32A7A /* UICollectionViewRegisterable.swift */; };
 		B3BD69AF27E9A78000A32A7A /* SectorContainerTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3BD69AD27E9A78000A32A7A /* SectorContainerTableViewCell.swift */; };
 		B3BD69B027E9A78000A32A7A /* SectorContainerTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B3BD69AE27E9A78000A32A7A /* SectorContainerTableViewCell.xib */; };
@@ -116,6 +117,9 @@
 		B3844E8D28099EE3007A5215 /* CardCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CardCollectionViewCell.xib; sourceTree = "<group>"; };
 		B388AC2F282BF6A3001C3D71 /* RobotTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RobotTableViewCell.swift; sourceTree = "<group>"; };
 		B388AC30282BF6A3001C3D71 /* RobotTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = RobotTableViewCell.xib; sourceTree = "<group>"; };
+		B3AA004828313C97007CD284 /* UILabelExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UILabelExtension.swift; sourceTree = "<group>"; };
+		B3AA004A28313CDF007CD284 /* UITextFieldExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITextFieldExtension.swift; sourceTree = "<group>"; };
+		B3AA004C28313CEA007CD284 /* UITextViewExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITextViewExtension.swift; sourceTree = "<group>"; };
 		B3B156DD282397AF0058B538 /* ImageOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageOverlay.swift; sourceTree = "<group>"; };
 		B3B361052829522A00B8E876 /* MapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
 		B3B3610828295E1400B8E876 /* Autoway_RP_B3F.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Autoway_RP_B3F.csv; sourceTree = "<group>"; };
@@ -124,13 +128,11 @@
 		B3B4F85928114EEB009F9E6C /* ShowCardCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ShowCardCollectionViewCell.xib; sourceTree = "<group>"; };
 		B3BD699727E9A4A500A32A7A /* ColorPalette.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorPalette.swift; sourceTree = "<group>"; };
 		B3BD699927E9A4BE00A32A7A /* Colors.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Colors.xcassets; sourceTree = "<group>"; };
-		B3BD699C27E9A4FE00A32A7A /* setCharacterSpacing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = setCharacterSpacing.swift; sourceTree = "<group>"; };
-		B3BD699E27E9A51100A32A7A /* makeVibrate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = makeVibrate.swift; sourceTree = "<group>"; };
+		B3BD699E27E9A51100A32A7A /* UIViewControllerExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIViewControllerExtension.swift; sourceTree = "<group>"; };
 		B3BD69A027E9A52500A32A7A /* applyShadow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = applyShadow.swift; sourceTree = "<group>"; };
 		B3BD69A327E9A54700A32A7A /* StringExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringExtension.swift; sourceTree = "<group>"; };
 		B3BD69A527E9A55400A32A7A /* UIViewExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIViewExtension.swift; sourceTree = "<group>"; };
 		B3BD69A727E9A56B00A32A7A /* UITableViewRegisterable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITableViewRegisterable.swift; sourceTree = "<group>"; };
-		B3BD69A927E9A57500A32A7A /* getClassName + UIViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "getClassName + UIViewController.swift"; sourceTree = "<group>"; };
 		B3BD69AB27E9A57E00A32A7A /* UICollectionViewRegisterable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UICollectionViewRegisterable.swift; sourceTree = "<group>"; };
 		B3BD69AD27E9A78000A32A7A /* SectorContainerTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SectorContainerTableViewCell.swift; sourceTree = "<group>"; };
 		B3BD69AE27E9A78000A32A7A /* SectorContainerTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SectorContainerTableViewCell.xib; sourceTree = "<group>"; };
@@ -215,8 +217,7 @@
 				B345527F282AA00700F0DD3E /* Network */,
 				B360D88728090D400084FB22 /* Fonts */,
 				B3BD69B127E9A88B00A32A7A /* Sector */,
-				B3BD69A227E9A53C00A32A7A /* Extensions */,
-				B3BD699B27E9A4D100A32A7A /* Utils */,
+				B3BD69A227E9A53C00A32A7A /* Utils */,
 				B3BD699627E9A48E00A32A7A /* Color */,
 				607FACD51AFB9204008FA782 /* AppDelegate.swift */,
 				607FACD71AFB9204008FA782 /* MainViewController.swift */,
@@ -328,27 +329,21 @@
 			name = Color;
 			sourceTree = "<group>";
 		};
-		B3BD699B27E9A4D100A32A7A /* Utils */ = {
-			isa = PBXGroup;
-			children = (
-				B3BD699C27E9A4FE00A32A7A /* setCharacterSpacing.swift */,
-				B3BD699E27E9A51100A32A7A /* makeVibrate.swift */,
-				B3BD69A027E9A52500A32A7A /* applyShadow.swift */,
-			);
-			name = Utils;
-			sourceTree = "<group>";
-		};
-		B3BD69A227E9A53C00A32A7A /* Extensions */ = {
+		B3BD69A227E9A53C00A32A7A /* Utils */ = {
 			isa = PBXGroup;
 			children = (
 				B3BD69A327E9A54700A32A7A /* StringExtension.swift */,
 				B3BD69A527E9A55400A32A7A /* UIViewExtension.swift */,
 				B3BD69A727E9A56B00A32A7A /* UITableViewRegisterable.swift */,
-				B3BD69A927E9A57500A32A7A /* getClassName + UIViewController.swift */,
 				B3BD69AB27E9A57E00A32A7A /* UICollectionViewRegisterable.swift */,
 				B3DE146E280E7556006DA43C /* UIApplicationExtension.swift */,
+				B3BD699E27E9A51100A32A7A /* UIViewControllerExtension.swift */,
+				B3AA004C28313CEA007CD284 /* UITextViewExtension.swift */,
+				B3AA004A28313CDF007CD284 /* UITextFieldExtension.swift */,
+				B3AA004828313C97007CD284 /* UILabelExtension.swift */,
+				B3BD69A027E9A52500A32A7A /* applyShadow.swift */,
 			);
-			name = Extensions;
+			name = Utils;
 			sourceTree = "<group>";
 		};
 		B3BD69B127E9A88B00A32A7A /* Sector */ = {
@@ -621,12 +616,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B3BD69AA27E9A57500A32A7A /* getClassName + UIViewController.swift in Sources */,
 				B3D194DF282E2782004E6F9A /* GuideViewController.swift in Sources */,
 				B367526F2817CB3C00E4FA6C /* CardBackViewController.swift in Sources */,
 				B3B156DE282397AF0058B538 /* ImageOverlay.swift in Sources */,
 				B3BD69AF27E9A78000A32A7A /* SectorContainerTableViewCell.swift in Sources */,
 				B3BD69A127E9A52500A32A7A /* applyShadow.swift in Sources */,
+				B3AA004B28313CDF007CD284 /* UITextFieldExtension.swift in Sources */,
 				B3F370DA281BA1DD003A427F /* RobotView.swift in Sources */,
 				B3037A94281C07060058D025 /* OverlayCustomView.swift in Sources */,
 				B3B4F85A28114EEB009F9E6C /* ShowCardCollectionViewCell.swift in Sources */,
@@ -635,10 +630,10 @@
 				B3C09C64280E941B00E6F55F /* ShowCardViewController.swift in Sources */,
 				B3BD69AC27E9A57E00A32A7A /* UICollectionViewRegisterable.swift in Sources */,
 				607FACD81AFB9204008FA782 /* MainViewController.swift in Sources */,
+				B3AA004D28313CEA007CD284 /* UITextViewExtension.swift in Sources */,
 				B3844E8E28099EE3007A5215 /* CardCollectionViewCell.swift in Sources */,
 				B340EE3328093FB20096E404 /* CardViewController.swift in Sources */,
 				B3D194E2282E2B2B004E6F9A /* LocationTableViewCell.swift in Sources */,
-				B3BD699D27E9A4FE00A32A7A /* setCharacterSpacing.swift in Sources */,
 				B3DE146F280E7556006DA43C /* UIApplicationExtension.swift in Sources */,
 				B3D194DC282E2726004E6F9A /* JupiterGuideTableViewCell.swift in Sources */,
 				B3F370D6281B9DC5003A427F /* OutputView.swift in Sources */,
@@ -653,7 +648,8 @@
 				B3BD699827E9A4A500A32A7A /* ColorPalette.swift in Sources */,
 				B3BD69A827E9A56B00A32A7A /* UITableViewRegisterable.swift in Sources */,
 				B3B361062829522A00B8E876 /* MapViewController.swift in Sources */,
-				B3BD699F27E9A51100A32A7A /* makeVibrate.swift in Sources */,
+				B3AA004928313C97007CD284 /* UILabelExtension.swift in Sources */,
+				B3BD699F27E9A51100A32A7A /* UIViewControllerExtension.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

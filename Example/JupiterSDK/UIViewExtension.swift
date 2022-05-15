@@ -2,6 +2,14 @@ import UIKit
 
 extension UIView {
     
+    static var className: String {
+        NSStringFromClass(self.classForCoder()).components(separatedBy: ".").last!
+    }
+    
+     var className: String {
+        NSStringFromClass(self.classForCoder).components(separatedBy: ".").last!
+    }
+    
     @IBInspectable var borderWidth: CGFloat {
         set {
             layer.borderWidth = newValue
@@ -71,6 +79,12 @@ extension UIView {
             self.layer.masksToBounds = newValue
         }
         
+    }
+    
+    public func makeVibrate(degree : UIImpactFeedbackGenerator.FeedbackStyle = .medium)
+    {
+        let generator = UIImpactFeedbackGenerator(style: degree)
+        generator.impactOccurred()
     }
     
 }

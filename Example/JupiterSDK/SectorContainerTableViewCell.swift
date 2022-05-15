@@ -32,6 +32,11 @@ class SectorContainerTableViewCell: UITableViewCell {
         setCells()
         setZoneCollectionView()
     }
+    
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesBegan(touches, with: event)
+        print("Touch Began")
+    }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)

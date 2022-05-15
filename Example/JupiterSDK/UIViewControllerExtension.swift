@@ -16,19 +16,28 @@ import UIKit
 
 extension UIViewController{
     
+    static var className: String {
+        NSStringFromClass(self.classForCoder()).components(separatedBy: ".").last!
+    }
+    
+     var className: String {
+        NSStringFromClass(self.classForCoder).components(separatedBy: ".").last!
+    }
+    
   public func makeVibrate(degree : UIImpactFeedbackGenerator.FeedbackStyle = .medium)
     {
         let generator = UIImpactFeedbackGenerator(style: degree)
         generator.impactOccurred()
     }
-}
-
-extension UIView{
     
-    public func makeVibrate(degree : UIImpactFeedbackGenerator.FeedbackStyle = .medium)
-    {
-        let generator = UIImpactFeedbackGenerator(style: degree)
-        generator.impactOccurred()
+    func hideKeyboardWhenTappedAround() {
+        let tap: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(UIViewController.dismissKeyboard))
+        tap.cancelsTouchesInView = false
+        view.addGestureRecognizer(tap)
+    }
+    
+    @objc func dismissKeyboard() {
+        view.endEditing(true)
     }
 }
 

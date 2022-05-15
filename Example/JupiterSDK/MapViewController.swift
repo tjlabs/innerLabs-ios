@@ -120,6 +120,8 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
         jupiterService.mode = runMode
         jupiterService.startService(parent: self)
         startTimer()
+        
+        self.hideKeyboardWhenTappedAround()
     }
     
     @IBAction func tapBackButton(_ sender: UIButton) {
@@ -238,11 +240,6 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
     private func loadRP(fileName: String) {
         let path = Bundle.main.path(forResource: fileName, ofType: "csv")!
         parseCSV(url: URL(fileURLWithPath: path))
-    }
-    
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        jupiterTableView.endEditing(true)
-        self.view.endEditing(true)
     }
     
     // Display Outputs
