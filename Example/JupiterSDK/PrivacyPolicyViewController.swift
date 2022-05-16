@@ -14,7 +14,7 @@ class PrivacyPolicyViewController: UIViewController {
     @IBOutlet weak var webView: WKWebView!
     
     var url = URL(string: "https://tjlabscorp.tistory.com/3")!
-//    var url = URL(string: "https://www.notion.so/tjlabs/TJLABS-e83ccd3cb45342ffa4426877b146681b")!
+//    var url = URL(string: "https://tjlabs.notion.site/TJLABS-e83ccd3cb45342ffa4426877b146681b")!
     
     override func viewDidLoad() {
         super.viewDidLoad()
