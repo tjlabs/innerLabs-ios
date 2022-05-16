@@ -84,7 +84,25 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
         makeDelegate()
         registerXib()
         
-        if (cardData?.sector_id == 3 || cardData?.sector_id == 4) {
+        if ( cardData?.sector_id == 1 || cardData?.sector_id == 2 ) {
+            numLevels = (cardData?.infoLevel.count)!
+            for idx in 0..<numLevels {
+                if (idx == 0) {
+                    loadRP(fileName: "KIST_RP_B1")
+                }
+                let nameLevel: String = (cardData?.infoLevel[idx])!
+                RP[nameLevel] = [rpX, rpY]
+            }
+            
+            let first: String = (cardData?.infoLevel[0])!
+            if (numLevels == 1) {
+                infoOfLevels = "( " + first + " )"
+            } else {
+                let last: String = (cardData?.infoLevel[numLevels-1])!
+                infoOfLevels = "( " + first + "~" + last + " )"
+            }
+            
+        } else if (cardData?.sector_id == 3 || cardData?.sector_id == 4) {
             numLevels = (cardData?.infoLevel.count)!
             for idx in 0..<numLevels {
                 if (idx == 0) {
@@ -168,10 +186,10 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
     
     func fixChartHeight(flag: Bool) {
         if (flag) {
-            let xMin = rpX.min()!
-            let xMax = rpX.max()!
-            let yMin = rpY.min()!
-            let yMax = rpY.max()!
+//            let xMin = rpX.min()!
+//            let xMax = rpX.max()!
+//            let yMin = rpY.min()!
+//            let yMax = rpY.max()!
             
 //            let ratio = (yMax - yMin) / (xMax - xMin)
             let ratio: Double = 114900 / 68700
@@ -424,7 +442,10 @@ extension MapViewController: UITableViewDataSource {
                 
                 sectorContainerTVC.backgroundColor = .systemGray6
                 sectorContainerTVC.configure(cardData: cardData!, RP: RP)
-                sectorContainerTVC.updateCoord(data: coordToDisplay)
+                
+                if (cardData?.sector_id == 1 || cardData?.sector_id == 2 || cardData?.sector_id == 3 || cardData?.sector_id == 4) {
+                    sectorContainerTVC.updateCoord(data: coordToDisplay)
+                }
                 
                 sectorContainerTVC.selectionStyle = .none
                 

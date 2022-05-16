@@ -56,6 +56,7 @@
 		B3BD69B427E9A8AD00A32A7A /* LevelCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3BD69B227E9A8AD00A32A7A /* LevelCollectionViewCell.swift */; };
 		B3BD69B527E9A8AD00A32A7A /* LevelCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B3BD69B327E9A8AD00A32A7A /* LevelCollectionViewCell.xib */; };
 		B3C09C64280E941B00E6F55F /* ShowCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3C09C63280E941B00E6F55F /* ShowCardViewController.swift */; };
+		B3CC3C05283219EB00D50522 /* KIST_RP_B1.csv in Resources */ = {isa = PBXBuildFile; fileRef = B3CC3C04283219EB00D50522 /* KIST_RP_B1.csv */; };
 		B3D194DC282E2726004E6F9A /* JupiterGuideTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3D194DA282E2726004E6F9A /* JupiterGuideTableViewCell.swift */; };
 		B3D194DD282E2726004E6F9A /* JupiterGuideTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B3D194DB282E2726004E6F9A /* JupiterGuideTableViewCell.xib */; };
 		B3D194DF282E2782004E6F9A /* GuideViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3D194DE282E2782004E6F9A /* GuideViewController.swift */; };
@@ -139,6 +140,7 @@
 		B3BD69B227E9A8AD00A32A7A /* LevelCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LevelCollectionViewCell.swift; sourceTree = "<group>"; };
 		B3BD69B327E9A8AD00A32A7A /* LevelCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = LevelCollectionViewCell.xib; sourceTree = "<group>"; };
 		B3C09C63280E941B00E6F55F /* ShowCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowCardViewController.swift; sourceTree = "<group>"; };
+		B3CC3C04283219EB00D50522 /* KIST_RP_B1.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = KIST_RP_B1.csv; sourceTree = "<group>"; };
 		B3D194DA282E2726004E6F9A /* JupiterGuideTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JupiterGuideTableViewCell.swift; sourceTree = "<group>"; };
 		B3D194DB282E2726004E6F9A /* JupiterGuideTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = JupiterGuideTableViewCell.xib; sourceTree = "<group>"; };
 		B3D194DE282E2782004E6F9A /* GuideViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GuideViewController.swift; sourceTree = "<group>"; };
@@ -242,6 +244,7 @@
 				B3037A93281C07060058D025 /* OverlayCustomView.swift */,
 				B3037A91281C06D50058D025 /* OverlayCustomView.xib */,
 				B3B156DD282397AF0058B538 /* ImageOverlay.swift */,
+				B3CC3C04283219EB00D50522 /* KIST_RP_B1.csv */,
 				B3B3610828295E1400B8E876 /* Autoway_RP_B3F.csv */,
 				B3B3610A28295E1D00B8E876 /* Autoway_RP_B4F.csv */,
 				607FACDC1AFB9204008FA782 /* Images.xcassets */,
@@ -475,6 +478,7 @@
 				B3BD69B527E9A8AD00A32A7A /* LevelCollectionViewCell.xib in Resources */,
 				B3F370D4281B9B85003A427F /* OutputView.xib in Resources */,
 				B360D89128090D6A0084FB22 /* NotoSansKR-Black.otf in Resources */,
+				B3CC3C05283219EB00D50522 /* KIST_RP_B1.csv in Resources */,
 				607FACDB1AFB9204008FA782 /* Main.storyboard in Resources */,
 				B360D88E28090D6A0084FB22 /* NotoSansKR-Bold.otf in Resources */,
 				B3D194DD282E2726004E6F9A /* JupiterGuideTableViewCell.xib in Resources */,
@@ -798,6 +802,7 @@
 				DEVELOPMENT_TEAM = G75UAV755N;
 				INFOPLIST_FILE = JupiterSDK/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				MARKETING_VERSION = 1.1;
 				MODULE_NAME = ExampleApp;
 				PRODUCT_BUNDLE_IDENTIFIER = com.tjlabscorp.ios.innerLabs;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -814,6 +819,7 @@
 				DEVELOPMENT_TEAM = G75UAV755N;
 				INFOPLIST_FILE = JupiterSDK/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				MARKETING_VERSION = 1.1;
 				MODULE_NAME = ExampleApp;
 				PRODUCT_BUNDLE_IDENTIFIER = com.tjlabscorp.ios.innerLabs;
 				PRODUCT_NAME = "$(TARGET_NAME)";

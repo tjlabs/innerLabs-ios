@@ -293,6 +293,7 @@ extension ShowCardViewController: UICollectionViewDataSource {
             // CollectionView Reload
             self.showCardCollectionView.reloadData()
             
+            self.delegate?.sendCardItemData(data: cardItemData)
             self.pageDelegate?.sendPage(data: 0)
         }
         

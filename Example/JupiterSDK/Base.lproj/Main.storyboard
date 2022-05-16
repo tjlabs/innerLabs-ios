@@ -520,7 +520,7 @@
                             </view>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="I5y-00-m4y"/>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <color key="backgroundColor" systemColor="systemGray6Color"/>
                         <constraints>
                             <constraint firstItem="qpb-Ci-WlG" firstAttribute="trailing" secondItem="I5y-00-m4y" secondAttribute="trailing" id="5pd-se-j0j"/>
                             <constraint firstItem="fII-7b-eZC" firstAttribute="leading" secondItem="I5y-00-m4y" secondAttribute="leading" id="AnU-An-H50"/>

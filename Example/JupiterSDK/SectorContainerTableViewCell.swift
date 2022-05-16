@@ -33,11 +33,6 @@ class SectorContainerTableViewCell: UITableViewCell {
         setCells()
         setZoneCollectionView()
     }
-    
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        super.touchesBegan(touches, with: event)
-        print("Touch Began")
-    }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
@@ -81,9 +76,9 @@ class SectorContainerTableViewCell: UITableViewCell {
         set1.scatterShapeSize = 2
         
         let set2 = ScatterChartDataSet(entries: values2, label: "User")
-        set2.setScatterShape(.square)
-        set2.setColor(ChartColorTemplates.colorful()[1])
-        set2.scatterShapeSize = 8
+        set2.setScatterShape(.circle)
+        set2.setColor(ChartColorTemplates.colorful()[2])
+        set2.scatterShapeSize = 10
         
         let chartData = ScatterChartData(dataSet: set1)
         chartData.append(set2)
@@ -93,46 +88,156 @@ class SectorContainerTableViewCell: UITableViewCell {
         let yMin = yAxisValue.min()!
         let yMax = yAxisValue.max()!
         
+        let chartFlag: Bool = false
+        
         // Configure Chart
-        if (currentLevel == "B3") {
-//            scatterChart.xAxis.axisMinimum = xMin-4.5
-//            scatterChart.xAxis.axisMaximum = xMax+4.5
-//            scatterChart.leftAxis.axisMinimum = yMin-11
-//            scatterChart.leftAxis.axisMaximum = yMax+2
-            
+        if (currentLevel == "B1") {
+            scatterChart.xAxis.axisMinimum = xMin-4
+            scatterChart.xAxis.axisMaximum = xMax+4
+            scatterChart.leftAxis.axisMinimum = yMin-37.5
+            scatterChart.leftAxis.axisMaximum = yMax+36
+        }
+        else if (currentLevel == "B3") {
             scatterChart.xAxis.axisMinimum = xMin-4.2
             scatterChart.xAxis.axisMaximum = xMax+1.4
             scatterChart.leftAxis.axisMinimum = yMin-15
             scatterChart.leftAxis.axisMaximum = yMax+3.2
-        } else {
-//            scatterChart.xAxis.axisMinimum = xMin-15
-//            scatterChart.xAxis.axisMaximum = xMax+4.5
-//            scatterChart.leftAxis.axisMinimum = yMin-22
-//            scatterChart.leftAxis.axisMaximum = yMax+34
-            
+        } else if (currentLevel == "B4") {
             scatterChart.xAxis.axisMinimum = xMin-10
             scatterChart.xAxis.axisMaximum = xMax
             scatterChart.leftAxis.axisMinimum = yMin-15
             scatterChart.leftAxis.axisMaximum = yMax+25.5
+        } else {
+//            scatterChart.xAxis.axisMinimum = xMin
+//            scatterChart.xAxis.axisMaximum = xMax+2
+//            scatterChart.leftAxis.axisMinimum = yMin-35
+//            scatterChart.leftAxis.axisMaximum = yMax+35
         }
         
-        scatterChart.xAxis.drawGridLinesEnabled = false
-        scatterChart.leftAxis.drawGridLinesEnabled = false
-        scatterChart.rightAxis.drawGridLinesEnabled = false
+        scatterChart.xAxis.drawGridLinesEnabled = chartFlag
+        scatterChart.leftAxis.drawGridLinesEnabled = chartFlag
+        scatterChart.rightAxis.drawGridLinesEnabled = chartFlag
         
-        scatterChart.xAxis.drawAxisLineEnabled = false
-        scatterChart.leftAxis.drawAxisLineEnabled = false
-        scatterChart.rightAxis.drawAxisLineEnabled = false
+        scatterChart.xAxis.drawAxisLineEnabled = chartFlag
+        scatterChart.leftAxis.drawAxisLineEnabled = chartFlag
+        scatterChart.rightAxis.drawAxisLineEnabled = chartFlag
         
-        scatterChart.xAxis.centerAxisLabelsEnabled = false
-        scatterChart.leftAxis.centerAxisLabelsEnabled = false
-        scatterChart.rightAxis.centerAxisLabelsEnabled = false
+        scatterChart.xAxis.centerAxisLabelsEnabled = chartFlag
+        scatterChart.leftAxis.centerAxisLabelsEnabled = chartFlag
+        scatterChart.rightAxis.centerAxisLabelsEnabled = chartFlag
 
-        scatterChart.xAxis.drawLabelsEnabled = false
-        scatterChart.leftAxis.drawLabelsEnabled = false
-        scatterChart.rightAxis.drawLabelsEnabled = false
+        scatterChart.xAxis.drawLabelsEnabled = chartFlag
+        scatterChart.leftAxis.drawLabelsEnabled = chartFlag
+        scatterChart.rightAxis.drawLabelsEnabled = chartFlag
         
-        scatterChart.legend.enabled = false
+        scatterChart.legend.enabled = chartFlag
+        
+        scatterChart.backgroundColor = .clear
+        
+        scatterChart.data = chartData
+    }
+    
+    private func drawUser(RP_X: [Double], RP_Y: [Double], XY: [Double]) {
+        let xAxisValue: [Double] = RP_X
+        let yAxisValue: [Double] = RP_Y
+        
+        let values1 = (0..<1).map { (i) -> ChartDataEntry in
+            return ChartDataEntry(x: XY[0], y: XY[1])
+        }
+        
+        let set1 = ScatterChartDataSet(entries: values1, label: "RP")
+        set1.setScatterShape(.circle)
+//        set1.drawValuesEnabled = false
+        set1.setColor(ChartColorTemplates.colorful()[2])
+        set1.scatterShapeSize = 15
+        
+        let chartData = ScatterChartData(dataSet: set1)
+        chartData.setDrawValues(false)
+        
+        let xMin = xAxisValue.min()!
+        let xMax = xAxisValue.max()!
+        let yMin = yAxisValue.min()!
+        let yMax = yAxisValue.max()!
+        
+        let chartFlag: Bool = false
+        
+        // Configure Chart
+        if (currentLevel == "B1") {
+            scatterChart.xAxis.axisMinimum = xMin-4
+            scatterChart.xAxis.axisMaximum = xMax+4
+            scatterChart.leftAxis.axisMinimum = yMin-37.5
+            scatterChart.leftAxis.axisMaximum = yMax+36
+        }
+        else if (currentLevel == "B3") {
+            scatterChart.xAxis.axisMinimum = xMin-4.2
+            scatterChart.xAxis.axisMaximum = xMax+1.4
+            scatterChart.leftAxis.axisMinimum = yMin-15
+            scatterChart.leftAxis.axisMaximum = yMax+3.2
+        } else if (currentLevel == "B4") {
+            scatterChart.xAxis.axisMinimum = xMin-10
+            scatterChart.xAxis.axisMaximum = xMax
+            scatterChart.leftAxis.axisMinimum = yMin-15
+            scatterChart.leftAxis.axisMaximum = yMax+25.5
+        } else {
+        }
+        
+        scatterChart.xAxis.drawGridLinesEnabled = chartFlag
+        scatterChart.leftAxis.drawGridLinesEnabled = chartFlag
+        scatterChart.rightAxis.drawGridLinesEnabled = chartFlag
+        
+        scatterChart.xAxis.drawAxisLineEnabled = chartFlag
+        scatterChart.leftAxis.drawAxisLineEnabled = chartFlag
+        scatterChart.rightAxis.drawAxisLineEnabled = chartFlag
+        
+        scatterChart.xAxis.centerAxisLabelsEnabled = chartFlag
+        scatterChart.leftAxis.centerAxisLabelsEnabled = chartFlag
+        scatterChart.rightAxis.centerAxisLabelsEnabled = chartFlag
+
+        scatterChart.xAxis.drawLabelsEnabled = chartFlag
+        scatterChart.leftAxis.drawLabelsEnabled = chartFlag
+        scatterChart.rightAxis.drawLabelsEnabled = chartFlag
+        
+        scatterChart.legend.enabled = chartFlag
+        
+        scatterChart.backgroundColor = .clear
+        
+        scatterChart.data = chartData
+    }
+    
+    private func drawTest() {
+        
+        let randomNumX = Double.random(in: 0...20)
+        let randomNumY = Double.random(in: -10...10)
+        
+        let values1 = (0..<1).map { (i) -> ChartDataEntry in
+            return ChartDataEntry(x: randomNumX, y: randomNumY)
+        }
+        
+        let set1 = ScatterChartDataSet(entries: values1, label: "TEST")
+        set1.setScatterShape(.square)
+        set1.setColor(UIColor.yellow)
+        set1.scatterShapeSize = 4
+        
+        let chartData = ScatterChartData(dataSet: set1)
+        
+        let chartFlag: Bool = false
+        scatterChart.xAxis.drawGridLinesEnabled = chartFlag
+        scatterChart.leftAxis.drawGridLinesEnabled = chartFlag
+        scatterChart.rightAxis.drawGridLinesEnabled = chartFlag
+        
+        scatterChart.xAxis.drawAxisLineEnabled = chartFlag
+        scatterChart.leftAxis.drawAxisLineEnabled = chartFlag
+        scatterChart.rightAxis.drawAxisLineEnabled = chartFlag
+        
+        scatterChart.xAxis.centerAxisLabelsEnabled = chartFlag
+        scatterChart.leftAxis.centerAxisLabelsEnabled = chartFlag
+        scatterChart.rightAxis.centerAxisLabelsEnabled = chartFlag
+
+        scatterChart.xAxis.drawLabelsEnabled = chartFlag
+        scatterChart.leftAxis.drawLabelsEnabled = chartFlag
+        scatterChart.rightAxis.drawLabelsEnabled = chartFlag
+        
+        scatterChart.legend.enabled = chartFlag
         
         scatterChart.backgroundColor = .clear
         
@@ -156,9 +261,18 @@ class SectorContainerTableViewCell: UITableViewCell {
         }
         fetchLevel(currentLevel: currentLevel, levelList: levelList)
         
-        let rp: [[Double]] = RP?[currentLevel] ?? [[Double]]()
-        drawRP(RP_X: rp[0], RP_Y: rp[1], XY: XY)
+        let condition: ((String, [[Double]])) -> Bool = {
+            $0.0.contains(self.currentLevel)
+        }
         
+        if (RP!.contains(where: condition)) {
+            let rp: [[Double]] = RP?[currentLevel] ?? [[Double]]()
+//            drawRP(RP_X: rp[0], RP_Y: rp[1], XY: XY)
+            drawUser(RP_X: rp[0], RP_Y: rp[1], XY: XY)
+        } else {
+            drawTest()
+        }
+            
         levelCollectionView.reloadData()
     }
 }
@@ -171,8 +285,10 @@ extension SectorContainerTableViewCell : UICollectionViewDelegate{
         let rp: [[Double]] = RP?[currentLevel] ?? [[Double]]()
         if (rp.isEmpty) {
             // RP가 없어서 그리지 않음
+//            drawTest()
         } else {
-            drawRP(RP_X: rp[0], RP_Y: rp[1], XY: XY)
+//            drawRP(RP_X: rp[0], RP_Y: rp[1], XY: XY)
+            drawUser(RP_X: rp[0], RP_Y: rp[1], XY: XY)
             fetchLevel(currentLevel: currentLevel, levelList: levelList)
         }
         
