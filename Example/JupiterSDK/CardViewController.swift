@@ -116,12 +116,12 @@ class CardViewController: UIViewController, AddCardDelegate, ShowCardDelegate, S
     func initCardVC() {
         setData(data: cardItemData)
         
-        let sizes = checkImageSize(cards: cardImages, sectors: sectorImages)
         collectionViewSize = [collectionView.frame.width, collectionView.frame.height]
         
-        print("Card -> Size of CollectionView : \(collectionViewSize)")
-        print("Card -> Size of Card : \(sizes.sizeCard)")
-        print("Card -> Size of Sector : \(sizes.sizeSector)")
+//        let sizes = checkImageSize(cards: cardImages, sectors: sectorImages)
+//        print("Card -> Size of CollectionView : \(collectionViewSize)")
+//        print("Card -> Size of Card : \(sizes.sizeCard)")
+//        print("Card -> Size of Sector : \(sizes.sizeSector)")
         
         setupCollectionView()
         setupProgressView()

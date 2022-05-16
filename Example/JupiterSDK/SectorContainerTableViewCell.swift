@@ -145,7 +145,7 @@ class SectorContainerTableViewCell: UITableViewCell {
             return ChartDataEntry(x: XY[0], y: XY[1])
         }
         
-        let set1 = ScatterChartDataSet(entries: values1, label: "RP")
+        let set1 = ScatterChartDataSet(entries: values1, label: "USER")
         set1.setScatterShape(.circle)
 //        set1.drawValuesEnabled = false
         set1.setColor(ChartColorTemplates.colorful()[2])
@@ -206,19 +206,20 @@ class SectorContainerTableViewCell: UITableViewCell {
     
     private func drawTest() {
         
-        let randomNumX = Double.random(in: 0...20)
-        let randomNumY = Double.random(in: -10...10)
+        let randomNumX = Double.random(in: 10...40)
+        let randomNumY = Double.random(in: 10...40)
         
         let values1 = (0..<1).map { (i) -> ChartDataEntry in
             return ChartDataEntry(x: randomNumX, y: randomNumY)
         }
         
         let set1 = ScatterChartDataSet(entries: values1, label: "TEST")
-        set1.setScatterShape(.square)
-        set1.setColor(UIColor.yellow)
-        set1.scatterShapeSize = 4
+        set1.setScatterShape(.circle)
+        set1.setColor(ChartColorTemplates.colorful()[2])
+        set1.scatterShapeSize = 15
         
         let chartData = ScatterChartData(dataSet: set1)
+        chartData.setDrawValues(false)
         
         let chartFlag: Bool = false
         scatterChart.xAxis.drawGridLinesEnabled = chartFlag

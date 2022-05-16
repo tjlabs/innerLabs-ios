@@ -23,8 +23,6 @@ class ShowCardViewController: UIViewController, AddCardDelegate {
     var cardSize: [Double]?
     var collectionViewSize: [Double] = [0, 0]
     
-    var isCardSmall = true
-    
     func sendCardItemData(data: [CardItemData]) {
         cardItemData = data
     }
@@ -62,13 +60,12 @@ class ShowCardViewController: UIViewController, AddCardDelegate {
         setData(data: cardItemData)
         
         // Size 확인
-        let sizes = checkImageSize(cards: cardShowImages, sectors: sectorShowImages)
         collectionViewSize = [showCardCollectionView.bounds.width, showCardCollectionView.bounds.height]
         
-        print("Show Card -> Size of CollectionView : \(collectionViewSize)")
-        print("Show Card -> Size of Card : \(sizes.sizeCard)")
-        print("Show Card -> Size of Sector : \(sizes.sizeSector)")
-        isCardSmall = checkRatio(collectionViewSize: collectionViewSize, sizeCard: sizes.sizeCard)
+//        let sizes = checkImageSize(cards: cardShowImages, sectors: sectorShowImages)
+//        print("Show Card -> Size of CollectionView : \(collectionViewSize)")
+//        print("Show Card -> Size of Card : \(sizes.sizeCard)")
+//        print("Show Card -> Size of Sector : \(sizes.sizeSector)")
         
         setupCollectionView()
     }
