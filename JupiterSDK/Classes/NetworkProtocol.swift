@@ -78,7 +78,7 @@ struct Input: Codable {
     var heading: Double
     var pressure: Double = 0
     var looking_flag: Bool = false
-    var ble: [String: Int]
+    var ble: [String: Double]
     var mobile_time: Double
     var device_model: String
     var os_version: Int

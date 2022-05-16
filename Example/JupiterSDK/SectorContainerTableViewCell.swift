@@ -21,10 +21,11 @@ class SectorContainerTableViewCell: UITableViewCell {
     
     var cardData: CardItemData?
     var RP: [String: [[Double]]]?
-    var XY: [Double] = [60, 60]
+    var XY: [Double] = [0, 0]
 
     private var levelList = [String]()
     private var currentLevel: String = ""
+    private var countLevelChanged: Int = 0
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -56,9 +57,9 @@ class SectorContainerTableViewCell: UITableViewCell {
     
     private func fetchLevel(currentLevel: String, levelList: [String]) -> Void {
         let arr = levelList
-        let idx = (arr.firstIndex(where: {$0 == currentLevel}) ?? nil)
+        let idx = (arr.firstIndex(where: {$0 == currentLevel}) ?? 0)
         
-        let level: String = levelList[idx!]
+        let level: String = levelList[idx]
         imageLevel.image = UIImage(named: level)
     }
     
@@ -141,25 +142,24 @@ class SectorContainerTableViewCell: UITableViewCell {
     internal func configure(cardData: CardItemData, RP: [String: [[Double]]]) {
         self.cardData = cardData
         self.levelList = (cardData.infoLevel)
-        currentLevel = levelList[0]
-        
         self.RP = RP
-        let rp: [[Double]] = RP[currentLevel] ?? [[Double]]()
-        if (rp.isEmpty) {
-            // RP가 없어서 그리지 않음
-        } else {
-            drawRP(RP_X: rp[0], RP_Y: rp[1], XY: XY)
-        }
     }
     
     func updateCoord(data: CoordToDisplay) {
         self.XY[0] = data.x
         self.XY[1] = data.y
         
-        currentLevel = "B4"
-        let rp: [[Double]] = RP?[currentLevel] ?? [[Double]]()
+        if (data.level == "") {
+            currentLevel = levelList[0]
+        } else {
+            currentLevel = data.level
+        }
+        fetchLevel(currentLevel: currentLevel, levelList: levelList)
         
+        let rp: [[Double]] = RP?[currentLevel] ?? [[Double]]()
         drawRP(RP_X: rp[0], RP_Y: rp[1], XY: XY)
+        
+        levelCollectionView.reloadData()
     }
 }
 

@@ -65,6 +65,8 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
     var infoOfLevels: String = ""
     var runMode: String = ""
     
+    var currentLevel: String = ""
+    
     var isShow: Bool = false
     var isRadioMap: Bool = false
     var isOpen: Bool = false
@@ -95,14 +97,15 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
             }
             isRadioMap = true
             
+            let first: String = (cardData?.infoLevel[0])!
             if (numLevels == 1) {
-                let first: String = (cardData?.infoLevel[0])!
                 infoOfLevels = "( " + first + " )"
             } else {
-                let first: String = (cardData?.infoLevel[0])!
                 let last: String = (cardData?.infoLevel[numLevels-1])!
                 infoOfLevels = "( " + first + "~" + last + " )"
             }
+            
+            currentLevel = first
         }
         fixChartHeight(flag: isRadioMap)
     }
@@ -280,16 +283,19 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
             let unitIdxRx = jupiterService.jupiterOutput.index
             let scc = jupiterService.jupiterOutput.scc
             
-            let randomNumX = Double.random(in: 0...20)
-            let randomNumY = Double.random(in: -10...10)
+            currentLevel = level
             
-            coordToDisplay.x = 30 + randomNumX
-            coordToDisplay.y = 50 + randomNumY
+//            let randomNumX = Double.random(in: 0...20)
+//            let randomNumY = Double.random(in: -10...10)
+//            coordToDisplay.x = 30 + randomNumX
+//            coordToDisplay.y = 50 + randomNumY
             
+            coordToDisplay.x = x
+            coordToDisplay.y = y
             coordToDisplay.level = level
             
-            resultToDisplay.level = level
             resultToDisplay.unitIndexRx = unitIdxRx
+            resultToDisplay.level = level
             resultToDisplay.scc = scc
             
             UIView.performWithoutAnimation {
@@ -339,7 +345,8 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
     
     func tableView(_ tableView: ExpyTableView, expandableCellForSection section: Int) -> UITableViewCell {
         let cell = UITableViewCell()
-        cell.backgroundColor = .white
+//        cell.backgroundColor = .white
+        cell.backgroundColor = .systemGray6
         cell.selectionStyle = .none //선택했을 때 회색되는거 없애기
         
         cell.separatorInset = UIEdgeInsets(top: 5, left: 10, bottom: 0, right: 10)
@@ -413,8 +420,14 @@ extension MapViewController: UITableViewDataSource {
             case .sector:
                 guard let sectorContainerTVC = tableView.dequeueReusableCell(withIdentifier: SectorContainerTableViewCell.identifier) as?
                         SectorContainerTableViewCell else {return UITableViewCell()}
+                
+                sectorContainerTVC.backgroundColor = .systemGray6
+                
+                print("Reload Cell :", currentLevel)
+                print("Reload Cell :", coordToDisplay)
                 sectorContainerTVC.configure(cardData: cardData!, RP: RP)
                 sectorContainerTVC.updateCoord(data: coordToDisplay)
+                
                 sectorContainerTVC.selectionStyle = .none
                 
                 return sectorContainerTVC
@@ -424,6 +437,7 @@ extension MapViewController: UITableViewDataSource {
                 let serviceInfoTVC = tableView.dequeueReusableCell(withIdentifier: ServiceInfoTableViewCell.identifier) as!
                 ServiceInfoTableViewCell
     
+                serviceInfoTVC.backgroundColor = .systemGray6
                 serviceInfoTVC.infoOfLevelsLabel.text = infoOfLevels
                 serviceInfoTVC.numberOfLevelsLabel.text = String(numLevels)
                 serviceInfoTVC.modeLabel.text = runMode
@@ -434,6 +448,8 @@ extension MapViewController: UITableViewDataSource {
             } else {
                 let robotTVC = tableView.dequeueReusableCell(withIdentifier: RobotTableViewCell.identifier) as!
                 RobotTableViewCell
+                
+                robotTVC.backgroundColor = .systemGray6
                 
                 return robotTVC
             }

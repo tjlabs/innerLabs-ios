@@ -239,8 +239,10 @@ public class JupiterService: NSObject {
         }
         
         if (unitDRInfo.isIndexChanged) {
-            let bleTest = bleList.bleList.devices
-            let bleDictionary = Dictionary(uniqueKeysWithValues: bleTest.map { ($0.ward_id, $0.rssi) })
+//            let bleTest = bleList.bleList.devices
+//            let bleDictionary = Dictionary(uniqueKeysWithValues: bleTest.map { ($0.ward_id, $0.rssi) })
+            
+            let bleDictionary = bleManager.bleFinal
             
             var data = Input(user_id: uuid, index: unitDRInfo.index, length: unitDRInfo.length, heading: unitDRInfo.heading, pressure: sensorData.pressure[0], looking_flag: unitDRInfo.lookingFlag, ble: bleDictionary, mobile_time: timeStamp, device_model: deviceModel, os_version: osVersion)
             

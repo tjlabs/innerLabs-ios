@@ -90,6 +90,7 @@
                         </constraints>
                     </view>
                 </subviews>
+                <color key="backgroundColor" systemColor="systemGray6Color"/>
                 <constraints>
                     <constraint firstItem="NmZ-bI-f8d" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="Bsg-M1-riH"/>
                     <constraint firstAttribute="trailingMargin" secondItem="NmZ-bI-f8d" secondAttribute="trailing" id="Sxj-qu-Ver"/>
