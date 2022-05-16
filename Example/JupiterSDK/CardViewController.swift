@@ -21,6 +21,13 @@ class CardViewController: UIViewController, AddCardDelegate, ShowCardDelegate, S
     var cardSize: [Double]?
     var collectionViewSize: [Double] = [0, 0]
     
+    @IBOutlet weak var blackView: UIView!
+    @IBOutlet weak var menuView: UIView!
+    @IBOutlet weak var menuViewWidth: NSLayoutConstraint!
+    @IBOutlet weak var menuViewRight: NSLayoutConstraint!
+    
+    var isMenuOpened: Bool = false
+    
     // Card
     var currentIndex: CGFloat = 0
     let lineSpacing: CGFloat = 0
@@ -42,7 +49,68 @@ class CardViewController: UIViewController, AddCardDelegate, ShowCardDelegate, S
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        blackView.backgroundColor = UIColor.black
+        blackView.alpha = 0
+        blackView.isHidden = true
+        
+        menuViewRight.constant = -menuViewRight.constant
+        menuView.isHidden = true
+        
+        blackView.isUserInteractionEnabled = true
+        let tapRecognizer = UITapGestureRecognizer()
+        tapRecognizer.addTarget(self, action: #selector(self.tappedOnView))
+        blackView.addGestureRecognizer(tapRecognizer)
+    }
+    
+    @objc func tappedOnView(_ sender:UITapGestureRecognizer) {
+        switch sender.state {
+        case .began:
+            break
+        case .changed:
+            break
+        case .ended:
+            if isMenuOpened {
+                hideMenu() {
+                    
+                }
+                isMenuOpened = false
+            }
+            else {
+                openMenu()
+                isMenuOpened = true
+            }
+            break
+        default:
+            print("default")
+        }
+        
+    }
+    
+    func openMenu() {
+        menuViewRight.constant = 0
+            
+        menuView.isHidden = false
+        blackView.isHidden = false
+        
+            UIView.animate(withDuration: 0.3, animations: {
+                self.view.layoutIfNeeded()
+                self.blackView.alpha = 0.5
+            }, completion: { (complete) in
+            })
+        }
+        
+    func hideMenu(completionHandler: @escaping () -> Void) {
+        menuViewRight.constant = -menuViewRight.constant
 
+        UIView.animate(withDuration: 0.1, animations: {
+                self.view.layoutIfNeeded()
+                self.blackView.alpha = 0
+            }, completion: { (complete) in
+                self.blackView.isHidden = true
+                self.menuView.isHidden = true
+                completionHandler()
+            })
     }
     
     func initCardVC() {
@@ -199,6 +267,32 @@ class CardViewController: UIViewController, AddCardDelegate, ShowCardDelegate, S
         
         // 스크롤 시 빠르게 감속 되도록 설정
         collectionView.decelerationRate = UIScrollView.DecelerationRate.fast
+    }
+    
+    
+    @IBAction func tapShowUserInfoButton(_ sender: UIButton) {
+        if isMenuOpened {
+            hideMenu() {
+                
+            }
+            isMenuOpened = false
+        }
+        else {
+            openMenu()
+            isMenuOpened = true
+        }
+    }
+    
+    @IBAction func tapShowPrivacyPolicy(_ sender: UIButton) {
+        showPPVC()
+    }
+    
+    func showPPVC() {
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        let vc = storyboard.instantiateViewController(withIdentifier: "PrivacyPolicyViewController") as! PrivacyPolicyViewController
+        vc.modalPresentationStyle = .fullScreen
+        vc.modalTransitionStyle = .coverVertical
+        self.present(vc, animated: true, completion: nil)
     }
     
     

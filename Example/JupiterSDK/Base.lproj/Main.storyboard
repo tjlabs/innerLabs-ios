@@ -115,6 +115,54 @@
             </objects>
             <point key="canvasLocation" x="276.92307692307691" y="102.3696682464455"/>
         </scene>
+        <!--Privacy Policy View Controller-->
+        <scene sceneID="hNj-BN-Wfq">
+            <objects>
+                <viewController storyboardIdentifier="PrivacyPolicyViewController" id="Wwp-Gi-JYV" customClass="PrivacyPolicyViewController" customModule="JupiterSDK_Example" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="dB4-lv-b9n">
+                        <rect key="frame" x="0.0" y="0.0" width="390" height="844"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <navigationBar contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="b2r-Qb-nJC">
+                                <rect key="frame" x="0.0" y="44" width="390" height="44"/>
+                                <color key="backgroundColor" systemColor="systemGray6Color"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="44" id="eXJ-7R-Yod"/>
+                                </constraints>
+                                <items>
+                                    <navigationItem title="Title" id="xIV-sQ-4wR"/>
+                                </items>
+                            </navigationBar>
+                            <wkWebView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="3IS-6M-TsE">
+                                <rect key="frame" x="0.0" y="88" width="390" height="722"/>
+                                <color key="backgroundColor" red="0.36078431370000003" green="0.38823529410000002" blue="0.4039215686" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <wkWebViewConfiguration key="configuration">
+                                    <audiovisualMediaTypes key="mediaTypesRequiringUserActionForPlayback" none="YES"/>
+                                    <wkPreferences key="preferences"/>
+                                </wkWebViewConfiguration>
+                            </wkWebView>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="CQJ-6K-u2k"/>
+                        <color key="backgroundColor" systemColor="systemGray6Color"/>
+                        <constraints>
+                            <constraint firstItem="CQJ-6K-u2k" firstAttribute="bottom" secondItem="3IS-6M-TsE" secondAttribute="bottom" id="0zD-5C-Mpq"/>
+                            <constraint firstItem="b2r-Qb-nJC" firstAttribute="trailing" secondItem="CQJ-6K-u2k" secondAttribute="trailing" id="4ti-vh-VH2"/>
+                            <constraint firstItem="3IS-6M-TsE" firstAttribute="top" secondItem="b2r-Qb-nJC" secondAttribute="bottom" id="KXU-Y2-pIX"/>
+                            <constraint firstItem="CQJ-6K-u2k" firstAttribute="trailing" secondItem="3IS-6M-TsE" secondAttribute="trailing" id="aS1-AB-0Hd"/>
+                            <constraint firstItem="3IS-6M-TsE" firstAttribute="leading" secondItem="CQJ-6K-u2k" secondAttribute="leading" id="kEQ-k8-GOD"/>
+                            <constraint firstItem="b2r-Qb-nJC" firstAttribute="top" secondItem="CQJ-6K-u2k" secondAttribute="top" id="nKl-DZ-cbL"/>
+                            <constraint firstItem="b2r-Qb-nJC" firstAttribute="leading" secondItem="CQJ-6K-u2k" secondAttribute="leading" id="tMY-TP-d5q"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="NavBar" destination="b2r-Qb-nJC" id="Oh2-9Y-L9Y"/>
+                        <outlet property="webView" destination="3IS-6M-TsE" id="NGo-2X-iFL"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Wlp-k4-2G0" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="277" y="840"/>
+        </scene>
         <!--Show Card View Controller-->
         <scene sceneID="dej-Ff-dkI">
             <objects>
@@ -732,6 +780,52 @@
                                     <constraint firstAttribute="height" constant="4" id="XNT-Ri-MMu"/>
                                 </constraints>
                             </progressView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="O9f-hf-76E">
+                                <rect key="frame" x="342" y="76.666666666666671" width="28" height="28"/>
+                                <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                <state key="normal" image="showUserInfoButton"/>
+                                <connections>
+                                    <action selector="tapShowUserInfoButton:" destination="hKN-cI-aq7" eventType="touchUpInside" id="YaD-cC-e93"/>
+                                </connections>
+                            </button>
+                            <view alpha="0.20000000000000001" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="di9-FM-jQ3">
+                                <rect key="frame" x="0.0" y="0.0" width="390" height="844"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                            </view>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="pjn-OW-keg">
+                                <rect key="frame" x="290" y="0.0" width="100" height="844"/>
+                                <subviews>
+                                    <button opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hcr-0C-B4e">
+                                        <rect key="frame" x="5" y="76.666666666666671" width="90" height="28"/>
+                                        <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                        <state key="normal" image="showUserInfoButton"/>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="W3K-zo-oO3">
+                                        <rect key="frame" x="5" y="124.66666666666669" width="90" height="40"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="40" id="LKV-yl-46q"/>
+                                        </constraints>
+                                        <fontDescription key="fontDescription" name="NotoSansKR-Medium" family="Noto Sans KR" pointSize="10"/>
+                                        <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                        <state key="normal" title="개인정보처리방침">
+                                            <color key="titleColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        </state>
+                                        <connections>
+                                            <action selector="tapShowPrivacyPolicy:" destination="hKN-cI-aq7" eventType="touchUpInside" id="hbk-RS-b1c"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                                <color key="backgroundColor" systemColor="systemGray5Color"/>
+                                <constraints>
+                                    <constraint firstItem="W3K-zo-oO3" firstAttribute="leading" secondItem="pjn-OW-keg" secondAttribute="leading" constant="5" id="3VP-OG-hLK"/>
+                                    <constraint firstItem="hcr-0C-B4e" firstAttribute="leading" secondItem="pjn-OW-keg" secondAttribute="leading" constant="5" id="7WE-kn-vd5"/>
+                                    <constraint firstAttribute="trailing" secondItem="hcr-0C-B4e" secondAttribute="trailing" constant="5" id="PNw-0W-g8o"/>
+                                    <constraint firstItem="W3K-zo-oO3" firstAttribute="top" secondItem="hcr-0C-B4e" secondAttribute="bottom" constant="20" id="VDh-Wk-4oh"/>
+                                    <constraint firstAttribute="trailing" secondItem="W3K-zo-oO3" secondAttribute="trailing" constant="5" id="ZBZ-h3-CTt"/>
+                                    <constraint firstAttribute="width" constant="100" id="fIL-cB-veE"/>
+                                    <constraint firstItem="W3K-zo-oO3" firstAttribute="centerX" secondItem="hcr-0C-B4e" secondAttribute="centerX" id="rcg-IE-OAn"/>
+                                </constraints>
+                            </view>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="fqi-tX-EPG"/>
                         <color key="backgroundColor" systemColor="systemGray6Color"/>
@@ -739,6 +833,11 @@
                             <constraint firstItem="fqi-tX-EPG" firstAttribute="bottom" secondItem="MUW-dn-rmi" secondAttribute="bottom" constant="20" id="03v-kb-UyT"/>
                             <constraint firstItem="zG3-DH-fmo" firstAttribute="top" secondItem="W9g-WD-hba" secondAttribute="bottom" constant="20" id="9DW-cc-NJt"/>
                             <constraint firstItem="2Xj-Ao-iIB" firstAttribute="top" secondItem="fqi-tX-EPG" secondAttribute="top" constant="20" id="AOk-ke-YeF"/>
+                            <constraint firstAttribute="bottom" secondItem="di9-FM-jQ3" secondAttribute="bottom" id="GDH-CN-TSv"/>
+                            <constraint firstItem="di9-FM-jQ3" firstAttribute="trailing" secondItem="fqi-tX-EPG" secondAttribute="trailing" id="H8X-A3-Fm0"/>
+                            <constraint firstAttribute="bottom" secondItem="pjn-OW-keg" secondAttribute="bottom" id="NCo-Tw-3pH"/>
+                            <constraint firstItem="hcr-0C-B4e" firstAttribute="centerY" secondItem="2Xj-Ao-iIB" secondAttribute="centerY" id="NuK-4S-gkh"/>
+                            <constraint firstItem="O9f-hf-76E" firstAttribute="centerY" secondItem="2Xj-Ao-iIB" secondAttribute="centerY" id="P1j-w9-AMC"/>
                             <constraint firstItem="fqi-tX-EPG" firstAttribute="bottom" secondItem="gSy-dk-oxB" secondAttribute="bottom" constant="20" id="Pz8-NS-rY2"/>
                             <constraint firstItem="W9g-WD-hba" firstAttribute="top" secondItem="2Xj-Ao-iIB" secondAttribute="bottom" constant="10" id="U0W-3u-bZa"/>
                             <constraint firstItem="fqi-tX-EPG" firstAttribute="trailing" secondItem="2Xj-Ao-iIB" secondAttribute="trailing" id="Vtm-aO-Wr1"/>
@@ -749,11 +848,20 @@
                             <constraint firstItem="MUW-dn-rmi" firstAttribute="leading" secondItem="fqi-tX-EPG" secondAttribute="leading" constant="30" id="ggm-RQ-aNc"/>
                             <constraint firstItem="fqi-tX-EPG" firstAttribute="trailing" secondItem="zG3-DH-fmo" secondAttribute="trailing" constant="40" id="i0t-RT-7P8"/>
                             <constraint firstItem="MUW-dn-rmi" firstAttribute="top" secondItem="zG3-DH-fmo" secondAttribute="bottom" constant="10" id="nhD-mX-Tie"/>
+                            <constraint firstItem="pjn-OW-keg" firstAttribute="trailing" secondItem="fqi-tX-EPG" secondAttribute="trailing" id="nn5-pE-HnZ"/>
+                            <constraint firstItem="di9-FM-jQ3" firstAttribute="top" secondItem="feE-89-jXQ" secondAttribute="top" id="qDR-M3-UiG"/>
+                            <constraint firstItem="pjn-OW-keg" firstAttribute="top" secondItem="feE-89-jXQ" secondAttribute="top" id="qSz-PI-pui"/>
                             <constraint firstItem="zG3-DH-fmo" firstAttribute="leading" secondItem="fqi-tX-EPG" secondAttribute="leading" constant="40" id="tMo-gw-O0v"/>
+                            <constraint firstItem="fqi-tX-EPG" firstAttribute="trailing" secondItem="O9f-hf-76E" secondAttribute="trailing" constant="20" id="tn0-cg-AlG"/>
+                            <constraint firstItem="di9-FM-jQ3" firstAttribute="leading" secondItem="fqi-tX-EPG" secondAttribute="leading" id="wcZ-uB-cR6"/>
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="blackView" destination="di9-FM-jQ3" id="TVG-gd-KXq"/>
                         <outlet property="collectionView" destination="StD-CP-4oA" id="ExW-lQ-9zy"/>
+                        <outlet property="menuView" destination="pjn-OW-keg" id="hdB-SV-4Vu"/>
+                        <outlet property="menuViewRight" destination="nn5-pE-HnZ" id="93h-NS-Bb5"/>
+                        <outlet property="menuViewWidth" destination="fIL-cB-veE" id="wtF-mv-dsg"/>
                         <outlet property="progressView" destination="zG3-DH-fmo" id="qFo-Y2-M0q"/>
                     </connections>
                 </viewController>
@@ -793,6 +901,7 @@
         <image name="purpleCardTop" width="390" height="95"/>
         <image name="showCard" width="78" height="22"/>
         <image name="showInfoButton" width="42" height="15.666666984558105"/>
+        <image name="showUserInfoButton" width="28" height="28"/>
         <image name="toCard" width="78" height="22"/>
         <image name="unCheckedBox" width="24.666666030883789" height="25.333333969116211"/>
         <namedColor name="red1">
@@ -803,6 +912,9 @@
         </systemColor>
         <systemColor name="systemGray2Color">
             <color red="0.68235294117647061" green="0.68235294117647061" blue="0.69803921568627447" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
+        <systemColor name="systemGray5Color">
+            <color red="0.89803921568627454" green="0.89803921568627454" blue="0.91764705882352937" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemGray6Color">
             <color red="0.94901960784313721" green="0.94901960784313721" blue="0.96862745098039216" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>

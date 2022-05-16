@@ -11,7 +11,6 @@ import JupiterSDK
 import ExpyTableView
 import Charts
 
-
 protocol PageDelegate {
     func sendPage(data: Int)
 }
