@@ -183,7 +183,6 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
                     }
                     
                     trimBleData()
-//                    print(bleDictionary)
                     bleFinal = avgBleData(bleDictionary: bleDictionary)
                     
                     NotificationCenter.default.post(name: .scanInfo, object: nil, userInfo: userInfo)
@@ -267,10 +266,9 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
         for index in 0..<keys.count {
             let bleID: String = keys[index]
             let bleData: [[Double]] = bleDictionary[bleID]!
-//            print(bleID,":",bleData,":",bleData.count)
-            
+            let bleCount = bleData.count
             var newValue = [[Double]]()
-            for i in 0..<bleData.count {
+            for i in 0..<bleCount {
                 let rssi = bleData[i][0]
                 let time = bleData[i][1]
                 
@@ -279,7 +277,12 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
                     newValue.append(dataToAdd)
                 }
             }
-            bleDictionary.updateValue(newValue, forKey: bleID)
+            
+            if ( bleCount == 0 ) {
+                bleDictionary.removeValue(forKey: bleID)
+            } else {
+                bleDictionary.updateValue(newValue, forKey: bleID)
+            }
         }
     }
     
@@ -290,15 +293,20 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
         for index in 0..<keys.count {
             let bleID: String = keys[index]
             let bleData: [[Double]] = bleDictionary[bleID]!
+            let bleCount = bleData.count
             
             var rssiSum: Double = 0
-            for i in 0..<bleData.count {
+            for i in 0..<bleCount {
                 let rssi = bleData[i][0]
                 rssiSum += rssi
             }
             let rssiFinal: Double = rssiSum/Double(bleData.count)
             
-            ble.updateValue(rssiFinal, forKey: bleID)
+            if ( bleCount == 0 ) {
+                ble.removeValue(forKey: bleID)
+            } else {
+                ble.updateValue(rssiFinal, forKey: bleID)
+            }
         }
         return ble
     }

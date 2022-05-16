@@ -301,6 +301,7 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
             UIView.performWithoutAnimation {
                     self.jupiterTableView.reloadSections(IndexSet(0...0), with: .none)
             }
+            
             if (isOpen) {
                 UIView.performWithoutAnimation {
                         self.containerTableView.reloadSections(IndexSet(0...0), with: .none)
@@ -422,9 +423,6 @@ extension MapViewController: UITableViewDataSource {
                         SectorContainerTableViewCell else {return UITableViewCell()}
                 
                 sectorContainerTVC.backgroundColor = .systemGray6
-                
-                print("Reload Cell :", currentLevel)
-                print("Reload Cell :", coordToDisplay)
                 sectorContainerTVC.configure(cardData: cardData!, RP: RP)
                 sectorContainerTVC.updateCoord(data: coordToDisplay)
                 
