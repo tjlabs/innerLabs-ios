@@ -102,6 +102,11 @@ class AddCardViewController: UIViewController, UITextFieldDelegate {
                         
                         self.cardItemData.append(CardItemData(sector_id: id, sector_name: name, description: description,
                                                               cardColor: cardColor, mode: mode, infoLevel: infoLevel))
+                    } else if (message == "Update message") {
+                        self.responseLabel.text = "이미 등록된 카드 입니다"
+                        self.responseLabel.textColor = .systemRed
+                        self.responseLabel.isHidden = false
+                        
                     } else {
                         self.responseLabel.text = "유효한 코드를 입력해주세요 !!"
                         self.responseLabel.textColor = .systemRed
