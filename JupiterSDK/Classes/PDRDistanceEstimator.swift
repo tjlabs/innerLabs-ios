@@ -32,9 +32,12 @@ public class PDRDistanceEstimator: NSObject {
     
     public func estimateDistanceInfo(time: Double, sensorData: SensorData) -> UnitDistance {
         let accNorm = CF.l2Normalize(originalVector: sensorData.acc)
+//        print("StepLengthEstimator / accNorm :", accNorm)
         
         // EMA를 통해 센서의 노이즈를 줄임
         let accNormEMA = CF.exponentialMovingAverage(preEMA: preAccNormEMA, curValue: accNorm, windowSize: AVG_NORM_ACC_WINDOW)
+        preAccNormEMA = accNormEMA
+//        print("StepLengthEstimator / accNormEMA :", accNormEMA)
         
         if (accNormEMAQueue.count < ACC_NORM_EMA_QUEUE_SIZE) {
             accNormEMAQueue.append(TimestampDouble(timestamp: time, valuestamp: accNormEMA))

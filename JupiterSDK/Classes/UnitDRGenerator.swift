@@ -39,7 +39,7 @@ public class UnitDRGenerator: NSObject {
             fatalError("Please check unitMode .. (PDR or DR)")
         }
         
-        var currentTime = getCurrentTimeInMilliseconds()
+        let currentTime = getCurrentTimeInMilliseconds()
         
         let sensorAtt = sensorData.att
         let curAttitude = Attitude(Roll: sensorAtt[0], Pitch: sensorAtt[1], Yaw: sensorAtt[2])
@@ -55,7 +55,7 @@ public class UnitDRGenerator: NSObject {
             unitDistance = pdrDistanceEstimator.estimateDistanceInfo(time: currentTime, sensorData: sensorData)
         }
         
-        var unitStatus = unitStatusEstimator.estimateStatus(Attitude: curAttitude, isIndexChanged: unitDistance.isIndexChanged)
+        let unitStatus = unitStatusEstimator.estimateStatus(Attitude: curAttitude, isIndexChanged: unitDistance.isIndexChanged)
         if (!unitStatus && unitMode == MODE_PDR) {
             unitDistance.length = 0.7
         }

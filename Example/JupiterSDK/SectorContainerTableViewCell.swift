@@ -78,7 +78,7 @@ class SectorContainerTableViewCell: UITableViewCell {
         let set2 = ScatterChartDataSet(entries: values2, label: "User")
         set2.setScatterShape(.circle)
         set2.setColor(UIColor.systemRed)
-        set2.scatterShapeSize = 10
+        set2.scatterShapeSize = 16
         
         let chartData = ScatterChartData(dataSet: set1)
         chartData.append(set2)

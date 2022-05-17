@@ -300,6 +300,7 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
             let bleCount = bleData.count
             
             var rssiSum: Double = 0
+            // 여기서 잘 못 될 수 있음
             for i in 0..<bleCount {
                 let rssi = bleData[i][0]
                 rssiSum += rssi

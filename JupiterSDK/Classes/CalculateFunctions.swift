@@ -16,8 +16,8 @@ public class CalculateFunctions: NSObject {
     }
     
     public func exponentialMovingAverage(preEMA: Double, curValue: Double, windowSize: Int) -> Double {
-        let windowSizeFloat: Double = Double(windowSize)
-        return preEMA * (windowSizeFloat - 1) / windowSizeFloat + curValue / windowSizeFloat
+        let windowSizeDouble: Double = Double(windowSize)
+        return preEMA * (windowSizeDouble - 1) / windowSizeDouble + curValue / windowSizeDouble
     }
     
     public func callAttEMA(preAttEMA: Attitude, curAtt: Attitude, windowSize: Int) -> Attitude{
@@ -131,10 +131,16 @@ public class CalculateFunctions: NSObject {
     }
     
     public func l2Normalize(originalVector: [Double]) -> Double {
-        let squared = originalVector.map { $0 * $0 }
-        let arraySum: Double = squared.reduce(0, +)
-        
-        return sqrt(arraySum)
+        var vector2 = [Double]()
+        var originalVectorSum: Double = 0
+        for i in 0..<originalVector.count {
+            vector2.append(originalVector[i] * originalVector[i])
+            originalVectorSum += vector2[i]
+        }
+//        let squared = originalVector.map { $0 * $0 }
+//        let arraySum: Double = squared.reduce(0, +)
+//
+        return sqrt(originalVectorSum)
     }
     
     public func transBody2Nav(att: Attitude, data: [Double]) -> [Double] {
