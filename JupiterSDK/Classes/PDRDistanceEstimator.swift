@@ -7,12 +7,6 @@
 
 import Foundation
 
-let AVG_NORM_ACC_WINDOW: Int = 20
-let ACC_PV_QUEUE_SIZE: Int = 3
-let ACC_NORM_EMA_QUEUE_SIZE: Int = 3
-let STEP_LENGTH_QUEUE_SIZE: Int = 5
-let NORMAL_STEP_LOSS_CHECK_SIZE: Int = 3
-
 public class PDRDistanceEstimator: NSObject {
     
     public override init() {

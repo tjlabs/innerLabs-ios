@@ -165,6 +165,8 @@ class SectorContainerTableViewCell: UITableViewCell {
         if (currentLevel == "B1") {
             scatterChart.xAxis.axisMinimum = xMin-4
             scatterChart.xAxis.axisMaximum = xMax+4
+//            scatterChart.xAxis.axisMinimum = xMin-10
+//            scatterChart.xAxis.axisMaximum = xMax+18
             scatterChart.leftAxis.axisMinimum = yMin-37.5
             scatterChart.leftAxis.axisMaximum = yMax+36
         }
@@ -268,8 +270,8 @@ class SectorContainerTableViewCell: UITableViewCell {
         
         if (RP!.contains(where: condition)) {
             let rp: [[Double]] = RP?[currentLevel] ?? [[Double]]()
-//            drawRP(RP_X: rp[0], RP_Y: rp[1], XY: XY)
-            drawUser(RP_X: rp[0], RP_Y: rp[1], XY: XY)
+            drawRP(RP_X: rp[0], RP_Y: rp[1], XY: XY)
+//            drawUser(RP_X: rp[0], RP_Y: rp[1], XY: XY)
         } else {
             drawTest()
         }
@@ -288,8 +290,8 @@ extension SectorContainerTableViewCell : UICollectionViewDelegate{
             // RP가 없어서 그리지 않음
 //            drawTest()
         } else {
-//            drawRP(RP_X: rp[0], RP_Y: rp[1], XY: XY)
-            drawUser(RP_X: rp[0], RP_Y: rp[1], XY: XY)
+            drawRP(RP_X: rp[0], RP_Y: rp[1], XY: XY)
+//            drawUser(RP_X: rp[0], RP_Y: rp[1], XY: XY)
             fetchLevel(currentLevel: currentLevel, levelList: levelList)
         }
         

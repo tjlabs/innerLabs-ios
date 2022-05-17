@@ -7,8 +7,6 @@
 
 import Foundation
 
-let LOOKING_FLAG_STEP_CHECK_SIZE: Int = 3
-
 public class UnitStatusEstimator: NSObject {
     public override init() {
         

@@ -9,6 +9,8 @@ import Foundation
 
 public class CalculateFunctions: NSObject {
     
+    let PDF = PacingDetectFunctions()
+    
     public override init() {
         
     }
@@ -24,6 +26,13 @@ public class CalculateFunctions: NSObject {
             Pitch: exponentialMovingAverage(preEMA: preAttEMA.Pitch, curValue: curAtt.Pitch, windowSize: windowSize),
             Yaw: exponentialMovingAverage(preEMA: preAttEMA.Yaw, curValue: curAtt.Yaw, windowSize: windowSize)
         )
+    }
+    
+    public func calSensorAxisEMA(preArrayEMA: SensorAxisValue, curArray: SensorAxisValue, windowSize: Int) -> SensorAxisValue {
+        return SensorAxisValue(x: exponentialMovingAverage(preEMA: preArrayEMA.x, curValue: curArray.x, windowSize: windowSize),
+                               y: exponentialMovingAverage(preEMA: preArrayEMA.y, curValue: curArray.y, windowSize: windowSize),
+                               z: exponentialMovingAverage(preEMA: preArrayEMA.z, curValue: curArray.z, windowSize: windowSize),
+                               norm: exponentialMovingAverage(preEMA: preArrayEMA.norm, curValue: curArray.norm, windowSize: windowSize))
     }
     
     public func getRotationMatrixFromVector(rotationVector: [Double], returnSize: Int) -> [[Double]] {
@@ -130,5 +139,25 @@ public class CalculateFunctions: NSObject {
     
     public func transBody2Nav(att: Attitude, data: [Double]) -> [Double] {
         return rotationXY(roll: -att.Roll, pitch: -att.Pitch, gyro: data)
+    }
+    
+    public func calSensorAxisVariance(curArray: LinkedList<SensorAxisValue>, bufferMean: SensorAxisValue) -> SensorAxisValue {
+        var bufferX = [Double]()
+        var bufferY = [Double]()
+        var bufferZ = [Double]()
+        var bufferNorm = [Double]()
+        
+        let count = curArray.count
+        for i in 0..<count {
+            bufferX.append(curArray.node(at: i)!.value.x)
+            bufferY.append(curArray.node(at: i)!.value.y)
+            bufferZ.append(curArray.node(at: i)!.value.z)
+            bufferNorm.append(curArray.node(at: i)!.value.norm)
+        }
+        
+        return SensorAxisValue(x: PDF.calVariance(buffer: bufferX, bufferMean: bufferX.average),
+                               y: PDF.calVariance(buffer: bufferY, bufferMean: bufferY.average),
+                               z: PDF.calVariance(buffer: bufferZ, bufferMean: bufferZ.average),
+                               norm: PDF.calVariance(buffer: bufferNorm, bufferMean: bufferNorm.average))
     }
 }

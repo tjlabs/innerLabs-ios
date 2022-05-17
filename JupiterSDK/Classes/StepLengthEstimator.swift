@@ -7,16 +7,6 @@
 
 import Foundation
 
-let ALPHA: Double = 0.45
-let DIFFERENCE_PV_STANDARD: Double = 0.83
-let MID_STEP_LENGTH: Double = 0.5
-let DEFAULT_STEP_LENGTH: Double = 0.60
-let MIN_STEP_LENGTH: Double = 0.01
-let MAX_STEP_LENGTH: Double = 0.93
-let MIN_DIFFERENCE_PV: Double = 0.2
-let COMPENSATION_WEIGHT: Double = 0.85
-let COMPENSATION_BIAS: Double = 0.1
-let DIFFERENCE_PV_THRESHOLD: Double = (MID_STEP_LENGTH - DEFAULT_STEP_LENGTH) / ALPHA + DIFFERENCE_PV_STANDARD
 
 public class StepLengthEstimator: NSObject {
     

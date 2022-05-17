@@ -11,9 +11,6 @@ import FirebaseMLCommon
 import FirebaseMLModelInterpreter
 import TFLTensorFlowLite
 
-let MODE_PDR = "PDR"
-let MODE_DR = "DR"
-
 public class UnitDRGenerator: NSObject {
     
     public override init() {

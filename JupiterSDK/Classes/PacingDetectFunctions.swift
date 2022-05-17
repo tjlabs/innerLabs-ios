@@ -25,7 +25,7 @@ public class PacingDetectFunctions: NSObject {
         }
         
         let diffStepLengthBuffer = calDiffDoubleBuffer(buffer: Buffer)
-        let diffStepLengthVariance = calVariance(buffer: diffStepLengthBuffer)
+        let diffStepLengthVariance = calVariance(buffer: diffStepLengthBuffer, bufferMean: diffStepLengthBuffer.average)
         
         return diffStepLengthVariance >= 0.09
     }
@@ -38,9 +38,9 @@ public class PacingDetectFunctions: NSObject {
         return diffBuffer
     }
     
-    public func calVariance(buffer: [Double]) -> Double {
+    public func calVariance(buffer: [Double], bufferMean: Double) -> Double {
         var bufferSum: Double = 0
-        let bufferMean = buffer.average
+        
         for i in 0..<buffer.count {
             bufferSum += pow((Double(buffer[i]) - bufferMean), 2)
         }

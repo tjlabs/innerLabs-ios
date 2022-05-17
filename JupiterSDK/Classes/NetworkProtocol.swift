@@ -71,13 +71,17 @@ struct UploadData: Codable {
     var units: [KeyStamp]
 }
 
+struct postInput: Codable {
+    var inputs: [Input]?
+}
+
 struct Input: Codable {
     var user_id : String
-    var index: Int = 0
+    var index: Int
     var length: Double
     var heading: Double
-    var pressure: Double = 0
-    var looking_flag: Bool = false
+    var pressure: Double
+    var looking_flag: Bool
     var ble: [String: Double]
     var mobile_time: Double
     var device_model: String

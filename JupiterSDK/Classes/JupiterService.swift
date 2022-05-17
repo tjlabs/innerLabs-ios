@@ -16,6 +16,9 @@ public class JupiterService: NSObject {
     let motionManager = CMMotionManager()
     let motionAltimeter = CMAltimeter()
     
+    let PDR_INPUT_NUM: Int = 1
+    let DR_INPUT_NUM: Int = 5
+    
     let G: Double = 9.81
     
     var accX: Double = 0
@@ -48,6 +51,9 @@ public class JupiterService: NSObject {
     var pastTime: Double = 0
     var elapsedTime: Double = 0
     
+//    var inputArray = postInput(inputs: [Input()])
+    var inputArray: [Input] = [Input(user_id: "", index: 0, length: 0, heading: 0, pressure: 0, looking_flag: false, ble: [:], mobile_time: 0, device_model: "", os_version: 0)]
+    
     public var sensorData = SensorData()
     public var unitDRInfo = UnitDRInfo()
     public var jupiterOutput = Output(mobile_time: 0, index: 0, building: "", level: "", x: 0, y: 0, scc: 0, scr: 0, phase: 0, calculated_time: 0)
@@ -74,11 +80,12 @@ public class JupiterService: NSObject {
     var parent: UIViewController?
     let unitDRGenerator = UnitDRGenerator()
     
+    public var unitModeInput: Int = 0
+    
     // To Server //
 //    let networkManager = NetworkManager()
 //    public var jupiterResult: Output = Output(mobile_time: 0, index: 0, building: "", level: "", x: 0, y: 0, scc: 0, scr: 0, phase: 0, calculated_time: 0)
     
-    public var sector: String = ""
     public var uuid: String = ""
     public var deviceModel: String = ""
     public var os: String = ""
@@ -107,6 +114,13 @@ public class JupiterService: NSObject {
             
             print("JupiterServcie Mode :", mode)
             unitDRGenerator.setMode(mode: mode)
+            
+            if (mode == "PDR") {
+                unitModeInput = PDR_INPUT_NUM
+            } else if (mode == "DR") {
+                unitModeInput = DR_INPUT_NUM
+            }
+            
             unitDRGenerator.setDRModel()
             onStartFlag = true
         }
@@ -246,7 +260,15 @@ public class JupiterService: NSObject {
             
             var data = Input(user_id: uuid, index: unitDRInfo.index, length: unitDRInfo.length, heading: unitDRInfo.heading, pressure: sensorData.pressure[0], looking_flag: unitDRInfo.lookingFlag, ble: bleDictionary, mobile_time: timeStamp, device_model: deviceModel, os_version: osVersion)
             
-            NetworkManager.shared.postRequest(url: url, input: data)
+            inputArray.append(data)
+            if ((inputArray.count-1) == unitModeInput) {
+                inputArray.remove(at: 0)
+                NetworkManager.shared.postInput(url: url, input: inputArray)
+//                print("Input Array: ", inputArray)
+//                print("Input Array Count: ", inputArray.count)
+                
+                inputArray = [Input(user_id: "", index: 0, length: 0, heading: 0, pressure: 0, looking_flag: false, ble: [:], mobile_time: 0, device_model: "", os_version: 0)]
+            }
         }
         jupiterOutput = NetworkManager.shared.jupiterResult
     }

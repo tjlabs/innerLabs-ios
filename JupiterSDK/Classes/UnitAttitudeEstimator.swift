@@ -7,9 +7,6 @@
 
 import Foundation
 
-let SAMPLE_HZ: Double = 40
-let AVG_ATTITUDE_WINDOW: Int = 20
-
 public class UnitAttitudeEstimator: NSObject {
     
     public override init() {
