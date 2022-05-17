@@ -55,8 +55,8 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
     var page: Int = 0
     
     var referencePoints = [[Double]]()
-    var rpX = [Double]()
-    var rpY = [Double]()
+//    var rpX = [Double]()
+//    var rpY = [Double]()
     
     var RP = [String: [[Double]]]()
     
@@ -86,11 +86,10 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
         if ( cardData?.sector_id == 1 || cardData?.sector_id == 2 ) {
             numLevels = (cardData?.infoLevel.count)!
             for idx in 0..<numLevels {
-                if (idx == 0) {
-                    loadRP(fileName: "KIST_RP_B1")
-                }
                 let nameLevel: String = (cardData?.infoLevel[idx])!
-                RP[nameLevel] = [rpX, rpY]
+                let fileName: String = "KIST_RP_" + nameLevel
+                let rpXY: [[Double]] = loadRP(fileName: fileName)
+                RP[nameLevel] = rpXY
             }
             
             let first: String = (cardData?.infoLevel[0])!
@@ -104,13 +103,11 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
         } else if (cardData?.sector_id == 3 || cardData?.sector_id == 4) {
             numLevels = (cardData?.infoLevel.count)!
             for idx in 0..<numLevels {
-                if (idx == 0) {
-                    loadRP(fileName: "Autoway_RP_B4F")
-                } else {
-                    loadRP(fileName: "Autoway_RP_B3F")
-                }
                 let nameLevel: String = (cardData?.infoLevel[idx])!
-                RP[nameLevel] = [rpX, rpY]
+                let fileName: String = "Autoway_RP_" + nameLevel
+                let rpXY: [[Double]] = loadRP(fileName: fileName)
+                
+                RP[nameLevel] = rpXY
             }
             isRadioMap = true
             
@@ -234,7 +231,12 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
         containerTableView.separatorStyle = UITableViewCell.SeparatorStyle.none
     }
     
-    private func parseCSV(url:URL) {
+    private func parseCSV(url:URL) -> [[Double]] {
+        var rpXY = [[Double]]()
+        
+        var rpX = [Double]()
+        var rpY = [Double]()
+        
         do {
             let data = try Data(contentsOf: url)
             let dataEncoded = String(data: data, encoding: .utf8)
@@ -251,15 +253,19 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
                     }
                 }
             }
+            rpXY = [rpX, rpY]
         } catch {
             print("Error reading CSV file")
-            
         }
+        
+        return rpXY
     }
     
-    private func loadRP(fileName: String) {
+    private func loadRP(fileName: String) -> [[Double]] {
         let path = Bundle.main.path(forResource: fileName, ofType: "csv")!
-        parseCSV(url: URL(fileURLWithPath: path))
+        let rpXY:[[Double]] = parseCSV(url: URL(fileURLWithPath: path))
+        
+        return rpXY
     }
     
     // Display Outputs

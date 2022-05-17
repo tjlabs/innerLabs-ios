@@ -207,12 +207,12 @@ class ShowCardViewController: UIViewController, AddCardDelegate {
         
         if sender.isSelected == false {
             isEditMode = true
-            print("여기는 EditMode 입니다")
+//            print("여기는 EditMode 입니다")
             self.showCardCollectionView.reloadData()
         }
         else {
             isEditMode = false
-            print("여기는 모아보기 입니다")
+//            print("여기는 모아보기 입니다")
             self.showCardCollectionView.reloadData()
         }
     }

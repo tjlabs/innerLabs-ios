@@ -73,11 +73,11 @@ class SectorContainerTableViewCell: UITableViewCell {
         let set1 = ScatterChartDataSet(entries: values1, label: "RP")
         set1.setScatterShape(.square)
         set1.setColor(UIColor.yellow)
-        set1.scatterShapeSize = 2
+        set1.scatterShapeSize = 4
         
         let set2 = ScatterChartDataSet(entries: values2, label: "User")
         set2.setScatterShape(.circle)
-        set2.setColor(ChartColorTemplates.colorful()[2])
+        set2.setColor(UIColor.systemRed)
         set2.scatterShapeSize = 10
         
         let chartData = ScatterChartData(dataSet: set1)
@@ -108,10 +108,10 @@ class SectorContainerTableViewCell: UITableViewCell {
             scatterChart.leftAxis.axisMinimum = yMin-15
             scatterChart.leftAxis.axisMaximum = yMax+25.5
         } else {
-//            scatterChart.xAxis.axisMinimum = xMin
-//            scatterChart.xAxis.axisMaximum = xMax+2
-//            scatterChart.leftAxis.axisMinimum = yMin-35
-//            scatterChart.leftAxis.axisMaximum = yMax+35
+            scatterChart.xAxis.axisMinimum = xMin-10
+            scatterChart.xAxis.axisMaximum = xMax+10
+            scatterChart.leftAxis.axisMinimum = yMin
+            scatterChart.leftAxis.axisMaximum = yMax
         }
         
         scatterChart.xAxis.drawGridLinesEnabled = chartFlag
@@ -256,6 +256,8 @@ class SectorContainerTableViewCell: UITableViewCell {
     func updateCoord(data: CoordToDisplay) {
         self.XY[0] = data.x
         self.XY[1] = data.y
+        
+//        print("XY :", self.XY[0] , ",", self.XY[1])
         
         if (data.level == "") {
             currentLevel = levelList[0]

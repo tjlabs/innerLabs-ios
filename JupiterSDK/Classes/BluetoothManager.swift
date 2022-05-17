@@ -162,6 +162,9 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
                 let bleTime = getCurrentTimeInMilliseconds()
                 
                 if RSSI.intValue != 127 {
+//                    if (bleName == "TJ-00CB-000000B9-0000") {
+//                        print(bleName, " : ", RSSI.intValue)
+//                    }
                     NotificationCenter.default.post(name: .scanInfo, object: nil, userInfo: userInfo)
 //                    print("BLE Name :", bleName)
                     
@@ -176,14 +179,15 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
                         value.append(dataToAdd)
                         
                         bleDictionary.updateValue(value, forKey: bleName)
-//                        print("BLE NAME :", bleName)
-//                        print("Num of Scan Info :", value.count)
                     } else {
                         bleDictionary.updateValue([[RSSI.doubleValue, bleTime]], forKey: bleName)
                     }
                     
                     trimBleData()
+                    
+//                    bleFinal = latestBleData(bleDictionary: bleDictionary)
                     bleFinal = avgBleData(bleDictionary: bleDictionary)
+//                    print(bleFinal)
                     
                     NotificationCenter.default.post(name: .scanInfo, object: nil, userInfo: userInfo)
                 }
@@ -278,7 +282,7 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
                 }
             }
             
-            if ( bleCount == 0 ) {
+            if ( newValue.count == 0 ) {
                 bleDictionary.removeValue(forKey: bleID)
             } else {
                 bleDictionary.updateValue(newValue, forKey: bleID)
@@ -300,13 +304,28 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
                 let rssi = bleData[i][0]
                 rssiSum += rssi
             }
-            let rssiFinal: Double = rssiSum/Double(bleData.count)
+            let rssiFinal: Double = (rssiSum/Double(bleData.count)) + 5
             
-            if ( bleCount == 0 ) {
+            if ( rssiSum == 0 ) {
                 ble.removeValue(forKey: bleID)
             } else {
                 ble.updateValue(rssiFinal, forKey: bleID)
             }
+        }
+        return ble
+    }
+    
+    func latestBleData(bleDictionary: Dictionary<String, [[Double]]>) -> Dictionary<String, Double> {
+        var ble = [String: Double]()
+        
+        let keys: [String] = Array(bleDictionary.keys)
+        for index in 0..<keys.count {
+            let bleID: String = keys[index]
+            let bleData: [[Double]] = bleDictionary[bleID]!
+            
+            let rssiFinal: Double = bleData[bleData.count-1][0]
+            
+            ble.updateValue(rssiFinal, forKey: bleID)
         }
         return ble
     }

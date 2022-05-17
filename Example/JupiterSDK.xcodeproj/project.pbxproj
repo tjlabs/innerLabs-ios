@@ -33,6 +33,9 @@
 		B3844E8E28099EE3007A5215 /* CardCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3844E8C28099EE3007A5215 /* CardCollectionViewCell.swift */; };
 		B3844E8F28099EE3007A5215 /* CardCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B3844E8D28099EE3007A5215 /* CardCollectionViewCell.xib */; };
 		B38807EC283333250029B174 /* KIST_RP_B1.csv in Resources */ = {isa = PBXBuildFile; fileRef = B38807EB283333250029B174 /* KIST_RP_B1.csv */; };
+		B38807F2283390280029B174 /* KIST_RP_1F.csv in Resources */ = {isa = PBXBuildFile; fileRef = B38807EF283390280029B174 /* KIST_RP_1F.csv */; };
+		B38807F3283390280029B174 /* KIST_RP_3F.csv in Resources */ = {isa = PBXBuildFile; fileRef = B38807F0283390280029B174 /* KIST_RP_3F.csv */; };
+		B38807F4283390280029B174 /* KIST_RP_2F.csv in Resources */ = {isa = PBXBuildFile; fileRef = B38807F1283390280029B174 /* KIST_RP_2F.csv */; };
 		B388AC31282BF6A3001C3D71 /* RobotTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B388AC2F282BF6A3001C3D71 /* RobotTableViewCell.swift */; };
 		B388AC32282BF6A3001C3D71 /* RobotTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B388AC30282BF6A3001C3D71 /* RobotTableViewCell.xib */; };
 		B3AA004928313C97007CD284 /* UILabelExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3AA004828313C97007CD284 /* UILabelExtension.swift */; };
@@ -40,8 +43,8 @@
 		B3AA004D28313CEA007CD284 /* UITextViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3AA004C28313CEA007CD284 /* UITextViewExtension.swift */; };
 		B3B156DE282397AF0058B538 /* ImageOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3B156DD282397AF0058B538 /* ImageOverlay.swift */; };
 		B3B361062829522A00B8E876 /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3B361052829522A00B8E876 /* MapViewController.swift */; };
-		B3B3610928295E1400B8E876 /* Autoway_RP_B3F.csv in Resources */ = {isa = PBXBuildFile; fileRef = B3B3610828295E1400B8E876 /* Autoway_RP_B3F.csv */; };
-		B3B3610B28295E1D00B8E876 /* Autoway_RP_B4F.csv in Resources */ = {isa = PBXBuildFile; fileRef = B3B3610A28295E1D00B8E876 /* Autoway_RP_B4F.csv */; };
+		B3B3610928295E1400B8E876 /* Autoway_RP_B3.csv in Resources */ = {isa = PBXBuildFile; fileRef = B3B3610828295E1400B8E876 /* Autoway_RP_B3.csv */; };
+		B3B3610B28295E1D00B8E876 /* Autoway_RP_B4.csv in Resources */ = {isa = PBXBuildFile; fileRef = B3B3610A28295E1D00B8E876 /* Autoway_RP_B4.csv */; };
 		B3B4F85A28114EEB009F9E6C /* ShowCardCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3B4F85828114EEB009F9E6C /* ShowCardCollectionViewCell.swift */; };
 		B3B4F85B28114EEB009F9E6C /* ShowCardCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B3B4F85928114EEB009F9E6C /* ShowCardCollectionViewCell.xib */; };
 		B3BD699827E9A4A500A32A7A /* ColorPalette.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3BD699727E9A4A500A32A7A /* ColorPalette.swift */; };
@@ -118,6 +121,9 @@
 		B3844E8C28099EE3007A5215 /* CardCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardCollectionViewCell.swift; sourceTree = "<group>"; };
 		B3844E8D28099EE3007A5215 /* CardCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CardCollectionViewCell.xib; sourceTree = "<group>"; };
 		B38807EB283333250029B174 /* KIST_RP_B1.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = KIST_RP_B1.csv; sourceTree = "<group>"; };
+		B38807EF283390280029B174 /* KIST_RP_1F.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = KIST_RP_1F.csv; sourceTree = "<group>"; };
+		B38807F0283390280029B174 /* KIST_RP_3F.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = KIST_RP_3F.csv; sourceTree = "<group>"; };
+		B38807F1283390280029B174 /* KIST_RP_2F.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = KIST_RP_2F.csv; sourceTree = "<group>"; };
 		B388AC2F282BF6A3001C3D71 /* RobotTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RobotTableViewCell.swift; sourceTree = "<group>"; };
 		B388AC30282BF6A3001C3D71 /* RobotTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = RobotTableViewCell.xib; sourceTree = "<group>"; };
 		B3AA004828313C97007CD284 /* UILabelExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UILabelExtension.swift; sourceTree = "<group>"; };
@@ -125,8 +131,8 @@
 		B3AA004C28313CEA007CD284 /* UITextViewExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITextViewExtension.swift; sourceTree = "<group>"; };
 		B3B156DD282397AF0058B538 /* ImageOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageOverlay.swift; sourceTree = "<group>"; };
 		B3B361052829522A00B8E876 /* MapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
-		B3B3610828295E1400B8E876 /* Autoway_RP_B3F.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Autoway_RP_B3F.csv; sourceTree = "<group>"; };
-		B3B3610A28295E1D00B8E876 /* Autoway_RP_B4F.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Autoway_RP_B4F.csv; sourceTree = "<group>"; };
+		B3B3610828295E1400B8E876 /* Autoway_RP_B3.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Autoway_RP_B3.csv; sourceTree = "<group>"; };
+		B3B3610A28295E1D00B8E876 /* Autoway_RP_B4.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Autoway_RP_B4.csv; sourceTree = "<group>"; };
 		B3B4F85828114EEB009F9E6C /* ShowCardCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowCardCollectionViewCell.swift; sourceTree = "<group>"; };
 		B3B4F85928114EEB009F9E6C /* ShowCardCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ShowCardCollectionViewCell.xib; sourceTree = "<group>"; };
 		B3BD699727E9A4A500A32A7A /* ColorPalette.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorPalette.swift; sourceTree = "<group>"; };
@@ -248,8 +254,11 @@
 				B3037A91281C06D50058D025 /* OverlayCustomView.xib */,
 				B3B156DD282397AF0058B538 /* ImageOverlay.swift */,
 				B38807EB283333250029B174 /* KIST_RP_B1.csv */,
-				B3B3610828295E1400B8E876 /* Autoway_RP_B3F.csv */,
-				B3B3610A28295E1D00B8E876 /* Autoway_RP_B4F.csv */,
+				B38807EF283390280029B174 /* KIST_RP_1F.csv */,
+				B38807F1283390280029B174 /* KIST_RP_2F.csv */,
+				B38807F0283390280029B174 /* KIST_RP_3F.csv */,
+				B3B3610828295E1400B8E876 /* Autoway_RP_B3.csv */,
+				B3B3610A28295E1D00B8E876 /* Autoway_RP_B4.csv */,
 				607FACDC1AFB9204008FA782 /* Images.xcassets */,
 				607FACD31AFB9204008FA782 /* Supporting Files */,
 			);
@@ -474,7 +483,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				B360D89228090D6A0084FB22 /* NotoSansKR-Medium.otf in Resources */,
-				B3B3610928295E1400B8E876 /* Autoway_RP_B3F.csv in Resources */,
+				B3B3610928295E1400B8E876 /* Autoway_RP_B3.csv in Resources */,
+				B38807F4283390280029B174 /* KIST_RP_2F.csv in Resources */,
 				B360D89328090D6A0084FB22 /* NotoSansKR-Regular.otf in Resources */,
 				B388AC32282BF6A3001C3D71 /* RobotTableViewCell.xib in Resources */,
 				B3F370D8281BA1CC003A427F /* RobotView.xib in Resources */,
@@ -487,7 +497,7 @@
 				B3D194DD282E2726004E6F9A /* JupiterGuideTableViewCell.xib in Resources */,
 				B3D194E3282E2B2B004E6F9A /* LocationTableViewCell.xib in Resources */,
 				B3B4F85B28114EEB009F9E6C /* ShowCardCollectionViewCell.xib in Resources */,
-				B3B3610B28295E1D00B8E876 /* Autoway_RP_B4F.csv in Resources */,
+				B3B3610B28295E1D00B8E876 /* Autoway_RP_B4.csv in Resources */,
 				B3BD699A27E9A4BE00A32A7A /* Colors.xcassets in Resources */,
 				B360D89028090D6A0084FB22 /* NotoSansKR-Thin.otf in Resources */,
 				B3455284282AB7B400F0DD3E /* ServiceInfoTableViewCell.xib in Resources */,
@@ -495,7 +505,9 @@
 				607FACE01AFB9204008FA782 /* LaunchScreen.xib in Resources */,
 				607FACDD1AFB9204008FA782 /* Images.xcassets in Resources */,
 				B360D88F28090D6A0084FB22 /* NotoSansKR-Light.otf in Resources */,
+				B38807F2283390280029B174 /* KIST_RP_1F.csv in Resources */,
 				B3BD69B027E9A78000A32A7A /* SectorContainerTableViewCell.xib in Resources */,
+				B38807F3283390280029B174 /* KIST_RP_3F.csv in Resources */,
 				B3844E8F28099EE3007A5215 /* CardCollectionViewCell.xib in Resources */,
 				B3037A92281C06D50058D025 /* OverlayCustomView.xib in Resources */,
 				B360D8652807C6090084FB22 /* GoogleService-Info.plist in Resources */,

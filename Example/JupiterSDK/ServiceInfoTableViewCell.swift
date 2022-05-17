@@ -36,7 +36,7 @@ class ServiceInfoTableViewCell: UITableViewCell {
     }
     
     func updateResult(data: ResultToDisplay) {
-        print("Deteced Level :", data.level)
+//        print("Deteced Level :", data.level)
         self.detectedLevelLabel.text = data.level
         self.IndexRxLabel.text = String(data.unitIndexRx)
         self.IndexTxLabel.text = String(data.unitIndexTx)

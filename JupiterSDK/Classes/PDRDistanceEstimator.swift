@@ -17,7 +17,6 @@ public class PDRDistanceEstimator: NSObject {
     public var HF = HeadingFunctions()
     public var PDF = PacingDetectFunctions()
     
-    
     public var peakValleyDetector = PeakValleyDetector()
     public var stepLengthEstimator = StepLengthEstimator()
     public var preAccNormEMA: Double = 0
@@ -40,6 +39,7 @@ public class PDRDistanceEstimator: NSObject {
         if (accNormEMAQueue.count < ACC_NORM_EMA_QUEUE_SIZE) {
             accNormEMAQueue.append(TimestampDouble(timestamp: time, valuestamp: accNormEMA))
             return UnitDistance()
+            
         } else {
             accNormEMAQueue.pop()
             accNormEMAQueue.append(TimestampDouble(timestamp: time, valuestamp: accNormEMA))

@@ -82,10 +82,6 @@ public class JupiterService: NSObject {
     
     public var unitModeInput: Int = 0
     
-    // To Server //
-//    let networkManager = NetworkManager()
-//    public var jupiterResult: Output = Output(mobile_time: 0, index: 0, building: "", level: "", x: 0, y: 0, scc: 0, scr: 0, phase: 0, calculated_time: 0)
-    
     public var uuid: String = ""
     public var deviceModel: String = ""
     public var os: String = ""
