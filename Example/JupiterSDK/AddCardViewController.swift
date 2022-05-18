@@ -71,6 +71,7 @@ class AddCardViewController: UIViewController, UITextFieldDelegate {
                 
                 self.cardItemData.append(CardItemData(sector_id: id, sector_name: name, description: description,
                                                                               cardColor: cardColor, mode: mode, infoLevel: infoLevel))
+                self.page = self.page + 4
             case "Update Conflict":
                 self.responseLabel.text = "이미 등록된 카드 입니다"
                 self.responseLabel.textColor = .systemRed
