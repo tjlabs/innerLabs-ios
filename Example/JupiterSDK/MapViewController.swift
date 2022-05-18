@@ -62,6 +62,7 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
     var infoOfLevels: String = ""
     var runMode: String = ""
     
+    var levelList = [String]()
     var currentLevel: String = ""
     
     var isShow: Bool = false
@@ -119,6 +120,8 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
             
             currentLevel = first
         }
+        levelList = cardData!.infoLevel
+        
         fixChartHeight(flag: isRadioMap)
     }
     
@@ -290,7 +293,8 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
         let isStepDetected = jupiterService.unitDRInfo.isIndexChanged
         
         let unitIdxTx = Int(jupiterService.unitDRInfo.index)
-        let unitLength = jupiterService.unitDRInfo.length
+//        let unitLength = jupiterService.unitDRInfo.length
+        let unitLength = jupiterService.unitDistane
         let status = jupiterService.unitDRInfo.lookingFlag
         
         if (isStepDetected) {
@@ -301,22 +305,24 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
             let x = jupiterService.jupiterOutput.x
             let y = jupiterService.jupiterOutput.y
             let level = jupiterService.jupiterOutput.level
+            var levelOutput: String = ""
+            if (levelList.contains(level)) {
+                levelOutput = level
+            } else {
+                levelOutput = "Out of bounds"
+            }
+            
             let unitIdxRx = jupiterService.jupiterOutput.index
             let scc = jupiterService.jupiterOutput.scc
             
-            currentLevel = level
-            
-//            let randomNumX = Double.random(in: 0...20)
-//            let randomNumY = Double.random(in: -10...10)
-//            coordToDisplay.x = 30 + randomNumX
-//            coordToDisplay.y = 50 + randomNumY
-            
+//            currentLevel = level
+
             coordToDisplay.x = x
             coordToDisplay.y = y
-            coordToDisplay.level = level
+            coordToDisplay.level = levelOutput
             
             resultToDisplay.unitIndexRx = unitIdxRx
-            resultToDisplay.level = level
+            resultToDisplay.level = levelOutput
             resultToDisplay.scc = scc
             
             UIView.performWithoutAnimation {

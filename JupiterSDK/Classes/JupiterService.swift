@@ -56,6 +56,7 @@ public class JupiterService: NSObject {
     
     public var sensorData = SensorData()
     public var unitDRInfo = UnitDRInfo()
+    public var unitDistane: Double = 0
     public var jupiterOutput = Output(mobile_time: 0, index: 0, building: "", level: "", x: 0, y: 0, scc: 0, scr: 0, phase: 0, calculated_time: 0)
     
     public var testQueue = LinkedList<TimestampDouble>()
@@ -249,8 +250,6 @@ public class JupiterService: NSObject {
         }
         
         if (unitDRInfo.isIndexChanged) {
-//            let bleTest = bleList.bleList.devices
-//            let bleDictionary = Dictionary(uniqueKeysWithValues: bleTest.map { ($0.ward_id, $0.rssi) })
             
             let bleDictionary = bleManager.bleFinal
             
@@ -260,8 +259,12 @@ public class JupiterService: NSObject {
             if ((inputArray.count-1) == unitModeInput) {
                 inputArray.remove(at: 0)
                 NetworkManager.shared.postInput(url: url, input: inputArray)
-//                print("Input Array: ", inputArray)
-//                print("Input Array Count: ", inputArray.count)
+                
+                var lengthSum: Double = 0
+                for idx in 0..<inputArray.count {
+                    lengthSum += inputArray[idx].length
+                }
+                unitDistane = lengthSum
                 
                 inputArray = [Input(user_id: "", index: 0, length: 0, heading: 0, pressure: 0, looking_flag: false, ble: [:], mobile_time: 0, device_model: "", os_version: 0)]
             }

@@ -183,7 +183,7 @@ class SectorContainerTableViewCell: UITableViewCell {
         } else {
             scatterChart.xAxis.axisMinimum = xMin-10
             scatterChart.xAxis.axisMaximum = xMax+10
-            scatterChart.leftAxis.axisMinimum = yMin
+            scatterChart.leftAxis.axisMinimum = yMin-20
             scatterChart.leftAxis.axisMaximum = yMax
         }
         
@@ -275,11 +275,14 @@ class SectorContainerTableViewCell: UITableViewCell {
         }
         
         if (RP!.contains(where: condition)) {
+            scatterChart.alpha = 1.0
+            
             let rp: [[Double]] = RP?[currentLevel] ?? [[Double]]()
             drawRP(RP_X: rp[0], RP_Y: rp[1], XY: XY)
 //            drawUser(RP_X: rp[0], RP_Y: rp[1], XY: XY)
         } else {
-            drawTest()
+            scatterChart.alpha = 0
+//            drawTest()
         }
             
         levelCollectionView.reloadData()
@@ -294,8 +297,9 @@ extension SectorContainerTableViewCell : UICollectionViewDelegate{
         let rp: [[Double]] = RP?[currentLevel] ?? [[Double]]()
         if (rp.isEmpty) {
             // RP가 없어서 그리지 않음
-//            drawTest()
+            scatterChart.alpha = 0
         } else {
+            scatterChart.alpha = 1.0
             drawRP(RP_X: rp[0], RP_Y: rp[1], XY: XY)
 //            drawUser(RP_X: rp[0], RP_Y: rp[1], XY: XY)
             fetchLevel(currentLevel: currentLevel, levelList: levelList)
