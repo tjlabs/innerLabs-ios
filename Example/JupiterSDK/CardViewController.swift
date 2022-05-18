@@ -2,13 +2,19 @@ import UIKit
 import JupiterSDK
 
 class CardViewController: UIViewController, AddCardDelegate, ShowCardDelegate, SendPageDelegate, PageDelegate, ShowCardPageDelegate {
+    
+    func moveToFirst(data: [CardItemData]) {
+        moveToInitSectionFirstCard()
+    }
+    
     func sendCardItemData(data: [CardItemData]) {
         cardItemData = data
-        initCardVC()
+//        print("CardViewController : CardItemData Edited /", cardItemData)
     }
     
     func sendPage(data: Int) {
         currentPage = data
+        currentIndex = CGFloat(data)
     }
     
     @IBOutlet weak var collectionView: UICollectionView!
@@ -134,7 +140,7 @@ class CardViewController: UIViewController, AddCardDelegate, ShowCardDelegate, S
             moveToIndexCard(index: currentPage)
         }
         
-        print(currentIndex)
+        print("CardViewController : Index /", currentIndex)
     }
     
     func checkImageSize(cards: Array<UIImage>, sectors: Array<UIImage>) -> (sizeCard: Array<Double>, sizeSector: Array<Double>) {
@@ -359,7 +365,7 @@ extension CardViewController: UICollectionViewDataSource, UICollectionViewDelega
         let mod = indexPath.item%cardCount
         
         let sector_id = cardItemData[mod].sector_id
-        print("Selected Sector ID :", sector_id)
+//        print("Selected Sector ID :", sector_id)
         
         if (sector_id == 0) {
            // to CardBackViewController

@@ -217,8 +217,7 @@ public class Network {
         return result
     }
     
-    func deleteCard(url: String, input: DeleteCard) -> String {
-        var result: String = ""
+    func deleteCard(url: String, input: DeleteCard, completion: @escaping (Int, String) -> Void) {
         // [http 요청 헤더 지정]
         let header : HTTPHeaders = [
             "Content-Type" : "application/json"
@@ -253,7 +252,7 @@ public class Network {
                     print("====================================")
                     print("")
                     
-                    result = String(data: res, encoding: .utf8) ?? ""
+                    completion(200, "")
                     // [비동기 작업 수행]
                     DispatchQueue.main.async {
                         
@@ -265,6 +264,7 @@ public class Network {
                     print("catch :: ", err.localizedDescription)
                     print("====================================")
                     print("")
+                    completion(200, "")
                 }
                 break
             case .failure(let err):
@@ -275,12 +275,11 @@ public class Network {
                 print("에 러 :: ", err.localizedDescription)
                 print("====================================")
                 print("")
+                completion(200, "")
                 
                 break
             }
         }
-        return result
-        
     }
 }
 

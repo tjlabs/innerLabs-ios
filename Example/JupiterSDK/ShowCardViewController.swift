@@ -6,7 +6,9 @@ protocol ShowCardDelegate {
 }
 
 protocol ShowCardPageDelegate {
-    func sendPage(data: Int)
+//    func sendPage(data: Int)
+    
+    func moveToFirst(data: [CardItemData])
 }
 
 class ShowCardViewController: UIViewController, AddCardDelegate {
@@ -32,15 +34,6 @@ class ShowCardViewController: UIViewController, AddCardDelegate {
     
     var delegate : ShowCardDelegate?
     var pageDelegate : ShowCardPageDelegate?
-    
-    //test
-    //    let collectionView: UICollectionView = {
-    //        let layout = UICollectionViewFlowLayout()
-    //        layout.scrollDirection = .vertical
-    //        let collection = UICollectionView(frame: CGRect(x: 50, y: 50, width: UIScreen.main.bounds.width-100, height: UIScreen.main.bounds.height-100), collectionViewLayout: layout)
-    ////        let collection = UICollectionView(frame: CGRect(x: 0, y: 0, width: 390, height: 633), collectionViewLayout: layout)
-    //        return collection
-    //    }()
     
     
     override func viewWillAppear(_ animated: Bool) {
@@ -274,24 +267,22 @@ extension ShowCardViewController: UICollectionViewDataSource {
         cell.delete = {
             [unowned self] in
             // 내가 선택한 카드 삭제
-            print(self.cardItemData)
-            print("Index : ", indexPath.item)
+//            print(self.cardItemData)
             
             let uuid = self.uuid
             let sector_id = self.cardItemData[indexPath.item].sector_id
             
             let input = DeleteCard(user_id: uuid, sector_id: sector_id)
-            let result = Network.shared.deleteCard(url: JUPITER_URL, input: input)
-            print("Delete :", result)
-            
-            self.cardItemData.remove(at: indexPath.item)
-            setData(data: cardItemData)
-            
-            // CollectionView Reload
-            self.showCardCollectionView.reloadData()
-            
-            self.delegate?.sendCardItemData(data: cardItemData)
-            self.pageDelegate?.sendPage(data: 0)
+            Network.shared.deleteCard(url: JUPITER_URL, input: input, completion: { [self]statusCode, returnedString in
+                self.cardItemData.remove(at: indexPath.item)
+                self.delegate?.sendCardItemData(data: self.cardItemData)
+                
+                self.setData(data: cardItemData)
+                self.pageDelegate?.moveToFirst(data: cardItemData)
+                
+                // CollectionView Reload
+                self.showCardCollectionView.reloadData()
+            })
         }
         
         return cell
