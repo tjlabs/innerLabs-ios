@@ -71,11 +71,13 @@ class SectorContainerTableViewCell: UITableViewCell {
         }
         
         let set1 = ScatterChartDataSet(entries: values1, label: "RP")
+        set1.drawValuesEnabled = false
         set1.setScatterShape(.square)
         set1.setColor(UIColor.yellow)
         set1.scatterShapeSize = 4
         
         let set2 = ScatterChartDataSet(entries: values2, label: "User")
+        set2.drawValuesEnabled = false
         set2.setScatterShape(.circle)
         set2.setColor(UIColor.systemRed)
         set2.scatterShapeSize = 16
@@ -92,10 +94,10 @@ class SectorContainerTableViewCell: UITableViewCell {
         
         // Configure Chart
         if (currentLevel == "B1") {
-            scatterChart.xAxis.axisMinimum = xMin-4
-            scatterChart.xAxis.axisMaximum = xMax+4
-            scatterChart.leftAxis.axisMinimum = yMin-37.5
-            scatterChart.leftAxis.axisMaximum = yMax+36
+            scatterChart.xAxis.axisMinimum = xMin-6
+            scatterChart.xAxis.axisMaximum = xMax+9.5
+            scatterChart.leftAxis.axisMinimum = yMin-39
+            scatterChart.leftAxis.axisMaximum = yMax+38
         }
         else if (currentLevel == "B3") {
             scatterChart.xAxis.axisMinimum = xMin-4.2
@@ -146,8 +148,8 @@ class SectorContainerTableViewCell: UITableViewCell {
         }
         
         let set1 = ScatterChartDataSet(entries: values1, label: "USER")
+        set1.drawValuesEnabled = false
         set1.setScatterShape(.circle)
-//        set1.drawValuesEnabled = false
         set1.setColor(ChartColorTemplates.colorful()[2])
         set1.scatterShapeSize = 15
         
@@ -163,12 +165,10 @@ class SectorContainerTableViewCell: UITableViewCell {
         
         // Configure Chart
         if (currentLevel == "B1") {
-            scatterChart.xAxis.axisMinimum = xMin-4
-            scatterChart.xAxis.axisMaximum = xMax+4
-//            scatterChart.xAxis.axisMinimum = xMin-10
-//            scatterChart.xAxis.axisMaximum = xMax+18
-            scatterChart.leftAxis.axisMinimum = yMin-37.5
-            scatterChart.leftAxis.axisMaximum = yMax+36
+            scatterChart.xAxis.axisMinimum = xMin-6
+            scatterChart.xAxis.axisMaximum = xMax+9.5
+            scatterChart.leftAxis.axisMinimum = yMin-39
+            scatterChart.leftAxis.axisMaximum = yMax+38
         }
         else if (currentLevel == "B3") {
             scatterChart.xAxis.axisMinimum = xMin-4.2
@@ -181,6 +181,10 @@ class SectorContainerTableViewCell: UITableViewCell {
             scatterChart.leftAxis.axisMinimum = yMin-15
             scatterChart.leftAxis.axisMaximum = yMax+25.5
         } else {
+            scatterChart.xAxis.axisMinimum = xMin-10
+            scatterChart.xAxis.axisMaximum = xMax+10
+            scatterChart.leftAxis.axisMinimum = yMin
+            scatterChart.leftAxis.axisMaximum = yMax
         }
         
         scatterChart.xAxis.drawGridLinesEnabled = chartFlag

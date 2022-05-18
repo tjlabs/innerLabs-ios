@@ -162,11 +162,7 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
                 let bleTime = getCurrentTimeInMilliseconds()
                 
                 if RSSI.intValue != 127 {
-//                    if (bleName == "TJ-00CB-000000B9-0000") {
-//                        print(bleName, " : ", RSSI.intValue)
-//                    }
                     NotificationCenter.default.post(name: .scanInfo, object: nil, userInfo: userInfo)
-//                    print("BLE Name :", bleName)
                     
                     let condition: ((String, [[Double]])) -> Bool = {
                         $0.0.contains(bleName)
@@ -187,7 +183,6 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
                     
 //                    bleFinal = latestBleData(bleDictionary: bleDictionary)
                     bleFinal = avgBleData(bleDictionary: bleDictionary)
-//                    print(bleFinal)
                     
                     NotificationCenter.default.post(name: .scanInfo, object: nil, userInfo: userInfo)
                 }
@@ -301,11 +296,13 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
             
             var rssiSum: Double = 0
             // 여기서 잘 못 될 수 있음
+//            print("BLE INFO :", bleCount, "/", bleID, "/", bleData)
+            
             for i in 0..<bleCount {
                 let rssi = bleData[i][0]
                 rssiSum += rssi
             }
-            let rssiFinal: Double = (rssiSum/Double(bleData.count)) + 5
+            let rssiFinal: Double = (rssiSum/Double(bleData.count)) + 8
             
             if ( rssiSum == 0 ) {
                 ble.removeValue(forKey: bleID)
