@@ -16,7 +16,7 @@ struct DeleteCard: Codable {
     var sector_id: Int
 }
 
-struct AddCardResponse: Codable {
+struct AddCardSuccess: Codable {
     var message: String
     var sector_id: Int
     var sector_name: String
@@ -24,6 +24,10 @@ struct AddCardResponse: Codable {
     var cardColor: String
     var mode: Int
     var infoLevel: String
+}
+
+struct AddCardFail: Codable {
+    var message: String
 }
 
 struct DeleteCardResponse: Codable {
