@@ -7,10 +7,6 @@ protocol ShowCardDelegate {
     func sendPage(data: Int)
 }
 
-protocol MoveToFirstDelegate {
-    func moveToFirst(data: [CardItemData])
-}
-
 class ShowCardViewController: UIViewController, AddCardDelegate {
     
     func sendPage(data: Int) {
@@ -37,7 +33,6 @@ class ShowCardViewController: UIViewController, AddCardDelegate {
     var cardItemData: [CardItemData] = []
     
     var delegate : ShowCardDelegate?
-    var moveToFirstDelegate : MoveToFirstDelegate?
     
     var page: Int = 0
     
@@ -194,12 +189,10 @@ class ShowCardViewController: UIViewController, AddCardDelegate {
         
         if sender.isSelected == false {
             isEditMode = true
-//            print("여기는 EditMode 입니다")
             self.showCardCollectionView.reloadData()
         }
         else {
             isEditMode = false
-//            print("여기는 모아보기 입니다")
             self.showCardCollectionView.reloadData()
         }
     }
@@ -261,8 +254,6 @@ extension ShowCardViewController: UICollectionViewDataSource {
         cell.delete = {
             [unowned self] in
             // 내가 선택한 카드 삭제
-//            print(self.cardItemData)
-            
             let uuid = self.uuid
             let sector_id = self.cardItemData[indexPath.item].sector_id
             
@@ -270,9 +261,9 @@ extension ShowCardViewController: UICollectionViewDataSource {
             Network.shared.deleteCard(url: JUPITER_URL, input: input, completion: { [self]statusCode, returnedString in
                 self.cardItemData.remove(at: indexPath.item)
                 self.delegate?.sendCardItemData(data: self.cardItemData)
+                self.page = 0
                 
                 self.setData(data: cardItemData)
-                self.moveToFirstDelegate?.moveToFirst(data: cardItemData)
                 
                 // CollectionView Reload
                 self.showCardCollectionView.reloadData()

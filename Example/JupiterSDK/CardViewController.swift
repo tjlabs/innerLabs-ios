@@ -1,11 +1,7 @@
 import UIKit
 import JupiterSDK
 
-class CardViewController: UIViewController, MapViewPageDelegate, AddCardDelegate, ShowCardDelegate, MoveToFirstDelegate, SendPageDelegate {
-    
-    func moveToFirst(data: [CardItemData]) {
-        moveToInitSectionFirstCard()
-    }
+class CardViewController: UIViewController, MapViewPageDelegate, AddCardDelegate, ShowCardDelegate, SendPageDelegate {
     
     func sendCardItemData(data: [CardItemData]) {
         cardItemData = data
