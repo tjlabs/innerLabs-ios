@@ -5,7 +5,7 @@ let NRF_UUID_SERVICE         = "6E400001-B5A3-F393-E0A9-E50E24DCCA9E";
 let NRF_UUID_CHAR_READ       = "6E400003-B5A3-F393-E0A9-E50E24DCCA9E";
 let NRF_UUID_CHAR_WRITE      = "6E400002-B5A3-F393-E0A9-E50E24DCCA9E";
 let NI_UUID_SERVICE          = "00001530-1212-efde-1523-785feabcd123";
-let RSSI_BIAS: Double        = 7
+let RSSI_BIAS: Double        = 5
 
 let TJLABS_UUID: String          = "0000FEAA-0000-1000-8000-00805f9b34fb";
 
@@ -296,7 +296,6 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
             let bleCount = bleData.count
             
             var rssiSum: Double = 0
-            // 여기서 잘 못 될 수 있음
 //            print("BLE INFO :", bleCount, "/", bleID, "/", bleData)
             
             for i in 0..<bleCount {
