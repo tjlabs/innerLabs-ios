@@ -12,6 +12,8 @@ import JupiterSDK
 
 protocol AddCardDelegate {
     func sendCardItemData(data: [CardItemData])
+    
+    func sendPage(data: Int)
 }
 
 class AddCardViewController: UIViewController, UITextFieldDelegate {
@@ -22,6 +24,8 @@ class AddCardViewController: UIViewController, UITextFieldDelegate {
     var uuid: String = ""
     var code: String = ""
     var cardItemData: [CardItemData] = []
+    
+    var page: Int = 0
 
     var delegate : AddCardDelegate?
     
@@ -31,11 +35,11 @@ class AddCardViewController: UIViewController, UITextFieldDelegate {
         codeTextField.delegate = self
         
         guard let presentingVC = self.presentingViewController else { return }
-        print("Storyboard : \(presentingVC)")
     }
 
     @IBAction func tapBackButton(_ sender: UIButton) {
         self.delegate?.sendCardItemData(data: cardItemData)
+        self.delegate?.sendPage(data: page)
         self.presentingViewController?.dismiss(animated: true)
     }
     

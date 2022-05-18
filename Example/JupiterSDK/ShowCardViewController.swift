@@ -3,15 +3,19 @@ import JupiterSDK
 
 protocol ShowCardDelegate {
     func sendCardItemData(data: [CardItemData])
+    
+    func sendPage(data: Int)
 }
 
-protocol ShowCardPageDelegate {
-//    func sendPage(data: Int)
-    
+protocol MoveToFirstDelegate {
     func moveToFirst(data: [CardItemData])
 }
 
 class ShowCardViewController: UIViewController, AddCardDelegate {
+    
+    func sendPage(data: Int) {
+        page = data
+    }
     
     @IBOutlet weak var editButton: UIButton!
     @IBOutlet weak var showCardCollectionView: UICollectionView!
@@ -33,8 +37,9 @@ class ShowCardViewController: UIViewController, AddCardDelegate {
     var cardItemData: [CardItemData] = []
     
     var delegate : ShowCardDelegate?
-    var pageDelegate : ShowCardPageDelegate?
+    var moveToFirstDelegate : MoveToFirstDelegate?
     
+    var page: Int = 0
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(false)
@@ -158,24 +163,12 @@ class ShowCardViewController: UIViewController, AddCardDelegate {
     
     @IBAction func tapToCardButton(_ sender: UIButton) {
         self.delegate?.sendCardItemData(data: cardItemData)
+        self.delegate?.sendPage(data: page)
         self.presentingViewController?.dismiss(animated: true)
     }
     
     
     @IBAction func tapAddCardButton(_ sender: UIButton) {
-        
-        // CardView로 이동한 후에 AddCard로 이동 //
-        //        guard let presentingVC = self.presentingViewController else { return }
-        //
-        //        self.dismiss(animated: true) {
-        //            guard let addCardVC = self.storyboard?.instantiateViewController(withIdentifier: "AddCardViewController") as? AddCardViewController else { return }
-        //            addCardVC.modalPresentationStyle = .currentContext
-        //
-        //            addCardVC.cardItemData = self.cardItemData
-        //            addCardVC.delegate = self
-        //
-        //            presentingVC.present(addCardVC, animated: true, completion: nil)
-        //        }
         
         // 바로 AddCard로 이동 //
         guard let addCardVC = self.storyboard?.instantiateViewController(withIdentifier: "AddCardViewController") as? AddCardViewController else { return }
@@ -183,6 +176,7 @@ class ShowCardViewController: UIViewController, AddCardDelegate {
         
         addCardVC.uuid = self.uuid
         addCardVC.cardItemData = self.cardItemData
+        addCardVC.page = self.page
         addCardVC.delegate = self
         
         self.present(addCardVC, animated: true, completion: nil)
@@ -278,7 +272,7 @@ extension ShowCardViewController: UICollectionViewDataSource {
                 self.delegate?.sendCardItemData(data: self.cardItemData)
                 
                 self.setData(data: cardItemData)
-                self.pageDelegate?.moveToFirst(data: cardItemData)
+                self.moveToFirstDelegate?.moveToFirst(data: cardItemData)
                 
                 // CollectionView Reload
                 self.showCardCollectionView.reloadData()

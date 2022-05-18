@@ -1,7 +1,7 @@
 import UIKit
 import JupiterSDK
 
-class CardViewController: UIViewController, AddCardDelegate, ShowCardDelegate, SendPageDelegate, PageDelegate, ShowCardPageDelegate {
+class CardViewController: UIViewController, MapViewPageDelegate, AddCardDelegate, ShowCardDelegate, MoveToFirstDelegate, SendPageDelegate {
     
     func moveToFirst(data: [CardItemData]) {
         moveToInitSectionFirstCard()
@@ -9,7 +9,6 @@ class CardViewController: UIViewController, AddCardDelegate, ShowCardDelegate, S
     
     func sendCardItemData(data: [CardItemData]) {
         cardItemData = data
-//        print("CardViewController : CardItemData Edited /", cardItemData)
     }
     
     func sendPage(data: Int) {
@@ -308,6 +307,7 @@ class CardViewController: UIViewController, AddCardDelegate, ShowCardDelegate, S
         
         showCardVC.uuid = self.uuid
         showCardVC.cardItemData = self.cardItemData
+        showCardVC.page = self.currentPage
         showCardVC.delegate = self
         
         self.present(showCardVC, animated: true, completion: nil)
@@ -320,6 +320,7 @@ class CardViewController: UIViewController, AddCardDelegate, ShowCardDelegate, S
         
         addCardVC.uuid = uuid
         addCardVC.cardItemData = self.cardItemData
+        addCardVC.page = self.currentPage
         addCardVC.delegate = self
         
         self.present(addCardVC, animated: true, completion: nil)

@@ -11,7 +11,7 @@ import JupiterSDK
 import ExpyTableView
 import Charts
 
-protocol PageDelegate {
+protocol MapViewPageDelegate {
     func sendPage(data: Int)
 }
 
@@ -49,14 +49,12 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
     var pastTime: Double = 0
     var elapsedTime: Double = 0
     
-    var delegate : PageDelegate?
+    var delegate : MapViewPageDelegate?
     
     var cardData: CardItemData?
     var page: Int = 0
     
     var referencePoints = [[Double]]()
-//    var rpX = [Double]()
-//    var rpY = [Double]()
     
     var RP = [String: [[Double]]]()
     
