@@ -112,8 +112,8 @@ class SectorContainerTableViewCell: UITableViewCell {
         } else {
             scatterChart.xAxis.axisMinimum = xMin-10
             scatterChart.xAxis.axisMaximum = xMax+10
-            scatterChart.leftAxis.axisMinimum = yMin
-            scatterChart.leftAxis.axisMaximum = yMax
+            scatterChart.leftAxis.axisMinimum = yMin-10
+            scatterChart.leftAxis.axisMaximum = yMax+10
         }
         
         scatterChart.xAxis.drawGridLinesEnabled = chartFlag
