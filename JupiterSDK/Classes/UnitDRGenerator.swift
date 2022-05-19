@@ -55,7 +55,7 @@ public class UnitDRGenerator: NSObject {
             unitDistance = pdrDistanceEstimator.estimateDistanceInfo(time: currentTime, sensorData: sensorData)
         }
         
-        let unitStatus = unitStatusEstimator.estimateStatus(Attitude: curAttitude, isIndexChanged: unitDistance.isIndexChanged)
+        let unitStatus = unitStatusEstimator.estimateStatus(Attitude: curAttitude, isIndexChanged: unitDistance.isIndexChanged, unitMode: unitMode)
         if (!unitStatus && unitMode == MODE_PDR) {
             unitDistance.length = 0.7
         }

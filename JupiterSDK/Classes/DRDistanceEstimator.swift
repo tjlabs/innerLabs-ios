@@ -182,9 +182,9 @@ public class DRDistanceEstimator: NSObject {
             magVar = lastMagQueue
         }
         
-        let accNormalizeConstant: Double = 5
-        let gyroNormalizeConstant: Double = 2
-        let magNormalizeConstant: Double = 1000
+        let accNormalizeConstant: Double = 7
+        let gyroNormalizeConstant: Double = 5
+        let magNormalizeConstant: Double = 500
         
         let input: [Float32] = [Float(accVar.x/accNormalizeConstant),
                                 Float(accVar.y/accNormalizeConstant),
@@ -250,7 +250,7 @@ public class DRDistanceEstimator: NSObject {
                 outputSum += mlpOutputQueue[i]
             }
             
-            var velocity: Double = Double(outputSum) * VELOCITY_SETTING * exp(-navGyroZSmoothing)
+            var velocity: Double = Double(outputSum) * VELOCITY_SETTING * exp(-navGyroZSmoothing/1.5)
             distance += (velocity * OUTPUT_SAMPLE_TIME)
             
             if (distance > Double(OUTPUT_DISTANCE_SETTING)) {

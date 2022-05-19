@@ -13,16 +13,20 @@ public class UnitStatusEstimator: NSObject {
     }
     public var lookingFlagStepQueue = LinkedList<Bool>()
     
-    public func estimateStatus(Attitude: Attitude, isIndexChanged: Bool) -> Bool {
-        if (isIndexChanged) {
-            var isLookingAttitude = (abs(Attitude.Roll) < degree2radian(degree: 25) && Attitude.Pitch > degree2radian(degree: -20) && Attitude.Pitch < degree2radian(degree: 80))
-            
-            updateIsLookingAttitudeQueue(lookingFlag: isLookingAttitude)
-            let flag: Bool = checkLookingAttitude(lookingFlagStepQueue: lookingFlagStepQueue)
-            
-            return flag
+    public func estimateStatus(Attitude: Attitude, isIndexChanged: Bool, unitMode: String) -> Bool {
+        if (unitMode == "PDR") {
+            if (isIndexChanged) {
+                var isLookingAttitude = (abs(Attitude.Roll) < degree2radian(degree: 25) && Attitude.Pitch > degree2radian(degree: -20) && Attitude.Pitch < degree2radian(degree: 80))
+                
+                updateIsLookingAttitudeQueue(lookingFlag: isLookingAttitude)
+                let flag: Bool = checkLookingAttitude(lookingFlagStepQueue: lookingFlagStepQueue)
+                
+                return flag
+            } else {
+                return false
+            }
         } else {
-            return false
+            return true
         }
     }
     
