@@ -28,7 +28,7 @@
                         <subviews>
                             <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" editable="NO" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="bJY-vi-KUJ">
                                 <rect key="frame" x="5" y="5" width="278" height="190"/>
-                                <mutableString key="text">우리는 지금까지 GPS를 활용한 세상에 살았습니다.
+                                <string key="text">우리는 지금까지 GPS를 활용한 세상에 살았습니다.
 TJLABS 는 실내 위치 측위 기술을 통한 새로운 세상
 ‘이너버스’를 열고자 합니다.
 ​
@@ -43,7 +43,7 @@ TJLABS 는 실내/외 작업자와 위험시설 및 위험지역 간 접근을 �
 라이다 없이도 위치를 잃지 않는 로봇과 함께 살아가는 세상.
 가상화폐 다음은 가상 부동산이 될 것이고, 위치가 중심이 될 것입니다.
 ​
-“Location opens innerverse.”</mutableString>
+“Location opens innerverse.”</string>
                                 <color key="textColor" systemColor="labelColor"/>
                                 <fontDescription key="fontDescription" name="NotoSansKR-Medium" family="Noto Sans KR" pointSize="14"/>
                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>

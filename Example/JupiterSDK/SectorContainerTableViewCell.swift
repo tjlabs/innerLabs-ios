@@ -150,7 +150,8 @@ class SectorContainerTableViewCell: UITableViewCell {
         let set1 = ScatterChartDataSet(entries: values1, label: "USER")
         set1.drawValuesEnabled = false
         set1.setScatterShape(.circle)
-        set1.setColor(ChartColorTemplates.colorful()[2])
+//        set1.setColor(ChartColorTemplates.colorful()[2])
+        set1.setColor(UIColor.systemYellow)
         set1.scatterShapeSize = 15
         
         let chartData = ScatterChartData(dataSet: set1)
@@ -183,8 +184,8 @@ class SectorContainerTableViewCell: UITableViewCell {
         } else {
             scatterChart.xAxis.axisMinimum = xMin-10
             scatterChart.xAxis.axisMaximum = xMax+10
-            scatterChart.leftAxis.axisMinimum = yMin-20
-            scatterChart.leftAxis.axisMaximum = yMax
+            scatterChart.leftAxis.axisMinimum = yMin-10
+            scatterChart.leftAxis.axisMaximum = yMax+10
         }
         
         scatterChart.xAxis.drawGridLinesEnabled = chartFlag
@@ -278,8 +279,8 @@ class SectorContainerTableViewCell: UITableViewCell {
             scatterChart.alpha = 1.0
             
             let rp: [[Double]] = RP?[currentLevel] ?? [[Double]]()
-            drawRP(RP_X: rp[0], RP_Y: rp[1], XY: XY)
-//            drawUser(RP_X: rp[0], RP_Y: rp[1], XY: XY)
+//            drawRP(RP_X: rp[0], RP_Y: rp[1], XY: XY)
+            drawUser(RP_X: rp[0], RP_Y: rp[1], XY: XY)
         } else {
             scatterChart.alpha = 0
 //            drawTest()
@@ -300,8 +301,8 @@ extension SectorContainerTableViewCell : UICollectionViewDelegate{
             scatterChart.alpha = 0
         } else {
             scatterChart.alpha = 1.0
-            drawRP(RP_X: rp[0], RP_Y: rp[1], XY: XY)
-//            drawUser(RP_X: rp[0], RP_Y: rp[1], XY: XY)
+//            drawRP(RP_X: rp[0], RP_Y: rp[1], XY: XY)
+            drawUser(RP_X: rp[0], RP_Y: rp[1], XY: XY)
             fetchLevel(currentLevel: currentLevel, levelList: levelList)
         }
         

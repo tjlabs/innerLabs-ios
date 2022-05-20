@@ -132,6 +132,7 @@ public class DRDistanceEstimator: NSObject {
         let acc = sensorData.acc
         let gyro = sensorData.gyro
         let mag = sensorData.mag
+        
         let att = Attitude(Roll: sensorData.att[0], Pitch: sensorData.att[1], Yaw: sensorData.att[2])
         
         let gyroNavZ = abs(CF.transBody2Nav(att: att, data: gyro)[2])
@@ -181,6 +182,16 @@ public class DRDistanceEstimator: NSObject {
         if (featureExtractionCount == 0) {
             magVar = lastMagQueue
         }
+        
+//        print(acc[0], ",", acc[1], ",", acc[2], ",",
+//              gyro[0], ",", gyro[1], ",", gyro[2], ",",
+//              mag[0], ",", mag[1], ",", mag[2], ",",
+//              accSmoothing.x, ",", accSmoothing.y, ",", accSmoothing.z, ",", accSmoothing.norm, ",",
+//              gyroSmoothing.x, ",", gyroSmoothing.y, ",", gyroSmoothing.z, ",",
+//              magSmoothing.x, ",", magSmoothing.y, ",", magSmoothing.z, ",",
+//              accVar.x, ",", accVar.y, ",", accVar.z, ",", accVar.norm, ",",
+//              gyroVar.x, ",", gyroVar.y, ",", gyroVar.z, ",",
+//              magVar.x, ",", magVar.y, ",", magVar.z)
         
         let accNormalizeConstant: Double = 7
         let gyroNormalizeConstant: Double = 5

@@ -9,8 +9,8 @@ import TFLTensorFlowLite
 
 public class JupiterService: NSObject {
     
-//    let url = "https://where-run-kr-6qjrrjlaga-an.a.run.app/calc"
-    let url = "https://where-run-fire-skrgq3jc5a-du.a.run.app/calc"
+//    let url = "https://where-run-os-skrgq3jc5a-du.a.run.app/calc"  // Android
+    let url = "https://where-run-ios-skrgq3jc5a-du.a.run.app/calc" // iOS
     
     // Sensor //
     let motionManager = CMMotionManager()
@@ -88,6 +88,7 @@ public class JupiterService: NSObject {
     public var os: String = ""
     public var osVersion: Int = 0
     public var mode: String = ""
+    var recentThreshold: Double = 800 // ms
     var onStartFlag: Bool = false
     
     public override init() {
@@ -114,8 +115,10 @@ public class JupiterService: NSObject {
             
             if (mode == "PDR") {
                 unitModeInput = PDR_INPUT_NUM
+                recentThreshold = 800
             } else if (mode == "DR") {
                 unitModeInput = DR_INPUT_NUM
+                recentThreshold = 2000
             }
             
             unitDRGenerator.setDRModel()
@@ -145,7 +148,7 @@ public class JupiterService: NSObject {
                 }
                 if let accZ = data?.acceleration.z {
                     self.accZ = accZ
-                    sensorData.acc[2] = accZ*G
+                    sensorData.acc[2] = -accZ*G
                 }
             }
         }
@@ -251,7 +254,10 @@ public class JupiterService: NSObject {
         
         if (unitDRInfo.isIndexChanged) {
             
-            let bleDictionary = bleManager.bleFinal
+            var bleDictionary = bleManager.bleFinal
+//            if (mode == "DR") {
+//                bleDictionary.keys.forEach { bleDictionary[$0] = bleDictionary[$0]! + 4 }
+//            }
             
             var data = Input(user_id: uuid, index: unitDRInfo.index, length: unitDRInfo.length, heading: unitDRInfo.heading, pressure: sensorData.pressure[0], looking_flag: unitDRInfo.lookingFlag, ble: bleDictionary, mobile_time: timeStamp, device_model: deviceModel, os_version: osVersion)
             
@@ -269,7 +275,12 @@ public class JupiterService: NSObject {
                 inputArray = [Input(user_id: "", index: 0, length: 0, heading: 0, pressure: 0, looking_flag: false, ble: [:], mobile_time: 0, device_model: "", os_version: 0)]
             }
         }
-        jupiterOutput = NetworkManager.shared.jupiterResult
+        var tempOutput = NetworkManager.shared.jupiterResult
+        
+        if ((timeStamp - tempOutput.mobile_time) < recentThreshold) {
+            jupiterOutput = NetworkManager.shared.jupiterResult
+        }
+        
     }
     
     func startBLE() {

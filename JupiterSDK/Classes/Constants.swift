@@ -28,7 +28,6 @@ let NORMAL_STEP_LOSS_CHECK_SIZE: Int = 3
 
 let ALPHA: Double = 0.45
 let DIFFERENCE_PV_STANDARD: Double = 0.83
-//let DIFFERENCE_PV_STANDARD: Double = 0.25
 let MID_STEP_LENGTH: Double = 0.5
 let DEFAULT_STEP_LENGTH: Double = 0.60
 let MIN_STEP_LENGTH: Double = 0.01

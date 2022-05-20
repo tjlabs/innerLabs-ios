@@ -5,7 +5,7 @@ let NRF_UUID_SERVICE         = "6E400001-B5A3-F393-E0A9-E50E24DCCA9E";
 let NRF_UUID_CHAR_READ       = "6E400003-B5A3-F393-E0A9-E50E24DCCA9E";
 let NRF_UUID_CHAR_WRITE      = "6E400002-B5A3-F393-E0A9-E50E24DCCA9E";
 let NI_UUID_SERVICE          = "00001530-1212-efde-1523-785feabcd123";
-let RSSI_BIAS: Double        = 5
+let RSSI_BIAS: Double        = 0
 
 let TJLABS_UUID: String          = "0000FEAA-0000-1000-8000-00805f9b34fb";
 
@@ -272,7 +272,7 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
                 let rssi = bleData[i][0]
                 let time = bleData[i][1]
                 
-                if (nowTime - time <= 1500) {
+                if ((nowTime - time <= 1500) && (rssi >= 100)) {
                     let dataToAdd: [Double] = [rssi, time]
                     newValue.append(dataToAdd)
                 }

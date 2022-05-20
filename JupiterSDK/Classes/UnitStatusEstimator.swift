@@ -14,7 +14,7 @@ public class UnitStatusEstimator: NSObject {
     public var lookingFlagStepQueue = LinkedList<Bool>()
     
     public func estimateStatus(Attitude: Attitude, isIndexChanged: Bool, unitMode: String) -> Bool {
-        if (unitMode == "PDR") {
+        if (unitMode == MODE_PDR) {
             if (isIndexChanged) {
                 var isLookingAttitude = (abs(Attitude.Roll) < degree2radian(degree: 25) && Attitude.Pitch > degree2radian(degree: -20) && Attitude.Pitch < degree2radian(degree: 80))
                 

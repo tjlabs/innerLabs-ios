@@ -57,6 +57,8 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
     var referencePoints = [[Double]]()
     
     var RP = [String: [[Double]]]()
+    var pastX: Double = 0
+    var pastY: Double = 0
     
     var numLevels: Int = 0
     var infoOfLevels: String = ""
@@ -293,7 +295,6 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
         let isStepDetected = jupiterService.unitDRInfo.isIndexChanged
         
         let unitIdxTx = Int(jupiterService.unitDRInfo.index)
-//        let unitLength = jupiterService.unitDRInfo.length
         let unitLength = jupiterService.unitDistane
         let status = jupiterService.unitDRInfo.lookingFlag
         
@@ -302,8 +303,18 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
             resultToDisplay.unitLength = unitLength
             resultToDisplay.status = status
             
-            let x = jupiterService.jupiterOutput.x
-            let y = jupiterService.jupiterOutput.y
+//            let x = jupiterService.jupiterOutput.x
+//            let y = jupiterService.jupiterOutput.y
+            
+            var x = jupiterService.jupiterOutput.x
+            var y = jupiterService.jupiterOutput.y
+            
+            x = (x+pastX)/2
+            y = (y+pastY)/2
+            
+            pastX = x
+            pastY = y
+            
             let level = jupiterService.jupiterOutput.level
             var levelOutput: String = ""
             if (levelList.contains(level)) {

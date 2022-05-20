@@ -51,8 +51,8 @@
                                         </subviews>
                                     </stackView>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="7Na-YR-peu">
-                                        <rect key="frame" x="40" y="59" width="91.5" height="31"/>
-                                        <buttonConfiguration key="configuration" style="gray" title="Call To Me">
+                                        <rect key="frame" x="40" y="59" width="89" height="31"/>
+                                        <buttonConfiguration key="configuration" style="gray" title="Call to Me">
                                             <color key="baseForegroundColor" systemColor="labelColor"/>
                                         </buttonConfiguration>
                                     </button>

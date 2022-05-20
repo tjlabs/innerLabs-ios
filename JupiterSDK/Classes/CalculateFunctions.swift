@@ -131,11 +131,9 @@ public class CalculateFunctions: NSObject {
     }
     
     public func l2Normalize(originalVector: [Double]) -> Double {
-        var vector2 = [Double]()
         var originalVectorSum: Double = 0
         for i in 0..<originalVector.count {
-            vector2.append(originalVector[i] * originalVector[i])
-            originalVectorSum += vector2[i]
+            originalVectorSum += (originalVector[i] * originalVector[i])
         }
 //        let squared = originalVector.map { $0 * $0 }
 //        let arraySum: Double = squared.reduce(0, +)
