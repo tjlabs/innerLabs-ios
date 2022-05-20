@@ -303,17 +303,16 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
             resultToDisplay.unitLength = unitLength
             resultToDisplay.status = status
             
-//            let x = jupiterService.jupiterOutput.x
-//            let y = jupiterService.jupiterOutput.y
-            
             var x = jupiterService.jupiterOutput.x
             var y = jupiterService.jupiterOutput.y
             
-            x = (x+pastX)/2
-            y = (y+pastY)/2
-            
-            pastX = x
-            pastY = y
+            if (runMode == "PDR") {
+                x = (x+pastX)/2
+                y = (y+pastY)/2
+                
+                pastX = x
+                pastY = y
+            }
             
             let level = jupiterService.jupiterOutput.level
             var levelOutput: String = ""

@@ -272,7 +272,7 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
                 let rssi = bleData[i][0]
                 let time = bleData[i][1]
                 
-                if ((nowTime - time <= 1500) && (rssi >= 100)) {
+                if ((nowTime - time <= 1500) && (rssi >= -100)) {
                     let dataToAdd: [Double] = [rssi, time]
                     newValue.append(dataToAdd)
                 }
