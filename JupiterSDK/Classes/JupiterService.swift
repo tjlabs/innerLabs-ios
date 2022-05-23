@@ -10,7 +10,8 @@ import TFLTensorFlowLite
 public class JupiterService: NSObject {
     
 //    let url = "https://where-run-os-skrgq3jc5a-du.a.run.app/calc"  // Android
-    let url = "https://where-run-ios-skrgq3jc5a-du.a.run.app/calc" // iOS
+//    let url = "https://where-run-ios-skrgq3jc5a-du.a.run.app/calc" // iOS
+    var url = ""
     
     // Sensor //
     let motionManager = CMMotionManager()
@@ -115,9 +116,12 @@ public class JupiterService: NSObject {
             unitDRGenerator.setMode(mode: mode)
             
             if (mode == "PDR") {
+//                url = "https://where-run-os-skrgq3jc5a-du.a.run.app/calc"  // Android
+                url = "https://where-run-ios-skrgq3jc5a-du.a.run.app/calc" // iOS
                 unitModeInput = PDR_INPUT_NUM
                 recentThreshold = 800
             } else if (mode == "DR") {
+                url = "https://where-run-ios-dr-skrgq3jc5a-du.a.run.app/calc"
                 unitModeInput = DR_INPUT_NUM
                 recentThreshold = 2000
             }
@@ -227,11 +231,11 @@ public class JupiterService: NSObject {
                 sensorData.rotationMatrix[0][0] = m.attitude.rotationMatrix.m11
                 sensorData.rotationMatrix[0][1] = m.attitude.rotationMatrix.m12
                 sensorData.rotationMatrix[0][2] = m.attitude.rotationMatrix.m13
-                
+                                
                 sensorData.rotationMatrix[1][0] = m.attitude.rotationMatrix.m21
                 sensorData.rotationMatrix[1][1] = m.attitude.rotationMatrix.m22
                 sensorData.rotationMatrix[1][2] = m.attitude.rotationMatrix.m23
-                
+                                
                 sensorData.rotationMatrix[2][0] = m.attitude.rotationMatrix.m31
                 sensorData.rotationMatrix[2][1] = m.attitude.rotationMatrix.m32
                 sensorData.rotationMatrix[2][2] = m.attitude.rotationMatrix.m33
@@ -272,9 +276,9 @@ public class JupiterService: NSObject {
 //                bleDictionary.keys.forEach { bleDictionary[$0] = bleDictionary[$0]! + 4 }
 //            }
             
-            if (deviceModel == "iPhone 13 Mini" || deviceModel ==  "iPhone 12 Mini") {
-                bleDictionary.keys.forEach { bleDictionary[$0] = bleDictionary[$0]! + 5 }
-            }
+//            if (deviceModel == "iPhone 13 Mini" || deviceModel == "iPhone 12 mini") {
+//                bleDictionary.keys.forEach { bleDictionary[$0] = bleDictionary[$0]! + 5 }
+//            }
             
             var data = Input(user_id: uuid, index: unitDRInfo.index, length: unitDRInfo.length, heading: unitDRInfo.heading, pressure: sensorData.pressure[0], looking_flag: unitDRInfo.lookingFlag, ble: bleDictionary, mobile_time: timeStamp, device_model: deviceModel, os_version: osVersion)
             
