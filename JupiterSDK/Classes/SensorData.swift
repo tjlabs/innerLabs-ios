@@ -15,6 +15,7 @@ public struct SensorData {
     public var grav = [Double](repeating: 0, count: 3)
     public var pressure = [Double](repeating: 0, count: 1)
     public var att = [Double](repeating: 0, count: 3)
+    public var rotationMatrix = [[Double]](repeating: [Double](repeating: 0, count: 3), count: 3)
     
     public func toString() -> String {
         return "acc=\(self.acc), gyro=\(self.gyro), mag=\(self.mag), grav=\(self.grav)"

@@ -37,7 +37,6 @@ public class PDRDistanceEstimator: NSObject {
         // EMA를 통해 센서의 노이즈를 줄임
         let accNormEMA = CF.exponentialMovingAverage(preEMA: preAccNormEMA, curValue: accNorm, windowSize: AVG_NORM_ACC_WINDOW)
         preAccNormEMA = accNormEMA
-//        print("StepLengthEstimator / accNormEMA :", accNormEMA)
         
         if (accNormEMAQueue.count < ACC_NORM_EMA_QUEUE_SIZE) {
             accNormEMAQueue.append(TimestampDouble(timestamp: time, valuestamp: accNormEMA))
@@ -60,15 +59,23 @@ public class PDRDistanceEstimator: NSObject {
             if (PDF.isNormalStep(normalStepCount: normalStepCheckCount) || finalUnitResult.index <= 2) {
                 finalUnitResult.index += 1
                 finalUnitResult.isIndexChanged = true
-                finalUnitResult.length = stepLengthEstimator.estStepLength(accPeakQueue: accPeakQueue, accValleyQueue: accValleyQueue)
+                
+                finalUnitResult.length = 0.65
+//                finalUnitResult.length = stepLengthEstimator.estStepLength(accPeakQueue: accPeakQueue, accValleyQueue: accValleyQueue)
+//                if (finalUnitResult.length > 0.7) {
+//                    finalUnitResult.length = 0.7
+//                } else if (finalUnitResult.length < 0.5) {
+//                    finalUnitResult.length = 0.5
+//                }
+                
                 updateStepLengthQueue(stepLengthWithTimeStamp: StepLengthWithTimestamp(timestamp: foundAccPV.timestamp, stepLength: finalUnitResult.length))
                 
                 if (isLossStep && finalUnitResult.index > 3) {
-                    finalUnitResult.length = 2.1
+                    finalUnitResult.length = 1.8
                 }
-                if (PDF.isPacing(queue: stepLengthQueue)) {
-                    finalUnitResult.length = 0.01
-                }
+//                if (PDF.isPacing(queue: stepLengthQueue)) {
+//                    finalUnitResult.length = 0.01
+//                }
             }
         }
         

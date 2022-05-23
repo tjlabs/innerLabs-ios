@@ -130,14 +130,17 @@ public class CalculateFunctions: NSObject {
         return Attitude(Roll: vecOrientation[2], Pitch: -vecOrientation[1], Yaw: -vecOrientation[0])
     }
     
+    public func calAttitudeUsingRotMatrix(rotationMatrix: [[Double]]) -> Attitude {
+        let vecOrientation = getOrientation(rotationMatrix: rotationMatrix)
+        
+        return Attitude(Roll: vecOrientation[2], Pitch: -vecOrientation[1], Yaw: -vecOrientation[0])
+    }
+    
     public func l2Normalize(originalVector: [Double]) -> Double {
         var originalVectorSum: Double = 0
         for i in 0..<originalVector.count {
             originalVectorSum += (originalVector[i] * originalVector[i])
         }
-//        let squared = originalVector.map { $0 * $0 }
-//        let arraySum: Double = squared.reduce(0, +)
-//
         return sqrt(originalVectorSum)
     }
     
