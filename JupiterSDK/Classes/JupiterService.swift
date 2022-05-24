@@ -95,7 +95,6 @@ public class JupiterService: NSObject {
         NotificationCenter.default.addObserver(self, selector: #selector(onDidReceiveBluetoothNotification), name: .scanInfo, object: nil)
         
         deviceModel = UIDevice.modelName
-        print("Device ")
         os = UIDevice.current.systemVersion
         let arr = os.components(separatedBy: ".")
         print("Device Model : \(deviceModel)")

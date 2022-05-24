@@ -1,9 +1,6 @@
 import UIKit
 
 public extension UIDevice {
-    
-    // 2019. 11. 22 Kimjiwook
-    // 디바이스 이름 가져오기
     @objc static let modelName: String = {
         var systemInfo = utsname()
         uname(&systemInfo)
