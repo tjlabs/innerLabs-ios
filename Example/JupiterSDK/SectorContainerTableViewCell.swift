@@ -96,16 +96,16 @@ class SectorContainerTableViewCell: UITableViewCell {
         if (currentLevel == "B1") {
             scatterChart.xAxis.axisMinimum = xMin-6
             scatterChart.xAxis.axisMaximum = xMax+9.5
-            scatterChart.leftAxis.axisMinimum = yMin-39
-            scatterChart.leftAxis.axisMaximum = yMax+38
+            scatterChart.leftAxis.axisMinimum = yMin-40
+            scatterChart.leftAxis.axisMaximum = yMax+38.5
         }
         else if (currentLevel == "B3") {
-            scatterChart.xAxis.axisMinimum = xMin-4.2
-            scatterChart.xAxis.axisMaximum = xMax+1.4
-            scatterChart.leftAxis.axisMinimum = yMin-15
-            scatterChart.leftAxis.axisMaximum = yMax+3.2
+            scatterChart.xAxis.axisMinimum = xMin-3.8
+            scatterChart.xAxis.axisMaximum = xMax+6
+            scatterChart.leftAxis.axisMinimum = yMin-11.3
+            scatterChart.leftAxis.axisMaximum = yMax+1.5
         } else if (currentLevel == "B4") {
-            scatterChart.xAxis.axisMinimum = xMin-10
+            scatterChart.xAxis.axisMinimum = xMin-9
             scatterChart.xAxis.axisMaximum = xMax
             scatterChart.leftAxis.axisMinimum = yMin-15
             scatterChart.leftAxis.axisMaximum = yMax+25.5
@@ -151,8 +151,9 @@ class SectorContainerTableViewCell: UITableViewCell {
         set1.drawValuesEnabled = false
         set1.setScatterShape(.circle)
 //        set1.setColor(ChartColorTemplates.colorful()[2])
-        set1.setColor(UIColor.systemYellow)
-        set1.scatterShapeSize = 15
+//        set1.setColor(UIColor.systemYellow)
+        set1.setColor(UIColor.systemRed)
+        set1.scatterShapeSize = 22
         
         let chartData = ScatterChartData(dataSet: set1)
         chartData.setDrawValues(false)
@@ -168,16 +169,16 @@ class SectorContainerTableViewCell: UITableViewCell {
         if (currentLevel == "B1") {
             scatterChart.xAxis.axisMinimum = xMin-6
             scatterChart.xAxis.axisMaximum = xMax+9.5
-            scatterChart.leftAxis.axisMinimum = yMin-39
-            scatterChart.leftAxis.axisMaximum = yMax+38
+            scatterChart.leftAxis.axisMinimum = yMin-40
+            scatterChart.leftAxis.axisMaximum = yMax+38.5
         }
         else if (currentLevel == "B3") {
-            scatterChart.xAxis.axisMinimum = xMin-4.2
-            scatterChart.xAxis.axisMaximum = xMax+1.4
-            scatterChart.leftAxis.axisMinimum = yMin-15
-            scatterChart.leftAxis.axisMaximum = yMax+3.2
+            scatterChart.xAxis.axisMinimum = xMin-3.8
+            scatterChart.xAxis.axisMaximum = xMax+6
+            scatterChart.leftAxis.axisMinimum = yMin-11.3
+            scatterChart.leftAxis.axisMaximum = yMax+1.5
         } else if (currentLevel == "B4") {
-            scatterChart.xAxis.axisMinimum = xMin-10
+            scatterChart.xAxis.axisMinimum = xMin-9
             scatterChart.xAxis.axisMaximum = xMax
             scatterChart.leftAxis.axisMinimum = yMin-15
             scatterChart.leftAxis.axisMaximum = yMax+25.5

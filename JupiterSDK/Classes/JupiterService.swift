@@ -9,8 +9,6 @@ import TFLTensorFlowLite
 
 public class JupiterService: NSObject {
     
-//    let url = "https://where-run-os-skrgq3jc5a-du.a.run.app/calc"  // Android
-//    let url = "https://where-run-ios-skrgq3jc5a-du.a.run.app/calc" // iOS
     var url = ""
     
     // Sensor //
@@ -272,9 +270,6 @@ public class JupiterService: NSObject {
         if (unitDRInfo.isIndexChanged) {
             
             var bleDictionary = bleManager.bleFinal
-//            if (mode == "DR") {
-//                bleDictionary.keys.forEach { bleDictionary[$0] = bleDictionary[$0]! + 4 }
-//            }
             
             if (deviceModel == "iPhone 13 Mini" || deviceModel == "iPhone 12 mini") {
                 bleDictionary.keys.forEach { bleDictionary[$0] = bleDictionary[$0]! + 5 }
