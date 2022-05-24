@@ -60,13 +60,13 @@ public class PDRDistanceEstimator: NSObject {
                 finalUnitResult.index += 1
                 finalUnitResult.isIndexChanged = true
                 
-                finalUnitResult.length = 0.65
-//                finalUnitResult.length = stepLengthEstimator.estStepLength(accPeakQueue: accPeakQueue, accValleyQueue: accValleyQueue)
-//                if (finalUnitResult.length > 0.7) {
-//                    finalUnitResult.length = 0.7
-//                } else if (finalUnitResult.length < 0.5) {
-//                    finalUnitResult.length = 0.5
-//                }
+//                finalUnitResult.length = 0.65
+                finalUnitResult.length = stepLengthEstimator.estStepLength(accPeakQueue: accPeakQueue, accValleyQueue: accValleyQueue)
+                if (finalUnitResult.length > 0.7) {
+                    finalUnitResult.length = 0.7
+                } else if (finalUnitResult.length < 0.5) {
+                    finalUnitResult.length = 0.5
+                }
                 
                 updateStepLengthQueue(stepLengthWithTimeStamp: StepLengthWithTimestamp(timestamp: foundAccPV.timestamp, stepLength: finalUnitResult.length))
                 

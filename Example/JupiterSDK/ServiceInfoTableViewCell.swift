@@ -41,7 +41,11 @@ class ServiceInfoTableViewCell: UITableViewCell {
         self.IndexRxLabel.text = String(data.unitIndexRx)
         self.IndexTxLabel.text = String(data.unitIndexTx)
         self.lengthLabel.text = String(format: "%.4f", data.unitLength)
-        self.sccLabel.text = String(format: "%.4f", data.scc)
+        if ( abs(data.scc) < 100 ) {
+            self.sccLabel.text = String(format: "%.4f", data.scc)
+        } else {
+            self.sccLabel.text = "Unvalid"
+        }
         self.statusLabel.text = String(data.status)
     }
 }
