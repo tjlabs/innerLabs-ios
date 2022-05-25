@@ -271,7 +271,7 @@ public class JupiterService: NSObject {
             var bleDictionary = bleManager.bleFinal
             
             if (deviceModel == "iPhone 13 Mini" || deviceModel == "iPhone 12 mini") {
-                bleDictionary.keys.forEach { bleDictionary[$0] = bleDictionary[$0]! + 5 }
+                bleDictionary.keys.forEach { bleDictionary[$0] = bleDictionary[$0]! + 7 }
             }
             
             var data = Input(user_id: uuid, index: unitDRInfo.index, length: unitDRInfo.length, heading: unitDRInfo.heading, pressure: sensorData.pressure[0], looking_flag: unitDRInfo.lookingFlag, ble: bleDictionary, mobile_time: timeStamp, device_model: deviceModel, os_version: osVersion)

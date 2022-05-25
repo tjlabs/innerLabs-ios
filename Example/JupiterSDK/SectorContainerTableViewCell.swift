@@ -263,8 +263,6 @@ class SectorContainerTableViewCell: UITableViewCell {
         self.XY[0] = data.x
         self.XY[1] = data.y
         
-//        print("XY :", self.XY[0] , ",", self.XY[1])
-        
         if (data.level == "") {
             currentLevel = levelList[0]
         } else {
