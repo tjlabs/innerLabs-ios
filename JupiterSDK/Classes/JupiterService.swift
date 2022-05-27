@@ -117,10 +117,12 @@ public class JupiterService: NSObject {
                 url = "https://where-run-ios-skrgq3jc5a-du.a.run.app/calc" // iOS
                 unitModeInput = PDR_INPUT_NUM
                 recentThreshold = 800
+//                recentThreshold = 1400
             } else if (mode == "DR") {
                 url = "https://where-run-ios-dr-skrgq3jc5a-du.a.run.app/calc"
                 unitModeInput = DR_INPUT_NUM
                 recentThreshold = 2000
+//                recentThreshold = 2800
             }
             
             unitDRGenerator.setDRModel()

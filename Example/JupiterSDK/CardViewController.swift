@@ -342,16 +342,19 @@ extension CardViewController: UICollectionViewDataSource, UICollectionViewDelega
         
         cell.backgroundColor = .clear
 //        cell.backgroundColor = .black
+        
         // Sector Name & Description
         cell.sectorName.text = cardItemData[mod].sector_name
         cell.sectorDescription.text = cardItemData[mod].description
         
         // Sector Image
         cell.cardImageView.contentMode = .scaleAspectFit
-        
         cell.cardImageView.image = cardImages[mod]
-        cell.sectorImageView.image = sectorImages[mod]
         
+//        cell.sectorNameLeading.constant = floor((cell.sectorImageView.frame.size.width - cell.sectorImageView.frame.size.height * 0.6)/2)
+        cell.sectorImageView.image = sectorImages[mod]
+//        print("Sector Image :", cell.sectorImageView.frame.size)
+
         
         return cell
     }

@@ -19,8 +19,9 @@ class CardCollectionViewCell: UICollectionViewCell {
     @IBOutlet weak var sectorDescription: UILabel!
 
     @IBOutlet weak var sectorImageWidth: NSLayoutConstraint!
-    @IBOutlet weak var sectorImageHeight: NSLayoutConstraint!
     @IBOutlet weak var sectorImageFromTop: NSLayoutConstraint!
+    
+    @IBOutlet weak var sectorNameLeading: NSLayoutConstraint!
     
     override func awakeFromNib() {
         super.awakeFromNib()
