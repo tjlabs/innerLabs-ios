@@ -40,6 +40,6 @@ Pod::Spec.new do |s|
   s.static_framework = true
   s.dependency 'Alamofire'
   s.dependency 'Firebase/Core'
-#  s.dependency 'Firebase/MLModelInterpreter', '6.25.0'
+  s.dependency 'Firebase/MLModelInterpreter', '6.25.0'
 
 end
