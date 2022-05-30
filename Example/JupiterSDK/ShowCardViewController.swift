@@ -3,9 +3,15 @@ import JupiterSDK
 
 protocol ShowCardDelegate {
     func sendCardItemData(data: [CardItemData])
+    
+    func sendPage(data: Int)
 }
 
 class ShowCardViewController: UIViewController, AddCardDelegate {
+    
+    func sendPage(data: Int) {
+        page = data
+    }
     
     @IBOutlet weak var editButton: UIButton!
     @IBOutlet weak var showCardCollectionView: UICollectionView!
@@ -19,26 +25,16 @@ class ShowCardViewController: UIViewController, AddCardDelegate {
     var cardSize: [Double]?
     var collectionViewSize: [Double] = [0, 0]
     
-    var isCardSmall = true
-    
     func sendCardItemData(data: [CardItemData]) {
         cardItemData = data
     }
     
+    var uuid: String = ""
     var cardItemData: [CardItemData] = []
     
     var delegate : ShowCardDelegate?
     
-    
-    //test
-    //    let collectionView: UICollectionView = {
-    //        let layout = UICollectionViewFlowLayout()
-    //        layout.scrollDirection = .vertical
-    //        let collection = UICollectionView(frame: CGRect(x: 50, y: 50, width: UIScreen.main.bounds.width-100, height: UIScreen.main.bounds.height-100), collectionViewLayout: layout)
-    ////        let collection = UICollectionView(frame: CGRect(x: 0, y: 0, width: 390, height: 633), collectionViewLayout: layout)
-    //        return collection
-    //    }()
-    
+    var page: Int = 0
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(false)
@@ -57,13 +53,12 @@ class ShowCardViewController: UIViewController, AddCardDelegate {
         setData(data: cardItemData)
         
         // Size 확인
-        let sizes = checkImageSize(cards: cardShowImages, sectors: sectorShowImages)
         collectionViewSize = [showCardCollectionView.bounds.width, showCardCollectionView.bounds.height]
         
-        print("Size of CollectionView : \(collectionViewSize)")
-        print("Size of Card : \(sizes.sizeCard)")
-        print("Size of Sector : \(sizes.sizeSector)")
-        isCardSmall = checkRatio(collectionViewSize: collectionViewSize, sizeCard: sizes.sizeCard)
+//        let sizes = checkImageSize(cards: cardShowImages, sectors: sectorShowImages)
+//        print("Show Card -> Size of CollectionView : \(collectionViewSize)")
+//        print("Show Card -> Size of Card : \(sizes.sizeCard)")
+//        print("Show Card -> Size of Sector : \(sizes.sizeSector)")
         
         setupCollectionView()
     }
@@ -72,11 +67,39 @@ class ShowCardViewController: UIViewController, AddCardDelegate {
         cardShowImages = []
         sectorShowImages = []
         for i in 0..<data.count {
-            let cardImage = UIImage(named: data[i].cardShowImage)!
+            let imageName: String = data[i].cardColor + "CardShow"
+            let cardImage = UIImage(named: imageName)!
             cardShowImages.append(cardImage)
             
-            let sectorImage = UIImage(named: data[i].sectorShowImage)!
-            sectorShowImages.append(sectorImage)
+            let id = data[i].sector_id
+            var sectorImage = UIImage(named: "tjlabsShow")!
+            
+            switch(id) {
+            case 0:
+                sectorImage = UIImage(named: "tjlabsShow")!
+                sectorShowImages.append(sectorImage)
+            case 1:
+                sectorImage = UIImage(named: "kistShow")!
+                sectorShowImages.append(sectorImage)
+            case 2:
+                sectorImage = UIImage(named: "kistShow")!
+                sectorShowImages.append(sectorImage)
+            case 3:
+                sectorImage = UIImage(named: "parkingPedShow")!
+                sectorShowImages.append(sectorImage)
+            case 4:
+                sectorImage = UIImage(named: "parkingCarShow")!
+                sectorShowImages.append(sectorImage)
+            case 5:
+                sectorImage = UIImage(named: "coexShow")!
+                sectorShowImages.append(sectorImage)
+            case 6:
+                sectorImage = UIImage(named: "coexShow")!
+                sectorShowImages.append(sectorImage)
+            default:
+                sectorImage = UIImage(named: "tjlabsShow")!
+                sectorShowImages.append(sectorImage)
+            }
         }
     }
     
@@ -135,30 +158,20 @@ class ShowCardViewController: UIViewController, AddCardDelegate {
     
     @IBAction func tapToCardButton(_ sender: UIButton) {
         self.delegate?.sendCardItemData(data: cardItemData)
+        self.delegate?.sendPage(data: page)
         self.presentingViewController?.dismiss(animated: true)
     }
     
     
     @IBAction func tapAddCardButton(_ sender: UIButton) {
         
-        // CardView로 이동한 후에 AddCard로 이동 //
-        //        guard let presentingVC = self.presentingViewController else { return }
-        //
-        //        self.dismiss(animated: true) {
-        //            guard let addCardVC = self.storyboard?.instantiateViewController(withIdentifier: "AddCardViewController") as? AddCardViewController else { return }
-        //            addCardVC.modalPresentationStyle = .currentContext
-        //
-        //            addCardVC.cardItemData = self.cardItemData
-        //            addCardVC.delegate = self
-        //
-        //            presentingVC.present(addCardVC, animated: true, completion: nil)
-        //        }
-        
         // 바로 AddCard로 이동 //
         guard let addCardVC = self.storyboard?.instantiateViewController(withIdentifier: "AddCardViewController") as? AddCardViewController else { return }
         addCardVC.modalPresentationStyle = .currentContext
         
+        addCardVC.uuid = self.uuid
         addCardVC.cardItemData = self.cardItemData
+        addCardVC.page = self.page
         addCardVC.delegate = self
         
         self.present(addCardVC, animated: true, completion: nil)
@@ -176,12 +189,10 @@ class ShowCardViewController: UIViewController, AddCardDelegate {
         
         if sender.isSelected == false {
             isEditMode = true
-            print("여기는 EditMode 입니다")
             self.showCardCollectionView.reloadData()
         }
         else {
             isEditMode = false
-            print("여기는 모아보기 입니다")
             self.showCardCollectionView.reloadData()
         }
     }
@@ -210,12 +221,14 @@ extension ShowCardViewController: UICollectionViewDataSource {
         
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "ShowCardCollectionViewCell", for: indexPath) as! ShowCardCollectionViewCell
         
-        let sectorName = cardItemData[indexPath.item].name
-        let sectorID = cardItemData[indexPath.item].sectorID
+        let sectorName = cardItemData[indexPath.item].sector_name
+        let sectorID = cardItemData[indexPath.item].sector_id
         cell.nameLabel.text = sectorName
         
-        let width = showCardCollectionView.bounds.width
-        cell.cardWidth.constant = width
+        let ratio: Double = 7.6470
+        let width = collectionViewSize[0]
+        cell.cardWidth.constant = collectionViewSize[0]
+        cell.sectorShowImageLeading.constant = (width/ratio)
         
         cell.cardShowImage.image = cardShowImages[indexPath.item]
         cell.sectorShowImage.image = sectorShowImages[indexPath.item]
@@ -241,11 +254,20 @@ extension ShowCardViewController: UICollectionViewDataSource {
         cell.delete = {
             [unowned self] in
             // 내가 선택한 카드 삭제
-            self.cardItemData.remove(at: indexPath.item)
-            setData(data: cardItemData)
+            let uuid = self.uuid
+            let sector_id = self.cardItemData[indexPath.item].sector_id
             
-            // CollectionView Reload
-            self.showCardCollectionView.reloadData()
+            let input = DeleteCard(user_id: uuid, sector_id: sector_id)
+            Network.shared.deleteCard(url: JUPITER_URL, input: input, completion: { [self]statusCode, returnedString in
+                self.cardItemData.remove(at: indexPath.item)
+                self.delegate?.sendCardItemData(data: self.cardItemData)
+                self.page = 0
+                
+                self.setData(data: cardItemData)
+                
+                // CollectionView Reload
+                self.showCardCollectionView.reloadData()
+            })
         }
         
         return cell

@@ -7,86 +7,327 @@
 //
 
 import UIKit
+import JupiterSDK
+import Charts
 
 class SectorContainerTableViewCell: UITableViewCell {
+    
     static let identifier = "SectorContainerTableViewCell"
     
-    @IBOutlet weak var zoneCollectionView: UICollectionView!
-    @IBOutlet weak var zoneImage: UIImageView!
+    @IBOutlet weak var levelCollectionView: UICollectionView!
+
+    @IBOutlet weak var imageLevel: UIImageView!
+    @IBOutlet weak var scatterChart: ScatterChartView!
     
-    private let zoneList = DataModel.Zone.getZoneList()
-    private var currentZone : DataModel.ZoneList = .first{
-        didSet {
-            fetchZone(zone: currentZone)
-        }
-    }
+    var cardData: CardItemData?
+    var RP: [String: [[Double]]]?
+    var XY: [Double] = [0, 0]
+
+    private var levelList = [String]()
+    private var currentLevel: String = ""
+    private var countLevelChanged: Int = 0
     
     override func awakeFromNib() {
         super.awakeFromNib()
         
         setCells()
         setZoneCollectionView()
-        fetchZone(zone: currentZone)
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
 
-        // Configure the view for the selected state
     }
     
     private func setCells() {
-        ZoneCollectionViewCell.register(target: zoneCollectionView)
+        LevelCollectionViewCell.register(target: levelCollectionView)
     }
     
     private func setZoneCollectionView() {
-        zoneCollectionView.delegate = self
-        zoneCollectionView.dataSource = self
-        zoneCollectionView.reloadData()
+        levelCollectionView.delegate = self
+        levelCollectionView.dataSource = self
+
+        levelCollectionView.reloadData()
     }
     
-    private func fetchZone(zone : DataModel.ZoneList) -> Void {
-        switch(zone) {
-        case .first:
-            print("1st floor")
-            zoneImage.image = UIImage(named: "floor1")
-        case .second:
-            print("2nd floor")
-            zoneImage.image = UIImage(named: "floor2")
-        case .third:
-            print("3rd floor")
-            zoneImage.image = UIImage(named: "floor3")
+    private func fetchLevel(currentLevel: String, levelList: [String]) -> Void {
+        let arr = levelList
+        let idx = (arr.firstIndex(where: {$0 == currentLevel}) ?? 0)
+        
+        let level: String = levelList[idx]
+        imageLevel.image = UIImage(named: level)
+    }
+    
+    private func drawRP(RP_X: [Double], RP_Y: [Double], XY: [Double]) {
+        let xAxisValue: [Double] = RP_X
+        let yAxisValue: [Double] = RP_Y
+
+        let values1 = (0..<xAxisValue.count).map { (i) -> ChartDataEntry in
+            return ChartDataEntry(x: xAxisValue[i], y: yAxisValue[i])
         }
-        zoneImage.alpha = 0.5
-//        configureChartView()
+        
+        let values2 = (0..<1).map { (i) -> ChartDataEntry in
+            return ChartDataEntry(x: XY[0], y: XY[1])
+        }
+        
+        let set1 = ScatterChartDataSet(entries: values1, label: "RP")
+        set1.drawValuesEnabled = false
+        set1.setScatterShape(.square)
+        set1.setColor(UIColor.yellow)
+        set1.scatterShapeSize = 4
+        
+        let set2 = ScatterChartDataSet(entries: values2, label: "User")
+        set2.drawValuesEnabled = false
+        set2.setScatterShape(.circle)
+        set2.setColor(UIColor.systemRed)
+        set2.scatterShapeSize = 16
+        
+        let chartData = ScatterChartData(dataSet: set1)
+        chartData.append(set2)
+        
+        let xMin = xAxisValue.min()!
+        let xMax = xAxisValue.max()!
+        let yMin = yAxisValue.min()!
+        let yMax = yAxisValue.max()!
+        
+        let chartFlag: Bool = false
+        
+        // Configure Chart
+        if (currentLevel == "B1") {
+            scatterChart.xAxis.axisMinimum = xMin-6
+            scatterChart.xAxis.axisMaximum = xMax+9.5
+            scatterChart.leftAxis.axisMinimum = yMin-40
+            scatterChart.leftAxis.axisMaximum = yMax+38.5
+        }
+        else if (currentLevel == "B3") {
+            scatterChart.xAxis.axisMinimum = xMin-3.8
+            scatterChart.xAxis.axisMaximum = xMax+6
+            scatterChart.leftAxis.axisMinimum = yMin-11.3
+            scatterChart.leftAxis.axisMaximum = yMax+1.5
+        } else if (currentLevel == "B4") {
+            scatterChart.xAxis.axisMinimum = xMin-9
+            scatterChart.xAxis.axisMaximum = xMax
+            scatterChart.leftAxis.axisMinimum = yMin-15
+            scatterChart.leftAxis.axisMaximum = yMax+25.5
+        } else {
+            scatterChart.xAxis.axisMinimum = xMin-10
+            scatterChart.xAxis.axisMaximum = xMax+10
+            scatterChart.leftAxis.axisMinimum = yMin-10
+            scatterChart.leftAxis.axisMaximum = yMax+10
+        }
+        
+        scatterChart.xAxis.drawGridLinesEnabled = chartFlag
+        scatterChart.leftAxis.drawGridLinesEnabled = chartFlag
+        scatterChart.rightAxis.drawGridLinesEnabled = chartFlag
+        
+        scatterChart.xAxis.drawAxisLineEnabled = chartFlag
+        scatterChart.leftAxis.drawAxisLineEnabled = chartFlag
+        scatterChart.rightAxis.drawAxisLineEnabled = chartFlag
+        
+        scatterChart.xAxis.centerAxisLabelsEnabled = chartFlag
+        scatterChart.leftAxis.centerAxisLabelsEnabled = chartFlag
+        scatterChart.rightAxis.centerAxisLabelsEnabled = chartFlag
+
+        scatterChart.xAxis.drawLabelsEnabled = chartFlag
+        scatterChart.leftAxis.drawLabelsEnabled = chartFlag
+        scatterChart.rightAxis.drawLabelsEnabled = chartFlag
+        
+        scatterChart.legend.enabled = chartFlag
+        
+        scatterChart.backgroundColor = .clear
+        
+        scatterChart.data = chartData
     }
     
+    private func drawUser(RP_X: [Double], RP_Y: [Double], XY: [Double]) {
+        let xAxisValue: [Double] = RP_X
+        let yAxisValue: [Double] = RP_Y
+        
+        let values1 = (0..<1).map { (i) -> ChartDataEntry in
+            return ChartDataEntry(x: XY[0], y: XY[1])
+        }
+        
+        let set1 = ScatterChartDataSet(entries: values1, label: "USER")
+        set1.drawValuesEnabled = false
+        set1.setScatterShape(.circle)
+//        set1.setColor(ChartColorTemplates.colorful()[2])
+//        set1.setColor(UIColor.systemYellow)
+        set1.setColor(UIColor.systemRed)
+        set1.scatterShapeSize = 22
+        
+        let chartData = ScatterChartData(dataSet: set1)
+        chartData.setDrawValues(false)
+        
+        let xMin = xAxisValue.min()!
+        let xMax = xAxisValue.max()!
+        let yMin = yAxisValue.min()!
+        let yMax = yAxisValue.max()!
+        
+        let chartFlag: Bool = false
+        
+        // Configure Chart
+        if (currentLevel == "B1") {
+            scatterChart.xAxis.axisMinimum = xMin-6
+            scatterChart.xAxis.axisMaximum = xMax+9.5
+            scatterChart.leftAxis.axisMinimum = yMin-40
+            scatterChart.leftAxis.axisMaximum = yMax+38.5
+        }
+        else if (currentLevel == "B3") {
+            scatterChart.xAxis.axisMinimum = xMin-3.8
+            scatterChart.xAxis.axisMaximum = xMax+6
+            scatterChart.leftAxis.axisMinimum = yMin-11.3
+            scatterChart.leftAxis.axisMaximum = yMax+1.5
+        } else if (currentLevel == "B4") {
+            scatterChart.xAxis.axisMinimum = xMin-9
+            scatterChart.xAxis.axisMaximum = xMax
+            scatterChart.leftAxis.axisMinimum = yMin-15
+            scatterChart.leftAxis.axisMaximum = yMax+25.5
+        } else {
+            scatterChart.xAxis.axisMinimum = xMin-10
+            scatterChart.xAxis.axisMaximum = xMax+10
+            scatterChart.leftAxis.axisMinimum = yMin-10
+            scatterChart.leftAxis.axisMaximum = yMax+10
+        }
+        
+        scatterChart.xAxis.drawGridLinesEnabled = chartFlag
+        scatterChart.leftAxis.drawGridLinesEnabled = chartFlag
+        scatterChart.rightAxis.drawGridLinesEnabled = chartFlag
+        
+        scatterChart.xAxis.drawAxisLineEnabled = chartFlag
+        scatterChart.leftAxis.drawAxisLineEnabled = chartFlag
+        scatterChart.rightAxis.drawAxisLineEnabled = chartFlag
+        
+        scatterChart.xAxis.centerAxisLabelsEnabled = chartFlag
+        scatterChart.leftAxis.centerAxisLabelsEnabled = chartFlag
+        scatterChart.rightAxis.centerAxisLabelsEnabled = chartFlag
+
+        scatterChart.xAxis.drawLabelsEnabled = chartFlag
+        scatterChart.leftAxis.drawLabelsEnabled = chartFlag
+        scatterChart.rightAxis.drawLabelsEnabled = chartFlag
+        
+        scatterChart.legend.enabled = chartFlag
+        
+        scatterChart.backgroundColor = .clear
+        
+        scatterChart.data = chartData
+    }
+    
+    private func drawTest() {
+        
+        let randomNumX = Double.random(in: 10...40)
+        let randomNumY = Double.random(in: 10...40)
+        
+        let values1 = (0..<1).map { (i) -> ChartDataEntry in
+            return ChartDataEntry(x: randomNumX, y: randomNumY)
+        }
+        
+        let set1 = ScatterChartDataSet(entries: values1, label: "TEST")
+        set1.setScatterShape(.circle)
+        set1.setColor(ChartColorTemplates.colorful()[2])
+        set1.scatterShapeSize = 15
+        
+        let chartData = ScatterChartData(dataSet: set1)
+        chartData.setDrawValues(false)
+        
+        let chartFlag: Bool = false
+        scatterChart.xAxis.drawGridLinesEnabled = chartFlag
+        scatterChart.leftAxis.drawGridLinesEnabled = chartFlag
+        scatterChart.rightAxis.drawGridLinesEnabled = chartFlag
+        
+        scatterChart.xAxis.drawAxisLineEnabled = chartFlag
+        scatterChart.leftAxis.drawAxisLineEnabled = chartFlag
+        scatterChart.rightAxis.drawAxisLineEnabled = chartFlag
+        
+        scatterChart.xAxis.centerAxisLabelsEnabled = chartFlag
+        scatterChart.leftAxis.centerAxisLabelsEnabled = chartFlag
+        scatterChart.rightAxis.centerAxisLabelsEnabled = chartFlag
+
+        scatterChart.xAxis.drawLabelsEnabled = chartFlag
+        scatterChart.leftAxis.drawLabelsEnabled = chartFlag
+        scatterChart.rightAxis.drawLabelsEnabled = chartFlag
+        
+        scatterChart.legend.enabled = chartFlag
+        
+        scatterChart.backgroundColor = .clear
+        
+        scatterChart.data = chartData
+    }
+    
+    internal func configure(cardData: CardItemData, RP: [String: [[Double]]]) {
+        self.cardData = cardData
+        self.levelList = (cardData.infoLevel)
+        self.RP = RP
+    }
+    
+    func updateCoord(data: CoordToDisplay) {
+        self.XY[0] = data.x
+        self.XY[1] = data.y
+        
+        if (data.level == "") {
+            currentLevel = levelList[0]
+        } else {
+            currentLevel = data.level
+        }
+        fetchLevel(currentLevel: currentLevel, levelList: levelList)
+        
+        let condition: ((String, [[Double]])) -> Bool = {
+            $0.0.contains(self.currentLevel)
+        }
+        
+        if (RP!.contains(where: condition)) {
+            scatterChart.alpha = 1.0
+            
+            let rp: [[Double]] = RP?[currentLevel] ?? [[Double]]()
+//            drawRP(RP_X: rp[0], RP_Y: rp[1], XY: XY)
+            drawUser(RP_X: rp[0], RP_Y: rp[1], XY: XY)
+        } else {
+            scatterChart.alpha = 0
+//            drawTest()
+        }
+            
+        levelCollectionView.reloadData()
+    }
 }
 
 extension SectorContainerTableViewCell : UICollectionViewDelegate{
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         makeVibrate()
-        currentZone = zoneList[indexPath.row].case
-        zoneCollectionView.reloadData()
+        currentLevel = levelList[indexPath.row]
+        
+        let rp: [[Double]] = RP?[currentLevel] ?? [[Double]]()
+        if (rp.isEmpty) {
+            // RP가 없어서 그리지 않음
+            scatterChart.alpha = 0
+        } else {
+            scatterChart.alpha = 1.0
+//            drawRP(RP_X: rp[0], RP_Y: rp[1], XY: XY)
+            drawUser(RP_X: rp[0], RP_Y: rp[1], XY: XY)
+            fetchLevel(currentLevel: currentLevel, levelList: levelList)
+        }
+        
+        levelCollectionView.reloadData()
     }
     
 }
 
 extension SectorContainerTableViewCell : UICollectionViewDataSource{
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        zoneList.count
+        levelList.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let zoneCollectionView = collectionView.dequeueReusableCell(withReuseIdentifier: ZoneCollectionViewCell.className, for: indexPath)
-                as? ZoneCollectionViewCell else {return UICollectionViewCell()}
-        zoneCollectionView.setName(floor: zoneList[indexPath.row].case.rawValue,
-                                    isClicked: currentZone == zoneList[indexPath.row].case ? true : false)
-        zoneCollectionView.layer.cornerRadius = 15
-        zoneCollectionView.layer.borderColor = UIColor.blue1.cgColor
-        zoneCollectionView.layer.borderWidth = 1
+        guard let levelCollectionView = collectionView.dequeueReusableCell(withReuseIdentifier: LevelCollectionViewCell.className, for: indexPath)
+                as? LevelCollectionViewCell else {return UICollectionViewCell()}
+
+        levelCollectionView.setName(level: levelList[indexPath.row],
+                                    isClicked: currentLevel == levelList[indexPath.row] ? true : false)
+        fetchLevel(currentLevel: currentLevel, levelList: levelList)
         
-        return zoneCollectionView
+        levelCollectionView.layer.cornerRadius = 15
+        levelCollectionView.layer.borderColor = UIColor.blue1.cgColor
+        levelCollectionView.layer.borderWidth = 1
+        
+        return levelCollectionView
     }
 }
 
@@ -94,7 +335,7 @@ extension SectorContainerTableViewCell : UICollectionViewDelegateFlowLayout{
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let label = UILabel()
         label.font = .systemFont(ofSize: 14)
-        label.text = zoneList[indexPath.row].case.rawValue
+        label.text = levelList[indexPath.row]
         label.sizeToFit()
         
         return CGSize(width: label.frame.width + 30, height: 30)

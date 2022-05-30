@@ -1,14 +1,15 @@
 import UIKit
 import JupiterSDK
 
-class CardViewController: UIViewController, AddCardDelegate, ShowCardDelegate, SendPageDelegate {
+class CardViewController: UIViewController, MapViewPageDelegate, AddCardDelegate, ShowCardDelegate, SendPageDelegate {
+    
     func sendCardItemData(data: [CardItemData]) {
         cardItemData = data
-        initCardVC()
     }
     
     func sendPage(data: Int) {
         currentPage = data
+        currentIndex = CGFloat(data)
     }
     
     @IBOutlet weak var collectionView: UICollectionView!
@@ -18,14 +19,19 @@ class CardViewController: UIViewController, AddCardDelegate, ShowCardDelegate, S
     var cardItemData: [CardItemData] = []
     var cardImages: [UIImage] = []
     var sectorImages: [UIImage] = []
-    var cardImagesResized: [UIImage] = []
-    var sectorImagesResized: [UIImage] = []
     var cardSize: [Double]?
     var collectionViewSize: [Double] = [0, 0]
     
+    @IBOutlet weak var blackView: UIView!
+    @IBOutlet weak var menuView: UIView!
+    @IBOutlet weak var menuViewWidth: NSLayoutConstraint!
+    @IBOutlet weak var menuViewRight: NSLayoutConstraint!
+    
+    var isMenuOpened: Bool = false
+    
     // Card
     var currentIndex: CGFloat = 0
-    let lineSpacing: CGFloat = 20
+    let lineSpacing: CGFloat = 0
     
     var currentPage: Int = 0
     var previousIndex: Int = 0
@@ -44,20 +50,79 @@ class CardViewController: UIViewController, AddCardDelegate, ShowCardDelegate, S
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        blackView.backgroundColor = UIColor.black
+        blackView.alpha = 0
+        blackView.isHidden = true
+        
+        menuViewRight.constant = -menuViewRight.constant
+        menuView.isHidden = true
+        
+        blackView.isUserInteractionEnabled = true
+        let tapRecognizer = UITapGestureRecognizer()
+        tapRecognizer.addTarget(self, action: #selector(self.tappedOnView))
+        blackView.addGestureRecognizer(tapRecognizer)
+    }
+    
+    @objc func tappedOnView(_ sender:UITapGestureRecognizer) {
+        switch sender.state {
+        case .began:
+            break
+        case .changed:
+            break
+        case .ended:
+            if isMenuOpened {
+                hideMenu() {
+                    
+                }
+                isMenuOpened = false
+            }
+            else {
+                openMenu()
+                isMenuOpened = true
+            }
+            break
+        default:
+            print("default")
+        }
+        
+    }
+    
+    func openMenu() {
+        menuViewRight.constant = 0
+            
+        menuView.isHidden = false
+        blackView.isHidden = false
+        
+            UIView.animate(withDuration: 0.3, animations: {
+                self.view.layoutIfNeeded()
+                self.blackView.alpha = 0.5
+            }, completion: { (complete) in
+            })
+        }
+        
+    func hideMenu(completionHandler: @escaping () -> Void) {
+        menuViewRight.constant = -menuViewRight.constant
 
+        UIView.animate(withDuration: 0.1, animations: {
+                self.view.layoutIfNeeded()
+                self.blackView.alpha = 0
+            }, completion: { (complete) in
+                self.blackView.isHidden = true
+                self.menuView.isHidden = true
+                completionHandler()
+            })
     }
     
     func initCardVC() {
         setData(data: cardItemData)
         
-        let sizes = checkImageSize(cards: cardImages, sectors: sectorImages)
         collectionViewSize = [collectionView.frame.width, collectionView.frame.height]
         
-        print("Size of CollectionView : \(collectionViewSize)")
-        print("Size of Card : \(sizes.sizeCard)")
-        print("Size of Sector : \(sizes.sizeSector)")
-        
-        isCardSmall = checkRatio(collectionViewSize: collectionViewSize, sizeCard: sizes.sizeCard)
+//        let sizes = checkImageSize(cards: cardImages, sectors: sectorImages)
+//        print("Card -> Size of CollectionView : \(collectionViewSize)")
+//        print("Card -> Size of Card : \(sizes.sizeCard)")
+//        print("Card -> Size of Sector : \(sizes.sizeSector)")
         
         setupCollectionView()
         setupProgressView()
@@ -70,23 +135,7 @@ class CardViewController: UIViewController, AddCardDelegate, ShowCardDelegate, S
             moveToIndexCard(index: currentPage)
         }
         
-        print(currentIndex)
-    }
-    
-    func checkRatio(collectionViewSize: Array<Double>, sizeCard: Array<Double>) -> Bool {
-//        let collectionViewSizeWidth = collectionViewSize[0]
-        let collectionViewSizeHeight = collectionViewSize[1]
-        
-//        let sizeCardWidth = sizeCard[0]
-        let sizeCardHeight = sizeCard[1]
-        
-        if (collectionViewSizeHeight < sizeCardHeight) {
-            // 카드가 더 크면
-            return false
-        } else {
-            // 카드가 더 작으면
-            return true
-        }
+        print("CardViewController : Index /", currentIndex)
     }
     
     func checkImageSize(cards: Array<UIImage>, sectors: Array<UIImage>) -> (sizeCard: Array<Double>, sizeSector: Array<Double>) {
@@ -103,25 +152,40 @@ class CardViewController: UIViewController, AddCardDelegate, ShowCardDelegate, S
         cardImages = []
         sectorImages = []
         for i in 0..<data.count {
-            let cardImage = UIImage(named: data[i].cardImage)!
+            let imageName: String = data[i].cardColor + "Card"
+            let cardImage = UIImage(named: imageName)!
             cardImages.append(cardImage)
             
-            let sectorImage = UIImage(named: data[i].sectorImage)!
-            sectorImages.append(sectorImage)
+            let id = data[i].sector_id
+            var sectorImage = UIImage(named: "sectorDefault")!
+            
+            switch(id) {
+            case 0:
+                sectorImage = UIImage(named: "sectorDefault")!
+                sectorImages.append(sectorImage)
+            case 1:
+                sectorImage = UIImage(named: "sectorKist")!
+                sectorImages.append(sectorImage)
+            case 2:
+                sectorImage = UIImage(named: "sectorKist")!
+                sectorImages.append(sectorImage)
+            case 3:
+                sectorImage = UIImage(named: "sectorParkingPed")!
+                sectorImages.append(sectorImage)
+            case 4:
+                sectorImage = UIImage(named: "sectorParkingCar")!
+                sectorImages.append(sectorImage)
+            case 5:
+                sectorImage = UIImage(named: "sectorCoex")!
+                sectorImages.append(sectorImage)
+            case 6:
+                sectorImage = UIImage(named: "sectorCoex")!
+                sectorImages.append(sectorImage)
+            default:
+                sectorImage = UIImage(named: "sectorDefault")!
+                sectorImages.append(sectorImage)
+            }
         }
-    }
-    
-    func changeImageSize(imagesToChange: Array<UIImage>, sizeToChange: Array<Double>) -> Array<UIImage> {
-        var changedImages: [UIImage] = []
-        
-        for index in 0..<imagesToChange.count {
-            let image = imagesToChange[index]
-            let targetSize = CGSize(width: sizeToChange[0]*0.5 , height: sizeToChange[1]*0.5)
-            let newImage: UIImage = resizeImage(image: image, targetSize: targetSize) ?? imagesToChange[index]
-            changedImages.append(newImage)
-        }
-        
-        return changedImages
     }
     
     func moveToInitSectionFirstCard() {
@@ -207,15 +271,39 @@ class CardViewController: UIViewController, AddCardDelegate, ShowCardDelegate, S
     }
     
     
+    @IBAction func tapShowUserInfoButton(_ sender: UIButton) {
+        if isMenuOpened {
+            hideMenu() {
+                
+            }
+            isMenuOpened = false
+        }
+        else {
+            openMenu()
+            isMenuOpened = true
+        }
+    }
+    
+    @IBAction func tapShowPrivacyPolicy(_ sender: UIButton) {
+        showPPVC()
+    }
+    
+    func showPPVC() {
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        let vc = storyboard.instantiateViewController(withIdentifier: "PrivacyPolicyViewController") as! PrivacyPolicyViewController
+        vc.modalPresentationStyle = .fullScreen
+        vc.modalTransitionStyle = .coverVertical
+        self.present(vc, animated: true, completion: nil)
+    }
+    
+    
     @IBAction func tapShowCardButton(_ sender: UIButton) {
-//        guard let jupiterVC = self.storyboard?.instantiateViewController(withIdentifier: "JupiterViewController") as? JupiterViewController else { return }
-//        jupiterVC.uuid = uuid
-//        self.navigationController?.pushViewController(jupiterVC, animated: true)
-        
         guard let showCardVC = self.storyboard?.instantiateViewController(withIdentifier: "ShowCardViewController") as? ShowCardViewController else { return }
         showCardVC.modalPresentationStyle = .currentContext
         
+        showCardVC.uuid = self.uuid
         showCardVC.cardItemData = self.cardItemData
+        showCardVC.page = self.currentPage
         showCardVC.delegate = self
         
         self.present(showCardVC, animated: true, completion: nil)
@@ -226,36 +314,12 @@ class CardViewController: UIViewController, AddCardDelegate, ShowCardDelegate, S
         guard let addCardVC = self.storyboard?.instantiateViewController(withIdentifier: "AddCardViewController") as? AddCardViewController else { return }
         addCardVC.modalPresentationStyle = .currentContext
         
+        addCardVC.uuid = uuid
         addCardVC.cardItemData = self.cardItemData
+        addCardVC.page = self.currentPage
         addCardVC.delegate = self
         
         self.present(addCardVC, animated: true, completion: nil)
-    }
-    
-    func resizeImage(image: UIImage, targetSize: CGSize) -> UIImage? {
-        let size = image.size
-        
-        let widthRatio  = targetSize.width  / size.width
-        let heightRatio = targetSize.height / size.height
-        
-        // Figure out what our orientation is, and use that to form the rectangle
-        var newSize: CGSize
-        if(widthRatio > heightRatio) {
-            newSize = CGSize(width: size.width * heightRatio, height: size.height * heightRatio)
-        } else {
-            newSize = CGSize(width: size.width * widthRatio, height: size.height * widthRatio)
-        }
-        
-        // This is the rect that we've calculated out and this is what is actually used below
-        let rect = CGRect(origin: .zero, size: newSize)
-        
-        // Actually do the resizing to the rect using the ImageContext stuff
-        UIGraphicsBeginImageContextWithOptions(newSize, false, 1.0)
-        image.draw(in: rect)
-        let newImage = UIGraphicsGetImageFromCurrentImageContext()
-        UIGraphicsEndImageContext()
-        
-        return newImage
     }
     
 }
@@ -276,34 +340,21 @@ extension CardViewController: UICollectionViewDataSource, UICollectionViewDelega
         
         let mod = indexPath.item%cardCount
         
+        cell.backgroundColor = .clear
+//        cell.backgroundColor = .black
+        
         // Sector Name & Description
-        cell.sectorName.text = cardItemData[mod].name
+        cell.sectorName.text = cardItemData[mod].sector_name
         cell.sectorDescription.text = cardItemData[mod].description
         
         // Sector Image
+        cell.cardImageView.contentMode = .scaleAspectFit
         cell.cardImageView.image = cardImages[mod]
+        
+//        cell.sectorNameLeading.constant = floor((cell.sectorImageView.frame.size.width - cell.sectorImageView.frame.size.height * 0.6)/2)
         cell.sectorImageView.image = sectorImages[mod]
-        
-//        cell.cardImageView.image = cardImagesResized[mod]
-//        cell.sectorImageView.image = sectorImagesResized[mod]
-        
-        let cardRatio: Double = 2.18
-        let sectorRatio: Double = 1.53
-        
-        if (!isCardSmall) {
-            // [370, 594]
-            // [370, 597]
-            
-            let width = collectionViewSize[0] - 150 // -150
-            
-            cell.sectorImageFromTop.constant = 0
-            
-            cell.cardImageWidth.constant = width // 200
-            cell.cardImageHeight.constant = cell.cardImageWidth.constant * cardRatio
-            
-            cell.sectorImageWidth.constant = cell.cardImageWidth.constant - 50 // 150
-            cell.sectorImageHeight.constant = cell.cardImageWidth.constant * sectorRatio
-        }
+//        print("Sector Image :", cell.sectorImageView.frame.size)
+
         
         return cell
     }
@@ -312,18 +363,28 @@ extension CardViewController: UICollectionViewDataSource, UICollectionViewDelega
         // to JupiterViewController
         let cardCount = cardItemData.count
         let mod = indexPath.item%cardCount
-//        print(cardItemData[mod])
         
-//        guard let jupiterVC = self.storyboard?.instantiateViewController(withIdentifier: "JupiterViewController") as? JupiterViewController else { return }
-//        jupiterVC.uuid = uuid
-//        self.navigationController?.pushViewController(jupiterVC, animated: true)
+        let sector_id = cardItemData[mod].sector_id
+//        print("Selected Sector ID :", sector_id)
         
-        // to CardBackViewController
-        guard let cardBackVC = self.storyboard?.instantiateViewController(withIdentifier: "CardBackViewController") as? CardBackViewController else { return }
-        cardBackVC.cardData = cardItemData[mod]
-        cardBackVC.uuid = uuid
-        cardBackVC.page = currentPage
-        self.navigationController?.pushViewController(cardBackVC, animated: true)
+        if (sector_id == 0) {
+           // to CardBackViewController
+//           guard let cardBackVC = self.storyboard?.instantiateViewController(withIdentifier: "CardBackViewController") as? CardBackViewController else { return }
+//           cardBackVC.cardData = cardItemData[mod]
+//           cardBackVC.uuid = uuid
+//           cardBackVC.page = currentPage
+//           self.navigationController?.pushViewController(cardBackVC, animated: true)
+            
+            guard let guideVC = self.storyboard?.instantiateViewController(withIdentifier: "GuideViewController") as? GuideViewController else { return }
+            guideVC.page = currentPage
+            self.navigationController?.pushViewController(guideVC, animated: true)
+        } else {
+            guard let mapVC = self.storyboard?.instantiateViewController(withIdentifier: "MapViewController") as? MapViewController else { return }
+            mapVC.cardData = cardItemData[mod]
+            mapVC.uuid = uuid
+            mapVC.page = currentPage
+            self.navigationController?.pushViewController(mapVC, animated: true)
+        }
     }
     
 }
@@ -370,7 +431,7 @@ extension CardViewController : UIScrollViewDelegate {
         
 //        print("Current Index : \(currentIndex)")
         currentPage = Int(roundedIndex)
-        print("Current Page: \(currentPage)")
+//        print("Current Page: \(currentPage)")
         
         // ProgressBar
         let progress = getProgressValue(currentPage: currentPage)
@@ -400,17 +461,21 @@ extension CardViewController : UIScrollViewDelegate {
         let roundedIndex = round(index)
         let indexPath = IndexPath(item: Int(roundedIndex), section: 0)
         
+//        print("indexPath :", indexPath)
+        
 //        print("roundedIndex : \(roundedIndex)")
 //        print("previousIndex : \(previousIndex)")
         
         if let cell = collectionView.cellForItem(at: indexPath) {
-            animateZoomforCell(zoomCell: cell)
+//            print("This Cell will be Original Size :", indexPath)
+//            animateZoomforCell(zoomCell: cell)
         }
         if Int(roundedIndex) != previousIndex {
             let preIndexPath = IndexPath(item: previousIndex, section: 0)
             if let preCell = collectionView.cellForItem(at: preIndexPath)
             {
-                animateZoomforCellremove(zoomCell: preCell)
+//                print("This Cell will be Smaller Size :", preIndexPath)
+//                animateZoomforCellremove(zoomCell: preCell)
                 
             }
             previousIndex = indexPath.item

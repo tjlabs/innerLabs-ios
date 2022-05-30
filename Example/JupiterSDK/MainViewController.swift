@@ -7,7 +7,15 @@
 //
 
 import UIKit
+import Alamofire
 import JupiterSDK
+
+struct AppFontName {
+    static let bold = "NotoSansKR-Bold"
+    static let medium = "NotoSansKR-Medium"
+    static let regular = "NotoSansKR-Regular"
+    static let light = "NotoSansKR-Light"
+}
 
 class MainViewController: UIViewController, UITextFieldDelegate {
     
@@ -21,6 +29,8 @@ class MainViewController: UIViewController, UITextFieldDelegate {
     var uuid: String = ""
     
     let defaults = UserDefaults.standard
+    
+    let networkManager = Network()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -53,26 +63,8 @@ class MainViewController: UIViewController, UITextFieldDelegate {
             }
             defaults.synchronize()
             
-            guard let cardVC = self.storyboard?.instantiateViewController(withIdentifier: "CardViewController") as? CardViewController else { return }
-            cardVC.uuid = uuid
-            
-            // Card 정보 가져오기
-            var cardDatas = [CardItemData]()
-            cardDatas.append(CardItemData(name: "JUPITER\nService guide", description: "카드를 터치해주세요", cardImage: "purpleCard", cardShowImage: "purpleCardShow",
-                                          sectorImage: "sectorDefault", sectorShowImage: "tjlabsShow", cardTopImage: "cardTopPurple", code: "purple", sectorID: 0, numZones: 3, order: 0))
-            cardDatas.append(CardItemData(name: "KIST", description: "한국과학기술연구원 L8", cardImage: "orangeCard", cardShowImage: "orangeCardShow",
-                                          sectorImage: "sectorKist", sectorShowImage: "kistShow", cardTopImage: "cardTopOrange", code: "orange", sectorID: 1, numZones: 3, order: 1))
-            cardDatas.append(CardItemData(name: "오토웨이타워(V)", description: "For Vehicle", cardImage: "grayCard", cardShowImage: "grayCardShow",
-                                          sectorImage: "sectorParkingCar", sectorShowImage: "parkingCarShow", cardTopImage: "cardTopGray", code: "gray", sectorID: 2, numZones: 3, order: 2))
-            cardDatas.append(CardItemData(name: "오토웨이타워(P)", description: "For Pedestrian", cardImage: "grayCard", cardShowImage: "grayCardShow",
-                                          sectorImage: "sectorParkingPed", sectorShowImage: "parkingPedShow", cardTopImage: "cardTopGray", code: "gray", sectorID: 3, numZones: 3, order: 3))
-            cardDatas.append(CardItemData(name: "COEX", description: "지하주차장", cardImage: "pinkCard", cardShowImage: "pinkCardShow",
-                                          sectorImage: "sectorCoex", sectorShowImage: "coexShow", cardTopImage: "cardTopPink", code: "pink", sectorID: 4, numZones: 3, order: 4))
-            
-            cardVC.cardItemData = cardDatas
-            
-            self.navigationController?.pushViewController(cardVC, animated: true)
-            guideLabel.isHidden = true
+            let login = Login(user_id: uuid)
+            postLogin(url: JUPITER_URL, input: login)
         }
     }
     
@@ -102,6 +94,123 @@ class MainViewController: UIViewController, UITextFieldDelegate {
             isSaveUuid = false
         }
 //        print("Save UUID : \(isSaveUuid)")
+    }
+    
+    func postLogin(url: String, input: Login) {
+        // [http 요청 헤더 지정]
+        let header : HTTPHeaders = [
+            "Content-Type" : "application/json"
+        ]
+        
+        // [http 요청 수행 실시]
+        print("")
+        print("====================================")
+        print("주 소 :: ", url)
+        print("-------------------------------")
+        print("데이터 :: ", input)
+        print("====================================")
+        print("")
+        
+        AF.request(
+            url, // [주소]
+            method: .post, // [전송 타입]
+            parameters: input, // [전송 데이터]
+            encoder: JSONParameterEncoder.default,
+            headers: header // [헤더 지정]
+        )
+        .validate(statusCode: 200..<300)
+        .responseData { [self] response in
+            switch response.result {
+            case .success(let res):
+                do {
+                    print("")
+                    print("====================================")
+                    print("응답 코드 :: ", response.response?.statusCode ?? 0)
+                    print("-------------------------------")
+                    print("응답 데이터 :: ", String(data: res, encoding: .utf8) ?? "")
+                    print("====================================")
+                    print("")
+                    
+//                    let result = String(data: res, encoding: .utf8) ?? ""
+                    
+                    let returnedString = String(decoding: response.data!, as: UTF8.self)
+                    let list = jsonToCardList(json: returnedString)
+                    let myCard = list.sectors
+                    
+                    print("Sector List :", myCard)
+                    
+                    var cardDatas = [CardItemData]()
+                    
+                    if (myCard.isEmpty) {
+                        print("최초 사용자 입니다")
+                        cardDatas.append(CardItemData(sector_id: 0, sector_name: "JUPITER", description: "카드를 터치해주세요", cardColor: "purple", mode: 0, infoLevel: ["7F"]))
+                    } else {
+                        print("최초 사용자가 아닙니다")
+                        cardDatas.append(CardItemData(sector_id: 0, sector_name: "JUPITER", description: "카드를 터치해주세요", cardColor: "purple", mode: 0, infoLevel: ["7F"]))
+                        
+                        print("Sector List :", myCard)
+                        for card in 0..<myCard.count {
+                            let cardInfo: CardInfo = myCard[card]
+                            let id: Int = cardInfo.sector_id
+                            let name: String = cardInfo.sector_name
+                            let description: String = cardInfo.description
+                            let cardColor: String = cardInfo.cardColor
+                            let mode: Int = cardInfo.mode
+                            let infoLevel: [String] = cardInfo.infoLevel.components(separatedBy: " ")
+                            
+                            cardDatas.append(CardItemData(sector_id: id, sector_name: name, description: description, cardColor: cardColor, mode: mode, infoLevel: infoLevel))
+                        }
+                    }
+                    
+                    goToCardVC(cardDatas: cardDatas)
+                    
+                    DispatchQueue.main.async {
+                        
+                    }
+                }
+                catch (let err){
+                    print("")
+                    print("====================================")
+                    print("catch :: ", err.localizedDescription)
+                    print("====================================")
+                    print("")
+                }
+                break
+            case .failure(let err):
+                print("")
+                print("====================================")
+                print("응답 코드 :: ", response.response?.statusCode ?? 0)
+                print("-------------------------------")
+                print("에 러 :: ", err.localizedDescription)
+                print("====================================")
+                print("")
+                
+                break
+            }
+        }
+    }
+    
+    func goToCardVC(cardDatas: [CardItemData]) {
+        guard let cardVC = self.storyboard?.instantiateViewController(withIdentifier: "CardViewController") as? CardViewController else { return }
+        cardVC.uuid = uuid
+        cardVC.cardItemData = cardDatas
+        
+        self.navigationController?.pushViewController(cardVC, animated: true)
+        guideLabel.isHidden = true
+    }
+    
+    func jsonToCardList(json: String) -> CardList {
+        let result = CardList(sectors: [])
+        let decoder = JSONDecoder()
+        
+        let jsonString = json
+        
+        if let data = jsonString.data(using: .utf8), let decoded = try? decoder.decode(CardList.self, from: data) {
+            
+            return decoded
+        }
+        
+        return result
     }
     
 }

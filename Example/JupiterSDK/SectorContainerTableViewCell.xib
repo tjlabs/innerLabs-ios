@@ -4,6 +4,7 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="20020"/>
+        <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -19,8 +20,8 @@
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="none" translatesAutoresizingMaskIntoConstraints="NO" id="iow-eO-K05">
-                        <rect key="frame" x="0.0" y="10" width="320" height="30"/>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <rect key="frame" x="0.0" y="400" width="320" height="30"/>
+                        <color key="backgroundColor" systemColor="systemGray6Color"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="30" id="rXn-s2-8v1"/>
                         </constraints>
@@ -31,31 +32,43 @@
                             <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                         </collectionViewFlowLayout>
                     </collectionView>
-                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="9w1-8y-nmT">
-                        <rect key="frame" x="16" y="50" width="288" height="379"/>
+                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="mRU-bT-pKw">
+                        <rect key="frame" x="16" y="0.0" width="288" height="400"/>
                     </imageView>
+                    <view userInteractionEnabled="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="QSA-Kx-Yvk" customClass="ScatterChartView" customModule="Charts">
+                        <rect key="frame" x="16" y="10" width="288" height="380"/>
+                        <color key="backgroundColor" name="blue4"/>
+                    </view>
                 </subviews>
                 <constraints>
-                    <constraint firstAttribute="trailingMargin" secondItem="9w1-8y-nmT" secondAttribute="trailing" id="8Bc-82-zvr"/>
+                    <constraint firstItem="QSA-Kx-Yvk" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="10" id="5a4-Dj-HgI"/>
+                    <constraint firstItem="mRU-bT-pKw" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leadingMargin" id="GDI-dA-MJu"/>
+                    <constraint firstAttribute="trailingMargin" secondItem="mRU-bT-pKw" secondAttribute="trailing" id="H8g-kw-1r6"/>
                     <constraint firstAttribute="trailing" secondItem="iow-eO-K05" secondAttribute="trailing" id="KGz-LT-grp"/>
-                    <constraint firstItem="iow-eO-K05" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="10" id="hEB-t3-ks3"/>
-                    <constraint firstItem="9w1-8y-nmT" firstAttribute="top" secondItem="iow-eO-K05" secondAttribute="bottom" constant="10" id="lov-Xb-e2U"/>
+                    <constraint firstItem="iow-eO-K05" firstAttribute="top" secondItem="mRU-bT-pKw" secondAttribute="bottom" id="MH0-jz-aXp"/>
+                    <constraint firstItem="mRU-bT-pKw" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" id="SGq-In-IBf"/>
+                    <constraint firstAttribute="trailingMargin" secondItem="QSA-Kx-Yvk" secondAttribute="trailing" id="WX2-6z-hWn"/>
+                    <constraint firstAttribute="bottom" secondItem="iow-eO-K05" secondAttribute="bottom" constant="10" id="X4C-Lq-xyr"/>
+                    <constraint firstItem="iow-eO-K05" firstAttribute="top" secondItem="QSA-Kx-Yvk" secondAttribute="bottom" constant="10" id="jZP-0e-QCg"/>
+                    <constraint firstItem="QSA-Kx-Yvk" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leadingMargin" id="qR0-Nu-ifR"/>
                     <constraint firstItem="iow-eO-K05" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" id="rZH-y6-xGl"/>
-                    <constraint firstItem="9w1-8y-nmT" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leadingMargin" id="uDd-XZ-vHk"/>
-                    <constraint firstAttribute="bottomMargin" secondItem="9w1-8y-nmT" secondAttribute="bottom" id="uq9-a9-ctR"/>
                 </constraints>
             </tableViewCellContentView>
             <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
             <connections>
-                <outlet property="zoneCollectionView" destination="iow-eO-K05" id="an7-aG-NJt"/>
-                <outlet property="zoneImage" destination="9w1-8y-nmT" id="U3s-e1-HFk"/>
+                <outlet property="imageLevel" destination="mRU-bT-pKw" id="iv9-kN-oWg"/>
+                <outlet property="levelCollectionView" destination="iow-eO-K05" id="qpf-zR-Aaj"/>
+                <outlet property="scatterChart" destination="QSA-Kx-Yvk" id="JO2-kV-4Vi"/>
             </connections>
-            <point key="canvasLocation" x="132" y="87"/>
+            <point key="canvasLocation" x="131.8840579710145" y="86.383928571428569"/>
         </tableViewCell>
     </objects>
     <resources>
-        <systemColor name="systemBackgroundColor">
-            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        <namedColor name="blue4">
+            <color red="0.94499999284744263" green="0.96100002527236938" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+        <systemColor name="systemGray6Color">
+            <color red="0.94901960784313721" green="0.94901960784313721" blue="0.96862745098039216" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>

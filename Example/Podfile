@@ -9,7 +9,11 @@ target 'JupiterSDK_Example' do
   pod 'Alamofire'
   pod 'GoogleMaps', '4.0.0'
   pod 'GooglePlaces', '4.0.0'
-  pod 'SnapKit' 
+  pod 'Charts' 
+  pod 'SnapKit'
+  pod 'ExpyTableView' 
+  pod 'Firebase/Core'
+  pod 'Firebase/MLModelInterpreter', '6.25.0'
 
   target 'JupiterSDK_Tests' do
     inherit! :search_paths

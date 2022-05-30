@@ -12,9 +12,9 @@ class ShowCardCollectionViewCell: UICollectionViewCell {
     var delete : (() -> ()) = {}
 
     @IBOutlet weak var cardUIView: UIView!
-    @IBOutlet weak var cardWidth: NSLayoutConstraint!
+
     @IBOutlet weak var cardHeight: NSLayoutConstraint!
-    
+    @IBOutlet weak var cardWidth: NSLayoutConstraint!
     @IBOutlet weak var nameLabel: UILabel!
     
     @IBOutlet weak var deleteButton: UIButton!
@@ -23,13 +23,15 @@ class ShowCardCollectionViewCell: UICollectionViewCell {
     
     @IBOutlet weak var sectorShowImageWidth: NSLayoutConstraint!
     @IBOutlet weak var sectorShowImageHeight: NSLayoutConstraint!
-    
+    @IBOutlet weak var sectorShowImageLeading: NSLayoutConstraint!
     
     var isAnimate: Bool! = true
     override func awakeFromNib() {
         super.awakeFromNib()
         
         cardUIView.backgroundColor = .clear
+//        print("Show Card Width :", self.frame.width)
+//        print("Leading Constant :", sectorShowImageLeading.constant)
     }
 
     @IBAction func tapDeleteButton(_ sender: UIButton) {

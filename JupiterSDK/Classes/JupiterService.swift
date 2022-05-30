@@ -2,11 +2,21 @@ import Foundation
 import CoreMotion
 import CoreLocation
 
+import FirebaseCore
+import FirebaseMLCommon
+import FirebaseMLModelInterpreter
+import TFLTensorFlowLite
+
 public class JupiterService: NSObject {
+    
+    var url = ""
     
     // Sensor //
     let motionManager = CMMotionManager()
     let motionAltimeter = CMAltimeter()
+    
+    let PDR_INPUT_NUM: Int = 1
+    let DR_INPUT_NUM: Int = 5
     
     let G: Double = 9.81
     
@@ -40,8 +50,13 @@ public class JupiterService: NSObject {
     var pastTime: Double = 0
     var elapsedTime: Double = 0
     
+//    var inputArray = postInput(inputs: [Input()])
+    var inputArray: [Input] = [Input(user_id: "", index: 0, length: 0, heading: 0, pressure: 0, looking_flag: false, ble: [:], mobile_time: 0, device_model: "", os_version: 0)]
+    
     public var sensorData = SensorData()
-    public var stepResult = Step()
+    public var unitDRInfo = UnitDRInfo()
+    public var unitDistane: Double = 0
+    public var jupiterOutput = Output(mobile_time: 0, index: 0, building: "", level: "", x: 0, y: 0, scc: 0, scr: 0, phase: 0, calculated_time: 0)
     
     public var testQueue = LinkedList<TimestampDouble>()
     
@@ -63,17 +78,17 @@ public class JupiterService: NSObject {
     let SCAN_INTERVAL: TimeInterval = 30
     
     var parent: UIViewController?
+    let unitDRGenerator = UnitDRGenerator()
     
-    let TJ = TjAlgorithm()
+    public var unitModeInput: Int = 0
     
-    // To Server //
-    let networkManager = NetworkManager()
-    
-    public var sector: String = ""
     public var uuid: String = ""
     public var deviceModel: String = ""
     public var os: String = ""
     public var osVersion: Int = 0
+    public var mode: String = ""
+    var recentThreshold: Double = 800 // ms
+    var onStartFlag: Bool = false
     
     public override init() {
         super.init()
@@ -90,16 +105,40 @@ public class JupiterService: NSObject {
     public func startService(parent: UIViewController) {
         self.parent = parent
         if motionManager.isDeviceMotionAvailable {
-            initialzeSenseors()
+            initialzeSensors()
             startTimer()
             startBLE()
+            
+            print("JupiterServcie Mode :", mode)
+            unitDRGenerator.setMode(mode: mode)
+            
+            if (mode == "PDR") {
+//                url = "https://where-run-os-skrgq3jc5a-du.a.run.app/calc"  // Android
+                url = "https://where-run-ios-skrgq3jc5a-du.a.run.app/calc" // iOS
+                unitModeInput = PDR_INPUT_NUM
+                recentThreshold = 800
+//                recentThreshold = 1400
+            } else if (mode == "DR") {
+                url = "https://where-run-ios-dr-skrgq3jc5a-du.a.run.app/calc"
+                unitModeInput = DR_INPUT_NUM
+                recentThreshold = 2000
+//                recentThreshold = 2800
+            }
+            
+            unitDRGenerator.setDRModel()
+            onStartFlag = true
         }
         else {
             print("DeviceMotion unavailable")
         }
     }
     
-    public func initialzeSenseors() {
+    public func stopService() {
+        unitDRInfo = UnitDRInfo()
+        onStartFlag = false
+    }
+    
+    public func initialzeSensors() {
         if motionManager.isAccelerometerAvailable {
             motionManager.accelerometerUpdateInterval = SENSOR_INTERVAL
             motionManager.startAccelerometerUpdates(to: .main) { [self] (data, error) in
@@ -113,7 +152,7 @@ public class JupiterService: NSObject {
                 }
                 if let accZ = data?.acceleration.z {
                     self.accZ = accZ
-                    sensorData.acc[2] = accZ*G
+                    sensorData.acc[2] = -accZ*G
                 }
             }
         }
@@ -187,6 +226,18 @@ public class JupiterService: NSObject {
                 sensorData.att[0] = m.attitude.roll
                 sensorData.att[1] = m.attitude.pitch
                 sensorData.att[2] = m.attitude.yaw
+                
+                sensorData.rotationMatrix[0][0] = m.attitude.rotationMatrix.m11
+                sensorData.rotationMatrix[0][1] = m.attitude.rotationMatrix.m12
+                sensorData.rotationMatrix[0][2] = m.attitude.rotationMatrix.m13
+                                
+                sensorData.rotationMatrix[1][0] = m.attitude.rotationMatrix.m21
+                sensorData.rotationMatrix[1][1] = m.attitude.rotationMatrix.m22
+                sensorData.rotationMatrix[1][2] = m.attitude.rotationMatrix.m23
+                                
+                sensorData.rotationMatrix[2][0] = m.attitude.rotationMatrix.m31
+                sensorData.rotationMatrix[2][1] = m.attitude.rotationMatrix.m32
+                sensorData.rotationMatrix[2][2] = m.attitude.rotationMatrix.m33
             }
         
             if let e = error {
@@ -212,38 +263,41 @@ public class JupiterService: NSObject {
         let dt = timeStamp - pastTime
         pastTime = timeStamp
         elapsedTime += dt
-//        print(timeStamp, "\\", sensor)
         
-//        var value1 = Double.random(in: 2.71...3.14)
-//        var value2 = Double.random(in: 2.71...3.14)
-//        testQueue.append(TimestampDouble(timestamp: value1, valuestamp: value2))
-//
-//        if (testQueue.count > 5) {
-//            testQueue.pop()
-//        }
-//
-//        print(testQueue.count)
-//        print(testQueue.showList())
-        
-        stepResult = TJ.runAlgorithm(sensorData: sensorData)
-        if (stepResult.isStepDetected) {
-            let bleTest = bleList.bleList.devices
-            let bleDictionary = Dictionary(uniqueKeysWithValues: bleTest.map { ($0.ward_id, $0.rssi) })
-            
-            let data = Input(user_id: uuid, unit_idx: stepResult.unit_idx, step_length: stepResult.step_length, heading: stepResult.heading, pressure: stepResult.pressure, looking_flag: stepResult.lookingFlag,
-                             ble: bleDictionary, time_mobile: timeStamp, device_model: deviceModel, os_version: osVersion)
-            
-            networkManager.postRequest(input: data)
-            
-            // Upload to Firestore
-//            networkManager.upload(data) { error in
-//                if error == nil {
-//                    print("Firestore Upload Success")
-//                } else {
-//                    print(error as Any)
-//                }
-//            }
+        if (onStartFlag) {
+            unitDRInfo = unitDRGenerator.generateDRInfo(sensorData: sensorData)
         }
+        
+        if (unitDRInfo.isIndexChanged) {
+            
+            var bleDictionary = bleManager.bleFinal
+            
+            if (deviceModel == "iPhone 13 Mini" || deviceModel == "iPhone 12 mini") {
+                bleDictionary.keys.forEach { bleDictionary[$0] = bleDictionary[$0]! + 7 }
+            }
+            
+            var data = Input(user_id: uuid, index: unitDRInfo.index, length: unitDRInfo.length, heading: unitDRInfo.heading, pressure: sensorData.pressure[0], looking_flag: unitDRInfo.lookingFlag, ble: bleDictionary, mobile_time: timeStamp, device_model: deviceModel, os_version: osVersion)
+            
+            inputArray.append(data)
+            if ((inputArray.count-1) == unitModeInput) {
+                inputArray.remove(at: 0)
+                NetworkManager.shared.postInput(url: url, input: inputArray)
+                
+                var lengthSum: Double = 0
+                for idx in 0..<inputArray.count {
+                    lengthSum += inputArray[idx].length
+                }
+                unitDistane = lengthSum
+                
+                inputArray = [Input(user_id: "", index: 0, length: 0, heading: 0, pressure: 0, looking_flag: false, ble: [:], mobile_time: 0, device_model: "", os_version: 0)]
+            }
+        }
+        var tempOutput = NetworkManager.shared.jupiterResult
+        
+        if ((timeStamp - tempOutput.mobile_time) < recentThreshold) {
+            jupiterOutput = NetworkManager.shared.jupiterResult
+        }
+        
     }
     
     func startBLE() {

@@ -315,7 +315,7 @@
         </view>
     </objects>
     <resources>
-        <image name="closeInfoToggle" width="17" height="11"/>
+        <image name="closeInfoToggle" width="17" height="10.5"/>
         <image name="showInfoToggle" width="17" height="10.5"/>
         <systemColor name="linkColor">
             <color red="0.0" green="0.47843137254901963" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>

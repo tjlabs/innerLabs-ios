@@ -16,7 +16,6 @@ protocol SendPageDelegate {
     func sendPage(data: Int)
 }
 
-
 class CardBackViewController: UIViewController {
     
     enum ContainerViewState {
@@ -44,7 +43,6 @@ class CardBackViewController: UIViewController {
     @IBOutlet weak var sccLabel: UILabel!
     @IBOutlet weak var mobileStatusLabel: UILabel!
     
-    
     let sectionSpacing: Double = 42
     let firstSectionHeight: Double = 240
     let secondSectionHeight: Double = 220
@@ -55,8 +53,11 @@ class CardBackViewController: UIViewController {
     var isSecondOpen: Bool = false
     var isThirdOpen: Bool = false
     
-    let lat: Double = 37.5984295123542
-    let lon: Double = 127.04339296529642
+//    let lat: Double = 37.5984295123542
+//    let lon: Double = 127.04339296529642
+    
+    let lat: Double = 37.49575119345803
+    let lon: Double = 127.03829280268539
     
     // Overlay
     var imageOverlay = ImageOverlay()
@@ -117,7 +118,16 @@ class CardBackViewController: UIViewController {
         setupCustomView()
         
         // Start Jupiter Service
+        
+        var runMode: String = ""
+        if (cardData!.mode == 0) {
+            runMode = "PDR"
+        } else {
+            runMode = "DR"
+        }
+        
         jupiterService.uuid = uuid
+        jupiterService.mode = runMode
         jupiterService.startService(parent: self)
         startTimer()
     }
@@ -147,8 +157,10 @@ class CardBackViewController: UIViewController {
     }
     
     func setCardData(cardData: CardItemData) {
-        self.sectorNameLabel.text = cardData.name
-        self.cardTopImage.image = UIImage(named: cardData.cardTopImage)!
+        self.sectorNameLabel.text = cardData.sector_name
+        
+        let imageName: String = cardData.cardColor + "CardTop"
+        self.cardTopImage.image = UIImage(named: imageName)!
     }
     
     func showOutputView() {
@@ -176,11 +188,12 @@ class CardBackViewController: UIViewController {
         
         view.addSubview(dragIndicatorView)
         dragIndicatorView.translatesAutoresizingMaskIntoConstraints = false
+        dragIndicatorView.backgroundColor = .darkblack
         NSLayoutConstraint.activate([
             dragIndicatorView.widthAnchor.constraint(equalToConstant: 60),
             dragIndicatorView.heightAnchor.constraint(equalToConstant: dragIndicatorView.layer.cornerRadius * 2),
             dragIndicatorView.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor),
-            dragIndicatorView.bottomAnchor.constraint(equalTo: containerOutputScrollView.topAnchor, constant: -10)
+            dragIndicatorView.bottomAnchor.constraint(equalTo: containerOutputScrollView.topAnchor, constant: 10)
         ])
     }
     
@@ -516,11 +529,11 @@ class CardBackViewController: UIViewController {
         self.view.addSubview(mapView)
 
         // Creates a marker in the center of the map.
-//        let marker = GMSMarker()
-//        marker.position = CLLocationCoordinate2D(latitude: lat, longitude: lon)
-//        marker.title = "KIST"
-//        marker.snippet = "Korea Institute of Science Technology"
-//        marker.map = mapView
+        let marker = GMSMarker()
+        marker.position = CLLocationCoordinate2D(latitude: lat, longitude: lon)
+        marker.title = "TJLABS"
+        marker.snippet = "Location opens universe"
+        marker.map = mapView
     }
     
     func configureContainerOutputView() {
@@ -639,10 +652,10 @@ class CardBackViewController: UIViewController {
         }
 //        self.timeLabel.text = String(format: "%.2f", elapsedTime)
         
-        let isStepDetected = jupiterService.stepResult.isStepDetected
-        let unitIdx = Int(jupiterService.stepResult.unit_idx)
-        let unitLength = jupiterService.stepResult.step_length
-        let flag = jupiterService.stepResult.lookingFlag
+        let isStepDetected = jupiterService.unitDRInfo.isIndexChanged
+        let unitIdx = Int(jupiterService.unitDRInfo.index)
+        let unitLength = jupiterService.unitDRInfo.length
+        let flag = jupiterService.unitDRInfo.lookingFlag
         
         if (isStepDetected) {
             self.stepCountTxLabel.text = String(unitIdx)

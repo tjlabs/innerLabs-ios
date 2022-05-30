@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'JupiterSDK'
-  s.version          = '1.1.4'
+  s.version          = '1.2.1'
   s.summary          = 'JupiterSDK for iOS'
   s.swift_version    = '4.0'
   
@@ -25,20 +25,21 @@ Pod::Spec.new do |s|
   s.ios.deployment_target = '13.2'
   
   s.homepage         = 'https://www.tjlabscorp.com'
-  # s.screenshots     = 'www.example.com/screenshots_1', 'www.example.com/screenshots_2'
   s.license          = { :type => 'TJLABS Corp', :file => 'LICENSE' }
   s.author           = { 'Leo' => 'leo.shin@tjlabscorp.com' }
   s.source           = { :git => 'https://github.com/tjlabs/jupiter-ios.git', :tag => s.version.to_s }
   
   s.source_files = 'JupiterSDK/Classes/**/*'
   
-  # s.resource_bundles = {
-  #   'JupiterSDK' => ['JupiterSDK/Assets/*.png']
-  # }
+   s.resource_bundles = {
+     'JupiterSDK' => ['JupiterSDK/Assets/*.tflite']
+   }
   
   # s.public_header_files = 'Pod/Classes/**/*.h'
   # s.frameworks = 'UIKit', 'MapKit'
   s.static_framework = true
   s.dependency 'Alamofire'
+  s.dependency 'Firebase/Core'
+  s.dependency 'Firebase/MLModelInterpreter', '6.25.0'
 
 end

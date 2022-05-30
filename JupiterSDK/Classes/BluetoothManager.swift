@@ -5,6 +5,7 @@ let NRF_UUID_SERVICE         = "6E400001-B5A3-F393-E0A9-E50E24DCCA9E";
 let NRF_UUID_CHAR_READ       = "6E400003-B5A3-F393-E0A9-E50E24DCCA9E";
 let NRF_UUID_CHAR_WRITE      = "6E400002-B5A3-F393-E0A9-E50E24DCCA9E";
 let NI_UUID_SERVICE          = "00001530-1212-efde-1523-785feabcd123";
+let RSSI_BIAS: Double        = 0
 
 let TJLABS_UUID: String          = "0000FEAA-0000-1000-8000-00805f9b34fb";
 
@@ -68,6 +69,7 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
     
     var bleDictionary = [String: [[Double]]]()
     var bleFinal = [String: Double]()
+    var scanCount: Double = 0
     
     override init() {
         super.init()
@@ -155,7 +157,6 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
                 
                 var userInfo = [String:String]()
                 userInfo["Identifier"] = peripheral.identifier.uuidString
-//                userInfo["URL"] = "URLString"
                 userInfo["DeviceID"] = deviceIDString
                 userInfo["RSSI"] = String(format: "%d", RSSI.intValue )
                 
@@ -165,21 +166,23 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
                     NotificationCenter.default.post(name: .scanInfo, object: nil, userInfo: userInfo)
                     
                     let condition: ((String, [[Double]])) -> Bool = {
-                        $0.0.contains(deviceIDString)
+                        $0.0.contains(bleName)
                     }
                     
                     if (bleDictionary.contains(where: condition)) {
                         let data = bleDictionary.filter(condition)
-                        var value:[[Double]] = data[deviceIDString]!
+                        var value:[[Double]] = data[bleName]!
                         let dataToAdd: [Double] = [RSSI.doubleValue, bleTime]
                         value.append(dataToAdd)
                         
-                        bleDictionary.updateValue(value, forKey: deviceIDString)
+                        bleDictionary.updateValue(value, forKey: bleName)
                     } else {
-                        bleDictionary.updateValue([[RSSI.doubleValue, bleTime]], forKey: deviceIDString)
+                        bleDictionary.updateValue([[RSSI.doubleValue, bleTime]], forKey: bleName)
                     }
                     
                     trimBleData()
+                    
+//                    bleFinal = latestBleData(bleDictionary: bleDictionary)
                     bleFinal = avgBleData(bleDictionary: bleDictionary)
                     
                     NotificationCenter.default.post(name: .scanInfo, object: nil, userInfo: userInfo)
@@ -263,19 +266,23 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
         for index in 0..<keys.count {
             let bleID: String = keys[index]
             let bleData: [[Double]] = bleDictionary[bleID]!
-//            print(bleID,":",bleData,":",bleData.count)
-            
+            let bleCount = bleData.count
             var newValue = [[Double]]()
-            for i in 0..<bleData.count {
+            for i in 0..<bleCount {
                 let rssi = bleData[i][0]
                 let time = bleData[i][1]
                 
-                if (nowTime - time <= 1500) {
+                if ((nowTime - time <= 1500) && (rssi >= -100)) {
                     let dataToAdd: [Double] = [rssi, time]
                     newValue.append(dataToAdd)
                 }
             }
-            bleDictionary.updateValue(newValue, forKey: bleID)
+            
+            if ( newValue.count == 0 ) {
+                bleDictionary.removeValue(forKey: bleID)
+            } else {
+                bleDictionary.updateValue(newValue, forKey: bleID)
+            }
         }
     }
     
@@ -286,13 +293,35 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
         for index in 0..<keys.count {
             let bleID: String = keys[index]
             let bleData: [[Double]] = bleDictionary[bleID]!
+            let bleCount = bleData.count
             
             var rssiSum: Double = 0
-            for i in 0..<bleData.count {
+//            print("BLE INFO :", bleCount, "/", bleID, "/", bleData)
+            
+            for i in 0..<bleCount {
                 let rssi = bleData[i][0]
                 rssiSum += rssi
             }
-            let rssiFinal: Double = rssiSum/Double(bleData.count)
+            let rssiFinal: Double = (rssiSum/Double(bleData.count)) + RSSI_BIAS
+            
+            if ( rssiSum == 0 ) {
+                ble.removeValue(forKey: bleID)
+            } else {
+                ble.updateValue(rssiFinal, forKey: bleID)
+            }
+        }
+        return ble
+    }
+    
+    func latestBleData(bleDictionary: Dictionary<String, [[Double]]>) -> Dictionary<String, Double> {
+        var ble = [String: Double]()
+        
+        let keys: [String] = Array(bleDictionary.keys)
+        for index in 0..<keys.count {
+            let bleID: String = keys[index]
+            let bleData: [[Double]] = bleDictionary[bleID]!
+            
+            let rssiFinal: Double = bleData[bleData.count-1][0]
             
             ble.updateValue(rssiFinal, forKey: bleID)
         }
