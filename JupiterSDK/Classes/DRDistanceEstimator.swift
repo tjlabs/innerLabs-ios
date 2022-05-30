@@ -7,7 +7,7 @@
 
 import Foundation
 import FirebaseCore
-import FirebaseMLCommon
+//import FirebaseMLCommon
 import FirebaseMLModelInterpreter
 import TFLTensorFlowLite
 
