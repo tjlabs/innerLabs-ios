@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'JupiterSDK'
-  s.version          = '1.1.4'
+  s.version          = '1.2.0'
   s.summary          = 'JupiterSDK for iOS'
   s.swift_version    = '4.0'
   
@@ -25,7 +25,6 @@ Pod::Spec.new do |s|
   s.ios.deployment_target = '13.2'
   
   s.homepage         = 'https://www.tjlabscorp.com'
-  # s.screenshots     = 'www.example.com/screenshots_1', 'www.example.com/screenshots_2'
   s.license          = { :type => 'TJLABS Corp', :file => 'LICENSE' }
   s.author           = { 'Leo' => 'leo.shin@tjlabscorp.com' }
   s.source           = { :git => 'https://github.com/tjlabs/jupiter-ios.git', :tag => s.version.to_s }
