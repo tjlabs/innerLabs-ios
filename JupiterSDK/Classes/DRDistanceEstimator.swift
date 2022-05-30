@@ -6,8 +6,8 @@
 //
 
 import Foundation
-import FirebaseCore
-import FirebaseMLCommon
+//import FirebaseCore
+//import FirebaseMLCommon
 import FirebaseMLModelInterpreter
 import TFLTensorFlowLite
 
@@ -76,54 +76,6 @@ public class DRDistanceEstimator: NSObject {
         }
     }
     
-    public func modelRunTest() {
-        var inputData = Data()
-        var a = Float32(0.2)
-        var b = Float32(0.33)
-        var c = Float32(1.0)
-        
-        var testArr: [Float32] = [0.2, 0.33, 1.0]
-        
-        for i in 0..<3 {
-            var v = testArr[i]
-            let elementSize = MemoryLayout.size(ofValue: v)
-            var bytes = [UInt8](repeating: 0, count: elementSize)
-            memcpy(&bytes, &v, elementSize)
-            inputData.append(&bytes, count: elementSize)
-        }
-        
-        var inputs = ModelInputs()
-        
-        do {
-            try inputs.addInput(inputData)
-        } catch let error {
-            print("add input failure: \(error)")
-        }
-        
-        interpreter.run(inputs: inputs, options: ioOptions) {
-            outputs, error in
-            guard error == nil, let outputs = outputs else {
-                print("interpreter error")
-                if (error != nil) {
-                    print(error!)
-                }
-                return
-            }
-            
-            do {
-                let result = try outputs.output(index: 0) as! [[NSNumber]]
-                
-                let floatArray = result[0].map {
-                    a in
-                    a.floatValue
-                }
-                print("Model Result :", floatArray)
-            } catch {
-                //error
-            }
-        }
-    }
-    
     public func estimateDistanceInfo(time: Double, sensorData: SensorData) -> UnitDistance{
         // feature extraction
         // ACC X, Y, Z, Norm Smoothing
@@ -182,17 +134,7 @@ public class DRDistanceEstimator: NSObject {
         if (featureExtractionCount == 0) {
             magVar = lastMagQueue
         }
-        
-//        print(acc[0], ",", acc[1], ",", acc[2], ",",
-//              gyro[0], ",", gyro[1], ",", gyro[2], ",",
-//              mag[0], ",", mag[1], ",", mag[2], ",",
-//              accSmoothing.x, ",", accSmoothing.y, ",", accSmoothing.z, ",", accSmoothing.norm, ",",
-//              gyroSmoothing.x, ",", gyroSmoothing.y, ",", gyroSmoothing.z, ",",
-//              magSmoothing.x, ",", magSmoothing.y, ",", magSmoothing.z, ",",
-//              accVar.x, ",", accVar.y, ",", accVar.z, ",", accVar.norm, ",",
-//              gyroVar.x, ",", gyroVar.y, ",", gyroVar.z, ",",
-//              magVar.x, ",", magVar.y, ",", magVar.z)
-        
+
         let accNormalizeConstant: Double = 7
         let gyroNormalizeConstant: Double = 5
         let magNormalizeConstant: Double = 500
