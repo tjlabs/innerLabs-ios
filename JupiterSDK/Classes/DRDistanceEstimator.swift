@@ -63,6 +63,21 @@ public class DRDistanceEstimator: NSObject {
         
         interpreter = ModelInterpreter.modelInterpreter(localModel: localModel)
         
+        // Add
+//        let downloadConditions = ModelDownloadConditions(allowsCellularAccess: false)
+//        ModelDownloader.modelDownloader()
+//            .getModel(name: "dr_model",
+//                      downloadType: .latestModel,
+//                      conditions: downloadConditions,
+//                      progressHandler: { progress in
+//                        // Handle progress.
+//                      }) { result in
+//                // Handle download result.
+//                switch result {
+//                case let .success(model): // Use model.
+//                case let .failure(error): // Handle error.
+//                }
+//            }
     }
     
     public func argmax(array: [Float]) -> Int {
