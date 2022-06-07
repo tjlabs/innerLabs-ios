@@ -2,8 +2,8 @@ import Foundation
 import CoreMotion
 import CoreLocation
 
-import FirebaseCore
-import FirebaseMLCommon
+//import FirebaseCore
+//import FirebaseMLCommon
 import FirebaseMLModelInterpreter
 import TFLTensorFlowLite
 

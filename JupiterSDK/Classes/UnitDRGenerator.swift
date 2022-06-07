@@ -6,10 +6,6 @@
 //
 
 import Foundation
-import FirebaseCore
-import FirebaseMLCommon
-import FirebaseMLModelInterpreter
-import TFLTensorFlowLite
 
 public class UnitDRGenerator: NSObject {
     
