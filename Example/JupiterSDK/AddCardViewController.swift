@@ -34,7 +34,7 @@ class AddCardViewController: UIViewController, UITextFieldDelegate {
         
         codeTextField.delegate = self
         
-        guard let presentingVC = self.presentingViewController else { return }
+//        guard let presentingVC = self.presentingViewController else { return }
     }
 
     @IBAction func tapBackButton(_ sender: UIButton) {

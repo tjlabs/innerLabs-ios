@@ -1,8 +1,8 @@
 PODS:
   - Alamofire (5.6.1)
-  - Charts (4.0.2):
-    - Charts/Core (= 4.0.2)
-  - Charts/Core (4.0.2):
+  - Charts (4.0.3):
+    - Charts/Core (= 4.0.3)
+  - Charts/Core (4.0.3):
     - SwiftAlgorithms (~> 1.0)
   - ExpyTableView (1.2.1)
   - Firebase/CoreOnly (6.25.0):
@@ -74,17 +74,17 @@ PODS:
   - GoogleUtilities/UserDefaults (6.7.2):
     - GoogleUtilities/Logger
   - GTMSessionFetcher/Core (1.7.2)
-  - JupiterSDK (1.2.1):
+  - JupiterSDK (1.6.2):
     - Alamofire
     - Firebase/MLModelInterpreter (= 6.25.0)
-    - TensorFlowLiteSwift
+    - FirebaseMLCommon
   - nanopb (1.30906.0):
     - nanopb/decode (= 1.30906.0)
     - nanopb/encode (= 1.30906.0)
   - nanopb/decode (1.30906.0)
   - nanopb/encode (1.30906.0)
   - PromisesObjC (1.2.12)
-  - Protobuf (3.20.1)
+  - Protobuf (3.21.1)
   - SnapKit (5.6.0)
   - SwiftAlgorithms (1.0.0)
   - TensorFlowLiteC (1.14.0)
@@ -98,6 +98,7 @@ DEPENDENCIES:
   - Charts
   - ExpyTableView
   - Firebase/MLModelInterpreter (= 6.25.0)
+  - FirebaseMLCommon
   - GoogleMaps (= 4.0.0)
   - GooglePlaces (= 4.0.0)
   - JupiterSDK (from `../`)
@@ -138,7 +139,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   Alamofire: 87bd8c952f9a4454320fce00d9cc3de57bcadaf5
-  Charts: cfa4e911e6dc289582c2fe011a0e87c03d96727f
+  Charts: d959d6723c8eedfdd0735dfc28cb0a71762ac4d9
   ExpyTableView: 19cf224c2ff04b1ec215ec52bc4ba6f81fa809ed
   Firebase: 5719b4f965f76643241a1bb8244483ff6117db39
   FirebaseCore: 6023faeada5afa95a349fccafb40900e32e9ac42
@@ -154,16 +155,16 @@ SPEC CHECKSUMS:
   GoogleToolboxForMac: 8bef7c7c5cf7291c687cf5354f39f9db6399ad34
   GoogleUtilities: 7f2f5a07f888cdb145101d6042bc4422f57e70b3
   GTMSessionFetcher: 5595ec75acf5be50814f81e9189490412bad82ba
-  JupiterSDK: db1f2caf47c8bbb21fbab548a71d7e6b988461cc
+  JupiterSDK: ec1390cb38bfb6a7462995b86282a53f4f0e6964
   nanopb: 59317e09cf1f1a0af72f12af412d54edf52603fc
   PromisesObjC: 3113f7f76903778cf4a0586bd1ab89329a0b7b97
-  Protobuf: b60ec2f51ad74765f44d0c09d2e0579d7de21745
+  Protobuf: 9e88c1e667d75aa2491d211f26ccddde4e8ad4cf
   SnapKit: e01d52ebb8ddbc333eefe2132acf85c8227d9c25
   SwiftAlgorithms: 38dda4731d19027fdeee1125f973111bf3386b53
   TensorFlowLiteC: a6702011fb661928634e59565b5fe262f69692d0
   TensorFlowLiteObjC: ece71b1e78f3df5952996c1606934b1d5538c875
   TensorFlowLiteSwift: ac8c816ae2d65f631a96151e7991c46412aec7eb
 
-PODFILE CHECKSUM: f55aa7968b25eb2efe54d0e232eac67c0ffefad0
+PODFILE CHECKSUM: 19b8a59356f43439f87c7ef268cce98266011b5d
 
 COCOAPODS: 1.11.3

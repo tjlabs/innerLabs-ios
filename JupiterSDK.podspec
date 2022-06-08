@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'JupiterSDK'
-  s.version          = '1.6.2'
+  s.version          = '1.5'
   s.summary          = 'JupiterSDK for iOS'
   s.swift_version    = '4.0'
   
@@ -31,14 +31,20 @@ Pod::Spec.new do |s|
   
   s.source_files = 'JupiterSDK/Classes/**/*'
   
-   s.resource_bundles = {
+  s.resource_bundles = {
      'JupiterSDK' => ['JupiterSDK/Assets/*.tflite']
-   }
-  
+  }
+   
+  s.pod_target_xcconfig = {
+       'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'arm64'
+     }
+  s.user_target_xcconfig = { 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'arm64' }
+
   # s.public_header_files = 'Pod/Classes/**/*.h'
   # s.frameworks = 'UIKit', 'MapKit'
   s.static_framework = true
   s.dependency 'Alamofire'
+  s.dependency 'FirebaseMLCommon'
   s.dependency 'Firebase/MLModelInterpreter', '6.25.0'
   
 end
