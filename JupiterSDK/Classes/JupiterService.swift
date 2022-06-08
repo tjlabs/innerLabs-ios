@@ -1,11 +1,7 @@
 import Foundation
 import CoreMotion
 import CoreLocation
-
-//import FirebaseCore
-//import FirebaseMLCommon
 import FirebaseMLModelInterpreter
-import TFLTensorFlowLite
 
 public class JupiterService: NSObject {
     
@@ -292,7 +288,7 @@ public class JupiterService: NSObject {
                 inputArray = [Input(user_id: "", index: 0, length: 0, heading: 0, pressure: 0, looking_flag: false, ble: [:], mobile_time: 0, device_model: "", os_version: 0)]
             }
         }
-        var tempOutput = NetworkManager.shared.jupiterResult
+        let tempOutput = NetworkManager.shared.jupiterResult
         
         if ((timeStamp - tempOutput.mobile_time) < recentThreshold) {
             jupiterOutput = NetworkManager.shared.jupiterResult
