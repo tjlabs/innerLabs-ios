@@ -68,9 +68,10 @@ class AddCardViewController: UIViewController, UITextFieldDelegate {
                 let cardColor: String = addedCard.cardColor
                 let mode: Int = addedCard.mode
                 let infoLevel: [String] = addedCard.infoLevel.components(separatedBy: " ")
+                let infoBuilding: [String] = addedCard.infoBuilding.components(separatedBy: " ")
                 
-                self.cardItemData.append(CardItemData(sector_id: id, sector_name: name, description: description,
-                                                                              cardColor: cardColor, mode: mode, infoLevel: infoLevel))
+                self.cardItemData.append(CardItemData(sector_id: id, sector_name: name, description: description, cardColor: cardColor, mode: mode, infoLevel: infoLevel, infoBuilding: infoBuilding))
+                
                 self.page = self.page + 4
             case "Update Conflict":
                 self.responseLabel.text = "이미 등록된 카드 입니다"
@@ -89,7 +90,7 @@ class AddCardViewController: UIViewController, UITextFieldDelegate {
     }
     
     func jsonToCard(json: String) -> AddCardSuccess {
-        let result = AddCardSuccess(message: "", sector_id: 100, sector_name: "", description: "", cardColor: "", mode: 0, infoLevel: "")
+        let result = AddCardSuccess(message: "", sector_id: 100, sector_name: "", description: "", cardColor: "", mode: 0, infoLevel: "", infoBuilding: "")
         let decoder = JSONDecoder()
 
         let jsonString = json

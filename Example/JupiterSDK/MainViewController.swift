@@ -8,6 +8,7 @@
 
 import UIKit
 import Alamofire
+import Kingfisher
 import JupiterSDK
 
 struct AppFontName {
@@ -131,8 +132,6 @@ class MainViewController: UIViewController, UITextFieldDelegate {
                     print("====================================")
                     print("")
                     
-//                    let result = String(data: res, encoding: .utf8) ?? ""
-                    
                     let returnedString = String(decoding: response.data!, as: UTF8.self)
                     let list = jsonToCardList(json: returnedString)
                     let myCard = list.sectors
@@ -143,30 +142,43 @@ class MainViewController: UIViewController, UITextFieldDelegate {
                     
                     if (myCard.isEmpty) {
                         print("최초 사용자 입니다")
-                        cardDatas.append(CardItemData(sector_id: 0, sector_name: "JUPITER", description: "카드를 터치해주세요", cardColor: "purple", mode: 0, infoLevel: ["7F"]))
+                        cardDatas.append(CardItemData(sector_id: 0, sector_name: "JUPITER", description: "카드를 터치해주세요", cardColor: "purple", mode: 0, infoLevel: ["7F"], infoBuilding: ["S3"]))
                     } else {
                         print("최초 사용자가 아닙니다")
-                        cardDatas.append(CardItemData(sector_id: 0, sector_name: "JUPITER", description: "카드를 터치해주세요", cardColor: "purple", mode: 0, infoLevel: ["7F"]))
+                        cardDatas.append(CardItemData(sector_id: 0, sector_name: "JUPITER", description: "카드를 터치해주세요", cardColor: "purple", mode: 0, infoLevel: ["7F"], infoBuilding: ["S3"]))
                         
                         print("Sector List :", myCard)
+                        
+                        KingfisherManager.shared.cache.clearCache()
+                        
                         for card in 0..<myCard.count {
                             let cardInfo: CardInfo = myCard[card]
                             let id: Int = cardInfo.sector_id
                             let name: String = cardInfo.sector_name
                             let description: String = cardInfo.description
                             let cardColor: String = cardInfo.cardColor
+                            
                             let mode: Int = cardInfo.mode
                             let infoLevel: [String] = cardInfo.infoLevel.components(separatedBy: " ")
+                            let infoBuilding: [String] = cardInfo.infoBuilding.components(separatedBy: " ")
                             
-                            cardDatas.append(CardItemData(sector_id: id, sector_name: name, description: description, cardColor: cardColor, mode: mode, infoLevel: infoLevel))
+                            // KingFisher Image Download
+                            let urlSector = URL(string: "https://storage.googleapis.com/jupiter_image/card/\(id)/main_image.png")
+                            let resourceSector = ImageResource(downloadURL: urlSector!, cacheKey: "\(id)Main")
+                            let urlSectorShow = URL(string: "https://storage.googleapis.com/jupiter_image/card/\(id)/edit_image.png")
+                            let resourceSectorShow = ImageResource(downloadURL: urlSectorShow!, cacheKey: "\(id)Show")
+                            KingfisherManager.shared.retrieveImage(with: resourceSector, completionHandler: nil)
+                            KingfisherManager.shared.retrieveImage(with: resourceSectorShow, completionHandler: nil)
+                            
+                            cardDatas.append(CardItemData(sector_id: id, sector_name: name, description: description, cardColor: cardColor, mode: mode, infoLevel: infoLevel, infoBuilding: infoBuilding))
                         }
                     }
                     
                     goToCardVC(cardDatas: cardDatas)
                     
-                    DispatchQueue.main.async {
-                        
-                    }
+//                    DispatchQueue.main.async {
+//
+//                    }
                 }
                 catch (let err){
                     print("")

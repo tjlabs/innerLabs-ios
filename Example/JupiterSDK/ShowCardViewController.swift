@@ -1,5 +1,7 @@
 import UIKit
+import Kingfisher
 import JupiterSDK
+
 
 protocol ShowCardDelegate {
     func sendCardItemData(data: [CardItemData])
@@ -221,7 +223,7 @@ extension ShowCardViewController: UICollectionViewDataSource {
         
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "ShowCardCollectionViewCell", for: indexPath) as! ShowCardCollectionViewCell
         
-        let sectorName = cardItemData[indexPath.item].sector_name
+        let sectorName: String = cardItemData[indexPath.item].sector_name
         let sectorID = cardItemData[indexPath.item].sector_id
         cell.nameLabel.text = sectorName
         
@@ -231,7 +233,14 @@ extension ShowCardViewController: UICollectionViewDataSource {
         cell.sectorShowImageLeading.constant = (width/ratio)
         
         cell.cardShowImage.image = cardShowImages[indexPath.item]
-        cell.sectorShowImage.image = sectorShowImages[indexPath.item]
+        
+        if (indexPath.item == 0) {
+            cell.sectorShowImage.image = sectorShowImages[indexPath.item]
+        } else {
+            let urlSectorShow = URL(string: "https://storage.googleapis.com/jupiter_image/card/\(sectorID)/edit_image.png")
+            let resourceSectorShow = ImageResource(downloadURL: urlSectorShow!, cacheKey: "\(sectorID)Show")
+            cell.sectorShowImage.kf.setImage(with: resourceSectorShow, placeholder: nil, options: [.transition(.fade(1.2))], completionHandler: nil)
+        }
         
         if (isEditMode) {
             if (sectorID != 0) {

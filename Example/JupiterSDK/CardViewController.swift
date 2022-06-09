@@ -1,7 +1,9 @@
 import UIKit
+import Kingfisher
 import JupiterSDK
 
-class CardViewController: UIViewController, MapViewPageDelegate, AddCardDelegate, ShowCardDelegate, SendPageDelegate {
+
+class CardViewController: UIViewController, MapViewPageDelegate, AddCardDelegate, ShowCardDelegate {
     
     func sendCardItemData(data: [CardItemData]) {
         cardItemData = data
@@ -344,6 +346,7 @@ extension CardViewController: UICollectionViewDataSource, UICollectionViewDelega
 //        cell.backgroundColor = .black
         
         // Sector Name & Description
+        let sectorID: Int = cardItemData[mod].sector_id
         cell.sectorName.text = cardItemData[mod].sector_name
         cell.sectorDescription.text = cardItemData[mod].description
         
@@ -352,9 +355,14 @@ extension CardViewController: UICollectionViewDataSource, UICollectionViewDelega
         cell.cardImageView.image = cardImages[mod]
         
 //        cell.sectorNameLeading.constant = floor((cell.sectorImageView.frame.size.width - cell.sectorImageView.frame.size.height * 0.6)/2)
-        cell.sectorImageView.image = sectorImages[mod]
-//        print("Sector Image :", cell.sectorImageView.frame.size)
-
+        
+        if (mod == 0) {
+            cell.sectorImageView.image = sectorImages[mod]
+        } else {
+            let urlSector = URL(string: "https://storage.googleapis.com/jupiter_image/card/\(sectorID)/main_image.png")
+            let resourceSector = ImageResource(downloadURL: urlSector!, cacheKey: "\(sectorID)Main")
+            cell.sectorImageView.kf.setImage(with: resourceSector, placeholder: nil, options: [.transition(.fade(1.2))], completionHandler: nil)
+        }
         
         return cell
     }

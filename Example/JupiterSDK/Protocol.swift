@@ -2,6 +2,26 @@ import Foundation
 
 let JUPITER_URL = "https://where-run-card-skrgq3jc5a-du.a.run.app/cards"
 
+struct CardItemData: Codable {
+    public var sector_id: Int
+    public var sector_name: String
+    public var description: String
+    public var cardColor: String
+    public var mode: Int
+    public var infoLevel: [String]
+    public var infoBuilding: [String]
+    
+    public init(sector_id: Int, sector_name: String, description: String, cardColor: String, mode: Int, infoLevel: [String], infoBuilding: [String]) {
+        self.sector_id = sector_id
+        self.sector_name = sector_name
+        self.description = description
+        self.cardColor = cardColor
+        self.mode = mode
+        self.infoLevel = infoLevel
+        self.infoBuilding = infoBuilding
+    }
+}
+
 struct Login: Codable {
     var user_id: String
 }
@@ -24,6 +44,7 @@ struct AddCardSuccess: Codable {
     var cardColor: String
     var mode: Int
     var infoLevel: String
+    var infoBuilding: String
 }
 
 struct AddCardFail: Codable {
@@ -46,6 +67,7 @@ struct CardInfo: Codable {
     var cardColor: String
     var mode: Int
     var infoLevel: String
+    var infoBuilding: String
 }
 
 struct ResultToDisplay {

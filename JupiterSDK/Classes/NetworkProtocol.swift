@@ -1,29 +1,5 @@
 import Foundation
 
-public struct CardItemData: Codable {
-    public var sector_id: Int
-    public var sector_name: String
-    public var description: String
-    public var cardColor: String
-    public var mode: Int
-    public var infoLevel: [String]
-    
-    public init(sector_id: Int, sector_name: String, description: String, cardColor: String, mode: Int, infoLevel: [String]) {
-        self.sector_id = sector_id
-        self.sector_name = sector_name
-        self.description = description
-        self.cardColor = cardColor
-        self.mode = mode
-        self.infoLevel = infoLevel
-    }
-}
-
-public struct CardList: Codable {
-    var sectors = [CardItemData]()
-    
-    public init() {}
-}
-
 struct SendDataInfo: Encodable {
     let timestamp: String
     let value1: String
@@ -99,8 +75,9 @@ public struct Output: Codable {
     public var scr: Double
     public var phase : Int
     public var calculated_time: Double
-    
-    public func toString() -> String {
-        return "{x : \(x), y : \(y), mobile_time : \(mobile_time), scc : \(scc), unit_idx : \(scr), scr : \(index), index : \(index), level : \(level), building : \(building), phase : \(phase), calculated_time : \(calculated_time)}"
-    }
 }
+    
+//    public func toString() -> String {
+//        return "{x : \(x), y : \(y), mobile_time : \(mobile_time), scc : \(scc), unit_idx : \(scr), scr : \(index), index : \(index), level : \(level), building : \(building), phase : \(phase), calculated_time : \(calculated_time)}"
+//    }
+//}

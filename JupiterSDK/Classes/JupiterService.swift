@@ -109,16 +109,13 @@ public class JupiterService: NSObject {
             unitDRGenerator.setMode(mode: mode)
             
             if (mode == "PDR") {
-//                url = "https://where-run-os-skrgq3jc5a-du.a.run.app/calc"  // Android
                 url = "https://where-run-ios-skrgq3jc5a-du.a.run.app/calc" // iOS
                 unitModeInput = PDR_INPUT_NUM
                 recentThreshold = 800
-//                recentThreshold = 1400
             } else if (mode == "DR") {
                 url = "https://where-run-ios-dr-skrgq3jc5a-du.a.run.app/calc"
                 unitModeInput = DR_INPUT_NUM
                 recentThreshold = 2000
-//                recentThreshold = 2800
             }
             
             unitDRGenerator.setDRModel()
@@ -254,7 +251,7 @@ public class JupiterService: NSObject {
     
     @objc func timerUpdate() {
         let timeStamp = getCurrentTimeInMilliseconds()
-        let sensor = checkSensorData(sensorData: sensorData)
+//        let sensor = checkSensorData(sensorData: sensorData)
         
         let dt = timeStamp - pastTime
         pastTime = timeStamp
@@ -272,7 +269,7 @@ public class JupiterService: NSObject {
                 bleDictionary.keys.forEach { bleDictionary[$0] = bleDictionary[$0]! + 7 }
             }
             
-            var data = Input(user_id: uuid, index: unitDRInfo.index, length: unitDRInfo.length, heading: unitDRInfo.heading, pressure: sensorData.pressure[0], looking_flag: unitDRInfo.lookingFlag, ble: bleDictionary, mobile_time: timeStamp, device_model: deviceModel, os_version: osVersion)
+            let data = Input(user_id: uuid, index: unitDRInfo.index, length: unitDRInfo.length, heading: unitDRInfo.heading, pressure: sensorData.pressure[0], looking_flag: unitDRInfo.lookingFlag, ble: bleDictionary, mobile_time: timeStamp, device_model: deviceModel, os_version: osVersion)
             
             inputArray.append(data)
             if ((inputArray.count-1) == unitModeInput) {

@@ -29,7 +29,6 @@
 		B360D89128090D6A0084FB22 /* NotoSansKR-Black.otf in Resources */ = {isa = PBXBuildFile; fileRef = B360D88B28090D690084FB22 /* NotoSansKR-Black.otf */; };
 		B360D89228090D6A0084FB22 /* NotoSansKR-Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = B360D88C28090D6A0084FB22 /* NotoSansKR-Medium.otf */; };
 		B360D89328090D6A0084FB22 /* NotoSansKR-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = B360D88D28090D6A0084FB22 /* NotoSansKR-Regular.otf */; };
-		B367526F2817CB3C00E4FA6C /* CardBackViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B367526E2817CB3C00E4FA6C /* CardBackViewController.swift */; };
 		B3844E8E28099EE3007A5215 /* CardCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3844E8C28099EE3007A5215 /* CardCollectionViewCell.swift */; };
 		B3844E8F28099EE3007A5215 /* CardCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B3844E8D28099EE3007A5215 /* CardCollectionViewCell.xib */; };
 		B38807EC283333250029B174 /* KIST_RP_B1.csv in Resources */ = {isa = PBXBuildFile; fileRef = B38807EB283333250029B174 /* KIST_RP_B1.csv */; };
@@ -117,7 +116,6 @@
 		B360D88B28090D690084FB22 /* NotoSansKR-Black.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "NotoSansKR-Black.otf"; sourceTree = "<group>"; };
 		B360D88C28090D6A0084FB22 /* NotoSansKR-Medium.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "NotoSansKR-Medium.otf"; sourceTree = "<group>"; };
 		B360D88D28090D6A0084FB22 /* NotoSansKR-Regular.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "NotoSansKR-Regular.otf"; sourceTree = "<group>"; };
-		B367526E2817CB3C00E4FA6C /* CardBackViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardBackViewController.swift; sourceTree = "<group>"; };
 		B3844E8C28099EE3007A5215 /* CardCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardCollectionViewCell.swift; sourceTree = "<group>"; };
 		B3844E8D28099EE3007A5215 /* CardCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CardCollectionViewCell.xib; sourceTree = "<group>"; };
 		B38807EB283333250029B174 /* KIST_RP_B1.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = KIST_RP_B1.csv; sourceTree = "<group>"; };
@@ -239,7 +237,6 @@
 				B3B4F85828114EEB009F9E6C /* ShowCardCollectionViewCell.swift */,
 				B3B4F85928114EEB009F9E6C /* ShowCardCollectionViewCell.xib */,
 				B3DE146C280E7146006DA43C /* AddCardViewController.swift */,
-				B367526E2817CB3C00E4FA6C /* CardBackViewController.swift */,
 				B3D194DE282E2782004E6F9A /* GuideViewController.swift */,
 				B3CC3C06283231E000D50522 /* PrivacyPolicyViewController.swift */,
 				607FACD91AFB9204008FA782 /* Main.storyboard */,
@@ -581,6 +578,7 @@
 				"${BUILT_PRODUCTS_DIR}/GTMSessionFetcher/GTMSessionFetcher.framework",
 				"${BUILT_PRODUCTS_DIR}/GoogleToolboxForMac/GoogleToolboxForMac.framework",
 				"${BUILT_PRODUCTS_DIR}/GoogleUtilities/GoogleUtilities.framework",
+				"${BUILT_PRODUCTS_DIR}/Kingfisher/Kingfisher.framework",
 				"${BUILT_PRODUCTS_DIR}/PromisesObjC/FBLPromises.framework",
 				"${BUILT_PRODUCTS_DIR}/Protobuf/Protobuf.framework",
 				"${BUILT_PRODUCTS_DIR}/SnapKit/SnapKit.framework",
@@ -595,6 +593,7 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GTMSessionFetcher.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GoogleToolboxForMac.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GoogleUtilities.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Kingfisher.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FBLPromises.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Protobuf.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SnapKit.framework",
@@ -636,7 +635,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				B3D194DF282E2782004E6F9A /* GuideViewController.swift in Sources */,
-				B367526F2817CB3C00E4FA6C /* CardBackViewController.swift in Sources */,
 				B3B156DE282397AF0058B538 /* ImageOverlay.swift in Sources */,
 				B3BD69AF27E9A78000A32A7A /* SectorContainerTableViewCell.swift in Sources */,
 				B3BD69A127E9A52500A32A7A /* applyShadow.swift in Sources */,

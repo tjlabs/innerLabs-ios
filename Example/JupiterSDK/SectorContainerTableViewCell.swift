@@ -40,6 +40,7 @@ class SectorContainerTableViewCell: UITableViewCell {
     }
     
     private func setCells() {
+//        cardData?.sector_name
         LevelCollectionViewCell.register(target: levelCollectionView)
     }
     
@@ -56,6 +57,10 @@ class SectorContainerTableViewCell: UITableViewCell {
         
         let level: String = levelList[idx]
         imageLevel.image = UIImage(named: level)
+        
+//        let urlLevel = URL(string: "https://storage.googleapis.com/jupiter_image/map/\(sectorName)/\(building)_\(level).png")
+//        let resourceLevel = ImageResource(downloadURL: urlSector!, cacheKey: "\(sectorName)Main")
+//        cell.sectorImageView.kf.setImage(with: urlLevel, placeholder: nil, options: [.transition(.fade(1.2))], completionHandler: nil)
     }
     
     private func drawRP(RP_X: [Double], RP_Y: [Double], XY: [Double]) {
