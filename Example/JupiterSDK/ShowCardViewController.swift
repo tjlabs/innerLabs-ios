@@ -80,24 +80,6 @@ class ShowCardViewController: UIViewController, AddCardDelegate {
             case 0:
                 sectorImage = UIImage(named: "tjlabsShow")!
                 sectorShowImages.append(sectorImage)
-            case 1:
-                sectorImage = UIImage(named: "kistShow")!
-                sectorShowImages.append(sectorImage)
-            case 2:
-                sectorImage = UIImage(named: "kistShow")!
-                sectorShowImages.append(sectorImage)
-            case 3:
-                sectorImage = UIImage(named: "parkingPedShow")!
-                sectorShowImages.append(sectorImage)
-            case 4:
-                sectorImage = UIImage(named: "parkingCarShow")!
-                sectorShowImages.append(sectorImage)
-            case 5:
-                sectorImage = UIImage(named: "coexShow")!
-                sectorShowImages.append(sectorImage)
-            case 6:
-                sectorImage = UIImage(named: "coexShow")!
-                sectorShowImages.append(sectorImage)
             default:
                 sectorImage = UIImage(named: "tjlabsShow")!
                 sectorShowImages.append(sectorImage)

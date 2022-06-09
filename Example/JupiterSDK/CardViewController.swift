@@ -165,24 +165,6 @@ class CardViewController: UIViewController, MapViewPageDelegate, AddCardDelegate
             case 0:
                 sectorImage = UIImage(named: "sectorDefault")!
                 sectorImages.append(sectorImage)
-            case 1:
-                sectorImage = UIImage(named: "sectorKist")!
-                sectorImages.append(sectorImage)
-            case 2:
-                sectorImage = UIImage(named: "sectorKist")!
-                sectorImages.append(sectorImage)
-            case 3:
-                sectorImage = UIImage(named: "sectorParkingPed")!
-                sectorImages.append(sectorImage)
-            case 4:
-                sectorImage = UIImage(named: "sectorParkingCar")!
-                sectorImages.append(sectorImage)
-            case 5:
-                sectorImage = UIImage(named: "sectorCoex")!
-                sectorImages.append(sectorImage)
-            case 6:
-                sectorImage = UIImage(named: "sectorCoex")!
-                sectorImages.append(sectorImage)
             default:
                 sectorImage = UIImage(named: "sectorDefault")!
                 sectorImages.append(sectorImage)

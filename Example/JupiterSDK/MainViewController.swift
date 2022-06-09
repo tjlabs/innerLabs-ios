@@ -149,7 +149,8 @@ class MainViewController: UIViewController, UITextFieldDelegate {
                         
                         print("Sector List :", myCard)
                         
-                        KingfisherManager.shared.cache.clearCache()
+                        KingfisherManager.shared.cache.clearMemoryCache()
+                        KingfisherManager.shared.cache.clearDiskCache { print("Clear Cache Done !") }
                         
                         for card in 0..<myCard.count {
                             let cardInfo: CardInfo = myCard[card]
@@ -164,9 +165,11 @@ class MainViewController: UIViewController, UITextFieldDelegate {
                             
                             // KingFisher Image Download
                             let urlSector = URL(string: "https://storage.googleapis.com/jupiter_image/card/\(id)/main_image.png")
-                            let resourceSector = ImageResource(downloadURL: urlSector!, cacheKey: "\(id)Main")
                             let urlSectorShow = URL(string: "https://storage.googleapis.com/jupiter_image/card/\(id)/edit_image.png")
+                            
+                            let resourceSector = ImageResource(downloadURL: urlSector!, cacheKey: "\(id)Main")
                             let resourceSectorShow = ImageResource(downloadURL: urlSectorShow!, cacheKey: "\(id)Show")
+                            
                             KingfisherManager.shared.retrieveImage(with: resourceSector, completionHandler: nil)
                             KingfisherManager.shared.retrieveImage(with: resourceSectorShow, completionHandler: nil)
                             
