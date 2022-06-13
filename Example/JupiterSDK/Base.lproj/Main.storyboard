@@ -801,10 +801,13 @@
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="1bo-bz-bmJ">
-                                        <rect key="frame" x="5" y="765" width="90" height="39"/>
+                                        <rect key="frame" x="5" y="724" width="90" height="60"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="60" id="Vcv-5R-XNS"/>
+                                        </constraints>
                                         <fontDescription key="fontDescription" name="NotoSansKR-Medium" family="Noto Sans KR" pointSize="18"/>
                                         <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                                        <state key="normal" title="Logout">
+                                        <state key="normal" image="logoutButton">
                                             <color key="titleColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         </state>
                                         <connections>
@@ -816,7 +819,7 @@
                                 <constraints>
                                     <constraint firstItem="UYG-M7-TRh" firstAttribute="leading" secondItem="pjn-OW-keg" secondAttribute="leading" constant="5" id="2gp-KM-4pK"/>
                                     <constraint firstItem="W3K-zo-oO3" firstAttribute="leading" secondItem="pjn-OW-keg" secondAttribute="leading" constant="5" id="3VP-OG-hLK"/>
-                                    <constraint firstAttribute="bottom" secondItem="1bo-bz-bmJ" secondAttribute="bottom" constant="40" id="4gb-hk-vVK"/>
+                                    <constraint firstAttribute="bottom" secondItem="1bo-bz-bmJ" secondAttribute="bottom" constant="60" id="4gb-hk-vVK"/>
                                     <constraint firstAttribute="trailing" secondItem="UYG-M7-TRh" secondAttribute="trailing" constant="5" id="4wu-8p-mOB"/>
                                     <constraint firstItem="hcr-0C-B4e" firstAttribute="leading" secondItem="pjn-OW-keg" secondAttribute="leading" constant="5" id="7WE-kn-vd5"/>
                                     <constraint firstItem="UYG-M7-TRh" firstAttribute="top" secondItem="hcr-0C-B4e" secondAttribute="bottom" constant="20" id="9EF-4S-ghs"/>
@@ -903,6 +906,7 @@
         <image name="innerLabsBI" width="341.33334350585938" height="176.66667175292969"/>
         <image name="innerLabsNameCard" width="389.66665649414062" height="53"/>
         <image name="loginButton" width="349.33334350585938" height="58.333332061767578"/>
+        <image name="logoutButton" width="22.333333969116211" height="22.333333969116211"/>
         <image name="orangeCardTop" width="390" height="95"/>
         <image name="purpleCardTop" width="390" height="95"/>
         <image name="showCard" width="78" height="22"/>

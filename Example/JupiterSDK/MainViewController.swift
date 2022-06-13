@@ -94,7 +94,6 @@ class MainViewController: UIViewController, UITextFieldDelegate {
         else {
             isSaveUuid = false
         }
-//        print("Save UUID : \(isSaveUuid)")
     }
     
     func postLogin(url: String, input: Login) {

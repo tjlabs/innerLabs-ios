@@ -13,7 +13,7 @@ protocol GalleryViewPageDelegate {
     func sendPage(data: Int)
 }
 
-class GalleryViewController: UIViewController, WKNavigationDelegate {
+class GalleryViewController: UIViewController, WKNavigationDelegate, UIScrollViewDelegate {
 //    var url = URL(string: "https://tjlabs.notion.site/Inner-Labs-62a2233766be4bc6899d101484b360b8")!
 //    var url = URL(string: "https://tjlabscorp.com")!
     var url = URL(string: "https://tjlabscorp.tistory.com/3")!
@@ -39,14 +39,11 @@ class GalleryViewController: UIViewController, WKNavigationDelegate {
         
         let request = URLRequest.init(url: url, cachePolicy: URLRequest.CachePolicy.useProtocolCachePolicy, timeoutInterval: 60 * 60 * 24)
         webView.load(request)
+        
+        self.webView.navigationDelegate = self
+        self.webView.scrollView.delegate = self
         self.webView.scrollView.alwaysBounceVertical = false
         self.webView.scrollView.bounces = false
-        
-        
-//        var scrollPoint = self.view.convert(CGPoint(x: 0, y: 0), to: webView.scrollView)
-//        scrollPoint = CGPoint(x: scrollPoint.x, y: webView.scrollView.contentSize.height - webView.frame.size.height)
-//        print("WebView ScrollPoint :", scrollPoint)
-//        webView.scrollView.setContentOffset(scrollPoint, animated: true)
     }
     
     func setCardData(cardData: CardItemData) {
@@ -61,7 +58,21 @@ class GalleryViewController: UIViewController, WKNavigationDelegate {
         self.navigationController?.popViewController(animated: true)
     }
     
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+//        print(scrollView.contentOffset.y)
+    }
+    
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-        print("End Load")
+//        print("WebView is loaded")
+        scrollToBottom()
+    }
+    
+    func scrollToBottom() {
+        let bottomOffset = CGPoint(x: 0, y: self.webView.scrollView.contentSize.height - self.webView.scrollView.bounds.height + self.webView.scrollView.contentInset.bottom)
+        print(self.webView.scrollView.contentSize.height)
+        print(self.webView.scrollView.bounds.height)
+        print(self.webView.scrollView.contentInset.bottom)
+        print(bottomOffset)
+        self.webView.scrollView.setContentOffset(bottomOffset, animated: true)
     }
 }

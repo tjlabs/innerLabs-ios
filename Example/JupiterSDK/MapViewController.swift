@@ -113,6 +113,9 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
                 
                 RP[nameLevel] = rpXY
             }
+            
+            let fname: String = "\(cardData!.sector_id)/\(cardData!.infoBuilding[0])_\(cardData!.infoLevel[0]).csv"
+            downloadRP(fileName: fname)
             isRadioMap = true
             
             let first: String = (cardData?.infoLevel[0])!
@@ -286,6 +289,46 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
         let rpXY:[[Double]] = parseCSV(url: URL(fileURLWithPath: path))
         
         return rpXY
+    }
+    
+    private func downloadRP(fileName: String) {
+        // Create destination URL
+        let documentsUrl:URL =  FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+        
+        let saveName: [String] = fileName.components(separatedBy: "/")
+        let destinationFileUrl = documentsUrl.appendingPathComponent(saveName[1])
+        
+//        if FileManager.default.fileExists(atPath: destinationFileUrl) {
+//            do {
+//                try FileManager.default.removeItem(atPath: destinationFileUrl)
+//            } catch let error {
+//                print("Error cannot remove file")
+//            }
+//        }
+
+        //Create URL to the source file you want to download
+        let fileString: String = "https://storage.cloud.google.com/jupiter_image/rp/ios/" + fileName
+        print("RP URL :", fileString)
+        let fileURL = URL(string: fileString)
+        let sessionConfig = URLSessionConfiguration.default
+        let session = URLSession(configuration: sessionConfig)
+        let request = URLRequest(url:fileURL!)
+        let task = session.downloadTask(with: request) { (tempLocalUrl, response, error) in
+            if let tempLocalUrl = tempLocalUrl, error == nil {
+                // Success
+                if let statusCode = (response as? HTTPURLResponse)?.statusCode {
+                    print("Successfully downloaded. Status code: \(statusCode)")
+                }
+                do {
+                    try FileManager.default.copyItem(at: tempLocalUrl, to: destinationFileUrl)
+                } catch (let writeError) {
+                    print("Error creating a file \(destinationFileUrl) : \(writeError)")
+                }
+            } else {
+                print("Error took place while downloading a file. Error description: %@", error?.localizedDescription);
+            }
+        }
+        task.resume()
     }
     
     // Display Outputs
