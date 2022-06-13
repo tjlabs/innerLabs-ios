@@ -74,6 +74,9 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
     var coordToDisplay = CoordToDisplay()
     var resultToDisplay = ResultToDisplay()
     
+    var isShowRP = false
+    var countTap: Int = 0
+    
     // View
     var defaultHeight: CGFloat = 100
     
@@ -149,6 +152,7 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
         jupiterService.stopService()
         self.navigationController?.popViewController(animated: true)
     }
+    
     @IBAction func tapShowButton(_ sender: UIButton) {
         UIView.animate(withDuration: 0.5, delay: 0.0, options: .curveLinear, animations: {
         }) { (success) in
@@ -173,6 +177,24 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
         
         let imageName: String = cardData.cardColor + "CardTop"
         self.cardTopImage.image = UIImage(named: imageName)!
+        
+        self.sectorNameLabel.isUserInteractionEnabled = true
+        let tapRecognizer = UITapGestureRecognizer()
+        tapRecognizer.addTarget(self, action: #selector(self.showRP))
+        self.sectorNameLabel.addGestureRecognizer(tapRecognizer)
+    }
+    
+    @objc func showRP() {
+        countTap += 1
+        
+        if (countTap == 5) {
+            isShowRP = true
+            self.sectorNameLabel.textColor = .yellow
+        } else if (countTap > 9) {
+            isShowRP = false
+            countTap = 0
+            self.sectorNameLabel.textColor = .white
+        }
     }
     
     func showContainerTableView() {
@@ -185,12 +207,6 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
     
     func fixChartHeight(flag: Bool) {
         if (flag) {
-//            let xMin = rpX.min()!
-//            let xMax = rpX.max()!
-//            let yMin = rpY.min()!
-//            let yMax = rpY.max()!
-            
-//            let ratio = (yMax - yMin) / (xMax - xMin)
             let ratio: Double = 114900 / 68700
             jupiterTableViewHeight.constant = jupiterTableView.bounds.width * ratio
 
@@ -202,6 +218,7 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
             containerViewHeight.constant = defaultHeight
         } else {
             jupiterTableViewHeight.constant = 480
+//            jupiterTableViewHeight.constant = 880
             containerViewHeight.constant = 150
         }
     }
@@ -450,10 +467,10 @@ extension MapViewController: UITableViewDataSource {
                         SectorContainerTableViewCell else {return UITableViewCell()}
                 
                 sectorContainerTVC.backgroundColor = .systemGray6
-                sectorContainerTVC.configure(cardData: cardData!, RP: RP)
+                sectorContainerTVC.configure(cardData: cardData!, RP: RP, flag: isShowRP)
                 
                 if (cardData?.sector_id == 1 || cardData?.sector_id == 2 || cardData?.sector_id == 3 || cardData?.sector_id == 4) {
-                    sectorContainerTVC.updateCoord(data: coordToDisplay)
+                    sectorContainerTVC.updateCoord(data: coordToDisplay, flag: isShowRP)
                 }
                 
                 sectorContainerTVC.selectionStyle = .none

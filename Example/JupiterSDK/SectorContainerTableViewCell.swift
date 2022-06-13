@@ -22,10 +22,14 @@ class SectorContainerTableViewCell: UITableViewCell {
     var cardData: CardItemData?
     var RP: [String: [[Double]]]?
     var XY: [Double] = [0, 0]
+    var flagRP: Bool = false
 
     private var levelList = [String]()
     private var currentLevel: String = ""
     private var countLevelChanged: Int = 0
+    
+    var sectorID: Int = 0
+    var building: String = ""
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -40,7 +44,10 @@ class SectorContainerTableViewCell: UITableViewCell {
     }
     
     private func setCells() {
-//        cardData?.sector_name
+        
+//        sectorID = cardData!.sector_id
+//        building = cardData?.infoBuilding
+        
         LevelCollectionViewCell.register(target: levelCollectionView)
     }
     
@@ -57,8 +64,13 @@ class SectorContainerTableViewCell: UITableViewCell {
         
         let level: String = levelList[idx]
         imageLevel.image = UIImage(named: level)
+//        print("Width :", imageLevel.image!.size.width)
+//        print("Height :", imageLevel.image!.size.height)
         
-//        let urlLevel = URL(string: "https://storage.googleapis.com/jupiter_image/map/\(sectorName)/\(building)_\(level).png")
+//        guard let urlLevel = URL(string: "https://storage.googleapis.com/jupiter_image/map/\(sectorID)/\(building)_\(level).png") else {
+//            return nil
+//        }
+        
 //        let resourceLevel = ImageResource(downloadURL: urlSector!, cacheKey: "\(sectorName)Main")
 //        cell.sectorImageView.kf.setImage(with: urlLevel, placeholder: nil, options: [.transition(.fade(1.2))], completionHandler: nil)
     }
@@ -217,54 +229,14 @@ class SectorContainerTableViewCell: UITableViewCell {
         scatterChart.data = chartData
     }
     
-    private func drawTest() {
-        
-        let randomNumX = Double.random(in: 10...40)
-        let randomNumY = Double.random(in: 10...40)
-        
-        let values1 = (0..<1).map { (i) -> ChartDataEntry in
-            return ChartDataEntry(x: randomNumX, y: randomNumY)
-        }
-        
-        let set1 = ScatterChartDataSet(entries: values1, label: "TEST")
-        set1.setScatterShape(.circle)
-        set1.setColor(ChartColorTemplates.colorful()[2])
-        set1.scatterShapeSize = 15
-        
-        let chartData = ScatterChartData(dataSet: set1)
-        chartData.setDrawValues(false)
-        
-        let chartFlag: Bool = false
-        scatterChart.xAxis.drawGridLinesEnabled = chartFlag
-        scatterChart.leftAxis.drawGridLinesEnabled = chartFlag
-        scatterChart.rightAxis.drawGridLinesEnabled = chartFlag
-        
-        scatterChart.xAxis.drawAxisLineEnabled = chartFlag
-        scatterChart.leftAxis.drawAxisLineEnabled = chartFlag
-        scatterChart.rightAxis.drawAxisLineEnabled = chartFlag
-        
-        scatterChart.xAxis.centerAxisLabelsEnabled = chartFlag
-        scatterChart.leftAxis.centerAxisLabelsEnabled = chartFlag
-        scatterChart.rightAxis.centerAxisLabelsEnabled = chartFlag
-
-        scatterChart.xAxis.drawLabelsEnabled = chartFlag
-        scatterChart.leftAxis.drawLabelsEnabled = chartFlag
-        scatterChart.rightAxis.drawLabelsEnabled = chartFlag
-        
-        scatterChart.legend.enabled = chartFlag
-        
-        scatterChart.backgroundColor = .clear
-        
-        scatterChart.data = chartData
-    }
-    
-    internal func configure(cardData: CardItemData, RP: [String: [[Double]]]) {
+    internal func configure(cardData: CardItemData, RP: [String: [[Double]]], flag: Bool) {
         self.cardData = cardData
         self.levelList = (cardData.infoLevel)
         self.RP = RP
+        self.flagRP = flag
     }
     
-    func updateCoord(data: CoordToDisplay) {
+    func updateCoord(data: CoordToDisplay, flag: Bool) {
         self.XY[0] = data.x
         self.XY[1] = data.y
         
@@ -283,11 +255,14 @@ class SectorContainerTableViewCell: UITableViewCell {
             scatterChart.alpha = 1.0
             
             let rp: [[Double]] = RP?[currentLevel] ?? [[Double]]()
-//            drawRP(RP_X: rp[0], RP_Y: rp[1], XY: XY)
-            drawUser(RP_X: rp[0], RP_Y: rp[1], XY: XY)
+            if (flag) {
+                drawRP(RP_X: rp[0], RP_Y: rp[1], XY: XY)
+            } else {
+                drawUser(RP_X: rp[0], RP_Y: rp[1], XY: XY)
+            }
+            
         } else {
             scatterChart.alpha = 0
-//            drawTest()
         }
             
         levelCollectionView.reloadData()
@@ -305,8 +280,13 @@ extension SectorContainerTableViewCell : UICollectionViewDelegate{
             scatterChart.alpha = 0
         } else {
             scatterChart.alpha = 1.0
-//            drawRP(RP_X: rp[0], RP_Y: rp[1], XY: XY)
-            drawUser(RP_X: rp[0], RP_Y: rp[1], XY: XY)
+            
+            if (flagRP) {
+                drawRP(RP_X: rp[0], RP_Y: rp[1], XY: XY)
+            } else {
+                drawUser(RP_X: rp[0], RP_Y: rp[1], XY: XY)
+            }
+            
             fetchLevel(currentLevel: currentLevel, levelList: levelList)
         }
         

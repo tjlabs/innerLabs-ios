@@ -167,6 +167,8 @@ class MainViewController: UIViewController, UITextFieldDelegate {
                             let urlSector = URL(string: "https://storage.googleapis.com/jupiter_image/card/\(id)/main_image.png")
                             let urlSectorShow = URL(string: "https://storage.googleapis.com/jupiter_image/card/\(id)/edit_image.png")
                             
+//                            guard let a = URL(string: "https://storage.googleapis.com/jupiter_image/card/\(id)/main_image.png") else { nil }
+                            
                             let resourceSector = ImageResource(downloadURL: urlSector!, cacheKey: "\(id)Main")
                             let resourceSectorShow = ImageResource(downloadURL: urlSectorShow!, cacheKey: "\(id)Show")
                             

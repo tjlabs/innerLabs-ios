@@ -3,7 +3,7 @@ import Kingfisher
 import JupiterSDK
 
 
-class CardViewController: UIViewController, MapViewPageDelegate, AddCardDelegate, ShowCardDelegate {
+class CardViewController: UIViewController, MapViewPageDelegate, GalleryViewPageDelegate, AddCardDelegate, ShowCardDelegate {
     
     func sendCardItemData(data: [CardItemData]) {
         cardItemData = data
@@ -268,6 +268,11 @@ class CardViewController: UIViewController, MapViewPageDelegate, AddCardDelegate
         }
     }
     
+    @IBAction func tapLoginInfoButton(_ sender: UIButton) {
+        showPopUp(title: "로그인 정보", message: self.uuid)
+    }
+    
+    
     @IBAction func tapShowPrivacyPolicy(_ sender: UIButton) {
         showPPVC()
     }
@@ -304,6 +309,10 @@ class CardViewController: UIViewController, MapViewPageDelegate, AddCardDelegate
         addCardVC.delegate = self
         
         self.present(addCardVC, animated: true, completion: nil)
+    }
+    
+    @IBAction func tapLogoutButton(_ sender: UIButton) {
+        self.navigationController?.popToRootViewController(animated: true)
     }
     
 }
@@ -368,7 +377,14 @@ extension CardViewController: UICollectionViewDataSource, UICollectionViewDelega
             guard let guideVC = self.storyboard?.instantiateViewController(withIdentifier: "GuideViewController") as? GuideViewController else { return }
             guideVC.page = currentPage
             self.navigationController?.pushViewController(guideVC, animated: true)
-        } else {
+        } else if (sector_id == 7) {
+            guard let galleryVC = self.storyboard?.instantiateViewController(withIdentifier: "GalleryViewController") as? GalleryViewController else { return }
+            galleryVC.cardData = cardItemData[mod]
+            galleryVC.uuid = uuid
+            galleryVC.page = currentPage
+            self.navigationController?.pushViewController(galleryVC, animated: true)
+        }
+        else {
             guard let mapVC = self.storyboard?.instantiateViewController(withIdentifier: "MapViewController") as? MapViewController else { return }
             mapVC.cardData = cardItemData[mod]
             mapVC.uuid = uuid

@@ -46,6 +46,8 @@
 		B3B3610B28295E1D00B8E876 /* Autoway_RP_B4.csv in Resources */ = {isa = PBXBuildFile; fileRef = B3B3610A28295E1D00B8E876 /* Autoway_RP_B4.csv */; };
 		B3B4F85A28114EEB009F9E6C /* ShowCardCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3B4F85828114EEB009F9E6C /* ShowCardCollectionViewCell.swift */; };
 		B3B4F85B28114EEB009F9E6C /* ShowCardCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B3B4F85928114EEB009F9E6C /* ShowCardCollectionViewCell.xib */; };
+		B3B7FBF52856DA4000E23EDF /* PopUpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3B7FBF42856DA4000E23EDF /* PopUpViewController.swift */; };
+		B3B7FBF72856F43200E23EDF /* GalleryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3B7FBF62856F43200E23EDF /* GalleryViewController.swift */; };
 		B3BD699827E9A4A500A32A7A /* ColorPalette.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3BD699727E9A4A500A32A7A /* ColorPalette.swift */; };
 		B3BD699A27E9A4BE00A32A7A /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B3BD699927E9A4BE00A32A7A /* Colors.xcassets */; };
 		B3BD699F27E9A51100A32A7A /* UIViewControllerExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3BD699E27E9A51100A32A7A /* UIViewControllerExtension.swift */; };
@@ -133,6 +135,8 @@
 		B3B3610A28295E1D00B8E876 /* Autoway_RP_B4.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Autoway_RP_B4.csv; sourceTree = "<group>"; };
 		B3B4F85828114EEB009F9E6C /* ShowCardCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowCardCollectionViewCell.swift; sourceTree = "<group>"; };
 		B3B4F85928114EEB009F9E6C /* ShowCardCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ShowCardCollectionViewCell.xib; sourceTree = "<group>"; };
+		B3B7FBF42856DA4000E23EDF /* PopUpViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopUpViewController.swift; sourceTree = "<group>"; };
+		B3B7FBF62856F43200E23EDF /* GalleryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GalleryViewController.swift; sourceTree = "<group>"; };
 		B3BD699727E9A4A500A32A7A /* ColorPalette.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorPalette.swift; sourceTree = "<group>"; };
 		B3BD699927E9A4BE00A32A7A /* Colors.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Colors.xcassets; sourceTree = "<group>"; };
 		B3BD699E27E9A51100A32A7A /* UIViewControllerExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIViewControllerExtension.swift; sourceTree = "<group>"; };
@@ -239,6 +243,8 @@
 				B3DE146C280E7146006DA43C /* AddCardViewController.swift */,
 				B3D194DE282E2782004E6F9A /* GuideViewController.swift */,
 				B3CC3C06283231E000D50522 /* PrivacyPolicyViewController.swift */,
+				B3B7FBF42856DA4000E23EDF /* PopUpViewController.swift */,
+				B3B7FBF62856F43200E23EDF /* GalleryViewController.swift */,
 				607FACD91AFB9204008FA782 /* Main.storyboard */,
 				B35272B1281F8DC300321CC6 /* SplashScreen.storyboard */,
 				607FACDE1AFB9204008FA782 /* LaunchScreen.xib */,
@@ -664,8 +670,10 @@
 				607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */,
 				B3BD69A627E9A55400A32A7A /* UIViewExtension.swift in Sources */,
 				B3BD699827E9A4A500A32A7A /* ColorPalette.swift in Sources */,
+				B3B7FBF52856DA4000E23EDF /* PopUpViewController.swift in Sources */,
 				B3BD69A827E9A56B00A32A7A /* UITableViewRegisterable.swift in Sources */,
 				B3B361062829522A00B8E876 /* MapViewController.swift in Sources */,
+				B3B7FBF72856F43200E23EDF /* GalleryViewController.swift in Sources */,
 				B3AA004928313C97007CD284 /* UILabelExtension.swift in Sources */,
 				B3BD699F27E9A51100A32A7A /* UIViewControllerExtension.swift in Sources */,
 			);
