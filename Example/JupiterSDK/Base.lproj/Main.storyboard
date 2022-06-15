@@ -653,28 +653,39 @@
                                 </constraints>
                             </view>
                             <wkWebView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Yij-dS-ee6">
-                                <rect key="frame" x="0.0" y="100" width="390" height="710"/>
+                                <rect key="frame" x="0.0" y="600" width="390" height="210"/>
                                 <color key="backgroundColor" red="0.36078431370000003" green="0.38823529410000002" blue="0.4039215686" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <wkWebViewConfiguration key="configuration">
                                     <audiovisualMediaTypes key="mediaTypesRequiringUserActionForPlayback" none="YES"/>
                                     <wkPreferences key="preferences"/>
                                 </wkWebViewConfiguration>
                             </wkWebView>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="1F" translatesAutoresizingMaskIntoConstraints="NO" id="jGZ-Ue-0YW">
+                                <rect key="frame" x="0.0" y="100" width="390" height="500"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="500" id="nrs-jD-uBe"/>
+                                </constraints>
+                            </imageView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="ufE-Gx-orG"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
                             <constraint firstItem="UHa-ap-rPQ" firstAttribute="top" secondItem="POC-Xj-NH8" secondAttribute="top" id="3Rv-xb-z6c"/>
+                            <constraint firstItem="Yij-dS-ee6" firstAttribute="top" secondItem="jGZ-Ue-0YW" secondAttribute="bottom" id="529-6m-SWY"/>
+                            <constraint firstItem="ufE-Gx-orG" firstAttribute="trailing" secondItem="jGZ-Ue-0YW" secondAttribute="trailing" id="DVQ-ng-9dV"/>
                             <constraint firstItem="Yij-dS-ee6" firstAttribute="leading" secondItem="ufE-Gx-orG" secondAttribute="leading" id="F85-LJ-txG"/>
                             <constraint firstItem="UHa-ap-rPQ" firstAttribute="leading" secondItem="ufE-Gx-orG" secondAttribute="leading" constant="-10" id="MdW-3r-WNI"/>
                             <constraint firstItem="ufE-Gx-orG" firstAttribute="trailing" secondItem="Yij-dS-ee6" secondAttribute="trailing" id="XDL-1w-Fst"/>
                             <constraint firstItem="UHa-ap-rPQ" firstAttribute="trailing" secondItem="ufE-Gx-orG" secondAttribute="trailing" constant="10" id="ZjF-P8-Ndu"/>
+                            <constraint firstItem="jGZ-Ue-0YW" firstAttribute="leading" secondItem="ufE-Gx-orG" secondAttribute="leading" id="dzO-Sg-RDF"/>
+                            <constraint firstItem="jGZ-Ue-0YW" firstAttribute="top" secondItem="UHa-ap-rPQ" secondAttribute="bottom" id="eQH-ES-H7T"/>
                             <constraint firstItem="ufE-Gx-orG" firstAttribute="bottom" secondItem="Yij-dS-ee6" secondAttribute="bottom" id="fhC-LZ-Leh"/>
-                            <constraint firstItem="Yij-dS-ee6" firstAttribute="top" secondItem="UHa-ap-rPQ" secondAttribute="bottom" id="gi3-x1-3pI"/>
                         </constraints>
                     </view>
                     <connections>
                         <outlet property="cardTopImage" destination="3qK-PC-clp" id="7jP-47-oYs"/>
+                        <outlet property="imageHeight" destination="nrs-jD-uBe" id="Jb2-LO-b5J"/>
+                        <outlet property="imageLevel" destination="jGZ-Ue-0YW" id="Rtc-gp-0Fp"/>
                         <outlet property="sectorNameLabel" destination="BaS-us-eNZ" id="UqB-fT-iNB"/>
                         <outlet property="webView" destination="Yij-dS-ee6" id="Cp1-dd-PTG"/>
                     </connections>
@@ -894,6 +905,7 @@
         </scene>
     </scenes>
     <resources>
+        <image name="1F" width="144" height="176.5"/>
         <image name="addCard" width="77.333335876464844" height="22"/>
         <image name="backButton" width="29" height="29"/>
         <image name="backButtonWhite" width="13.333333015441895" height="25"/>
@@ -906,7 +918,7 @@
         <image name="innerLabsBI" width="341.33334350585938" height="176.66667175292969"/>
         <image name="innerLabsNameCard" width="389.66665649414062" height="53"/>
         <image name="loginButton" width="349.33334350585938" height="58.333332061767578"/>
-        <image name="logoutButton" width="22.333333969116211" height="22.333333969116211"/>
+        <image name="logoutButton" width="34" height="40"/>
         <image name="orangeCardTop" width="390" height="95"/>
         <image name="purpleCardTop" width="390" height="95"/>
         <image name="showCard" width="78" height="22"/>

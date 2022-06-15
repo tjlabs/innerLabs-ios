@@ -14,8 +14,12 @@ protocol GalleryViewPageDelegate {
 }
 
 class GalleryViewController: UIViewController, WKNavigationDelegate, UIScrollViewDelegate {
-//    var url = URL(string: "https://tjlabs.notion.site/Inner-Labs-62a2233766be4bc6899d101484b360b8")!
-//    var url = URL(string: "https://tjlabscorp.com")!
+    
+    @IBOutlet weak var imageLevel: UIImageView!
+    @IBOutlet weak var imageHeight: NSLayoutConstraint!
+    
+    let defaultHeight:Double = 500
+    
     var url = URL(string: "https://tjlabscorp.tistory.com/3")!
     
     @IBOutlet weak var webView: WKWebView!
@@ -28,6 +32,8 @@ class GalleryViewController: UIViewController, WKNavigationDelegate, UIScrollVie
     var cardData: CardItemData?
     var page: Int = 0
     var uuid: String = ""
+    
+    var contentsHeight: CGPoint?
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(false)
@@ -60,19 +66,33 @@ class GalleryViewController: UIViewController, WKNavigationDelegate, UIScrollVie
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
 //        print(scrollView.contentOffset.y)
+        let scrollPosition: Double = scrollView.contentOffset.y
+        imageDisappear(contentsHeight: (self.contentsHeight!.y/8), scrollPostion: scrollPosition)
     }
     
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-//        print("WebView is loaded")
-        scrollToBottom()
+        contentsHeight = CGPoint(x: 0, y: self.webView.scrollView.contentSize.height - self.webView.scrollView.bounds.height + self.webView.scrollView.contentInset.bottom)
+        print("WebView is loaded")
+        print("Contents Height :", contentsHeight!.y)
+        
+//        scrollToBottom()
     }
     
     func scrollToBottom() {
         let bottomOffset = CGPoint(x: 0, y: self.webView.scrollView.contentSize.height - self.webView.scrollView.bounds.height + self.webView.scrollView.contentInset.bottom)
-        print(self.webView.scrollView.contentSize.height)
-        print(self.webView.scrollView.bounds.height)
-        print(self.webView.scrollView.contentInset.bottom)
-        print(bottomOffset)
+//        print(self.webView.scrollView.contentSize.height)
+//        print(self.webView.scrollView.bounds.height)
+//        print(self.webView.scrollView.contentInset.bottom)
+//        print(bottomOffset)
         self.webView.scrollView.setContentOffset(bottomOffset, animated: true)
+        imageDisappear(contentsHeight: (self.contentsHeight!.y/8), scrollPostion: (self.contentsHeight!.y/8))
+    }
+    
+    func imageDisappear(contentsHeight: Double, scrollPostion: Double) {
+        var percentage: Double = scrollPostion/contentsHeight
+        if (percentage > 1) {
+            percentage = 1
+        }
+        imageHeight.constant = defaultHeight - (defaultHeight*percentage)
     }
 }

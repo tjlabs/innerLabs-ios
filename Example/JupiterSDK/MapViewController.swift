@@ -8,6 +8,7 @@
 
 import UIKit
 import JupiterSDK
+import Alamofire
 import ExpyTableView
 import Charts
 
@@ -93,8 +94,11 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
                 let nameLevel: String = (cardData?.infoLevel[idx])!
                 let fileName: String = "KIST_RP_" + nameLevel
                 let rpXY: [[Double]] = loadRP(fileName: fileName)
+                
                 RP[nameLevel] = rpXY
             }
+            
+            isRadioMap = true
             
             let first: String = (cardData?.infoLevel[0])!
             if (numLevels == 1) {
@@ -110,12 +114,19 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
                 let nameLevel: String = (cardData?.infoLevel[idx])!
                 let fileName: String = "Autoway_RP_" + nameLevel
                 let rpXY: [[Double]] = loadRP(fileName: fileName)
-                
+
                 RP[nameLevel] = rpXY
+                
+//                let fname: String = "\(cardData!.sector_id)/\(cardData!.infoBuilding[0])_\(nameLevel).csv"
+//                downloadRP(fileName: fname, levelName: nameLevel)
             }
             
             let fname: String = "\(cardData!.sector_id)/\(cardData!.infoBuilding[0])_\(cardData!.infoLevel[0]).csv"
-            downloadRP(fileName: fname)
+            readFileURL(fileName: fname)
+//            let aaa: URL = downloadTest(fileName: fname)
+//            let tttt: [[Double]] = parseCSV(url: aaa)
+//            print(tttt)
+            
             isRadioMap = true
             
             let first: String = (cardData?.infoLevel[0])!
@@ -127,9 +138,28 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
             }
             
             currentLevel = first
+        } else if (cardData?.sector_id == 5 || cardData?.sector_id == 6) {
+            numLevels = (cardData?.infoLevel.count)!
+//            for idx in 0..<numLevels {
+//                let nameLevel: String = (cardData?.infoLevel[idx])!
+//                let fileName: String = "Autoway_RP_" + nameLevel
+//                let rpXY: [[Double]] = loadRP(fileName: fileName)
+//
+//                RP[nameLevel] = rpXY
+//            }
+            
+            isRadioMap = true
+            
+            let first: String = (cardData?.infoLevel[0])!
+            if (numLevels == 1) {
+                infoOfLevels = "( " + first + " )"
+            } else {
+                let last: String = (cardData?.infoLevel[numLevels-1])!
+                infoOfLevels = "( " + first + "~" + last + " )"
+            }
         }
-        levelList = cardData!.infoLevel
         
+        levelList = cardData!.infoLevel
         fixChartHeight(flag: isRadioMap)
     }
     
@@ -210,18 +240,32 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
     
     func fixChartHeight(flag: Bool) {
         if (flag) {
-            let ratio: Double = 114900 / 68700
-            jupiterTableViewHeight.constant = jupiterTableView.bounds.width * ratio
+            if ( cardData?.sector_id == 1 || cardData?.sector_id == 2 ) {
+                jupiterTableViewHeight.constant = 480
+                containerViewHeight.constant = 150
+            } else if ( cardData?.sector_id == 3 || cardData?.sector_id == 4 ) {
+                let ratio: Double = 114900 / 68700
+                jupiterTableViewHeight.constant = jupiterTableView.bounds.width * ratio
 
-            let window = UIApplication.shared.keyWindow
-            let bottomPadding = window?.safeAreaInsets.bottom ?? 0.0
-            
-            defaultHeight = MapView.bounds.height - 100 - jupiterTableViewHeight.constant - bottomPadding
-            
-            containerViewHeight.constant = defaultHeight
+                let window = UIApplication.shared.keyWindow
+                let bottomPadding = window?.safeAreaInsets.bottom ?? 0.0
+                
+                defaultHeight = MapView.bounds.height - 100 - jupiterTableViewHeight.constant - bottomPadding
+                
+                containerViewHeight.constant = defaultHeight
+            } else if ( cardData?.sector_id == 5 || cardData?.sector_id == 6 ) {
+                let ratio: Double = 114900 / 68700
+                jupiterTableViewHeight.constant = jupiterTableView.bounds.width * ratio
+
+                let window = UIApplication.shared.keyWindow
+                let bottomPadding = window?.safeAreaInsets.bottom ?? 0.0
+                
+                defaultHeight = MapView.bounds.height - 100 - jupiterTableViewHeight.constant - bottomPadding
+                
+                containerViewHeight.constant = defaultHeight
+            }
         } else {
             jupiterTableViewHeight.constant = 480
-//            jupiterTableViewHeight.constant = 880
             containerViewHeight.constant = 150
         }
     }
@@ -255,6 +299,8 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
     }
     
     private func parseCSV(url:URL) -> [[Double]] {
+        print("Parsing :", url)
+        
         var rpXY = [[Double]]()
         
         var rpX = [Double]()
@@ -273,6 +319,7 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
                         
                         rpX.append(Double(x)!)
                         rpY.append(Double(y[0])!)
+                        
                     }
                 }
             }
@@ -291,36 +338,61 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
         return rpXY
     }
     
-    private func downloadRP(fileName: String) {
+    private func downloadTest(fileName: String) -> URL {
+        let url = "https://storage.cloud.google.com/jupiter_image/rp/ios/" + fileName
+        // 파일매니저
+        let fileManager = FileManager.default
+        // 앱 경로
+        let appURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask)[0]
+        // 파일이름 url 의 맨 뒤 컴포넌트로 지정 (50MB.zip)
+        let fileName : String = URL(string: url)!.lastPathComponent
+        // 파일 경로 생성
+        let fileURL = appURL.appendingPathComponent(fileName)
+        // 파일 경로 지정 및 다운로드 옵션 설정 ( 이전 파일 삭제 , 디렉토리 생성 )
+        let destination: DownloadRequest.Destination = { _, _ in
+            return (fileURL, [.removePreviousFile, .createIntermediateDirectories])
+        }
+        // 다운로드 시작
+        AF.download(url, method: .get, parameters: nil, encoding: JSONEncoding.default, to: destination).downloadProgress { (progress) in
+        }.response{ response in
+            if response.error != nil {
+                print("파일다운로드 실패")
+            }else{
+                print("파일다운로드 완료")
+                
+            }
+        }
+        
+        return fileURL
+    }
+    
+    private func downloadRP(fileName: String) -> URL{
         // Create destination URL
         let documentsUrl:URL =  FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
         
-        let saveName: [String] = fileName.components(separatedBy: "/")
-        let destinationFileUrl = documentsUrl.appendingPathComponent(saveName[1])
-        
-//        if FileManager.default.fileExists(atPath: destinationFileUrl) {
-//            do {
-//                try FileManager.default.removeItem(atPath: destinationFileUrl)
-//            } catch let error {
-//                print("Error cannot remove file")
-//            }
-//        }
-
         //Create URL to the source file you want to download
         let fileString: String = "https://storage.cloud.google.com/jupiter_image/rp/ios/" + fileName
         print("RP URL :", fileString)
+        
         let fileURL = URL(string: fileString)
+        
+        let destinationFileUrl = documentsUrl.appendingPathComponent((fileURL?.lastPathComponent)!)
+        print("Destination URL :", destinationFileUrl)
+        
         let sessionConfig = URLSessionConfiguration.default
         let session = URLSession(configuration: sessionConfig)
         let request = URLRequest(url:fileURL!)
-        let task = session.downloadTask(with: request) { (tempLocalUrl, response, error) in
+        let task = session.downloadTask(with: request) { [self] (tempLocalUrl, response, error) in
             if let tempLocalUrl = tempLocalUrl, error == nil {
                 // Success
                 if let statusCode = (response as? HTTPURLResponse)?.statusCode {
                     print("Successfully downloaded. Status code: \(statusCode)")
                 }
                 do {
-                    try FileManager.default.copyItem(at: tempLocalUrl, to: destinationFileUrl)
+                    let data = try Data(contentsOf: tempLocalUrl)
+                    try data.write(to: destinationFileUrl)
+                    
+//                    try FileManager.default.copyItem(at: tempLocalUrl, to: destinationFileUrl)
                 } catch (let writeError) {
                     print("Error creating a file \(destinationFileUrl) : \(writeError)")
                 }
@@ -329,8 +401,25 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
             }
         }
         task.resume()
+        
+        return destinationFileUrl
     }
     
+    private func readFileURL(fileName: String) {
+        let fileString: String = "https://storage.cloud.google.com/jupiter_image/rp/ios/" + fileName
+        print("File URL :", fileString)
+        if let url = URL(string: fileString) {
+            do {
+                let contents = try String(contentsOf: url, encoding: .utf8)
+                print(contents)
+            } catch {
+                // contents could not be loaded
+            }
+        } else {
+            // the URL was bad!
+        }
+    }
+
     // Display Outputs
     func startTimer() {
         self.timer = Timer.scheduledTimer(timeInterval: TIMER_INTERVAL, target: self, selector: #selector(self.timerUpdate), userInfo: nil, repeats: true)

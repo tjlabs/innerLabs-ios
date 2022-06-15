@@ -252,14 +252,18 @@ class SectorContainerTableViewCell: UITableViewCell {
         }
         
         if (RP!.contains(where: condition)) {
-            scatterChart.alpha = 1.0
-            
             let rp: [[Double]] = RP?[currentLevel] ?? [[Double]]()
-            if (flag) {
-                drawRP(RP_X: rp[0], RP_Y: rp[1], XY: XY)
+            
+            if (rp.isEmpty) {
+                scatterChart.alpha = 1.0
             } else {
-                drawUser(RP_X: rp[0], RP_Y: rp[1], XY: XY)
+                if (flag) {
+                    drawRP(RP_X: rp[0], RP_Y: rp[1], XY: XY)
+                } else {
+                    drawUser(RP_X: rp[0], RP_Y: rp[1], XY: XY)
+                }
             }
+            
             
         } else {
             scatterChart.alpha = 0
