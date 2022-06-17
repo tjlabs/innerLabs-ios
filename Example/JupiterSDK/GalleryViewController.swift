@@ -21,6 +21,7 @@ class GalleryViewController: UIViewController, WKNavigationDelegate, UIScrollVie
     let defaultHeight:Double = 500
     
     var url = URL(string: "https://tjlabscorp.tistory.com/3")!
+//    var url = URL(string: "https://storage.cloud.google.com/jupiter_image/rp/ios/1/L1_2F.txt")!
     
     @IBOutlet weak var webView: WKWebView!
     

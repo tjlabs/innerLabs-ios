@@ -11,6 +11,7 @@ import JupiterSDK
 import Alamofire
 import ExpyTableView
 import Charts
+import SwiftUI
 
 protocol MapViewPageDelegate {
     func sendPage(data: Int)
@@ -97,6 +98,10 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
                 
                 RP[nameLevel] = rpXY
             }
+            
+            let fname: String = "\(cardData!.sector_id)/\(cardData!.infoBuilding[0])_\(cardData!.infoLevel[0]).txt"
+//            readFileURL(fileName: fname)
+            let aaa: URL = downloadTest(fileName: fname)
             
             isRadioMap = true
             
@@ -339,7 +344,8 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
     }
     
     private func downloadTest(fileName: String) -> URL {
-        let url = "https://storage.cloud.google.com/jupiter_image/rp/ios/" + fileName
+//        let url = "https://storage.cloud.google.com/jupiter_image/rp/ios/" + fileName
+        let url = "https://storage.cloud.google.com/jupiter_image/rp/ios/1/L1_2F.txt"
         // 파일매니저
         let fileManager = FileManager.default
         // 앱 경로
@@ -406,7 +412,8 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
     }
     
     private func readFileURL(fileName: String) {
-        let fileString: String = "https://storage.cloud.google.com/jupiter_image/rp/ios/" + fileName
+//        let fileString: String = "https://storage.cloud.google.com/jupiter_image/rp/ios/" + fileName
+        let fileString: String = "https://storage.cloud.google.com/jupiter_image/rp/ios/1/L1_2F.txt"
         print("File URL :", fileString)
         if let url = URL(string: fileString) {
             do {
