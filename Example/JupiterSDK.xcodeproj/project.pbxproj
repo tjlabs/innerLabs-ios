@@ -828,7 +828,7 @@
 			baseConfigurationReference = 6C664AF60D59718EECD6DBBC /* Pods-JupiterSDK_Example.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_TEAM = G75UAV755N;
 				INFOPLIST_FILE = JupiterSDK/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -846,7 +846,7 @@
 			baseConfigurationReference = 8B538B887A8FED7CB659550A /* Pods-JupiterSDK_Example.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_TEAM = G75UAV755N;
 				INFOPLIST_FILE = JupiterSDK/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
