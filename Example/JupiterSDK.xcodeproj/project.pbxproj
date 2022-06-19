@@ -67,6 +67,7 @@
 		B3D194DF282E2782004E6F9A /* GuideViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3D194DE282E2782004E6F9A /* GuideViewController.swift */; };
 		B3D194E2282E2B2B004E6F9A /* LocationTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3D194E0282E2B2B004E6F9A /* LocationTableViewCell.swift */; };
 		B3D194E3282E2B2B004E6F9A /* LocationTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B3D194E1282E2B2B004E6F9A /* LocationTableViewCell.xib */; };
+		B3DD33D4285F08AE00866506 /* COEX_RP_B2.csv in Resources */ = {isa = PBXBuildFile; fileRef = B3DD33D3285F08AE00866506 /* COEX_RP_B2.csv */; };
 		B3DE146D280E7146006DA43C /* AddCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3DE146C280E7146006DA43C /* AddCardViewController.swift */; };
 		B3DE146F280E7556006DA43C /* UIApplicationExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3DE146E280E7556006DA43C /* UIApplicationExtension.swift */; };
 		B3F370D4281B9B85003A427F /* OutputView.xib in Resources */ = {isa = PBXBuildFile; fileRef = B3F370D3281B9B85003A427F /* OutputView.xib */; };
@@ -156,6 +157,7 @@
 		B3D194DE282E2782004E6F9A /* GuideViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GuideViewController.swift; sourceTree = "<group>"; };
 		B3D194E0282E2B2B004E6F9A /* LocationTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationTableViewCell.swift; sourceTree = "<group>"; };
 		B3D194E1282E2B2B004E6F9A /* LocationTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = LocationTableViewCell.xib; sourceTree = "<group>"; };
+		B3DD33D3285F08AE00866506 /* COEX_RP_B2.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = COEX_RP_B2.csv; sourceTree = "<group>"; };
 		B3DE146C280E7146006DA43C /* AddCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddCardViewController.swift; sourceTree = "<group>"; };
 		B3DE146E280E7556006DA43C /* UIApplicationExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIApplicationExtension.swift; sourceTree = "<group>"; };
 		B3F370D3281B9B85003A427F /* OutputView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = OutputView.xib; sourceTree = "<group>"; };
@@ -260,6 +262,7 @@
 				B38807EF283390280029B174 /* KIST_RP_1F.csv */,
 				B38807F1283390280029B174 /* KIST_RP_2F.csv */,
 				B38807F0283390280029B174 /* KIST_RP_3F.csv */,
+				B3DD33D3285F08AE00866506 /* COEX_RP_B2.csv */,
 				B3B3610828295E1400B8E876 /* Autoway_RP_B3.csv */,
 				B3B3610A28295E1D00B8E876 /* Autoway_RP_B4.csv */,
 				607FACDC1AFB9204008FA782 /* Images.xcassets */,
@@ -512,6 +515,7 @@
 				B3BD69B027E9A78000A32A7A /* SectorContainerTableViewCell.xib in Resources */,
 				B38807F3283390280029B174 /* KIST_RP_3F.csv in Resources */,
 				B3844E8F28099EE3007A5215 /* CardCollectionViewCell.xib in Resources */,
+				B3DD33D4285F08AE00866506 /* COEX_RP_B2.csv in Resources */,
 				B3037A92281C06D50058D025 /* OverlayCustomView.xib in Resources */,
 				B360D8652807C6090084FB22 /* GoogleService-Info.plist in Resources */,
 			);

@@ -116,6 +116,12 @@ class SectorContainerTableViewCell: UITableViewCell {
             scatterChart.leftAxis.axisMinimum = yMin-40
             scatterChart.leftAxis.axisMaximum = yMax+38.5
         }
+        else if (currentLevel == "B2") {
+            scatterChart.xAxis.axisMinimum = xMin-28
+            scatterChart.xAxis.axisMaximum = xMax+12
+            scatterChart.leftAxis.axisMinimum = yMin-2
+            scatterChart.leftAxis.axisMaximum = yMax+39.5
+        }
         else if (currentLevel == "B3") {
             scatterChart.xAxis.axisMinimum = xMin-3.8
             scatterChart.xAxis.axisMaximum = xMax+6

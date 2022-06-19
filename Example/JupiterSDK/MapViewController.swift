@@ -145,13 +145,17 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
             currentLevel = first
         } else if (cardData?.sector_id == 5 || cardData?.sector_id == 6) {
             numLevels = (cardData?.infoLevel.count)!
-//            for idx in 0..<numLevels {
-//                let nameLevel: String = (cardData?.infoLevel[idx])!
-//                let fileName: String = "Autoway_RP_" + nameLevel
-//                let rpXY: [[Double]] = loadRP(fileName: fileName)
-//
-//                RP[nameLevel] = rpXY
-//            }
+            for idx in 0..<numLevels {
+                let nameLevel: String = (cardData?.infoLevel[idx])!
+                
+                if (nameLevel == "B2") {
+                    let fileName: String = "COEX_RP_" + nameLevel
+                    let rpXY: [[Double]] = loadRP(fileName: fileName)
+                    
+                    RP[nameLevel] = rpXY
+                }
+                
+            }
             
             isRadioMap = true
             
