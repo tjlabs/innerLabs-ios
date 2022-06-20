@@ -646,6 +646,7 @@
 		B39DD7B2285C25B90070C65C /* CoarseLevelDetectionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B39DD7B1285C25B90070C65C /* CoarseLevelDetectionService.swift */; };
 		B39DD7B4285C25DB0070C65C /* FineLevelDetectionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B39DD7B3285C25DB0070C65C /* FineLevelDetectionService.swift */; };
 		B39DD7B6285C25FA0070C65C /* CoarseLocationEstimationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B39DD7B5285C25FA0070C65C /* CoarseLocationEstimationService.swift */; };
+		B3CDBFC328601A9100319C3E /* FineLocationTrackingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3CDBFC228601A9100319C3E /* FineLocationTrackingService.swift */; };
 		B3E2EC4AA24902461F8F40AD9C192A5D /* FIRInstallationsErrorUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 63B97A66B77205E6D79C0D2ABAA12F8E /* FIRInstallationsErrorUtil.m */; };
 		B3EC96DEABE7500ED8820F977C1688A7 /* FBLPromise+Await.m in Sources */ = {isa = PBXBuildFile; fileRef = 9AE39D34F1E59097E146A12D4A5C8A64 /* FBLPromise+Await.m */; };
 		B4015BE1313094DACA3DBB86191C5030 /* CombinedHighlighter.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5EE808C79FC8D810431BCE9FFF775E3 /* CombinedHighlighter.swift */; };
@@ -696,7 +697,6 @@
 		C4C9E2606BCD98D06F27B6129F2BB80F /* c_api_internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 86ED30F5FC63593D2E7A13D5CF3BECEA /* c_api_internal.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		C4FB409FCFF5A6CAD9A2F2E39731FB4A /* GoogleToolboxForMac-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 36B6397720D2D4950F7AE0D71FA79BB7 /* GoogleToolboxForMac-dummy.m */; };
 		C552D491FE4682F254F4CA9F7C8F3E41 /* FBLPromisePrivate.h in Headers */ = {isa = PBXBuildFile; fileRef = 276181B26C3A48D410F67562BC71D637 /* FBLPromisePrivate.h */; };
-		C5711520FA3EE5E4FAEDD25098135479 /* BluetoothData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 166DA33BB46FB50CB57DB539DF9D99E2 /* BluetoothData.swift */; };
 		C61593A3D80353C03800E27760382C43 /* FBLPromise+Reduce.h in Copy . Public Headers */ = {isa = PBXBuildFile; fileRef = 54DDBAF6C033DE7193FDC1C1266E84A5 /* FBLPromise+Reduce.h */; };
 		C651C64AA7B93CAA2B0A2B11E855BDA3 /* FBLPromise+Delay.m in Sources */ = {isa = PBXBuildFile; fileRef = B5C334489A23BFD7FFEE7BE689A0795E /* FBLPromise+Delay.m */; };
 		C66429D5C4E3303B089AB21274AAC840 /* SwiftAlgorithms-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = C94EDA67DBF9B4DAC0FC2D826C66BA85 /* SwiftAlgorithms-dummy.m */; };
@@ -1449,7 +1449,6 @@
 		14DF08DDBDC77F16440FC1E8F3B2E204 /* FIRInstanceIDConstants.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = FIRInstanceIDConstants.h; path = Firebase/InstanceID/FIRInstanceIDConstants.h; sourceTree = "<group>"; };
 		161D1149F89AAC7720C0D931D7562098 /* MarkerImage.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MarkerImage.swift; path = Source/Charts/Components/MarkerImage.swift; sourceTree = "<group>"; };
 		165C109283D2E3A7B5DFFC4220AA1ECF /* Partition.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Partition.swift; path = Sources/Algorithms/Partition.swift; sourceTree = "<group>"; };
-		166DA33BB46FB50CB57DB539DF9D99E2 /* BluetoothData.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BluetoothData.swift; path = JupiterSDK/Classes/BluetoothData.swift; sourceTree = "<group>"; };
 		1695E46E2D72E1C64AE7AF1B2E20CEC5 /* GPBCodedInputStream.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = GPBCodedInputStream.m; path = objectivec/GPBCodedInputStream.m; sourceTree = "<group>"; };
 		1763D348C36F37B3ED6E9B9F63F0D7D8 /* Entity.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Entity.swift; path = JupiterSDK/Classes/Entity.swift; sourceTree = "<group>"; };
 		1791C6BBFCDC0244244BF0F8E578A6CF /* Kingfisher.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Kingfisher.swift; path = Sources/General/Kingfisher.swift; sourceTree = "<group>"; };
@@ -2030,6 +2029,7 @@
 		B39DD7B1285C25B90070C65C /* CoarseLevelDetectionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = CoarseLevelDetectionService.swift; path = JupiterSDK/Classes/CoarseLevelDetectionService.swift; sourceTree = "<group>"; };
 		B39DD7B3285C25DB0070C65C /* FineLevelDetectionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = FineLevelDetectionService.swift; path = JupiterSDK/Classes/FineLevelDetectionService.swift; sourceTree = "<group>"; };
 		B39DD7B5285C25FA0070C65C /* CoarseLocationEstimationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = CoarseLocationEstimationService.swift; path = JupiterSDK/Classes/CoarseLocationEstimationService.swift; sourceTree = "<group>"; };
+		B3CDBFC228601A9100319C3E /* FineLocationTrackingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = FineLocationTrackingService.swift; path = JupiterSDK/Classes/FineLocationTrackingService.swift; sourceTree = "<group>"; };
 		B43874C6CBB50E7134FBEC24BABFE14F /* GoogleUtilities */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = GoogleUtilities; path = GoogleUtilities.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B459D4138EF93DA8D0D4B4001170C824 /* GoogleMaps.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = GoogleMaps.debug.xcconfig; sourceTree = "<group>"; };
 		B4963F19BDD3421D1603DBF24E8CAE0E /* ShapeRenderer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ShapeRenderer.swift; path = Source/Charts/Renderers/Scatter/ShapeRenderer.swift; sourceTree = "<group>"; };
@@ -2518,7 +2518,6 @@
 			isa = PBXGroup;
 			children = (
 				847CB50A50DE7A4B043C67D003FBE522 /* ArrayExtension.swift */,
-				166DA33BB46FB50CB57DB539DF9D99E2 /* BluetoothData.swift */,
 				0DE77DB661E7677C9C0C6EE9714B98F1 /* BluetoothManager.swift */,
 				34033DBE408F5CC332EE2DFDDC43974C /* CalculateFunctions.swift */,
 				B593259587804C0E95899A58CF5A295F /* Constants.swift */,
@@ -2547,6 +2546,7 @@
 				B39DD7B1285C25B90070C65C /* CoarseLevelDetectionService.swift */,
 				B39DD7B3285C25DB0070C65C /* FineLevelDetectionService.swift */,
 				B39DD7B5285C25FA0070C65C /* CoarseLocationEstimationService.swift */,
+				B3CDBFC228601A9100319C3E /* FineLocationTrackingService.swift */,
 				71C70E7F990C9BE588FCEA1A153BB5BB /* Pod */,
 				19A3D5C01F626887F61FEC2389821DDE /* Support Files */,
 			);
@@ -5831,11 +5831,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				05F3E10EC19713F02E4B3FED995FFBD8 /* ArrayExtension.swift in Sources */,
-				C5711520FA3EE5E4FAEDD25098135479 /* BluetoothData.swift in Sources */,
 				F5A82F99277A7891A55A55B8C0960EAD /* BluetoothManager.swift in Sources */,
 				62B2F4138A7E178B0E403E1B855CE790 /* CalculateFunctions.swift in Sources */,
 				26B4AA61422E22D002F0E61CB01F0757 /* Constants.swift in Sources */,
 				188BBEFF1B771874178CA763195E491A /* DeviceModel.swift in Sources */,
+				B3CDBFC328601A9100319C3E /* FineLocationTrackingService.swift in Sources */,
 				B39DD7B6285C25FA0070C65C /* CoarseLocationEstimationService.swift in Sources */,
 				F7BE3F2F67C686BA403BAAE77F552E07 /* DRDistanceEstimator.swift in Sources */,
 				FDA87D0BD93458CA4FEA1946BE2A1645 /* Entity.swift in Sources */,

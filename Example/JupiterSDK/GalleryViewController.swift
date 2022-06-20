@@ -8,6 +8,7 @@
 
 import UIKit
 import WebKit
+import JupiterSDK
 
 protocol GalleryViewPageDelegate {
     func sendPage(data: Int)
@@ -36,6 +37,8 @@ class GalleryViewController: UIViewController, WKNavigationDelegate, UIScrollVie
     
     var contentsHeight: CGPoint?
     
+    var sectorDetectionService = SectorDetectionService()
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(false)
         setCardData(cardData: cardData!)
@@ -51,6 +54,8 @@ class GalleryViewController: UIViewController, WKNavigationDelegate, UIScrollVie
         self.webView.scrollView.delegate = self
         self.webView.scrollView.alwaysBounceVertical = false
         self.webView.scrollView.bounces = false
+        
+        sectorDetectionService.startService()
     }
     
     func setCardData(cardData: CardItemData) {

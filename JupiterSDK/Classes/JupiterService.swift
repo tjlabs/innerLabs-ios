@@ -46,7 +46,6 @@ public class JupiterService: NSObject {
     var pastTime: Double = 0
     var elapsedTime: Double = 0
     
-//    var inputArray = postInput(inputs: [Input()])
     var inputArray: [Input] = [Input(user_id: "", index: 0, length: 0, heading: 0, pressure: 0, looking_flag: false, ble: [:], mobile_time: 0, device_model: "", os_version: 0)]
     
     public var sensorData = SensorData()
@@ -63,11 +62,8 @@ public class JupiterService: NSObject {
     let SENSOR_INTERVAL: TimeInterval = 1/200
     
     // Bluetooth //
-    let defaults = UserDefaults.standard
     var bleManager = BLECentralManager()
     var bleRSSI: Int = 0
-    
-    var bleList = BLEList()
     
     var timerBle = Timer()
     var timerBleTimeOut: Int = 10
@@ -88,7 +84,6 @@ public class JupiterService: NSObject {
     
     public override init() {
         super.init()
-        NotificationCenter.default.addObserver(self, selector: #selector(onDidReceiveBluetoothNotification), name: .scanInfo, object: nil)
         
         deviceModel = UIDevice.modelName
         os = UIDevice.current.systemVersion
@@ -295,57 +290,12 @@ public class JupiterService: NSObject {
     
     func startBLE() {
         bleManager.startScan(option: .Foreground)
-//        startBleTimer()
     }
     
     func stopBLE() {
         bleManager.stopScan()
-//        stopBleTimer()
     }
     
-//    func startBleTimer() {
-//        self.timerBle = Timer.scheduledTimer(timeInterval: SCAN_INTERVAL, target: self, selector: #selector(self.timerBleUpdate), userInfo: nil, repeats: true)
-//
-//        timerCounter = 0
-//    }
-//
-//    func stopBleTimer() {
-//        self.timerBle.invalidate()
-//    }
-//
-//    @objc func timerBleUpdate() {
-//        let timeStamp = Date().timeIntervalSince1970.rounded()
-//
-//        let bleData = KeyStamp(fingerprints: bleList.bleList.devices, mobile_time: timeStamp)
-//        print(bleData)
-//
-//        let d = UploadData(units: [t])
-//
-//        NetworkManager.shared.uploadData(data: d, completion: {statusCode, returnString in
-//
-//            self.bleList.resetList()
-//        })
-//    }
-    
-    @objc func onDidReceiveBluetoothNotification(_ notification: Notification) {
-        if notification.name == .bluetoothReady {
-            bleManager.startScan(option: .Foreground)
-        }
-        
-        if notification.name == .scanInfo {
-            
-            if let data = notification.userInfo as? [String: String]
-            {
-                let deviceID = data["DeviceID"]!
-                let rssi = data["RSSI"]
-                
-                bleRSSI = Int(rssi!)!
-                
-                let bleData = FingerPrint(ward_id: deviceID, rssi: bleRSSI)
-                bleList.insertDevice(bleData)
-            }
-        }
-    }
     
     func getCurrentTimeInMilliseconds() -> Double
     {

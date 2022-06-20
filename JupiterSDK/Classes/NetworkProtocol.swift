@@ -1,58 +1,7 @@
 import Foundation
 
-struct SendDataInfo: Encodable {
-    let timestamp: String
-    let value1: String
-    let value2: String
-    let value3: String
-}
-
-struct ServerResponse : Codable {
-    let returnCode: Int
-    let returnMessage: String
-}
-
-struct SignInInfo: Codable {
-    var email: String
-    var password: String
-}
-
-struct SignInResponse: Codable {
-    var token: String
-}
-
-struct SignInResponseFail: Codable {
-    var error: String
-}
-
-struct ServerResponseError: Codable {
-    var error: String
-}
-
-struct ChannelCode: Codable {
-    var channel_code: String
-}
-
-struct FingerPrint: Codable {
-    var ward_id: String
-    var rssi: Int
-}
-
-struct KeyStamp: Codable {
-    var fingerprints: [FingerPrint]
-    var mobile_time: Double
-}
-
-struct UploadData: Codable {
-    var units: [KeyStamp]
-}
-
-struct postInput: Codable {
-    var inputs: [Input]?
-}
-
 struct Input: Codable {
-    var user_id : String
+    var user_id: String
     var index: Int
     var length: Double
     var heading: Double
@@ -76,8 +25,58 @@ public struct Output: Codable {
     public var phase : Int
     public var calculated_time: Double
 }
-    
-//    public func toString() -> String {
-//        return "{x : \(x), y : \(y), mobile_time : \(mobile_time), scc : \(scc), unit_idx : \(scr), scr : \(index), index : \(index), level : \(level), building : \(building), phase : \(phase), calculated_time : \(calculated_time)}"
-//    }
-//}
+
+
+struct SpatialForce: Codable {
+    var user_id: String
+    var mobile_time: Double
+    var ble: [String: Double]
+    var pressure: Double
+}
+
+struct MobileForce: Codable {
+    var user_id: String
+    var mobile_time: Double
+    var index: Double
+    var length: Double
+    var heading: Double
+    var looking_flag: Bool
+}
+
+// Sector Detection
+struct SectorDetection: Codable {
+    var user_id: String
+    var mobile_time: Double
+}
+
+
+// Building Detection
+struct BuildingDetection: Codable {
+    var user_id: String
+    var mobile_time: Double
+    var sector_id: Int
+}
+
+
+// Coarse Level Detection
+struct CoarseLevelDetection: Codable {
+    var user_id: String
+    var mobile_time: Double
+    var sector_id: Int
+}
+
+
+// Fine Level Detection
+struct FineLevelDetection: Codable {
+    var user_id: String
+    var mobile_time: Double
+    var sector_id: Int
+}
+
+
+// Coarse Location Estimation
+struct CoarseLocationEstimation: Codable {
+    var user_id: String
+    var mobile_time: Double
+    var sector_id: Int
+}

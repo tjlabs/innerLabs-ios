@@ -12,6 +12,7 @@ public class NetworkManager {
     
     static let shared = NetworkManager()
     
+    // Jupiter
     var jupiterResult: Output = Output(mobile_time: 0, index: 0, building: "", level: "", x: 0, y: 0, scc: 0, scr: 0, phase: 0, calculated_time: 0)
     
     func postInput(url: String, input: [Input]){
@@ -91,6 +92,130 @@ public class NetworkManager {
         
         return result
     }
+    
+    func postSpatialForce(url: String, input: [SpatialForce]){
+        // [http 요청 헤더 지정]
+        let header : HTTPHeaders = [
+            "Content-Type" : "application/json"
+        ]
+        
+        // [http 요청 수행 실시]
+        print("")
+        print("====================================")
+        print("주 소 :: ", url)
+        print("-------------------------------")
+        print("데이터 :: ", input)
+        print("====================================")
+        print("")
+        
+        AF.request(
+            url, // [주소]
+            method: .post, // [전송 타입]
+            parameters: input, // [전송 데이터]
+            encoder: JSONParameterEncoder.default,
+            headers: header // [헤더 지정]
+        )
+        .validate(statusCode: 200..<300)
+        .responseData { response in
+            switch response.result {
+            case .success(let res):
+                do {
+                    print("")
+                    print("====================================")
+                    print("응답 코드 :: ", response.response?.statusCode ?? 0)
+                    print("-------------------------------")
+                    print("응답 데이터 :: ", String(data: res, encoding: .utf8) ?? "")
+                    print("====================================")
+                    print("")
+                    
+                    // [비동기 작업 수행]
+                    DispatchQueue.main.async {
+                        
+                    }
+                }
+                catch (let err){
+                    print("")
+                    print("====================================")
+                    print("catch :: ", err.localizedDescription)
+                    print("====================================")
+                    print("")
+                }
+                break
+            case .failure(let err):
+                print("")
+                print("====================================")
+                print("응답 코드 :: ", response.response?.statusCode ?? 0)
+                print("-------------------------------")
+                print("에 러 :: ", err.localizedDescription)
+                print("====================================")
+                print("")
+                break
+            }
+        }
+    }
+    
+    func postMobileForce(url: String, input: [MobileForce]){
+        // [http 요청 헤더 지정]
+        let header : HTTPHeaders = [
+            "Content-Type" : "application/json"
+        ]
+        
+        // [http 요청 수행 실시]
+        print("")
+        print("====================================")
+        print("주 소 :: ", url)
+        print("-------------------------------")
+        print("데이터 :: ", input)
+        print("====================================")
+        print("")
+        
+        AF.request(
+            url, // [주소]
+            method: .post, // [전송 타입]
+            parameters: input, // [전송 데이터]
+            encoder: JSONParameterEncoder.default,
+            headers: header // [헤더 지정]
+        )
+        .validate(statusCode: 200..<300)
+        .responseData { response in
+            switch response.result {
+            case .success(let res):
+                do {
+                    print("")
+                    print("====================================")
+                    print("응답 코드 :: ", response.response?.statusCode ?? 0)
+                    print("-------------------------------")
+                    print("응답 데이터 :: ", String(data: res, encoding: .utf8) ?? "")
+                    print("====================================")
+                    print("")
+                    
+                    // [비동기 작업 수행]
+                    DispatchQueue.main.async {
+                        
+                    }
+                }
+                catch (let err){
+                    print("")
+                    print("====================================")
+                    print("catch :: ", err.localizedDescription)
+                    print("====================================")
+                    print("")
+                }
+                break
+            case .failure(let err):
+                print("")
+                print("====================================")
+                print("응답 코드 :: ", response.response?.statusCode ?? 0)
+                print("-------------------------------")
+                print("에 러 :: ", err.localizedDescription)
+                print("====================================")
+                print("")
+                break
+            }
+        }
+    }
+    
+    // Sector Detection Service
 }
 
 extension Encodable {
