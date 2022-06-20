@@ -15,6 +15,8 @@ class ShowCardViewController: UIViewController, AddCardDelegate {
         page = data
     }
     
+    let defaults = UserDefaults.standard
+    
     @IBOutlet weak var editButton: UIButton!
     @IBOutlet weak var showCardCollectionView: UICollectionView!
     
@@ -178,6 +180,22 @@ class ShowCardViewController: UIViewController, AddCardDelegate {
         else {
             isEditMode = false
             self.showCardCollectionView.reloadData()
+            
+            var ids = [Int]()
+            for i in 1..<cardItemData.count {
+                ids.append(cardItemData[i].sector_id)
+            }
+            
+            let newOrder: [String: [Int]] = [self.uuid: ids]
+            if var order = defaults.dictionary(forKey: "CardOrder") {
+                order.updateValue(ids, forKey: self.uuid)
+                
+                defaults.set(order, forKey: "CardOrder")
+//                print("Card Order :", order)
+            } else {
+                defaults.set(newOrder, forKey: "CardOrder")
+//                print("Card Order :", newOrder)
+            }
         }
     }
 }

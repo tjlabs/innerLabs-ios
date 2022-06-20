@@ -134,6 +134,7 @@ class MainViewController: UIViewController, UITextFieldDelegate {
                     let returnedString = String(decoding: response.data!, as: UTF8.self)
                     let list = jsonToCardList(json: returnedString)
                     let myCard = list.sectors
+                    var reorderedCard = [CardInfo]()
                     
                     print("Sector List :", myCard)
                     
@@ -151,8 +152,26 @@ class MainViewController: UIViewController, UITextFieldDelegate {
                         KingfisherManager.shared.cache.clearMemoryCache()
                         KingfisherManager.shared.cache.clearDiskCache { print("Clear Cache Done !") }
                         
-                        for card in 0..<myCard.count {
-                            let cardInfo: CardInfo = myCard[card]
+                        if var order = defaults.dictionary(forKey: "CardOrder") {
+                            if (order[self.uuid] != nil) {
+                                let savedCardOrder: [Int] = order[self.uuid] as! [Int]
+                                print("Saved Card Order :", savedCardOrder)
+                                
+                                for i in 0..<savedCardOrder.count {
+                                    let id: Int = savedCardOrder[i]
+                                    for j in 0..<myCard.count {
+                                        if (myCard[j].sector_id == id) {
+                                            reorderedCard.append(myCard[j])
+                                        }
+                                    }
+                                }
+                            }
+                        } else {
+                            reorderedCard = myCard
+                        }
+                        
+                        for card in 0..<reorderedCard.count {
+                            let cardInfo: CardInfo = reorderedCard[card]
                             let id: Int = cardInfo.sector_id
                             let name: String = cardInfo.sector_name
                             let description: String = cardInfo.description
@@ -179,10 +198,6 @@ class MainViewController: UIViewController, UITextFieldDelegate {
                     }
                     
                     goToCardVC(cardDatas: cardDatas)
-                    
-//                    DispatchQueue.main.async {
-//
-//                    }
                 }
                 catch (let err){
                     print("")
