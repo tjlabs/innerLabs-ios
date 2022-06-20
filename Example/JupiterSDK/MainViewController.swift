@@ -152,7 +152,7 @@ class MainViewController: UIViewController, UITextFieldDelegate {
                         KingfisherManager.shared.cache.clearMemoryCache()
                         KingfisherManager.shared.cache.clearDiskCache { print("Clear Cache Done !") }
                         
-                        if var order = defaults.dictionary(forKey: "CardOrder") {
+                        if let order = defaults.dictionary(forKey: "CardOrder") {
                             if (order[self.uuid] != nil) {
                                 let savedCardOrder: [Int] = order[self.uuid] as! [Int]
                                 print("Saved Card Order :", savedCardOrder)

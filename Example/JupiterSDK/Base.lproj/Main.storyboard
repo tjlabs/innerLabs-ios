@@ -694,10 +694,10 @@
             </objects>
             <point key="canvasLocation" x="3329" y="102"/>
         </scene>
-        <!--View Controller-->
+        <!--Collect View Controller-->
         <scene sceneID="jcl-F7-OzO">
             <objects>
-                <viewController id="PGK-WT-1iI" sceneMemberID="viewController">
+                <viewController id="PGK-WT-1iI" customClass="CollectViewController" customModule="JupiterSDK_Example" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="aVh-vd-k6Y">
                         <rect key="frame" x="0.0" y="0.0" width="390" height="844"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
