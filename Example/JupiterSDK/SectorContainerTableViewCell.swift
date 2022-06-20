@@ -48,7 +48,6 @@ class SectorContainerTableViewCell: UITableViewCell {
         setZoneCollectionView()
         
         initDropDown()
-//        setDropDown()
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
@@ -57,7 +56,6 @@ class SectorContainerTableViewCell: UITableViewCell {
     }
     
     private func initDropDown() {
-        dropView.backgroundColor = UIColor.systemGray4
         dropView.layer.cornerRadius = 6
         
         DropDown.appearance().textColor = UIColor.black // 아이템 텍스트 색상
@@ -74,7 +72,6 @@ class SectorContainerTableViewCell: UITableViewCell {
     
     private func setDropDown() {
         dropDown.dataSource = self.buildingList
-        print("Set DropDown :", dropDown.dataSource)
         
         // anchorView를 통해 UI와 연결
         dropDown.anchorView = self.dropView
@@ -92,14 +89,14 @@ class SectorContainerTableViewCell: UITableViewCell {
         // 취소 시 처리
         dropDown.cancelAction = { [weak self] in
             //빈 화면 터치 시 DropDown이 사라지고 아이콘을 원래대로 변경
-            self!.dropImage.image = UIImage.init(named: "closeInfoToggle")
+            self!.dropImage.image = UIImage.init(named: "showInfoToggle")
         }
     }
     
     @IBAction func dropDownClicked(_ sender: Any) {
         dropDown.show() // 아이템 팝업을 보여준다.
         // 아이콘 이미지를 변경하여 DropDown이 펼쳐진 것을 표현
-        self.dropImage.image = UIImage.init(named: "showInfoToggle")
+        self.dropImage.image = UIImage.init(named: "closeInfoToggle")
     }
     
     
@@ -295,7 +292,6 @@ class SectorContainerTableViewCell: UITableViewCell {
         self.cardData = cardData
         self.buildingList = cardData.infoBuilding
         self.levelList = (cardData.infoLevel)
-//        self.levelList = ["B3", "B4", "B1", "B2", "1F", "2F", "3F", "4F", "5F", "6F", "7F"]
         self.RP = RP
         self.flagRP = flag
         

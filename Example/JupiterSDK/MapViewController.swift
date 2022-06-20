@@ -101,7 +101,7 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
             
             let fname: String = "\(cardData!.sector_id)/\(cardData!.infoBuilding[0])_\(cardData!.infoLevel[0]).txt"
 //            readFileURL(fileName: fname)
-            let aaa: URL = downloadTest(fileName: fname)
+//            var checkRP: [[Double]] = downloadRP(fileName: fname)
             
             isRadioMap = true
             
@@ -121,16 +121,7 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
                 let rpXY: [[Double]] = loadRP(fileName: fileName)
 
                 RP[nameLevel] = rpXY
-                
-//                let fname: String = "\(cardData!.sector_id)/\(cardData!.infoBuilding[0])_\(nameLevel).csv"
-//                downloadRP(fileName: fname, levelName: nameLevel)
             }
-            
-            let fname: String = "\(cardData!.sector_id)/\(cardData!.infoBuilding[0])_\(cardData!.infoLevel[0]).csv"
-            readFileURL(fileName: fname)
-//            let aaa: URL = downloadTest(fileName: fname)
-//            let tttt: [[Double]] = parseCSV(url: aaa)
-//            print(tttt)
             
             isRadioMap = true
             
@@ -347,8 +338,9 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
         return rpXY
     }
     
-    private func downloadTest(fileName: String) -> URL {
-//        let url = "https://storage.cloud.google.com/jupiter_image/rp/ios/" + fileName
+    private func downloadRP(fileName: String) -> [[Double]] {
+        var rpXY = [[Double]]()
+        
         let url = "https://storage.cloud.google.com/jupiter_image/rp/ios/1/L1_2F.txt"
         // 파일매니저
         let fileManager = FileManager.default
@@ -364,55 +356,54 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
         }
         // 다운로드 시작
         AF.download(url, method: .get, parameters: nil, encoding: JSONEncoding.default, to: destination).downloadProgress { (progress) in
-        }.response{ response in
+        }.response{ [self] response in
             if response.error != nil {
                 print("파일다운로드 실패")
-            }else{
-                print("파일다운로드 완료")
+            } else{
+                print("파일다운로드 완료 :", fileURL)
                 
+                if (fileManager.fileExists(atPath: fileURL.path)) {
+                    // File 존재
+                    rpXY = parseRP(url: URL(fileURLWithPath: fileURL.path))
+                }
             }
         }
-        
-        return fileURL
+        return rpXY
     }
     
-    private func downloadRP(fileName: String) -> URL{
-        // Create destination URL
-        let documentsUrl:URL =  FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+    private func parseRP(url:URL) -> [[Double]] {
+        print("Parsing :", url)
         
-        //Create URL to the source file you want to download
-        let fileString: String = "https://storage.cloud.google.com/jupiter_image/rp/ios/" + fileName
-        print("RP URL :", fileString)
+        var rpXY = [[Double]]()
         
-        let fileURL = URL(string: fileString)
+        var rpX = [Double]()
+        var rpY = [Double]()
         
-        let destinationFileUrl = documentsUrl.appendingPathComponent((fileURL?.lastPathComponent)!)
-        print("Destination URL :", destinationFileUrl)
-        
-        let sessionConfig = URLSessionConfiguration.default
-        let session = URLSession(configuration: sessionConfig)
-        let request = URLRequest(url:fileURL!)
-        let task = session.downloadTask(with: request) { [self] (tempLocalUrl, response, error) in
-            if let tempLocalUrl = tempLocalUrl, error == nil {
-                // Success
-                if let statusCode = (response as? HTTPURLResponse)?.statusCode {
-                    print("Successfully downloaded. Status code: \(statusCode)")
+        do {
+            let data = try Data(contentsOf: url)
+            let dataEncoded = String(data: data, encoding: .utf8)
+            
+            if let dataArr = dataEncoded?.components(separatedBy: "\n").map({$0.components(separatedBy: ",")}) {
+                for item in dataArr {
+                    let rp: [String] = item
+                    if (rp.count == 2) {
+                        let x = rp[0]
+                        let y = rp[1].components(separatedBy: "\r")
+                        
+                        rpX.append(Double(x)!)
+                        rpY.append(Double(y[0])!)
+                    } else {
+                        print("Error reading .txt file")
+                        return [[Double]]()
+                    }
                 }
-                do {
-                    let data = try Data(contentsOf: tempLocalUrl)
-                    try data.write(to: destinationFileUrl)
-                    
-//                    try FileManager.default.copyItem(at: tempLocalUrl, to: destinationFileUrl)
-                } catch (let writeError) {
-                    print("Error creating a file \(destinationFileUrl) : \(writeError)")
-                }
-            } else {
-                print("Error took place while downloading a file. Error description: %@", error?.localizedDescription);
             }
+            rpXY = [rpX, rpY]
+        } catch {
+            print("Error reading .txt file")
         }
-        task.resume()
         
-        return destinationFileUrl
+        return rpXY
     }
     
     private func readFileURL(fileName: String) {
