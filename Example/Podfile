@@ -13,6 +13,7 @@ target 'JupiterSDK_Example' do
   pod 'SnapKit'
   pod 'ExpyTableView'
   pod 'Kingfisher'
+  pod 'DropDown'
   pod 'FirebaseMLCommon'
   pod 'Firebase/MLModelInterpreter', '6.25.0'
   pod 'TensorFlowLiteSwift'

@@ -9,6 +9,7 @@
 import UIKit
 import JupiterSDK
 import Charts
+import DropDown
 
 class SectorContainerTableViewCell: UITableViewCell {
     
@@ -19,11 +20,20 @@ class SectorContainerTableViewCell: UITableViewCell {
     @IBOutlet weak var imageLevel: UIImageView!
     @IBOutlet weak var scatterChart: ScatterChartView!
     
+    // DropDown
+    @IBOutlet weak var dropView: UIView!
+    @IBOutlet weak var dropImage: UIImageView!
+    @IBOutlet weak var dropText: UITextField!
+    @IBOutlet weak var dropButton: UIButton!
+    
+    let dropDown = DropDown()
+    
     var cardData: CardItemData?
     var RP: [String: [[Double]]]?
     var XY: [Double] = [0, 0]
     var flagRP: Bool = false
 
+    private var buildingList = [String]()
     private var levelList = [String]()
     private var currentLevel: String = ""
     private var countLevelChanged: Int = 0
@@ -36,6 +46,9 @@ class SectorContainerTableViewCell: UITableViewCell {
         
         setCells()
         setZoneCollectionView()
+        
+        initDropDown()
+//        setDropDown()
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
@@ -43,11 +56,54 @@ class SectorContainerTableViewCell: UITableViewCell {
 
     }
     
+    private func initDropDown() {
+        dropView.backgroundColor = UIColor.systemGray4
+        dropView.layer.cornerRadius = 6
+        
+        DropDown.appearance().textColor = UIColor.black // 아이템 텍스트 색상
+        DropDown.appearance().selectedTextColor = UIColor.red // 선택된 아이템 텍스트 색상
+        DropDown.appearance().backgroundColor = UIColor.white // 아이템 팝업 배경 색상
+        DropDown.appearance().selectionBackgroundColor = UIColor.lightGray // 선택한 아이템 배경 색상
+        DropDown.appearance().setupCornerRadius(6)
+        
+        dropText.borderStyle = .none
+        dropText.text = "Buildings"
+        
+        dropDown.dismissMode = .automatic // 팝업을 닫을 모드 설정
+    }
+    
+    private func setDropDown() {
+        dropDown.dataSource = self.buildingList
+        print("Set DropDown :", dropDown.dataSource)
+        
+        // anchorView를 통해 UI와 연결
+        dropDown.anchorView = self.dropView
+            
+        // View를 갖리지 않고 View아래에 Item 팝업이 붙도록 설정
+        dropDown.bottomOffset = CGPoint(x: 0, y: dropView.bounds.height)
+            
+        // Item 선택 시 처리
+        dropDown.selectionAction = { [weak self] (index, item) in
+            //선택한 Item을 TextField에 넣어준다.
+            self!.dropText.text = item
+            self!.dropImage.image = UIImage.init(named: "showInfoToggle")
+        }
+            
+        // 취소 시 처리
+        dropDown.cancelAction = { [weak self] in
+            //빈 화면 터치 시 DropDown이 사라지고 아이콘을 원래대로 변경
+            self!.dropImage.image = UIImage.init(named: "closeInfoToggle")
+        }
+    }
+    
+    @IBAction func dropDownClicked(_ sender: Any) {
+        dropDown.show() // 아이템 팝업을 보여준다.
+        // 아이콘 이미지를 변경하여 DropDown이 펼쳐진 것을 표현
+        self.dropImage.image = UIImage.init(named: "showInfoToggle")
+    }
+    
+    
     private func setCells() {
-        
-//        sectorID = cardData!.sector_id
-//        building = cardData?.infoBuilding
-        
         LevelCollectionViewCell.register(target: levelCollectionView)
     }
     
@@ -237,9 +293,13 @@ class SectorContainerTableViewCell: UITableViewCell {
     
     internal func configure(cardData: CardItemData, RP: [String: [[Double]]], flag: Bool) {
         self.cardData = cardData
+        self.buildingList = cardData.infoBuilding
         self.levelList = (cardData.infoLevel)
+//        self.levelList = ["B3", "B4", "B1", "B2", "1F", "2F", "3F", "4F", "5F", "6F", "7F"]
         self.RP = RP
         self.flagRP = flag
+        
+        setDropDown()
     }
     
     func updateCoord(data: CoordToDisplay, flag: Bool) {
