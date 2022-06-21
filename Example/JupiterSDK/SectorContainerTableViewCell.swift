@@ -229,7 +229,7 @@ class SectorContainerTableViewCell: UITableViewCell {
 //        set1.setColor(ChartColorTemplates.colorful()[2])
 //        set1.setColor(UIColor.systemYellow)
         set1.setColor(UIColor.systemRed)
-        set1.scatterShapeSize = 22
+        set1.scatterShapeSize = 16
         
         let chartData = ScatterChartData(dataSet: set1)
         chartData.setDrawValues(false)
@@ -240,15 +240,18 @@ class SectorContainerTableViewCell: UITableViewCell {
         let yMax = yAxisValue.max()!
         
         let chartFlag: Bool = false
-        
         // Configure Chart
         if (currentLevel == "B1") {
             scatterChart.xAxis.axisMinimum = xMin-6
             scatterChart.xAxis.axisMaximum = xMax+9.5
             scatterChart.leftAxis.axisMinimum = yMin-40
             scatterChart.leftAxis.axisMaximum = yMax+38.5
-        }
-        else if (currentLevel == "B3") {
+        } else if (currentLevel == "B2") {
+            scatterChart.xAxis.axisMinimum = xMin-28
+            scatterChart.xAxis.axisMaximum = xMax+12
+            scatterChart.leftAxis.axisMinimum = yMin-2
+            scatterChart.leftAxis.axisMaximum = yMax+39.5
+        } else if (currentLevel == "B3") {
             scatterChart.xAxis.axisMinimum = xMin-3.8
             scatterChart.xAxis.axisMaximum = xMax+6
             scatterChart.leftAxis.axisMinimum = yMin-11.3
@@ -317,8 +320,9 @@ class SectorContainerTableViewCell: UITableViewCell {
             let rp: [[Double]] = RP?[currentLevel] ?? [[Double]]()
             
             if (rp.isEmpty) {
-                scatterChart.alpha = 1.0
+                scatterChart.alpha = 0
             } else {
+                scatterChart.alpha = 1.0
                 if (flag) {
                     drawRP(RP_X: rp[0], RP_Y: rp[1], XY: XY)
                 } else {
@@ -326,9 +330,8 @@ class SectorContainerTableViewCell: UITableViewCell {
                 }
             }
             
-            
         } else {
-            scatterChart.alpha = 0
+            scatterChart.alpha = 1.0
         }
             
         levelCollectionView.reloadData()
@@ -346,7 +349,6 @@ extension SectorContainerTableViewCell : UICollectionViewDelegate{
             scatterChart.alpha = 0
         } else {
             scatterChart.alpha = 1.0
-            
             if (flagRP) {
                 drawRP(RP_X: rp[0], RP_Y: rp[1], XY: XY)
             } else {

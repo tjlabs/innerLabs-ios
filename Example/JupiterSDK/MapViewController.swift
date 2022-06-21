@@ -603,7 +603,7 @@ extension MapViewController: UITableViewDataSource {
                 sectorContainerTVC.backgroundColor = .systemGray6
                 sectorContainerTVC.configure(cardData: cardData!, RP: RP, flag: isShowRP)
                 
-                if (cardData?.sector_id == 1 || cardData?.sector_id == 2 || cardData?.sector_id == 3 || cardData?.sector_id == 4) {
+                if (cardData?.sector_id != 0 && cardData?.sector_id != 7) {
                     sectorContainerTVC.updateCoord(data: coordToDisplay, flag: isShowRP)
                 }
                 
