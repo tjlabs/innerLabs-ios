@@ -100,8 +100,6 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
             }
             
             let fname: String = "\(cardData!.sector_id)/\(cardData!.infoBuilding[0])_\(cardData!.infoLevel[0]).txt"
-//            readFileURL(fileName: fname)
-//            var checkRP: [[Double]] = downloadRP(fileName: fname)
             
             isRadioMap = true
             
@@ -215,6 +213,21 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
         let tapRecognizer = UITapGestureRecognizer()
         tapRecognizer.addTarget(self, action: #selector(self.showRP))
         self.sectorNameLabel.addGestureRecognizer(tapRecognizer)
+        
+        // Download RP
+//        let numBuildings: Int = cardData.infoBuilding.count
+//        for building in 0..<numBuildings {
+//            let numLevels: Int = cardData.infoLevel.count
+//
+//            for level in 0..<numLevels {
+//                let nameLevel: String = (cardData.infoLevel[level])
+//
+//                let fileName: String = "\(cardData.sector_id)/\(cardData.infoBuilding[building])_\(cardData.infoLevel[level]).txt"
+//                let rpXY: [[Double]] = downloadRP(fileName: fileName)
+//
+//                RP[nameLevel] = rpXY
+//            }
+//        }
     }
     
     @objc func showRP() {
@@ -387,11 +400,12 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
                 for item in dataArr {
                     let rp: [String] = item
                     if (rp.count == 2) {
-                        let x = rp[0]
-                        let y = rp[1].components(separatedBy: "\r")
                         
-                        rpX.append(Double(x)!)
-                        rpY.append(Double(y[0])!)
+                        guard let x: Double = Double(rp[0]) else { return [[Double]]() }
+                        guard let y: Double = Double(rp[1].components(separatedBy: "\r")[0]) else { return [[Double]]() }
+                        
+                        rpX.append(x)
+                        rpY.append(y)
                     } else {
                         print("Error reading .txt file")
                         return [[Double]]()
@@ -413,7 +427,6 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
         if let url = URL(string: fileString) {
             do {
                 let contents = try String(contentsOf: url, encoding: .utf8)
-                print(contents)
             } catch {
                 // contents could not be loaded
             }

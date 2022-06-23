@@ -45,7 +45,7 @@ class SectorContainerTableViewCell: UITableViewCell {
         super.awakeFromNib()
         
         setCells()
-        setZoneCollectionView()
+        setLevelCollectionView()
         
         initDropDown()
     }
@@ -65,7 +65,7 @@ class SectorContainerTableViewCell: UITableViewCell {
         DropDown.appearance().setupCornerRadius(6)
         
         dropText.borderStyle = .none
-        dropText.text = "Buildings"
+//        dropText.text = "Buildings"
         
         dropDown.dismissMode = .automatic // 팝업을 닫을 모드 설정
     }
@@ -104,7 +104,7 @@ class SectorContainerTableViewCell: UITableViewCell {
         LevelCollectionViewCell.register(target: levelCollectionView)
     }
     
-    private func setZoneCollectionView() {
+    private func setLevelCollectionView() {
         levelCollectionView.delegate = self
         levelCollectionView.dataSource = self
 
@@ -226,8 +226,7 @@ class SectorContainerTableViewCell: UITableViewCell {
         let set1 = ScatterChartDataSet(entries: values1, label: "USER")
         set1.drawValuesEnabled = false
         set1.setScatterShape(.circle)
-//        set1.setColor(ChartColorTemplates.colorful()[2])
-//        set1.setColor(UIColor.systemYellow)
+
         set1.setColor(UIColor.systemRed)
         set1.scatterShapeSize = 16
         

@@ -73,7 +73,8 @@ class GalleryViewController: UIViewController, WKNavigationDelegate, UIScrollVie
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
 //        print(scrollView.contentOffset.y)
         let scrollPosition: Double = scrollView.contentOffset.y
-        imageDisappear(contentsHeight: (self.contentsHeight!.y/8), scrollPostion: scrollPosition)
+        guard let height = contentsHeight else { return }
+        imageDisappear(contentsHeight: (height.y/5), scrollPostion: scrollPosition)
     }
     
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
