@@ -71,7 +71,6 @@ class GalleryViewController: UIViewController, WKNavigationDelegate, UIScrollVie
     }
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-//        print(scrollView.contentOffset.y)
         let scrollPosition: Double = scrollView.contentOffset.y
         guard let height = contentsHeight else { return }
         imageDisappear(contentsHeight: (height.y/5), scrollPostion: scrollPosition)
@@ -79,18 +78,14 @@ class GalleryViewController: UIViewController, WKNavigationDelegate, UIScrollVie
     
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         contentsHeight = CGPoint(x: 0, y: self.webView.scrollView.contentSize.height - self.webView.scrollView.bounds.height + self.webView.scrollView.contentInset.bottom)
-        print("WebView is loaded")
-        print("Contents Height :", contentsHeight!.y)
-        
+//        print("WebView is loaded")
+//        print("Contents Height :", contentsHeight!.y)
 //        scrollToBottom()
     }
     
     func scrollToBottom() {
         let bottomOffset = CGPoint(x: 0, y: self.webView.scrollView.contentSize.height - self.webView.scrollView.bounds.height + self.webView.scrollView.contentInset.bottom)
-//        print(self.webView.scrollView.contentSize.height)
-//        print(self.webView.scrollView.bounds.height)
-//        print(self.webView.scrollView.contentInset.bottom)
-//        print(bottomOffset)
+
         self.webView.scrollView.setContentOffset(bottomOffset, animated: true)
         imageDisappear(contentsHeight: (self.contentsHeight!.y/8), scrollPostion: (self.contentsHeight!.y/8))
     }

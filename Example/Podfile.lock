@@ -47,6 +47,7 @@ PODS:
     - GoogleUtilities/UserDefaults (~> 6.0)
     - GTMSessionFetcher/Core (~> 1.1)
     - TensorFlowLiteObjC (~> 1.14.0)
+  - Floaty (4.2.0)
   - GoogleDataTransport (7.5.1):
     - nanopb (~> 1.30906.0)
   - GoogleMaps (4.0.0):
@@ -102,6 +103,7 @@ DEPENDENCIES:
   - ExpyTableView
   - Firebase/MLModelInterpreter (= 6.25.0)
   - FirebaseMLCommon
+  - Floaty (~> 4.2.0)
   - GoogleMaps (= 4.0.0)
   - GooglePlaces (= 4.0.0)
   - JupiterSDK (from `../`)
@@ -123,6 +125,7 @@ SPEC REPOS:
     - FirebaseInstanceID
     - FirebaseMLCommon
     - FirebaseMLModelInterpreter
+    - Floaty
     - GoogleDataTransport
     - GoogleMaps
     - GooglePlaces
@@ -156,6 +159,7 @@ SPEC CHECKSUMS:
   FirebaseInstanceID: cef67c4967c7cecb56ea65d8acbb4834825c587b
   FirebaseMLCommon: 850f595135e066b989f90323c970499a4d8afbf9
   FirebaseMLModelInterpreter: 00dc6b246167a350a91be2d2667736d290700366
+  Floaty: e2bd5a0f6f7f70899e26ff2da31081c8bee8d1b0
   GoogleDataTransport: f56af7caa4ed338dc8e138a5d7c5973e66440833
   GoogleMaps: b7f7fc569a9b354a3af0d9729dbec40957b7d41e
   GooglePlaces: ca8d4aba09ba79e0a829cf1dca03a41de6a09016
@@ -173,6 +177,6 @@ SPEC CHECKSUMS:
   TensorFlowLiteObjC: ece71b1e78f3df5952996c1606934b1d5538c875
   TensorFlowLiteSwift: ac8c816ae2d65f631a96151e7991c46412aec7eb
 
-PODFILE CHECKSUM: b9c5606d6750f5172a72a404ba22c849359cf6d8
+PODFILE CHECKSUM: 2ef6482c54ad72dbef642629a0b2d6a03712b57d
 
 COCOAPODS: 1.11.3
