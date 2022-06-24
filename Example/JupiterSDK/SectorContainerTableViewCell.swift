@@ -33,9 +33,14 @@ class SectorContainerTableViewCell: UITableViewCell {
     var XY: [Double] = [0, 0]
     var flagRP: Bool = false
 
-    private var buildingList = [String]()
-    private var levelList = [String]()
+    private var buildings = [String]()
+    private var levels = [String: [String]]()
+    
+    private var matchedLevels = [String]()
+    
+    private var currentBuilding: String = ""
     private var currentLevel: String = ""
+    
     private var countLevelChanged: Int = 0
     
     var sectorID: Int = 0
@@ -57,6 +62,7 @@ class SectorContainerTableViewCell: UITableViewCell {
     
     private func initDropDown() {
         dropView.layer.cornerRadius = 6
+        dropView.borderColor = .blue1
         
         DropDown.appearance().textColor = UIColor.black // 아이템 텍스트 색상
         DropDown.appearance().selectedTextColor = UIColor.red // 선택된 아이템 텍스트 색상
@@ -65,13 +71,14 @@ class SectorContainerTableViewCell: UITableViewCell {
         DropDown.appearance().setupCornerRadius(6)
         
         dropText.borderStyle = .none
-//        dropText.text = "Buildings"
+        dropText.text = "Buildings"
+        dropText.textColor = .blue1
         
         dropDown.dismissMode = .automatic // 팝업을 닫을 모드 설정
     }
     
     private func setDropDown() {
-        dropDown.dataSource = self.buildingList
+        dropDown.dataSource = self.buildings
         
         // anchorView를 통해 UI와 연결
         dropDown.anchorView = self.dropView
@@ -83,6 +90,8 @@ class SectorContainerTableViewCell: UITableViewCell {
         dropDown.selectionAction = { [weak self] (index, item) in
             //선택한 Item을 TextField에 넣어준다.
             self!.dropText.text = item
+            self!.currentBuilding = item
+            self!.levelCollectionView.reloadData()
             self!.dropImage.image = UIImage.init(named: "showInfoToggle")
         }
             
@@ -111,12 +120,10 @@ class SectorContainerTableViewCell: UITableViewCell {
         levelCollectionView.reloadData()
     }
     
-    private func fetchLevel(currentLevel: String, levelList: [String]) -> Void {
-        let arr = levelList
-        let idx = (arr.firstIndex(where: {$0 == currentLevel}) ?? 0)
+    private func fetchLevel(building: String, level: String) {
+        let imageName: String = "\(currentBuilding)_\(currentLevel)"
         
-        let level: String = levelList[idx]
-        imageLevel.image = UIImage(named: level)
+        imageLevel.image = UIImage(named: imageName)
 //        print("Width :", imageLevel.image!.size.width)
 //        print("Height :", imageLevel.image!.size.height)
         
@@ -292,8 +299,8 @@ class SectorContainerTableViewCell: UITableViewCell {
     
     internal func configure(cardData: CardItemData, RP: [String: [[Double]]], flag: Bool) {
         self.cardData = cardData
-        self.buildingList = cardData.infoBuilding
-        self.levelList = (cardData.infoLevel)
+        self.buildings = cardData.infoBuilding
+        self.levels = cardData.infoLevel
         self.RP = RP
         self.flagRP = flag
         
@@ -304,19 +311,26 @@ class SectorContainerTableViewCell: UITableViewCell {
         self.XY[0] = data.x
         self.XY[1] = data.y
         
-        if (data.level == "") {
-            currentLevel = levelList[0]
+        if (data.building == "") {
+            currentBuilding = buildings[0]
         } else {
-            currentLevel = data.level
+            currentBuilding = data.building
+            if (data.level == "") {
+                currentLevel = levels[currentBuilding]![0]
+            } else {
+                currentLevel = data.level
+            }
         }
-        fetchLevel(currentLevel: currentLevel, levelList: levelList)
         
+        fetchLevel(building: currentBuilding, level: currentLevel)
+        
+        let key = "\(currentBuilding)_\(currentLevel)"
         let condition: ((String, [[Double]])) -> Bool = {
-            $0.0.contains(self.currentLevel)
+            $0.0.contains(key)
         }
         
         if (RP!.contains(where: condition)) {
-            let rp: [[Double]] = RP?[currentLevel] ?? [[Double]]()
+            let rp: [[Double]] = RP?[key] ?? [[Double]]()
             
             if (rp.isEmpty) {
                 scatterChart.alpha = 0
@@ -340,9 +354,10 @@ class SectorContainerTableViewCell: UITableViewCell {
 extension SectorContainerTableViewCell : UICollectionViewDelegate{
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         makeVibrate()
-        currentLevel = levelList[indexPath.row]
+        currentLevel = levels[currentBuilding]![indexPath.row]
         
-        let rp: [[Double]] = RP?[currentLevel] ?? [[Double]]()
+        let key = "\(currentBuilding)_\(currentLevel)"
+        let rp: [[Double]] = RP?[key] ?? [[Double]]()
         if (rp.isEmpty) {
             // RP가 없어서 그리지 않음
             scatterChart.alpha = 0
@@ -354,7 +369,7 @@ extension SectorContainerTableViewCell : UICollectionViewDelegate{
                 drawUser(RP_X: rp[0], RP_Y: rp[1], XY: XY)
             }
             
-            fetchLevel(currentLevel: currentLevel, levelList: levelList)
+            fetchLevel(building: currentBuilding, level: currentLevel)
         }
         
         levelCollectionView.reloadData()
@@ -364,16 +379,16 @@ extension SectorContainerTableViewCell : UICollectionViewDelegate{
 
 extension SectorContainerTableViewCell : UICollectionViewDataSource{
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        levelList.count
+        levels[currentBuilding]!.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let levelCollectionView = collectionView.dequeueReusableCell(withReuseIdentifier: LevelCollectionViewCell.className, for: indexPath)
                 as? LevelCollectionViewCell else {return UICollectionViewCell()}
 
-        levelCollectionView.setName(level: levelList[indexPath.row],
-                                    isClicked: currentLevel == levelList[indexPath.row] ? true : false)
-        fetchLevel(currentLevel: currentLevel, levelList: levelList)
+        levelCollectionView.setName(level: levels[currentBuilding]![indexPath.row],
+                                    isClicked: currentLevel == levels[currentBuilding]![indexPath.row] ? true : false)
+        fetchLevel(building: currentBuilding, level: currentLevel)
         
         levelCollectionView.layer.cornerRadius = 15
         levelCollectionView.layer.borderColor = UIColor.blue1.cgColor
@@ -387,7 +402,7 @@ extension SectorContainerTableViewCell : UICollectionViewDelegateFlowLayout{
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let label = UILabel()
         label.font = .systemFont(ofSize: 14)
-        label.text = levelList[indexPath.row]
+        label.text = levels[currentBuilding]![indexPath.row]
         label.sizeToFit()
         
         return CGSize(width: label.frame.width + 30, height: 30)

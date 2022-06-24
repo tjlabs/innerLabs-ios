@@ -66,6 +66,10 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
     var infoOfLevels: String = ""
     var runMode: String = ""
     
+    var buildings = [String]()
+    var currentBuilding: String = ""
+    var levels = [String:[String]]()
+    
     var levelList = [String]()
     var currentLevel: String = ""
     
@@ -89,82 +93,26 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
         makeDelegate()
         registerXib()
         
-        if ( cardData?.sector_id == 1 || cardData?.sector_id == 2 ) {
-            numLevels = (cardData?.infoLevel.count)!
-            for idx in 0..<numLevels {
-                let nameLevel: String = (cardData?.infoLevel[idx])!
-                let fileName: String = "KIST_RP_" + nameLevel
-                let rpXY: [[Double]] = loadRP(fileName: fileName)
-                
-                RP[nameLevel] = rpXY
-            }
+        if (cardData?.sector_id != 0 && cardData?.sector_id != 7) {
+            let firstBuilding: String = (cardData?.infoBuilding[0])!
+            let firstBuildingLevels: [String] = (cardData?.infoLevel[firstBuilding])!
             
-            let fname: String = "\(cardData!.sector_id)/\(cardData!.infoBuilding[0])_\(cardData!.infoLevel[0]).txt"
+            displayLevelInfo(infoLevel: firstBuildingLevels)
+            
+            levelList = firstBuildingLevels
             
             isRadioMap = true
-            
-            let first: String = (cardData?.infoLevel[0])!
-            if (numLevels == 1) {
-                infoOfLevels = "( " + first + " )"
-            } else {
-                let last: String = (cardData?.infoLevel[numLevels-1])!
-                infoOfLevels = "( " + first + "~" + last + " )"
-            }
-            
-        } else if (cardData?.sector_id == 3 || cardData?.sector_id == 4) {
-            numLevels = (cardData?.infoLevel.count)!
-            for idx in 0..<numLevels {
-                let nameLevel: String = (cardData?.infoLevel[idx])!
-                let fileName: String = "Autoway_RP_" + nameLevel
-                let rpXY: [[Double]] = loadRP(fileName: fileName)
-
-                RP[nameLevel] = rpXY
-            }
-            
-            isRadioMap = true
-            
-            let first: String = (cardData?.infoLevel[0])!
-            if (numLevels == 1) {
-                infoOfLevels = "( " + first + " )"
-            } else {
-                let last: String = (cardData?.infoLevel[numLevels-1])!
-                infoOfLevels = "( " + first + "~" + last + " )"
-            }
-            
-            currentLevel = first
-        } else if (cardData?.sector_id == 5 || cardData?.sector_id == 6) {
-            numLevels = (cardData?.infoLevel.count)!
-            for idx in 0..<numLevels {
-                let nameLevel: String = (cardData?.infoLevel[idx])!
-                
-                if (nameLevel == "B2") {
-                    let fileName: String = "COEX_RP_" + nameLevel
-                    let rpXY: [[Double]] = loadRP(fileName: fileName)
-                    
-                    RP[nameLevel] = rpXY
-                }
-                
-            }
-            
-            isRadioMap = true
-            
-            let first: String = (cardData?.infoLevel[0])!
-            if (numLevels == 1) {
-                infoOfLevels = "( " + first + " )"
-            } else {
-                let last: String = (cardData?.infoLevel[numLevels-1])!
-                infoOfLevels = "( " + first + "~" + last + " )"
-            }
+        } else {
+            isRadioMap = false
         }
         
-        levelList = cardData!.infoLevel
         fixChartHeight(flag: isRadioMap)
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        if (cardData!.mode == 0) {
+        if (cardData!.mode == 1 || cardData!.mode == 2) {
             runMode = "PDR"
         } else {
             runMode = "DR"
@@ -214,20 +162,40 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
         tapRecognizer.addTarget(self, action: #selector(self.showRP))
         self.sectorNameLabel.addGestureRecognizer(tapRecognizer)
         
+        self.buildings = cardData.infoBuilding
+        self.levels = cardData.infoLevel
+        
         // Download RP
-//        let numBuildings: Int = cardData.infoBuilding.count
-//        for building in 0..<numBuildings {
-//            let numLevels: Int = cardData.infoLevel.count
-//
-//            for level in 0..<numLevels {
-//                let nameLevel: String = (cardData.infoLevel[level])
-//
-//                let fileName: String = "\(cardData.sector_id)/\(cardData.infoBuilding[building])_\(cardData.infoLevel[level]).txt"
-//                let rpXY: [[Double]] = downloadRP(fileName: fileName)
-//
-//                RP[nameLevel] = rpXY
-//            }
-//        }
+        let numBuildings: Int = cardData.infoBuilding.count
+        for building in 0..<numBuildings {
+            let buildingName: String = cardData.infoBuilding[building]
+            let levels: [String] = cardData.infoLevel[buildingName]!
+            let numLevels: Int = levels.count
+
+            for level in 0..<numLevels {
+                let levelName: String = levels[level]
+
+                let fileName: String = "\(cardData.sector_id)/\(buildingName)_\(levelName).txt"
+                let rpXY: [[Double]] = downloadRP(fileName: fileName)
+
+                let key: String = "\(buildingName)_\(levelName)"
+                RP[key] = rpXY
+            }
+        }
+    }
+    
+    func displayLevelInfo(infoLevel: [String]) {
+        let numLevels = infoLevel.count
+        
+        let firstLevel: String = infoLevel[0]
+        
+        if (numLevels == 1) {
+            infoOfLevels = "( " + firstLevel + " )"
+        } else {
+            let lastLevel: String = infoLevel[numLevels-1]
+            infoOfLevels = "( " + firstLevel + "~" + lastLevel + " )"
+        }
+        
     }
     
     @objc func showRP() {
@@ -256,17 +224,7 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
             if ( cardData?.sector_id == 1 || cardData?.sector_id == 2 ) {
                 jupiterTableViewHeight.constant = 480
                 containerViewHeight.constant = 150
-            } else if ( cardData?.sector_id == 3 || cardData?.sector_id == 4 ) {
-                let ratio: Double = 114900 / 68700
-                jupiterTableViewHeight.constant = jupiterTableView.bounds.width * ratio
-
-                let window = UIApplication.shared.keyWindow
-                let bottomPadding = window?.safeAreaInsets.bottom ?? 0.0
-                
-                defaultHeight = MapView.bounds.height - 100 - jupiterTableViewHeight.constant - bottomPadding
-                
-                containerViewHeight.constant = defaultHeight
-            } else if ( cardData?.sector_id == 5 || cardData?.sector_id == 6 ) {
+            } else if ( cardData?.sector_id == 3 || cardData?.sector_id == 4 || cardData?.sector_id == 5 || cardData?.sector_id == 6 ) {
                 let ratio: Double = 114900 / 68700
                 jupiterTableViewHeight.constant = jupiterTableView.bounds.width * ratio
 
@@ -311,42 +269,9 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
         containerTableView.separatorStyle = UITableViewCell.SeparatorStyle.none
     }
     
-    private func parseCSV(url:URL) -> [[Double]] {
-        print("Parsing :", url)
-        
-        var rpXY = [[Double]]()
-        
-        var rpX = [Double]()
-        var rpY = [Double]()
-        
-        do {
-            let data = try Data(contentsOf: url)
-            let dataEncoded = String(data: data, encoding: .utf8)
-            
-            if let dataArr = dataEncoded?.components(separatedBy: "\n").map({$0.components(separatedBy: ",")}) {
-                for item in dataArr {
-                    let rp: [String] = item
-                    if(rp.count == 2) {
-                        let x = rp[0]
-                        let y = rp[1].components(separatedBy: "\r")
-                        
-                        rpX.append(Double(x)!)
-                        rpY.append(Double(y[0])!)
-                        
-                    }
-                }
-            }
-            rpXY = [rpX, rpY]
-        } catch {
-            print("Error reading CSV file")
-        }
-        
-        return rpXY
-    }
-    
     private func loadRP(fileName: String) -> [[Double]] {
         let path = Bundle.main.path(forResource: fileName, ofType: "csv")!
-        let rpXY:[[Double]] = parseCSV(url: URL(fileURLWithPath: path))
+        let rpXY:[[Double]] = parseRP(url: URL(fileURLWithPath: path))
         
         return rpXY
     }
@@ -354,7 +279,8 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
     private func downloadRP(fileName: String) -> [[Double]] {
         var rpXY = [[Double]]()
         
-        let url = "https://storage.cloud.google.com/jupiter_image/rp/ios/1/L1_2F.txt"
+        let url = "https://storage.cloud.google.com/jupiter_image/rp/ios/\(fileName)"
+        print("Download URL :", url)
         // 파일매니저
         let fileManager = FileManager.default
         // 앱 경로
@@ -470,10 +396,20 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
             let x = jupiterService.jupiterOutput.x
             let y = jupiterService.jupiterOutput.y
             
+            let building = jupiterService.jupiterOutput.building
             let level = jupiterService.jupiterOutput.level
             var levelOutput: String = ""
-            if (levelList.contains(level)) {
-                levelOutput = level
+            
+            if (buildings.contains(building)) {
+                if let levelList: [String] = levels[building] {
+                    if (levelList.contains(level)) {
+                        levelOutput = level
+                    } else {
+                        levelOutput = "Out of bounds"
+                    }
+                } else {
+                    levelOutput = "Out of bounds"
+                }
             } else {
                 levelOutput = "Out of bounds"
             }
@@ -483,6 +419,7 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
 
             coordToDisplay.x = x
             coordToDisplay.y = y
+            coordToDisplay.building = building
             coordToDisplay.level = levelOutput
             
             resultToDisplay.unitIndexRx = unitIdxRx
@@ -514,7 +451,7 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
         case .willExpand:
             print("WILL EXPAND")
             if (section == 0) {
-               isOpen = true
+                isOpen = true
             }
             
         case .willCollapse:
@@ -537,7 +474,6 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
     
     func tableView(_ tableView: ExpyTableView, expandableCellForSection section: Int) -> UITableViewCell {
         let cell = UITableViewCell()
-//        cell.backgroundColor = .white
         cell.backgroundColor = .systemGray6
         cell.selectionStyle = .none //선택했을 때 회색되는거 없애기
         
@@ -566,7 +502,7 @@ extension MapViewController: UITableViewDelegate {
                 return 40
             } else {
                 if (indexPath.section == 0) {
-                    return 300 + 20
+                    return 220 + 20
                 } else {
                     return 120 + 20
                 }

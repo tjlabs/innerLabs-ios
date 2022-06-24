@@ -8,6 +8,7 @@
 
 import UIKit
 import WebKit
+import Floaty
 import JupiterSDK
 
 protocol GalleryViewPageDelegate {
@@ -22,7 +23,6 @@ class GalleryViewController: UIViewController, WKNavigationDelegate, UIScrollVie
     let defaultHeight:Double = 500
     
     var url = URL(string: "https://tjlabscorp.tistory.com/3")!
-//    var url = URL(string: "https://storage.cloud.google.com/jupiter_image/rp/ios/1/L1_2F.txt")!
     
     @IBOutlet weak var webView: WKWebView!
     
@@ -37,7 +37,10 @@ class GalleryViewController: UIViewController, WKNavigationDelegate, UIScrollVie
     
     var contentsHeight: CGPoint?
     
-    var sectorDetectionService = SectorDetectionService()
+    // Floating Button
+    let floaty = Floaty()
+    
+    var sectorDetectionService = ServiceManager()
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(false)
@@ -55,7 +58,9 @@ class GalleryViewController: UIViewController, WKNavigationDelegate, UIScrollVie
         self.webView.scrollView.alwaysBounceVertical = false
         self.webView.scrollView.bounces = false
         
-        sectorDetectionService.startService()
+        setFloatingButton()
+        
+        sectorDetectionService.startService(service: "mariner1")
     }
     
     func setCardData(cardData: CardItemData) {
@@ -63,6 +68,37 @@ class GalleryViewController: UIViewController, WKNavigationDelegate, UIScrollVie
         
         let imageName: String = cardData.cardColor + "CardTop"
         self.cardTopImage.image = UIImage(named: imageName)!
+    }
+    
+    func setFloatingButton() {
+        floaty.buttonColor = .systemGreen
+        floaty.plusColor = .black
+        floaty.itemButtonColor = .white
+        floaty.openAnimationType = .slideLeft
+        
+        let item = FloatyItem()
+        item.buttonColor = .systemYellow
+        item.title = "Custom"
+        floaty.addItem(item: item)
+        
+        floaty.addItem("To Bottom", icon: UIImage(named: "showInfoToggle"), handler: { [self] item in
+            scrollToBottom()
+            floaty.close()
+        })
+        
+        floaty.addItem("To Top", icon: UIImage(named: "closeInfoToggle"), handler: { [self] item in
+            scrollToTop()
+            floaty.close()
+        })
+        
+//        floaty.addItem("Test", icon: UIImage(named: "showInfoToggle"), handler: { [self] item in
+//            let alert = UIAlertController(title: "Wow", message: "It's lunch time", preferredStyle: .alert)
+//            alert.addAction(UIAlertAction(title: "Yes", style: .default, handler: nil))
+//            self.present(alert, animated: true, completion: nil)
+//            floaty.close()
+//        })
+        
+        self.view.addSubview(floaty)
     }
     
     @IBAction func tapBackButton(_ sender: UIButton) {
@@ -78,16 +114,18 @@ class GalleryViewController: UIViewController, WKNavigationDelegate, UIScrollVie
     
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         contentsHeight = CGPoint(x: 0, y: self.webView.scrollView.contentSize.height - self.webView.scrollView.bounds.height + self.webView.scrollView.contentInset.bottom)
-//        print("WebView is loaded")
-//        print("Contents Height :", contentsHeight!.y)
-//        scrollToBottom()
+    }
+    
+    func scrollToTop() {
+        self.webView.scrollView.setContentOffset(CGPoint(x: 0, y: 0), animated: true)
+        imageDisappear(contentsHeight: (self.contentsHeight!.y/5), scrollPostion: 0)
     }
     
     func scrollToBottom() {
         let bottomOffset = CGPoint(x: 0, y: self.webView.scrollView.contentSize.height - self.webView.scrollView.bounds.height + self.webView.scrollView.contentInset.bottom)
 
         self.webView.scrollView.setContentOffset(bottomOffset, animated: true)
-        imageDisappear(contentsHeight: (self.contentsHeight!.y/8), scrollPostion: (self.contentsHeight!.y/8))
+        imageDisappear(contentsHeight: (self.contentsHeight!.y/5), scrollPostion: (self.contentsHeight!.y/5))
     }
     
     func imageDisappear(contentsHeight: Double, scrollPostion: Double) {

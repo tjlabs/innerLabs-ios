@@ -1,6 +1,8 @@
 import Foundation
 
-let JUPITER_URL = "https://where-run-card-skrgq3jc5a-du.a.run.app/cards"
+//let JUPITER_URL = "https://where-run-card-skrgq3jc5a-du.a.run.app/cards"
+let USER_URL = "https://where-run-user-skrgq3jc5a-du.a.run.app/user"
+let CARD_URL = "https://where-run-user-skrgq3jc5a-du.a.run.app/card"
 
 struct CardItemData: Codable {
     public var sector_id: Int
@@ -8,22 +10,27 @@ struct CardItemData: Codable {
     public var description: String
     public var cardColor: String
     public var mode: Int
-    public var infoLevel: [String]
+    public var service: String
     public var infoBuilding: [String]
+    public var infoLevel: [String: [String]]
     
-    public init(sector_id: Int, sector_name: String, description: String, cardColor: String, mode: Int, infoLevel: [String], infoBuilding: [String]) {
+    public init(sector_id: Int, sector_name: String, description: String, cardColor: String, mode: Int, service: String,
+                infoBuilding: [String], infoLevel: [String:[String]]) {
         self.sector_id = sector_id
         self.sector_name = sector_name
         self.description = description
         self.cardColor = cardColor
         self.mode = mode
-        self.infoLevel = infoLevel
+        self.service = service
         self.infoBuilding = infoBuilding
+        self.infoLevel = infoLevel
     }
 }
 
 struct Login: Codable {
     var user_id: String
+    var device_model: String
+    var os_version: Int
 }
 
 struct AddCard: Codable {
@@ -41,10 +48,10 @@ struct AddCardSuccess: Codable {
     var sector_id: Int
     var sector_name: String
     var description: String
-    var cardColor: String
-    var mode: Int
-    var infoLevel: String
-    var infoBuilding: String
+    var card_color: String
+    var mode_id: Int
+    var service: String
+    var building_level: [[String]]
 }
 
 struct AddCardFail: Codable {
@@ -64,10 +71,12 @@ struct CardInfo: Codable {
     var sector_id: Int
     var sector_name: String
     var description: String
-    var cardColor: String
-    var mode: Int
-    var infoLevel: String
-    var infoBuilding: String
+    var card_color: String
+    var mode_id: Int
+    var service_request: String
+    var building_level: [[String]]
+//    var infoLevel: String
+//    var infoBuilding: String
 }
 
 struct ResultToDisplay {
@@ -82,5 +91,6 @@ struct ResultToDisplay {
 struct CoordToDisplay {
     var x: Double = 0
     var y: Double = 0
+    var building: String = ""
     var level: String = ""
 }

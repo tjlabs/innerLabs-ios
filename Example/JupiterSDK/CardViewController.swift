@@ -364,7 +364,6 @@ extension CardViewController: UICollectionViewDataSource, UICollectionViewDelega
         let mod = indexPath.item%cardCount
         
         let sector_id = cardItemData[mod].sector_id
-//        print("Selected Sector ID :", sector_id)
         
         if (sector_id == 0) {
            // to CardBackViewController

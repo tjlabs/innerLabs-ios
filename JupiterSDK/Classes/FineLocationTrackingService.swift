@@ -14,11 +14,11 @@ public class FineLocationTrackingService: NSObject {
         print("OS : \(osVersion)")
     }
     
-    public var uuid: String = ""
-    public var deviceModel: String = ""
-    public var os: String = ""
-    public var osVersion: Int = 0
-    public var mode: String = ""
+    var uuid: String = ""
+    var deviceModel: String = ""
+    var os: String = ""
+    var osVersion: Int = 0
+    var mode: String = ""
     
     let G: Double = 9.81
     
@@ -81,7 +81,7 @@ public class FineLocationTrackingService: NSObject {
     var roll: Double = 0
     var yaw: Double = 0
     
-    public var unitModeInput: Int = 5
+    var unitModeInput: Int = 5
     let PDR_INPUT_NUM: Int = 1
     let DR_INPUT_NUM: Int = 5
     // ------------------------ //
@@ -123,7 +123,7 @@ public class FineLocationTrackingService: NSObject {
         stopBLE()
     }
     
-    public func initialzeSensors() {
+    func initialzeSensors() {
         if motionManager.isAccelerometerAvailable {
             motionManager.accelerometerUpdateInterval = SENSOR_INTERVAL
             motionManager.startAccelerometerUpdates(to: .main) { [self] (data, error) in

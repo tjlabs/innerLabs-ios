@@ -8,6 +8,7 @@
 
 import UIKit
 import Alamofire
+import Kingfisher
 import JupiterSDK
 
 protocol AddCardDelegate {
@@ -33,8 +34,6 @@ class AddCardViewController: UIViewController, UITextFieldDelegate {
         super.viewDidLoad()
         
         codeTextField.delegate = self
-        
-//        guard let presentingVC = self.presentingViewController else { return }
     }
 
     @IBAction func tapBackButton(_ sender: UIButton) {
@@ -50,7 +49,7 @@ class AddCardViewController: UIViewController, UITextFieldDelegate {
 
         // Add Card
         let input = AddCard(user_id: uuid, sector_code: code)
-        Network.shared.addCard(url: JUPITER_URL, input: input, completion: { [self]statusCode, returnedString in
+        Network.shared.addCard(url: CARD_URL, input: input, completion: { [self] statusCode, returnedString in
             let addedCard = jsonToCard(json: returnedString)
             var message: String = addedCard.message
             if (message.count < 5) {
@@ -65,12 +64,44 @@ class AddCardViewController: UIViewController, UITextFieldDelegate {
                 let id: Int = addedCard.sector_id
                 let name: String = addedCard.sector_name
                 let description: String = addedCard.description
-                let cardColor: String = addedCard.cardColor
-                let mode: Int = addedCard.mode
-                let infoLevel: [String] = addedCard.infoLevel.components(separatedBy: " ")
-                let infoBuilding: [String] = addedCard.infoBuilding.components(separatedBy: " ")
+                let cardColor: String = addedCard.card_color
+                let mode: Int = addedCard.mode_id
+                let service: String = addedCard.service
+                let buildings_n_levels: [[String]] = addedCard.building_level
                 
-                self.cardItemData.append(CardItemData(sector_id: id, sector_name: name, description: description, cardColor: cardColor, mode: mode, infoLevel: infoLevel, infoBuilding: infoBuilding))
+                var infoBuilding = [String]()
+                var infoLevel = [String:[String]]()
+                for building in 0..<buildings_n_levels.count {
+                    let buildingName: String = buildings_n_levels[building][0]
+                    let levelName: String = buildings_n_levels[building][1]
+                    
+                    // Building
+                    if !(infoBuilding.contains(buildingName)) {
+                        infoBuilding.append(buildingName)
+                    }
+                    
+                    // Level
+                    if let value = infoLevel[buildingName] {
+                        var levels:[String] = value
+                        levels.append(levelName)
+                        infoLevel[buildingName] = levels
+                    } else {
+                        let levels:[String] = [levelName]
+                        infoLevel[buildingName] = levels
+                    }
+                }
+                
+                // KingFisher Image Download
+                let urlSector = URL(string: "https://storage.googleapis.com/jupiter_image/card/\(id)/main_image.png")
+                let urlSectorShow = URL(string: "https://storage.googleapis.com/jupiter_image/card/\(id)/edit_image.png")
+                
+                let resourceSector = ImageResource(downloadURL: urlSector!, cacheKey: "\(id)Main")
+                let resourceSectorShow = ImageResource(downloadURL: urlSectorShow!, cacheKey: "\(id)Show")
+                
+                KingfisherManager.shared.retrieveImage(with: resourceSector, completionHandler: nil)
+                KingfisherManager.shared.retrieveImage(with: resourceSectorShow, completionHandler: nil)
+                
+                self.cardItemData.append(CardItemData(sector_id: id, sector_name: name, description: description, cardColor: cardColor, mode: mode, service: service, infoBuilding: infoBuilding, infoLevel: infoLevel))
                 
                 self.page = self.page + 4
             case "Update Conflict":
@@ -90,7 +121,7 @@ class AddCardViewController: UIViewController, UITextFieldDelegate {
     }
     
     func jsonToCard(json: String) -> AddCardSuccess {
-        let result = AddCardSuccess(message: "", sector_id: 100, sector_name: "", description: "", cardColor: "", mode: 0, infoLevel: "", infoBuilding: "")
+        let result = AddCardSuccess(message: "", sector_id: 100, sector_name: "", description: "", card_color: "", mode_id: 0, service: "", building_level: [[]])
         let decoder = JSONDecoder()
 
         let jsonString = json

@@ -14,12 +14,12 @@ public class FineLevelDetectionService: NSObject {
         print("OS : \(osVersion)")
     }
     
-    public var uuid: String = ""
-    public var deviceModel: String = ""
-    public var os: String = ""
-    public var osVersion: Int = 0
+    var uuid: String = ""
+    var deviceModel: String = ""
+    var os: String = ""
+    var osVersion: Int = 0
     
-    public var unitModeInput: Int = 5
+    var unitModeInput: Int = 5
     var recentThreshold: Double = 800 // ms
     
     // ----- URL ----- //
@@ -68,7 +68,7 @@ public class FineLevelDetectionService: NSObject {
         stopBLE()
     }
     
-    public func initialzeSensors() {
+    func initialzeSensors() {
         if motionManager.isMagnetometerAvailable {
             motionManager.magnetometerUpdateInterval = SENSOR_INTERVAL
             motionManager.startMagnetometerUpdates(to: .main) { [self] (data, error) in

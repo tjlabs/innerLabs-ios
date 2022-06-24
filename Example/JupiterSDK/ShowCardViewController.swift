@@ -267,7 +267,7 @@ extension ShowCardViewController: UICollectionViewDataSource {
             let sector_id = self.cardItemData[indexPath.item].sector_id
             
             let input = DeleteCard(user_id: uuid, sector_id: sector_id)
-            Network.shared.deleteCard(url: JUPITER_URL, input: input, completion: { [self]statusCode, returnedString in
+            Network.shared.deleteCard(url: USER_URL, input: input, completion: { [self] statusCode, returnedString in
                 self.cardItemData.remove(at: indexPath.item)
                 self.delegate?.sendCardItemData(data: self.cardItemData)
                 self.page = 0

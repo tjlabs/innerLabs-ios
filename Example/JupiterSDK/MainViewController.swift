@@ -28,6 +28,9 @@ class MainViewController: UIViewController, UITextFieldDelegate {
     
     var isSaveUuid: Bool = false
     var uuid: String = ""
+    var deviceModel: String = ""
+    var os: String = ""
+    var osVersion: Int = 0
     
     let defaults = UserDefaults.standard
     
@@ -43,7 +46,11 @@ class MainViewController: UIViewController, UITextFieldDelegate {
         }
         
         codeTextField.delegate = self
-        // Do any additional setup after loading the view, typically from a nib.
+        
+        deviceModel = UIDevice.modelName
+        os = UIDevice.current.systemVersion
+        let arr = os.components(separatedBy: ".")
+        osVersion = Int(arr[0]) ?? 0
     }
     
     override func didReceiveMemoryWarning() {
@@ -64,8 +71,8 @@ class MainViewController: UIViewController, UITextFieldDelegate {
             }
             defaults.synchronize()
             
-            let login = Login(user_id: uuid)
-            postLogin(url: JUPITER_URL, input: login)
+            let login = Login(user_id: uuid, device_model: deviceModel, os_version: osVersion)
+            postLogin(url: USER_URL, input: login)
         }
     }
     
@@ -142,10 +149,10 @@ class MainViewController: UIViewController, UITextFieldDelegate {
                     
                     if (myCard.isEmpty) {
                         print("최초 사용자 입니다")
-                        cardDatas.append(CardItemData(sector_id: 0, sector_name: "JUPITER", description: "카드를 터치해주세요", cardColor: "purple", mode: 0, infoLevel: ["7F"], infoBuilding: ["S3"]))
+                        cardDatas.append(CardItemData(sector_id: 0, sector_name: "JUPITER", description: "카드를 터치해주세요", cardColor: "purple", mode: 0, service: "NONE", infoBuilding: ["S3"], infoLevel: ["S3":["7F"]]))
                     } else {
                         print("최초 사용자가 아닙니다")
-                        cardDatas.append(CardItemData(sector_id: 0, sector_name: "JUPITER", description: "카드를 터치해주세요", cardColor: "purple", mode: 0, infoLevel: ["7F"], infoBuilding: ["S3"]))
+                        cardDatas.append(CardItemData(sector_id: 0, sector_name: "JUPITER", description: "카드를 터치해주세요", cardColor: "purple", mode: 0, service: "NONE", infoBuilding: ["S3"], infoLevel: ["S3":["7F"]]))
                         
                         print("Sector List :", myCard)
                         
@@ -175,17 +182,36 @@ class MainViewController: UIViewController, UITextFieldDelegate {
                             let id: Int = cardInfo.sector_id
                             let name: String = cardInfo.sector_name
                             let description: String = cardInfo.description
-                            let cardColor: String = cardInfo.cardColor
+                            let cardColor: String = cardInfo.card_color
+                            let mode: Int = cardInfo.mode_id
+                            let service: String = cardInfo.service_request
+                            let buildings_n_levels: [[String]] = cardInfo.building_level
                             
-                            let mode: Int = cardInfo.mode
-                            let infoLevel: [String] = cardInfo.infoLevel.components(separatedBy: " ")
-                            let infoBuilding: [String] = cardInfo.infoBuilding.components(separatedBy: " ")
+                            var infoBuilding = [String]()
+                            var infoLevel = [String:[String]]()
+                            for building in 0..<buildings_n_levels.count {
+                                let buildingName: String = buildings_n_levels[building][0]
+                                let levelName: String = buildings_n_levels[building][1]
+                                
+                                // Building
+                                if !(infoBuilding.contains(buildingName)) {
+                                    infoBuilding.append(buildingName)
+                                }
+                                
+                                // Level
+                                if let value = infoLevel[buildingName] {
+                                    var levels:[String] = value
+                                    levels.append(levelName)
+                                    infoLevel[buildingName] = levels
+                                } else {
+                                    let levels:[String] = [levelName]
+                                    infoLevel[buildingName] = levels
+                                }
+                            }
                             
                             // KingFisher Image Download
                             let urlSector = URL(string: "https://storage.googleapis.com/jupiter_image/card/\(id)/main_image.png")
                             let urlSectorShow = URL(string: "https://storage.googleapis.com/jupiter_image/card/\(id)/edit_image.png")
-                            
-//                            guard let a = URL(string: "https://storage.googleapis.com/jupiter_image/card/\(id)/main_image.png") else { nil }
                             
                             let resourceSector = ImageResource(downloadURL: urlSector!, cacheKey: "\(id)Main")
                             let resourceSectorShow = ImageResource(downloadURL: urlSectorShow!, cacheKey: "\(id)Show")
@@ -193,7 +219,7 @@ class MainViewController: UIViewController, UITextFieldDelegate {
                             KingfisherManager.shared.retrieveImage(with: resourceSector, completionHandler: nil)
                             KingfisherManager.shared.retrieveImage(with: resourceSectorShow, completionHandler: nil)
                             
-                            cardDatas.append(CardItemData(sector_id: id, sector_name: name, description: description, cardColor: cardColor, mode: mode, infoLevel: infoLevel, infoBuilding: infoBuilding))
+                            cardDatas.append(CardItemData(sector_id: id, sector_name: name, description: description, cardColor: cardColor, mode: mode, service: service, infoBuilding: infoBuilding, infoLevel: infoLevel))
                         }
                     }
                     
