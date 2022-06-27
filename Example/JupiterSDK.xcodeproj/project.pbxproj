@@ -77,6 +77,8 @@
 		B3F5C77E282A5408009BEDB9 /* Network.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3F5C77D282A5408009BEDB9 /* Network.swift */; };
 		B3F5C780282A5519009BEDB9 /* Protocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3F5C77F282A5519009BEDB9 /* Protocol.swift */; };
 		B3FD74E9286989A600CD4D74 /* CustomSwitchButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3FD74E8286989A600CD4D74 /* CustomSwitchButton.swift */; };
+		B3FD74EC2869A38800CD4D74 /* Gallery_4F.csv in Resources */ = {isa = PBXBuildFile; fileRef = B3FD74EA2869A38800CD4D74 /* Gallery_4F.csv */; };
+		B3FD74ED2869A38800CD4D74 /* Gallery_3F.csv in Resources */ = {isa = PBXBuildFile; fileRef = B3FD74EB2869A38800CD4D74 /* Gallery_3F.csv */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -168,6 +170,8 @@
 		B3F5C77D282A5408009BEDB9 /* Network.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Network.swift; sourceTree = "<group>"; };
 		B3F5C77F282A5519009BEDB9 /* Protocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Protocol.swift; sourceTree = "<group>"; };
 		B3FD74E8286989A600CD4D74 /* CustomSwitchButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomSwitchButton.swift; sourceTree = "<group>"; };
+		B3FD74EA2869A38800CD4D74 /* Gallery_4F.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Gallery_4F.csv; sourceTree = "<group>"; };
+		B3FD74EB2869A38800CD4D74 /* Gallery_3F.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Gallery_3F.csv; sourceTree = "<group>"; };
 		D004876B84847F9E6841D160 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
 		DB77B350B78C4D6D3DA0D745 /* Pods_JupiterSDK_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_JupiterSDK_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F53652D9802675AD38E29753 /* Pods_JupiterSDK_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_JupiterSDK_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -260,6 +264,8 @@
 				B3037A93281C07060058D025 /* OverlayCustomView.swift */,
 				B3037A91281C06D50058D025 /* OverlayCustomView.xib */,
 				B3B156DD282397AF0058B538 /* ImageOverlay.swift */,
+				B3FD74EB2869A38800CD4D74 /* Gallery_3F.csv */,
+				B3FD74EA2869A38800CD4D74 /* Gallery_4F.csv */,
 				B38807EB283333250029B174 /* KIST_RP_B1.csv */,
 				B38807EF283390280029B174 /* KIST_RP_1F.csv */,
 				B38807F1283390280029B174 /* KIST_RP_2F.csv */,
@@ -507,6 +513,7 @@
 				B3D194E3282E2B2B004E6F9A /* LocationTableViewCell.xib in Resources */,
 				B3B4F85B28114EEB009F9E6C /* ShowCardCollectionViewCell.xib in Resources */,
 				B3B3610B28295E1D00B8E876 /* Autoway_RP_B4.csv in Resources */,
+				B3FD74ED2869A38800CD4D74 /* Gallery_3F.csv in Resources */,
 				B3BD699A27E9A4BE00A32A7A /* Colors.xcassets in Resources */,
 				B360D89028090D6A0084FB22 /* NotoSansKR-Thin.otf in Resources */,
 				B3455284282AB7B400F0DD3E /* ServiceInfoTableViewCell.xib in Resources */,
@@ -516,6 +523,7 @@
 				B360D88F28090D6A0084FB22 /* NotoSansKR-Light.otf in Resources */,
 				B38807F2283390280029B174 /* KIST_RP_1F.csv in Resources */,
 				B3BD69B027E9A78000A32A7A /* SectorContainerTableViewCell.xib in Resources */,
+				B3FD74EC2869A38800CD4D74 /* Gallery_4F.csv in Resources */,
 				B38807F3283390280029B174 /* KIST_RP_3F.csv in Resources */,
 				B3844E8F28099EE3007A5215 /* CardCollectionViewCell.xib in Resources */,
 				B3DD33D4285F08AE00866506 /* COEX_RP_B2.csv in Resources */,

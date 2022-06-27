@@ -26,7 +26,7 @@ class GalleryViewController: UIViewController, WKNavigationDelegate, UIScrollVie
     @IBOutlet weak var imageHeight: NSLayoutConstraint!
     @IBOutlet weak var scatterChart: ScatterChartView!
     
-    let defaultHeight:Double = 300
+    let defaultHeight:Double = 250
     
     var url = URL(string: "https://tjlabscorp.tistory.com/3")!
     
@@ -40,10 +40,18 @@ class GalleryViewController: UIViewController, WKNavigationDelegate, UIScrollVie
     var cardData: CardItemData?
     var page: Int = 0
     var uuid: String = ""
+    var runMode: String = "PDR"
     var RP = [String: [[Double]]]()
+    var modeAuto: Bool = false
     let levels: [String] = ["3F", "4F"]
+    var currentLevel: String = "3F"
     
     var contentsHeight: CGPoint?
+    
+    var pastTime: Double = 0
+    var timer : Timer?
+    let TIMER_INTERVAL: TimeInterval = 1/40 // second
+    let jupiterService = JupiterService()
     
     // Floating Button
     let floaty = Floaty()
@@ -56,12 +64,22 @@ class GalleryViewController: UIViewController, WKNavigationDelegate, UIScrollVie
         switchButton.delegate = self
         
         setCardData(cardData: cardData!)
-//        loadRP()
+        loadRP()
         
+        let rp: [[Double]] = RP["3F"] ?? [[Double]]()
+        if (rp.isEmpty) {
+            scatterChart.alpha = 0
+        } else {
+            scatterChart.alpha = 1.0
+            drawRP(RP_X: rp[0], RP_Y: rp[1], XY: [0, 0])
+        }
+        
+        button3F.showsTouchWhenHighlighted = true
         button3F.layer.shadowOpacity = 0.5
         button3F.layer.shadowOffset = CGSize(width: 5, height: 5)
         button3F.layer.shadowRadius = 4
         
+        button4F.showsTouchWhenHighlighted = true
         button4F.layer.shadowOpacity = 0.5
         button4F.layer.shadowOffset = CGSize(width: 5, height: 5)
         button4F.layer.shadowRadius = 4
@@ -78,6 +96,16 @@ class GalleryViewController: UIViewController, WKNavigationDelegate, UIScrollVie
         self.webView.scrollView.delegate = self
         self.webView.scrollView.alwaysBounceVertical = false
         self.webView.scrollView.bounces = false
+        
+        if (cardData!.mode == 1 || cardData!.mode == 2) {
+            runMode = "PDR"
+        } else {
+            runMode = "DR"
+        }
+        
+        jupiterService.uuid = uuid
+        jupiterService.mode = runMode
+        jupiterService.startService(parent: self)
         
         // Floating Button
 //        setFloatingButton()
@@ -117,21 +145,17 @@ class GalleryViewController: UIViewController, WKNavigationDelegate, UIScrollVie
                 for item in dataArr {
                     let rp: [String] = item
                     if (rp.count == 2) {
-                        
                         guard let x: Double = Double(rp[0]) else { return [[Double]]() }
                         guard let y: Double = Double(rp[1].components(separatedBy: "\r")[0]) else { return [[Double]]() }
                         
                         rpX.append(x)
                         rpY.append(y)
-                    } else {
-                        print("Error reading .txt file")
-                        return [[Double]]()
                     }
                 }
             }
             rpXY = [rpX, rpY]
         } catch {
-            print("Error reading .txt file")
+            print("Error reading .csv file")
         }
         
         return rpXY
@@ -153,7 +177,7 @@ class GalleryViewController: UIViewController, WKNavigationDelegate, UIScrollVie
         set1.drawValuesEnabled = false
         set1.setScatterShape(.square)
         set1.setColor(UIColor.yellow)
-        set1.scatterShapeSize = 4
+        set1.scatterShapeSize = 8
         
         let set2 = ScatterChartDataSet(entries: values2, label: "User")
         set2.drawValuesEnabled = false
@@ -172,10 +196,22 @@ class GalleryViewController: UIViewController, WKNavigationDelegate, UIScrollVie
         let chartFlag: Bool = false
         
         // Configure Chart
-//        scatterChart.xAxis.axisMinimum = xMin + limits[0]
-//        scatterChart.xAxis.axisMaximum = xMax + limits[1]
-//        scatterChart.leftAxis.axisMinimum = yMin + limits[2]
-//        scatterChart.leftAxis.axisMaximum = yMax + limits[3]
+        if (currentLevel == "3F") {
+//            scatterChart.xAxis.axisMinimum = xMin - 2.8
+//            scatterChart.xAxis.axisMaximum = xMax + 0.2
+//            scatterChart.leftAxis.axisMinimum = yMin - 5
+//            scatterChart.leftAxis.axisMaximum = yMax + 3
+
+            scatterChart.xAxis.axisMinimum = xMin - 1
+            scatterChart.xAxis.axisMaximum = xMax + 1
+            scatterChart.leftAxis.axisMinimum = yMin - 1
+            scatterChart.leftAxis.axisMaximum = yMax + 1
+        } else if (currentLevel == "4F") {
+            scatterChart.xAxis.axisMinimum = xMin - 3.5
+            scatterChart.xAxis.axisMaximum = xMax + 1
+            scatterChart.leftAxis.axisMinimum = yMin - 1
+            scatterChart.leftAxis.axisMaximum = yMax + 1
+        }
         
         scatterChart.xAxis.drawGridLinesEnabled = chartFlag
         scatterChart.leftAxis.drawGridLinesEnabled = chartFlag
@@ -237,11 +273,79 @@ class GalleryViewController: UIViewController, WKNavigationDelegate, UIScrollVie
     }
     
     @IBAction func tapButton3F(_ sender: UIButton) {
-        imageLevel.image = UIImage(named: "L1_3F")
+        currentLevel = "3F"
+        imageLevel.image = UIImage(named: "Gallery_3F")
+        
+        
+        let rp: [[Double]] = RP["3F"] ?? [[Double]]()
+        if (rp.isEmpty) {
+            scatterChart.alpha = 0
+        } else {
+            scatterChart.alpha = 1.0
+            drawRP(RP_X: rp[0], RP_Y: rp[1], XY: [0, 0])
+        }
     }
     
     @IBAction func tapButton4F(_ sender: UIButton) {
-        imageLevel.image = UIImage(named: "L8_B1")
+        currentLevel = "4F"
+        imageLevel.image = UIImage(named: "Gallery_4F")
+        
+        let rp: [[Double]] = RP["4F"] ?? [[Double]]()
+        if (rp.isEmpty) {
+            scatterChart.alpha = 0
+        } else {
+            scatterChart.alpha = 1.0
+            drawRP(RP_X: rp[0], RP_Y: rp[1], XY: [0, 0])
+        }
+    }
+    
+    func getCurrentTimeInMilliseconds() -> Double
+    {
+        return Double(Date().timeIntervalSince1970 * 1000)
+    }
+    
+    // Display Outputs
+    func startTimer() {
+        if (timer == nil) {
+            timer = Timer.scheduledTimer(timeInterval: TIMER_INTERVAL, target: self, selector: #selector(self.timerUpdate), userInfo: nil, repeats: true)
+        }
+    }
+    
+    func stopTimer() {
+        if (timer != nil) {
+            timer!.invalidate()
+            timer = nil
+        }
+    }
+    
+    @objc func timerUpdate() {
+        let timeStamp = getCurrentTimeInMilliseconds()
+        let dt = timeStamp - pastTime
+        pastTime = timeStamp
+        print("Time Stamp :", timeStamp)
+        
+        // length, scc, status, mode, idx Tx, idx Rx, level
+        let isStepDetected = jupiterService.unitDRInfo.isIndexChanged
+        
+        let unitIdxTx = Int(jupiterService.unitDRInfo.index)
+        let unitLength = jupiterService.unitDistane
+        let status = jupiterService.unitDRInfo.lookingFlag
+        
+        if (isStepDetected) {
+//            let buildingName: String = jupiterService.jupiterOutput.building
+//            let buildingLevels: [String] = cardData!.infoLevel[buildingName] ?? []
+//
+//            let x = jupiterService.jupiterOutput.x
+//            let y = jupiterService.jupiterOutput.y
+//
+//            let building = jupiterService.jupiterOutput.building
+//            let level = jupiterService.jupiterOutput.level
+//
+//            var levelOutput: String = ""
+//
+//            let unitIdxRx = jupiterService.jupiterOutput.index
+//            let scc = jupiterService.jupiterOutput.scc
+        }
     }
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
@@ -277,6 +381,11 @@ class GalleryViewController: UIViewController, WKNavigationDelegate, UIScrollVie
 
 extension GalleryViewController: CustomSwitchButtonDelegate {
     func isOnValueChange(isOn: Bool) {
-//        label.text = "\(isOn)"
+        if (isOn) {
+            startTimer()
+        } else {
+            stopTimer()
+        }
+//        self.modeAuto = isOn
     }
 }

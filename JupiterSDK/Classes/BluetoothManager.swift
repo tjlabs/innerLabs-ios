@@ -118,7 +118,7 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
             self.bluetoothReady = false
             break
         case .poweredOn:
-            print("CoreBluetooth BLE hardware is powered on and ready")
+//            print("CoreBluetooth BLE hardware is powered on and ready")
             self.bluetoothReady = true
             NotificationCenter.default.post(name: .bluetoothReady, object: nil, userInfo: nil)
             

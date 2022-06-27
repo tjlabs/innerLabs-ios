@@ -212,13 +212,20 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
     func displayLevelInfo(infoLevel: [String]) {
         let numLevels = infoLevel.count
         
-        let firstLevel: String = infoLevel[0]
-        
-        if (numLevels == 1) {
-            infoOfLevels = "( " + firstLevel + " )"
+        if (infoLevel.isEmpty) {
+            infoOfLevels = ""
+            self.numLevels = 0
         } else {
-            let lastLevel: String = infoLevel[numLevels-1]
-            infoOfLevels = "( " + firstLevel + "~" + lastLevel + " )"
+            let firstLevel: String = infoLevel[0]
+            
+            if (numLevels == 1) {
+                infoOfLevels = "( " + firstLevel + " )"
+            } else {
+                let lastLevel: String = infoLevel[numLevels-1]
+                infoOfLevels = "( " + firstLevel + "~" + lastLevel + " )"
+            }
+            
+            self.numLevels = numLevels
         }
         
     }
@@ -414,10 +421,9 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
         let status = jupiterService.unitDRInfo.lookingFlag
         
         if (isStepDetected) {
-            
-//            let firstBuilding: String = (cardData?.infoBuilding[0])!
-//            let firstBuildingLevels: [String] = (cardData?.infoLevel[firstBuilding])!
-//            displayLevelInfo(infoLevel: firstBuildingLevels)
+            let buildingName: String = jupiterService.jupiterOutput.building
+            let buildingLevels: [String] = cardData!.infoLevel[buildingName] ?? []
+            displayLevelInfo(infoLevel: buildingLevels)
             
             resultToDisplay.unitIndexTx = unitIdxTx
             resultToDisplay.unitLength = unitLength

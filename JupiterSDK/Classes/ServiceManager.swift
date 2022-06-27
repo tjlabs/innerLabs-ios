@@ -9,6 +9,10 @@ import Foundation
 
 public class ServiceManager: NSObject {
     
+    var deviceModel: String = ""
+    var os: String = ""
+    var osVersion: Int = 0
+    
     let sectorDetectionService = SectorDetectionService()
     let buildingDetectionService = BuildingDetectionService()
     let coarseLevelDetectionService = CoarseLevelDetectionService()
@@ -17,7 +21,12 @@ public class ServiceManager: NSObject {
     let fineLocaationTrackingService = FineLocationTrackingService()
     
     public override init() {
-        
+        deviceModel = UIDevice.modelName
+        os = UIDevice.current.systemVersion
+        let arr = os.components(separatedBy: ".")
+        print("Device Model : \(deviceModel)")
+        osVersion = Int(arr[0]) ?? 0
+        print("OS : \(osVersion)")
     }
     
     public func startService(service: String) {

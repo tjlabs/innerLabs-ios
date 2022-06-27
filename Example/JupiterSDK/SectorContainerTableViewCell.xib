@@ -88,6 +88,13 @@
                             </userDefinedRuntimeAttribute>
                         </userDefinedRuntimeAttributes>
                     </view>
+                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hHv-S8-96G" customClass="CustomSwitchButton" customModule="JupiterSDK_Example" customModuleProvider="target">
+                        <rect key="frame" x="10" y="715" width="46" height="30"/>
+                        <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                        <state key="normal" title="Button">
+                            <color key="titleColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        </state>
+                    </button>
                     <view userInteractionEnabled="NO" alpha="0.0" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="QSA-Kx-Yvk" customClass="ScatterChartView" customModule="Charts">
                         <rect key="frame" x="16" y="10" width="288" height="735"/>
                         <color key="backgroundColor" name="blue4"/>
@@ -97,6 +104,7 @@
                     <constraint firstAttribute="bottom" secondItem="nrs-xA-hvt" secondAttribute="bottom" constant="10" id="0FA-m5-UPh"/>
                     <constraint firstItem="QSA-Kx-Yvk" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="10" id="5a4-Dj-HgI"/>
                     <constraint firstItem="iow-eO-K05" firstAttribute="leading" secondItem="nrs-xA-hvt" secondAttribute="trailing" id="8j9-3r-Q4n"/>
+                    <constraint firstItem="hHv-S8-96G" firstAttribute="leading" secondItem="nrs-xA-hvt" secondAttribute="leading" id="Ahi-bE-v89"/>
                     <constraint firstItem="mRU-bT-pKw" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leadingMargin" id="GDI-dA-MJu"/>
                     <constraint firstAttribute="trailingMargin" secondItem="mRU-bT-pKw" secondAttribute="trailing" id="H8g-kw-1r6"/>
                     <constraint firstItem="nrs-xA-hvt" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="10" id="Hdl-1L-TE2"/>
@@ -107,6 +115,7 @@
                     <constraint firstAttribute="bottom" secondItem="iow-eO-K05" secondAttribute="bottom" constant="10" id="X4C-Lq-xyr"/>
                     <constraint firstItem="nrs-xA-hvt" firstAttribute="top" secondItem="mRU-bT-pKw" secondAttribute="bottom" id="gNg-B7-4Mi"/>
                     <constraint firstItem="iow-eO-K05" firstAttribute="top" secondItem="QSA-Kx-Yvk" secondAttribute="bottom" constant="10" id="jZP-0e-QCg"/>
+                    <constraint firstItem="nrs-xA-hvt" firstAttribute="top" secondItem="hHv-S8-96G" secondAttribute="bottom" constant="10" id="nfo-09-FS1"/>
                     <constraint firstItem="QSA-Kx-Yvk" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leadingMargin" id="qR0-Nu-ifR"/>
                 </constraints>
             </tableViewCellContentView>
@@ -119,6 +128,7 @@
                 <outlet property="imageLevel" destination="mRU-bT-pKw" id="iv9-kN-oWg"/>
                 <outlet property="levelCollectionView" destination="iow-eO-K05" id="qpf-zR-Aaj"/>
                 <outlet property="scatterChart" destination="QSA-Kx-Yvk" id="JO2-kV-4Vi"/>
+                <outlet property="switchButton" destination="hHv-S8-96G" id="KHr-Yk-2jF"/>
             </connections>
             <point key="canvasLocation" x="131.8840579710145" y="86.383928571428569"/>
         </tableViewCell>

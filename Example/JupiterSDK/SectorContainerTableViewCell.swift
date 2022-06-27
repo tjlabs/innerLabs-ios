@@ -19,6 +19,7 @@ class SectorContainerTableViewCell: UITableViewCell {
 
     @IBOutlet weak var imageLevel: UIImageView!
     @IBOutlet weak var scatterChart: ScatterChartView!
+    @IBOutlet weak var switchButton: CustomSwitchButton!
     
     // DropDown
     @IBOutlet weak var dropView: UIView!
@@ -47,9 +48,14 @@ class SectorContainerTableViewCell: UITableViewCell {
     var sectorID: Int = 0
     var building: String = ""
     
+    var modeAuto: Bool = false
     
     override func awakeFromNib() {
         super.awakeFromNib()
+        
+        switchButton.delegate = self
+        let switchColor: (UIColor, UIColor) = (#colorLiteral(red: 0.5291011186, green: 0.7673488115, blue: 1, alpha: 1), #colorLiteral(red: 0.2705247761, green: 0.3820963617, blue: 1, alpha: 1))
+        switchButton.onColor = switchColor
         
         setCells()
         setLevelCollectionView()
@@ -438,5 +444,11 @@ extension SectorContainerTableViewCell : UICollectionViewDelegateFlowLayout{
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
         return UIEdgeInsets(top: 0, left: 20, bottom: 0, right: 20)
+    }
+}
+
+extension SectorContainerTableViewCell: CustomSwitchButtonDelegate {
+    func isOnValueChange(isOn: Bool) {
+        self.modeAuto = isOn
     }
 }

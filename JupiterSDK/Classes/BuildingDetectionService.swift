@@ -9,9 +9,7 @@ public class BuildingDetectionService: NSObject {
         deviceModel = UIDevice.modelName
         os = UIDevice.current.systemVersion
         let arr = os.components(separatedBy: ".")
-        print("Device Model : \(deviceModel)")
         osVersion = Int(arr[0]) ?? 0
-        print("OS : \(osVersion)")
     }
     
     var uuid: String = ""

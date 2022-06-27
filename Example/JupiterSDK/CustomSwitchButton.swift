@@ -25,7 +25,7 @@ class CustomSwitchButton: UIButton {
     }
 
     // on 상태의 스위치 색상
-    var onColor: SwitchColor = (#colorLiteral(red: 0.9960784314, green: 0.9058823529, blue: 0.9058823529, alpha: 1), #colorLiteral(red: 0.8901960784, green: 0.3137254902, blue: 0.3254901961, alpha: 1)) {
+    var onColor: SwitchColor = (#colorLiteral(red: 1, green: 0.9960784314, blue: 0.5647058824, alpha: 1), #colorLiteral(red: 1, green: 0.7886461807, blue: 0.1811748367, alpha: 1)) {
         didSet {
             if isOn {
                 self.barView.backgroundColor = self.onColor.bar
