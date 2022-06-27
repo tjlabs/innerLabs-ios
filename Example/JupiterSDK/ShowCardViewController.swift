@@ -181,21 +181,18 @@ class ShowCardViewController: UIViewController, AddCardDelegate {
             isEditMode = false
             self.showCardCollectionView.reloadData()
             
-            var ids = [Int]()
+            // Save Card Order
+            var order = [[Int]]()
             for i in 1..<cardItemData.count {
-                ids.append(cardItemData[i].sector_id)
+                let data: [Int] = [cardItemData[i].sector_id, i]
+                order.append(data)
             }
             
-            let newOrder: [String: [Int]] = [self.uuid: ids]
-            if var order = defaults.dictionary(forKey: "CardOrder") {
-                order.updateValue(ids, forKey: self.uuid)
-                
-                defaults.set(order, forKey: "CardOrder")
-//                print("Card Order :", order)
-            } else {
-                defaults.set(newOrder, forKey: "CardOrder")
-//                print("Card Order :", newOrder)
-            }
+            print("Order :", order)
+            
+            let input = OrderCard(user_id: uuid, card_order: order)
+            Network.shared.orderCard(url: CARD_URL, input: input, completion: { statusCode, returnedString in
+            })
         }
     }
 }

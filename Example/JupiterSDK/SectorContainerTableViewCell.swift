@@ -30,6 +30,7 @@ class SectorContainerTableViewCell: UITableViewCell {
     
     var cardData: CardItemData?
     var RP: [String: [[Double]]]?
+    var chartLimits: [String: [Double]]?
     var XY: [Double] = [0, 0]
     var flagRP: Bool = false
 
@@ -135,7 +136,7 @@ class SectorContainerTableViewCell: UITableViewCell {
 //        cell.sectorImageView.kf.setImage(with: urlLevel, placeholder: nil, options: [.transition(.fade(1.2))], completionHandler: nil)
     }
     
-    private func drawRP(RP_X: [Double], RP_Y: [Double], XY: [Double]) {
+    private func drawRP(RP_X: [Double], RP_Y: [Double], XY: [Double], limits: [Double]) {
         let xAxisValue: [Double] = RP_X
         let yAxisValue: [Double] = RP_Y
 
@@ -170,34 +171,40 @@ class SectorContainerTableViewCell: UITableViewCell {
         let chartFlag: Bool = false
         
         // Configure Chart
-        if (currentLevel == "B1") {
-            scatterChart.xAxis.axisMinimum = xMin-6
-            scatterChart.xAxis.axisMaximum = xMax+9.5
-            scatterChart.leftAxis.axisMinimum = yMin-40
-            scatterChart.leftAxis.axisMaximum = yMax+38.5
-        }
-        else if (currentLevel == "B2") {
-            scatterChart.xAxis.axisMinimum = xMin-28
-            scatterChart.xAxis.axisMaximum = xMax+12
-            scatterChart.leftAxis.axisMinimum = yMin-2
-            scatterChart.leftAxis.axisMaximum = yMax+39.5
-        }
-        else if (currentLevel == "B3") {
-            scatterChart.xAxis.axisMinimum = xMin-3.8
-            scatterChart.xAxis.axisMaximum = xMax+6
-            scatterChart.leftAxis.axisMinimum = yMin-11.3
-            scatterChart.leftAxis.axisMaximum = yMax+1.5
-        } else if (currentLevel == "B4") {
-            scatterChart.xAxis.axisMinimum = xMin-9
-            scatterChart.xAxis.axisMaximum = xMax
-            scatterChart.leftAxis.axisMinimum = yMin-15
-            scatterChart.leftAxis.axisMaximum = yMax+25.5
-        } else {
-            scatterChart.xAxis.axisMinimum = xMin-10
-            scatterChart.xAxis.axisMaximum = xMax+10
-            scatterChart.leftAxis.axisMinimum = yMin-10
-            scatterChart.leftAxis.axisMaximum = yMax+10
-        }
+        print("Limits :", limits)
+        scatterChart.xAxis.axisMinimum = xMin + limits[0]
+        scatterChart.xAxis.axisMaximum = xMax + limits[1]
+        scatterChart.leftAxis.axisMinimum = yMin + limits[2]
+        scatterChart.leftAxis.axisMaximum = yMax + limits[3]
+        
+//        if (currentLevel == "B1") {
+//            scatterChart.xAxis.axisMinimum = xMin-6
+//            scatterChart.xAxis.axisMaximum = xMax+9.5
+//            scatterChart.leftAxis.axisMinimum = yMin-40
+//            scatterChart.leftAxis.axisMaximum = yMax+38.5
+//        }
+//        else if (currentLevel == "B2") {
+//            scatterChart.xAxis.axisMinimum = xMin-28
+//            scatterChart.xAxis.axisMaximum = xMax+12
+//            scatterChart.leftAxis.axisMinimum = yMin-2
+//            scatterChart.leftAxis.axisMaximum = yMax+39.5
+//        }
+//        else if (currentLevel == "B3") {
+//            scatterChart.xAxis.axisMinimum = xMin-3.8
+//            scatterChart.xAxis.axisMaximum = xMax+6
+//            scatterChart.leftAxis.axisMinimum = yMin-11.3
+//            scatterChart.leftAxis.axisMaximum = yMax+1.5
+//        } else if (currentLevel == "B4") {
+//            scatterChart.xAxis.axisMinimum = xMin-9
+//            scatterChart.xAxis.axisMaximum = xMax
+//            scatterChart.leftAxis.axisMinimum = yMin-15
+//            scatterChart.leftAxis.axisMaximum = yMax+25.5
+//        } else {
+//            scatterChart.xAxis.axisMinimum = xMin-10
+//            scatterChart.xAxis.axisMaximum = xMax+10
+//            scatterChart.leftAxis.axisMinimum = yMin-10
+//            scatterChart.leftAxis.axisMaximum = yMax+10
+//        }
         
         scatterChart.xAxis.drawGridLinesEnabled = chartFlag
         scatterChart.leftAxis.drawGridLinesEnabled = chartFlag
@@ -222,7 +229,7 @@ class SectorContainerTableViewCell: UITableViewCell {
         scatterChart.data = chartData
     }
     
-    private func drawUser(RP_X: [Double], RP_Y: [Double], XY: [Double]) {
+    private func drawUser(RP_X: [Double], RP_Y: [Double], XY: [Double], limits: [Double]) {
         let xAxisValue: [Double] = RP_X
         let yAxisValue: [Double] = RP_Y
         
@@ -246,33 +253,40 @@ class SectorContainerTableViewCell: UITableViewCell {
         let yMax = yAxisValue.max()!
         
         let chartFlag: Bool = false
+        
         // Configure Chart
-        if (currentLevel == "B1") {
-            scatterChart.xAxis.axisMinimum = xMin-6
-            scatterChart.xAxis.axisMaximum = xMax+9.5
-            scatterChart.leftAxis.axisMinimum = yMin-40
-            scatterChart.leftAxis.axisMaximum = yMax+38.5
-        } else if (currentLevel == "B2") {
-            scatterChart.xAxis.axisMinimum = xMin-28
-            scatterChart.xAxis.axisMaximum = xMax+12
-            scatterChart.leftAxis.axisMinimum = yMin-2
-            scatterChart.leftAxis.axisMaximum = yMax+39.5
-        } else if (currentLevel == "B3") {
-            scatterChart.xAxis.axisMinimum = xMin-3.8
-            scatterChart.xAxis.axisMaximum = xMax+6
-            scatterChart.leftAxis.axisMinimum = yMin-11.3
-            scatterChart.leftAxis.axisMaximum = yMax+1.5
-        } else if (currentLevel == "B4") {
-            scatterChart.xAxis.axisMinimum = xMin-9
-            scatterChart.xAxis.axisMaximum = xMax
-            scatterChart.leftAxis.axisMinimum = yMin-15
-            scatterChart.leftAxis.axisMaximum = yMax+25.5
-        } else {
-            scatterChart.xAxis.axisMinimum = xMin-10
-            scatterChart.xAxis.axisMaximum = xMax+10
-            scatterChart.leftAxis.axisMinimum = yMin-10
-            scatterChart.leftAxis.axisMaximum = yMax+10
-        }
+        print("Limits :", limits)
+        scatterChart.xAxis.axisMinimum = xMin + limits[0]
+        scatterChart.xAxis.axisMaximum = xMax + limits[1]
+        scatterChart.leftAxis.axisMinimum = yMin + limits[2]
+        scatterChart.leftAxis.axisMaximum = yMax + limits[3]
+        
+//        if (currentLevel == "B1") {
+//            scatterChart.xAxis.axisMinimum = xMin-6
+//            scatterChart.xAxis.axisMaximum = xMax+9.5
+//            scatterChart.leftAxis.axisMinimum = yMin-40
+//            scatterChart.leftAxis.axisMaximum = yMax+38.5
+//        } else if (currentLevel == "B2") {
+//            scatterChart.xAxis.axisMinimum = xMin-28
+//            scatterChart.xAxis.axisMaximum = xMax+12
+//            scatterChart.leftAxis.axisMinimum = yMin-2
+//            scatterChart.leftAxis.axisMaximum = yMax+39.5
+//        } else if (currentLevel == "B3") {
+//            scatterChart.xAxis.axisMinimum = xMin-3.8
+//            scatterChart.xAxis.axisMaximum = xMax+6
+//            scatterChart.leftAxis.axisMinimum = yMin-11.3
+//            scatterChart.leftAxis.axisMaximum = yMax+1.5
+//        } else if (currentLevel == "B4") {
+//            scatterChart.xAxis.axisMinimum = xMin-9
+//            scatterChart.xAxis.axisMaximum = xMax
+//            scatterChart.leftAxis.axisMinimum = yMin-15
+//            scatterChart.leftAxis.axisMaximum = yMax+25.5
+//        } else {
+//            scatterChart.xAxis.axisMinimum = xMin-10
+//            scatterChart.xAxis.axisMaximum = xMax+10
+//            scatterChart.leftAxis.axisMinimum = yMin-10
+//            scatterChart.leftAxis.axisMaximum = yMax+10
+//        }
         
         scatterChart.xAxis.drawGridLinesEnabled = chartFlag
         scatterChart.leftAxis.drawGridLinesEnabled = chartFlag
@@ -297,11 +311,12 @@ class SectorContainerTableViewCell: UITableViewCell {
         scatterChart.data = chartData
     }
     
-    internal func configure(cardData: CardItemData, RP: [String: [[Double]]], flag: Bool) {
+    internal func configure(cardData: CardItemData, RP: [String: [[Double]]], chartLimits: [String: [Double]], flag: Bool) {
         self.cardData = cardData
         self.buildings = cardData.infoBuilding
         self.levels = cardData.infoLevel
         self.RP = RP
+        self.chartLimits = chartLimits
         self.flagRP = flag
         
         setDropDown()
@@ -332,14 +347,16 @@ class SectorContainerTableViewCell: UITableViewCell {
         if (RP!.contains(where: condition)) {
             let rp: [[Double]] = RP?[key] ?? [[Double]]()
             
+            let limits: [Double] = chartLimits?[key] ?? [0, 0, 0, 0]
+            
             if (rp.isEmpty) {
                 scatterChart.alpha = 0
             } else {
                 scatterChart.alpha = 1.0
                 if (flag) {
-                    drawRP(RP_X: rp[0], RP_Y: rp[1], XY: XY)
+                    drawRP(RP_X: rp[0], RP_Y: rp[1], XY: XY, limits: limits)
                 } else {
-                    drawUser(RP_X: rp[0], RP_Y: rp[1], XY: XY)
+                    drawUser(RP_X: rp[0], RP_Y: rp[1], XY: XY, limits: limits)
                 }
             }
             
@@ -358,15 +375,18 @@ extension SectorContainerTableViewCell : UICollectionViewDelegate{
         
         let key = "\(currentBuilding)_\(currentLevel)"
         let rp: [[Double]] = RP?[key] ?? [[Double]]()
+        
+        let limits: [Double] = chartLimits?[key] ?? [0, 0, 0, 0]
+        
         if (rp.isEmpty) {
             // RP가 없어서 그리지 않음
             scatterChart.alpha = 0
         } else {
             scatterChart.alpha = 1.0
             if (flagRP) {
-                drawRP(RP_X: rp[0], RP_Y: rp[1], XY: XY)
+                drawRP(RP_X: rp[0], RP_Y: rp[1], XY: XY, limits: limits)
             } else {
-                drawUser(RP_X: rp[0], RP_Y: rp[1], XY: XY)
+                drawUser(RP_X: rp[0], RP_Y: rp[1], XY: XY, limits: limits)
             }
             
             fetchLevel(building: currentBuilding, level: currentLevel)

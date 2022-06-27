@@ -143,8 +143,6 @@ class MainViewController: UIViewController, UITextFieldDelegate {
                     let myCard = list.sectors
                     var reorderedCard = [CardInfo]()
                     
-                    print("Sector List :", myCard)
-                    
                     var cardDatas = [CardItemData]()
                     
                     if (myCard.isEmpty) {
@@ -159,23 +157,24 @@ class MainViewController: UIViewController, UITextFieldDelegate {
                         KingfisherManager.shared.cache.clearMemoryCache()
                         KingfisherManager.shared.cache.clearDiskCache { print("Clear Cache Done !") }
                         
-                        if let order = defaults.dictionary(forKey: "CardOrder") {
-                            if (order[self.uuid] != nil) {
-                                let savedCardOrder: [Int] = order[self.uuid] as! [Int]
-                                print("Saved Card Order :", savedCardOrder)
-                                
-                                for i in 0..<savedCardOrder.count {
-                                    let id: Int = savedCardOrder[i]
-                                    for j in 0..<myCard.count {
-                                        if (myCard[j].sector_id == id) {
-                                            reorderedCard.append(myCard[j])
-                                        }
-                                    }
-                                }
-                            }
-                        } else {
-                            reorderedCard = myCard
-                        }
+//                        if let order = defaults.dictionary(forKey: "CardOrder") {
+//                            if (order[self.uuid] != nil) {
+//                                let savedCardOrder: [Int] = order[self.uuid] as! [Int]
+//                                print("Saved Card Order :", savedCardOrder)
+//
+//                                for i in 0..<savedCardOrder.count {
+//                                    let id: Int = savedCardOrder[i]
+//                                    for j in 0..<myCard.count {
+//                                        if (myCard[j].sector_id == id) {
+//                                            reorderedCard.append(myCard[j])
+//                                        }
+//                                    }
+//                                }
+//                            }
+//                        } else {
+//                            reorderedCard = myCard
+//                        }
+                        reorderedCard = myCard
                         
                         for card in 0..<reorderedCard.count {
                             let cardInfo: CardInfo = reorderedCard[card]

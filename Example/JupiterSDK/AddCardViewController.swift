@@ -49,7 +49,7 @@ class AddCardViewController: UIViewController, UITextFieldDelegate {
 
         // Add Card
         let input = AddCard(user_id: uuid, sector_code: code)
-        Network.shared.addCard(url: CARD_URL, input: input, completion: { [self] statusCode, returnedString in
+        Network.shared.addCard(url: USER_URL, input: input, completion: { [self] statusCode, returnedString in
             let addedCard = jsonToCard(json: returnedString)
             var message: String = addedCard.message
             if (message.count < 5) {
@@ -66,7 +66,7 @@ class AddCardViewController: UIViewController, UITextFieldDelegate {
                 let description: String = addedCard.description
                 let cardColor: String = addedCard.card_color
                 let mode: Int = addedCard.mode_id
-                let service: String = addedCard.service
+                let service: String = addedCard.service_request
                 let buildings_n_levels: [[String]] = addedCard.building_level
                 
                 var infoBuilding = [String]()
@@ -121,7 +121,7 @@ class AddCardViewController: UIViewController, UITextFieldDelegate {
     }
     
     func jsonToCard(json: String) -> AddCardSuccess {
-        let result = AddCardSuccess(message: "", sector_id: 100, sector_name: "", description: "", card_color: "", mode_id: 0, service: "", building_level: [[]])
+        let result = AddCardSuccess(message: "", sector_id: 100, sector_name: "", description: "", card_color: "", mode_id: 0, service_request: "", building_level: [[]])
         let decoder = JSONDecoder()
 
         let jsonString = json

@@ -59,6 +59,8 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
     var referencePoints = [[Double]]()
     
     var RP = [String: [[Double]]]()
+    var chartLimits = [String: [Double]]()
+    
     var pastX: Double = 0
     var pastY: Double = 0
     
@@ -180,6 +182,29 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
 
                 let key: String = "\(buildingName)_\(levelName)"
                 RP[key] = rpXY
+                
+                // Scale
+                let input = Scale(sector_id: cardData.sector_id, building_name: buildingName, level_name: levelName)
+                Network.shared.postScale(url: SCALE_URL, input: input, completion: { [self] statusCode, returnedString in
+                    let result = jsonToScale(json: returnedString)
+                    
+                    if (statusCode >= 200 && statusCode <= 300) {
+                        let scaleString = result.image_scale
+                        
+                        if (scaleString.isEmpty) {
+                            chartLimits[key] = [0, 0, 0, 0]
+                        } else {
+                            let os = scaleString.components(separatedBy: "/")
+                            let arr = os[1].components(separatedBy: " ")
+                            var data = [Double]()
+                            
+                            for i in 0..<arr.count {
+                                data.append(Double(arr[i])!)
+                            }
+                            chartLimits[key] = data
+                        }
+                    }
+                })
             }
         }
     }
@@ -438,6 +463,20 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
         }
     }
     
+    func jsonToScale(json: String) -> ScaleResponse {
+        let result = ScaleResponse(image_scale: "")
+        let decoder = JSONDecoder()
+
+        let jsonString = json
+
+        if let data = jsonString.data(using: .utf8), let decoded = try? decoder.decode(ScaleResponse.self, from: data) {
+            print("Data :", data)
+            return decoded
+        }
+
+        return result
+    }
+    
     func getCurrentTimeInMilliseconds() -> Double
     {
         return Double(Date().timeIntervalSince1970 * 1000)
@@ -523,7 +562,7 @@ extension MapViewController: UITableViewDelegate {
         if (tableView == jupiterTableView) {
             
         } else {
-            print("\(indexPath.section)섹션 \(indexPath.row)로우 선택됨")
+//            print("\(indexPath.section)섹션 \(indexPath.row)로우 선택됨")
         }
     }
 }
@@ -550,7 +589,7 @@ extension MapViewController: UITableViewDataSource {
                         SectorContainerTableViewCell else {return UITableViewCell()}
                 
                 sectorContainerTVC.backgroundColor = .systemGray6
-                sectorContainerTVC.configure(cardData: cardData!, RP: RP, flag: isShowRP)
+                sectorContainerTVC.configure(cardData: cardData!, RP: RP, chartLimits: chartLimits, flag: isShowRP)
                 
                 if (cardData?.sector_id != 0 && cardData?.sector_id != 7) {
                     sectorContainerTVC.updateCoord(data: coordToDisplay, flag: isShowRP)

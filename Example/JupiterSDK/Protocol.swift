@@ -3,6 +3,7 @@ import Foundation
 //let JUPITER_URL = "https://where-run-card-skrgq3jc5a-du.a.run.app/cards"
 let USER_URL = "https://where-run-user-skrgq3jc5a-du.a.run.app/user"
 let CARD_URL = "https://where-run-user-skrgq3jc5a-du.a.run.app/card"
+let SCALE_URL = "https://where-run-user-skrgq3jc5a-du.a.run.app/scale"
 
 struct CardItemData: Codable {
     public var sector_id: Int
@@ -43,6 +44,17 @@ struct DeleteCard: Codable {
     var sector_id: Int
 }
 
+struct OrderCard: Codable {
+    var user_id: String
+    var card_order: [[Int]]
+}
+
+struct Scale: Codable {
+    var sector_id: Int
+    var building_name: String
+    var level_name: String
+}
+
 struct AddCardSuccess: Codable {
     var message: String
     var sector_id: Int
@@ -50,7 +62,7 @@ struct AddCardSuccess: Codable {
     var description: String
     var card_color: String
     var mode_id: Int
-    var service: String
+    var service_request: String
     var building_level: [[String]]
 }
 
@@ -60,6 +72,10 @@ struct AddCardFail: Codable {
 
 struct DeleteCardResponse: Codable {
     var message: String
+}
+
+struct ScaleResponse: Codable {
+    var image_scale: String
 }
 
 
