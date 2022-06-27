@@ -76,6 +76,7 @@
 		B3F370DA281BA1DD003A427F /* RobotView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3F370D9281BA1DD003A427F /* RobotView.swift */; };
 		B3F5C77E282A5408009BEDB9 /* Network.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3F5C77D282A5408009BEDB9 /* Network.swift */; };
 		B3F5C780282A5519009BEDB9 /* Protocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3F5C77F282A5519009BEDB9 /* Protocol.swift */; };
+		B3FD74E9286989A600CD4D74 /* CustomSwitchButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3FD74E8286989A600CD4D74 /* CustomSwitchButton.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -166,6 +167,7 @@
 		B3F370D9281BA1DD003A427F /* RobotView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RobotView.swift; sourceTree = "<group>"; };
 		B3F5C77D282A5408009BEDB9 /* Network.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Network.swift; sourceTree = "<group>"; };
 		B3F5C77F282A5519009BEDB9 /* Protocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Protocol.swift; sourceTree = "<group>"; };
+		B3FD74E8286989A600CD4D74 /* CustomSwitchButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomSwitchButton.swift; sourceTree = "<group>"; };
 		D004876B84847F9E6841D160 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
 		DB77B350B78C4D6D3DA0D745 /* Pods_JupiterSDK_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_JupiterSDK_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F53652D9802675AD38E29753 /* Pods_JupiterSDK_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_JupiterSDK_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -363,6 +365,7 @@
 				B3AA004A28313CDF007CD284 /* UITextFieldExtension.swift */,
 				B3AA004828313C97007CD284 /* UILabelExtension.swift */,
 				B3BD69A027E9A52500A32A7A /* applyShadow.swift */,
+				B3FD74E8286989A600CD4D74 /* CustomSwitchButton.swift */,
 			);
 			name = Utils;
 			sourceTree = "<group>";
@@ -658,6 +661,7 @@
 				B3B4F85A28114EEB009F9E6C /* ShowCardCollectionViewCell.swift in Sources */,
 				B3DE146D280E7146006DA43C /* AddCardViewController.swift in Sources */,
 				B3455283282AB7B400F0DD3E /* ServiceInfoTableViewCell.swift in Sources */,
+				B3FD74E9286989A600CD4D74 /* CustomSwitchButton.swift in Sources */,
 				B3C09C64280E941B00E6F55F /* ShowCardViewController.swift in Sources */,
 				B3BD69AC27E9A57E00A32A7A /* UICollectionViewRegisterable.swift in Sources */,
 				607FACD81AFB9204008FA782 /* MainViewController.swift in Sources */,

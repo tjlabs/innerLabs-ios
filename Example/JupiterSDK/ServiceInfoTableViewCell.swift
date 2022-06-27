@@ -32,11 +32,11 @@ class ServiceInfoTableViewCell: UITableViewCell {
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
         
-        // Configure the view for the selected state
     }
     
     func updateResult(data: ResultToDisplay) {
-//        print("Deteced Level :", data.level)
+        self.infoOfLevelsLabel.text = data.infoLevels
+        self.numberOfLevelsLabel.text = String(data.numLevels)
         self.detectedLevelLabel.text = data.level
         self.IndexRxLabel.text = String(data.unitIndexRx)
         self.IndexTxLabel.text = String(data.unitIndexTx)

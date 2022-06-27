@@ -414,6 +414,11 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
         let status = jupiterService.unitDRInfo.lookingFlag
         
         if (isStepDetected) {
+            
+//            let firstBuilding: String = (cardData?.infoBuilding[0])!
+//            let firstBuildingLevels: [String] = (cardData?.infoLevel[firstBuilding])!
+//            displayLevelInfo(infoLevel: firstBuildingLevels)
+            
             resultToDisplay.unitIndexTx = unitIdxTx
             resultToDisplay.unitLength = unitLength
             resultToDisplay.status = status
@@ -423,6 +428,7 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
             
             let building = jupiterService.jupiterOutput.building
             let level = jupiterService.jupiterOutput.level
+            
             var levelOutput: String = ""
             
             if (buildings.contains(building)) {
@@ -470,7 +476,6 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
         let jsonString = json
 
         if let data = jsonString.data(using: .utf8), let decoded = try? decoder.decode(ScaleResponse.self, from: data) {
-            print("Data :", data)
             return decoded
         }
 
@@ -484,7 +489,7 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
     
     
     func tableView(_ tableView: ExpyTableView, expyState state: ExpyState, changeForSection section: Int) {
-        print("\(section)섹션")
+//        print("\(section)섹션")
         
         switch state {
         case .willExpand:
@@ -603,7 +608,7 @@ extension MapViewController: UITableViewDataSource {
             if indexPath.section == 0 {
                 let serviceInfoTVC = tableView.dequeueReusableCell(withIdentifier: ServiceInfoTableViewCell.identifier) as!
                 ServiceInfoTableViewCell
-    
+                
                 serviceInfoTVC.backgroundColor = .systemGray6
                 serviceInfoTVC.infoOfLevelsLabel.text = infoOfLevels
                 serviceInfoTVC.numberOfLevelsLabel.text = String(numLevels)

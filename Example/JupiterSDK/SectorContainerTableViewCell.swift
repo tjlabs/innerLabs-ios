@@ -47,6 +47,7 @@ class SectorContainerTableViewCell: UITableViewCell {
     var sectorID: Int = 0
     var building: String = ""
     
+    
     override func awakeFromNib() {
         super.awakeFromNib()
         
@@ -370,7 +371,6 @@ class SectorContainerTableViewCell: UITableViewCell {
 
 extension SectorContainerTableViewCell : UICollectionViewDelegate{
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        makeVibrate()
         currentLevel = levels[currentBuilding]![indexPath.row]
         
         let key = "\(currentBuilding)_\(currentLevel)"
