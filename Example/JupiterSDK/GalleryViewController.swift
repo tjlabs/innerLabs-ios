@@ -28,7 +28,8 @@ class GalleryViewController: UIViewController, WKNavigationDelegate, UIScrollVie
     
     let defaultHeight:Double = 250
     
-    var url = URL(string: "https://tjlabscorp.tistory.com/3")!
+    var url3F = URL(string: "https://tjlabscorp.tistory.com/3")!
+    var url4F = URL(string: "https://www.admgallery.co.kr/individual-island")!
     
     @IBOutlet weak var webView: WKWebView!
     
@@ -89,13 +90,7 @@ class GalleryViewController: UIViewController, WKNavigationDelegate, UIScrollVie
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let request = URLRequest.init(url: url, cachePolicy: URLRequest.CachePolicy.useProtocolCachePolicy, timeoutInterval: 60 * 60 * 24)
-        webView.load(request)
-        
-        self.webView.navigationDelegate = self
-        self.webView.scrollView.delegate = self
-        self.webView.scrollView.alwaysBounceVertical = false
-        self.webView.scrollView.bounces = false
+        loadWebView(currentLevel: self.currentLevel)
         
         if (cardData!.mode == 1 || cardData!.mode == 2) {
             runMode = "PDR"
@@ -276,7 +271,6 @@ class GalleryViewController: UIViewController, WKNavigationDelegate, UIScrollVie
         currentLevel = "3F"
         imageLevel.image = UIImage(named: "Gallery_3F")
         
-        
         let rp: [[Double]] = RP["3F"] ?? [[Double]]()
         if (rp.isEmpty) {
             scatterChart.alpha = 0
@@ -284,6 +278,8 @@ class GalleryViewController: UIViewController, WKNavigationDelegate, UIScrollVie
             scatterChart.alpha = 1.0
             drawRP(RP_X: rp[0], RP_Y: rp[1], XY: [0, 0])
         }
+        
+        loadWebView(currentLevel: currentLevel)
     }
     
     @IBAction func tapButton4F(_ sender: UIButton) {
@@ -297,6 +293,8 @@ class GalleryViewController: UIViewController, WKNavigationDelegate, UIScrollVie
             scatterChart.alpha = 1.0
             drawRP(RP_X: rp[0], RP_Y: rp[1], XY: [0, 0])
         }
+        
+        loadWebView(currentLevel: currentLevel)
     }
     
     func getCurrentTimeInMilliseconds() -> Double
@@ -332,19 +330,16 @@ class GalleryViewController: UIViewController, WKNavigationDelegate, UIScrollVie
         let status = jupiterService.unitDRInfo.lookingFlag
         
         if (isStepDetected) {
-//            let buildingName: String = jupiterService.jupiterOutput.building
-//            let buildingLevels: [String] = cardData!.infoLevel[buildingName] ?? []
-//
-//            let x = jupiterService.jupiterOutput.x
-//            let y = jupiterService.jupiterOutput.y
-//
-//            let building = jupiterService.jupiterOutput.building
-//            let level = jupiterService.jupiterOutput.level
-//
-//            var levelOutput: String = ""
-//
-//            let unitIdxRx = jupiterService.jupiterOutput.index
-//            let scc = jupiterService.jupiterOutput.scc
+            let buildingName: String = jupiterService.jupiterOutput.building
+            let buildingLevels: [String] = cardData!.infoLevel[buildingName] ?? []
+            
+            if (!buildingLevels.isEmpty) {
+                let x = jupiterService.jupiterOutput.x
+                let y = jupiterService.jupiterOutput.y
+                
+                let unitIdxRx = jupiterService.jupiterOutput.index
+                let scc = jupiterService.jupiterOutput.scc
+            }
         }
     }
     
@@ -356,6 +351,21 @@ class GalleryViewController: UIViewController, WKNavigationDelegate, UIScrollVie
     
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         contentsHeight = CGPoint(x: 0, y: self.webView.scrollView.contentSize.height - self.webView.scrollView.bounds.height + self.webView.scrollView.contentInset.bottom)
+    }
+    
+    func loadWebView(currentLevel: String) {
+        if (currentLevel == "3F") {
+            let request = URLRequest.init(url: url3F, cachePolicy: URLRequest.CachePolicy.useProtocolCachePolicy, timeoutInterval: 60 * 60 * 24)
+            webView.load(request)
+        } else {
+            let request = URLRequest.init(url: url4F, cachePolicy: URLRequest.CachePolicy.useProtocolCachePolicy, timeoutInterval: 60 * 60 * 24)
+            webView.load(request)
+        }
+        
+        self.webView.navigationDelegate = self
+        self.webView.scrollView.delegate = self
+        self.webView.scrollView.alwaysBounceVertical = false
+        self.webView.scrollView.bounces = false
     }
     
     func scrollToTop() {
@@ -386,6 +396,5 @@ extension GalleryViewController: CustomSwitchButtonDelegate {
         } else {
             stopTimer()
         }
-//        self.modeAuto = isOn
     }
 }

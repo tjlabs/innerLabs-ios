@@ -340,6 +340,10 @@ extension CardViewController: UICollectionViewDataSource, UICollectionViewDelega
         let sectorID: Int = cardItemData[mod].sector_id
         cell.sectorName.text = cardItemData[mod].sector_name
         cell.sectorDescription.text = cardItemData[mod].description
+//        if (sectorID == 7) {
+//            cell.sectorName.textColor = .black
+//            cell.sectorDescription.textColor = .black
+//        }
         
         // Sector Image
         cell.cardImageView.contentMode = .scaleAspectFit
