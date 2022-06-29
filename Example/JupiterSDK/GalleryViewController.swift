@@ -26,7 +26,7 @@ class GalleryViewController: UIViewController, WKNavigationDelegate, UIScrollVie
     @IBOutlet weak var imageHeight: NSLayoutConstraint!
     @IBOutlet weak var scatterChart: ScatterChartView!
     
-    let defaultHeight:Double = 250
+    let defaultHeight:Double = 320
     
     var url3F = URL(string: "https://tjlabscorp.tistory.com/3")!
     var url4F = URL(string: "https://www.admgallery.co.kr/individual-island")!
@@ -320,7 +320,6 @@ class GalleryViewController: UIViewController, WKNavigationDelegate, UIScrollVie
         let timeStamp = getCurrentTimeInMilliseconds()
         let dt = timeStamp - pastTime
         pastTime = timeStamp
-        print("Time Stamp :", timeStamp)
         
         // length, scc, status, mode, idx Tx, idx Rx, level
         let isStepDetected = jupiterService.unitDRInfo.isIndexChanged

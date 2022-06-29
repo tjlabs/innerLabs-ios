@@ -20,6 +20,7 @@ class SectorContainerTableViewCell: UITableViewCell {
     @IBOutlet weak var imageLevel: UIImageView!
     @IBOutlet weak var scatterChart: ScatterChartView!
     @IBOutlet weak var switchButton: CustomSwitchButton!
+    @IBOutlet weak var noImageLabel: UILabel!
     
     // DropDown
     @IBOutlet weak var dropView: UIView!
@@ -131,7 +132,15 @@ class SectorContainerTableViewCell: UITableViewCell {
     private func fetchLevel(building: String, level: String) {
         let imageName: String = "\(currentBuilding)_\(currentLevel)"
         
-        imageLevel.image = UIImage(named: imageName)
+        if let imageToDraw = UIImage(named: imageName) {
+            noImageLabel.isHidden = true
+            imageLevel.isHidden = false
+            imageLevel.image = imageToDraw
+        } else {
+            imageLevel.isHidden = true
+            noImageLabel.isHidden = false
+        }
+//        imageLevel.image = UIImage(named: imageName)
 //        print("Width :", imageLevel.image!.size.width)
 //        print("Height :", imageLevel.image!.size.height)
         
@@ -357,9 +366,9 @@ class SectorContainerTableViewCell: UITableViewCell {
             let limits: [Double] = chartLimits?[key] ?? [0, 0, 0, 0]
             
             if (rp.isEmpty) {
-                scatterChart.alpha = 0
+                scatterChart.isHidden = true
             } else {
-                scatterChart.alpha = 1.0
+                scatterChart.isHidden = false
                 if (flag) {
                     drawRP(RP_X: rp[0], RP_Y: rp[1], XY: XY, limits: limits)
                 } else {
@@ -368,7 +377,7 @@ class SectorContainerTableViewCell: UITableViewCell {
             }
             
         } else {
-            scatterChart.alpha = 1.0
+            scatterChart.isHidden = false
         }
             
         levelCollectionView.reloadData()
@@ -386,9 +395,9 @@ extension SectorContainerTableViewCell : UICollectionViewDelegate{
         
         if (rp.isEmpty) {
             // RP가 없어서 그리지 않음
-            scatterChart.alpha = 0
+            scatterChart.isHidden = true
         } else {
-            scatterChart.alpha = 1.0
+            scatterChart.isHidden = false
             if (flagRP) {
                 drawRP(RP_X: rp[0], RP_Y: rp[1], XY: XY, limits: limits)
             } else {

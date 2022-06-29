@@ -55,7 +55,7 @@ public class JupiterService: NSObject {
     
     public var testQueue = LinkedList<TimestampDouble>()
     
-    var timer = Timer()
+    var timer: Timer?
     var timerCounter: Int = 0
     var timerTimeOut: Int = 10
     let TIMER_INTERVAL: TimeInterval = 1/40 // second
@@ -100,7 +100,6 @@ public class JupiterService: NSObject {
             startTimer()
             startBLE()
             
-            print("JupiterServcie Mode :", mode)
             unitDRGenerator.setMode(mode: mode)
             
             if (mode == "PDR") {
@@ -235,13 +234,16 @@ public class JupiterService: NSObject {
     }
     
     func startTimer() {
-        self.timer = Timer.scheduledTimer(timeInterval: TIMER_INTERVAL, target: self, selector: #selector(self.timerUpdate), userInfo: nil, repeats: true)
-        
-        timerCounter = 0
+        if (timer == nil) {
+            timer = Timer.scheduledTimer(timeInterval: TIMER_INTERVAL, target: self, selector: #selector(self.timerUpdate), userInfo: nil, repeats: true)
+        }
     }
     
     func stopTimer() {
-        self.timer.invalidate()
+        if (timer != nil) {
+            timer!.invalidate()
+            timer = nil
+        }
     }
     
     @objc func timerUpdate() {

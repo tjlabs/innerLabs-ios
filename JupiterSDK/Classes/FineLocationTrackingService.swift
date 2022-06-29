@@ -28,8 +28,8 @@ public class FineLocationTrackingService: NSObject {
     // --------------- //
     
     // ----- Timer ----- //
-    var spatialTimer = Timer()
-    var mobileTimer = Timer()
+    var spatialTimer: Timer?
+    var mobileTimer: Timer?
     let SPATIAL_TIMER_INTERVAL: TimeInterval = 1/5 // second
     let MOBILE_TIMER_INTERVAL: TimeInterval = 1/40 // second
     
@@ -99,7 +99,6 @@ public class FineLocationTrackingService: NSObject {
         startTimer()
         startBLE()
         
-        print("JupiterServcie Mode :", mode)
         unitDRGenerator.setMode(mode: mode)
         
         if (mode == "PDR") {
@@ -199,14 +198,27 @@ public class FineLocationTrackingService: NSObject {
         }
     }
     
+    
     func startTimer() {
-        self.spatialTimer = Timer.scheduledTimer(timeInterval: SPATIAL_TIMER_INTERVAL, target: self, selector: #selector(self.spatialTimerUpdate), userInfo: nil, repeats: true)
-        self.mobileTimer = Timer.scheduledTimer(timeInterval: MOBILE_TIMER_INTERVAL, target: self, selector: #selector(self.mobileTimerUpdate), userInfo: nil, repeats: true)
+        if (spatialTimer == nil) {
+            spatialTimer = Timer.scheduledTimer(timeInterval: SPATIAL_TIMER_INTERVAL, target: self, selector: #selector(self.spatialTimerUpdate), userInfo: nil, repeats: true)
+        }
+        
+        if (mobileTimer == nil) {
+            mobileTimer = Timer.scheduledTimer(timeInterval: MOBILE_TIMER_INTERVAL, target: self, selector: #selector(self.mobileTimerUpdate), userInfo: nil, repeats: true)
+        }
     }
 
     func stopTimer() {
-        self.spatialTimer.invalidate()
-        self.mobileTimer.invalidate()
+        if (spatialTimer != nil) {
+            spatialTimer!.invalidate()
+            spatialTimer = nil
+        }
+        
+        if (mobileTimer != nil) {
+            mobileTimer!.invalidate()
+            mobileTimer = nil
+        }
     }
     
     @objc func spatialTimerUpdate() {

@@ -602,16 +602,16 @@
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="UHa-ap-rPQ">
                                 <rect key="frame" x="-10" y="0.0" width="410" height="100"/>
                                 <subviews>
-                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="greenCardTop" translatesAutoresizingMaskIntoConstraints="NO" id="3qK-PC-clp">
+                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="yellowCardTop" translatesAutoresizingMaskIntoConstraints="NO" id="3qK-PC-clp">
                                         <rect key="frame" x="0.0" y="0.0" width="410" height="100"/>
                                     </imageView>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3KN-v6-2fI">
-                                        <rect key="frame" x="20" y="60" width="50" height="25"/>
+                                        <rect key="frame" x="20" y="56" width="50" height="29"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="50" id="M0w-8P-udA"/>
                                         </constraints>
                                         <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                                        <state key="normal" image="backButtonWhite"/>
+                                        <state key="normal" image="backButton"/>
                                         <connections>
                                             <action selector="tapBackButton:" destination="1nM-eT-fBa" eventType="touchUpInside" id="A9w-fr-inB"/>
                                             <action selector="tapBackButton:" destination="DAK-bi-GFv" eventType="touchUpInside" id="MNG-1E-WkZ"/>
@@ -619,13 +619,13 @@
                                         </connections>
                                     </button>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Gallery" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="BaS-us-eNZ">
-                                        <rect key="frame" x="174.33333333333334" y="59.333333333333336" width="61.666666666666657" height="26.333333333333336"/>
+                                        <rect key="frame" x="174.33333333333334" y="57.333333333333336" width="61.666666666666657" height="26.333333333333336"/>
                                         <fontDescription key="fontDescription" name="NotoSansKR-Medium" family="Noto Sans KR" pointSize="18"/>
-                                        <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <color key="textColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <nil key="highlightedColor"/>
                                     </label>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ZUc-d3-bVH">
-                                        <rect key="frame" x="340" y="61.666666666666657" width="50" height="22"/>
+                                    <button hidden="YES" opaque="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ZUc-d3-bVH">
+                                        <rect key="frame" x="340" y="59.666666666666657" width="50" height="22"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="50" id="Vf4-YR-DJA"/>
                                         </constraints>
@@ -661,20 +661,20 @@
                                 </wkWebViewConfiguration>
                             </wkWebView>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Gallery_3F" translatesAutoresizingMaskIntoConstraints="NO" id="jGZ-Ue-0YW">
-                                <rect key="frame" x="0.0" y="170" width="390" height="250"/>
+                                <rect key="frame" x="0.0" y="100" width="390" height="320"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="250" id="nrs-jD-uBe"/>
+                                    <constraint firstAttribute="height" constant="320" id="nrs-jD-uBe"/>
                                 </constraints>
                             </imageView>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="IDh-xJ-izq">
                                 <rect key="frame" x="10" y="120" width="370" height="40"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="4yf-Y6-Cia">
-                                        <rect key="frame" x="20" y="0.0" width="80" height="40"/>
+                                        <rect key="frame" x="10" y="0.0" width="60" height="40"/>
                                         <color key="backgroundColor" red="1" green="0.99607843137254903" blue="0.56470588235294117" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <constraints>
-                                            <constraint firstAttribute="width" constant="80" id="HeQ-Fy-4Vq"/>
+                                            <constraint firstAttribute="width" constant="60" id="HeQ-Fy-4Vq"/>
                                         </constraints>
                                         <fontDescription key="fontDescription" name="NotoSansKR-Medium" family="Noto Sans KR" pointSize="18"/>
                                         <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
@@ -697,10 +697,10 @@
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="T7x-q6-gT7">
-                                        <rect key="frame" x="120" y="0.6666666666666714" width="80" height="39"/>
+                                        <rect key="frame" x="90" y="0.6666666666666714" width="60" height="39"/>
                                         <color key="backgroundColor" red="1" green="0.99607843139999996" blue="0.56470588239999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <constraints>
-                                            <constraint firstAttribute="width" constant="80" id="xxI-cP-yYl"/>
+                                            <constraint firstAttribute="width" constant="60" id="xxI-cP-yYl"/>
                                         </constraints>
                                         <fontDescription key="fontDescription" name="NotoSansKR-Medium" family="Noto Sans KR" pointSize="18"/>
                                         <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
@@ -730,19 +730,19 @@
                                         </state>
                                     </button>
                                 </subviews>
-                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
                                     <constraint firstItem="4yf-Y6-Cia" firstAttribute="top" secondItem="IDh-xJ-izq" secondAttribute="top" id="34Z-57-aHm"/>
                                     <constraint firstItem="T7x-q6-gT7" firstAttribute="leading" secondItem="4yf-Y6-Cia" secondAttribute="trailing" constant="20" id="9q0-iY-ypT"/>
                                     <constraint firstAttribute="bottom" secondItem="4yf-Y6-Cia" secondAttribute="bottom" id="Byb-QB-VfI"/>
                                     <constraint firstAttribute="trailing" secondItem="0kG-93-bn6" secondAttribute="trailing" constant="20" id="DzR-do-SWd"/>
                                     <constraint firstAttribute="height" constant="40" id="GkO-wd-b16"/>
-                                    <constraint firstItem="4yf-Y6-Cia" firstAttribute="leading" secondItem="IDh-xJ-izq" secondAttribute="leading" constant="20" id="Kbb-qq-FAY"/>
+                                    <constraint firstItem="4yf-Y6-Cia" firstAttribute="leading" secondItem="IDh-xJ-izq" secondAttribute="leading" constant="10" id="Kbb-qq-FAY"/>
                                     <constraint firstItem="T7x-q6-gT7" firstAttribute="centerY" secondItem="4yf-Y6-Cia" secondAttribute="centerY" id="aka-er-TW9"/>
                                     <constraint firstItem="0kG-93-bn6" firstAttribute="centerY" secondItem="T7x-q6-gT7" secondAttribute="centerY" id="xmi-1l-5uz"/>
                                 </constraints>
                             </view>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="IRr-WZ-vLZ" customClass="ScatterChartView" customModule="Charts">
+                            <view alpha="0.0" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="IRr-WZ-vLZ" customClass="ScatterChartView" customModule="Charts">
                                 <rect key="frame" x="0.0" y="170" width="390" height="250"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <accessibility key="accessibilityConfiguration">
@@ -761,7 +761,6 @@
                             <constraint firstItem="ufE-Gx-orG" firstAttribute="trailing" secondItem="jGZ-Ue-0YW" secondAttribute="trailing" id="DVQ-ng-9dV"/>
                             <constraint firstItem="IDh-xJ-izq" firstAttribute="leading" secondItem="ufE-Gx-orG" secondAttribute="leading" constant="10" id="Drh-eK-iGD"/>
                             <constraint firstItem="Yij-dS-ee6" firstAttribute="leading" secondItem="ufE-Gx-orG" secondAttribute="leading" id="F85-LJ-txG"/>
-                            <constraint firstItem="jGZ-Ue-0YW" firstAttribute="top" secondItem="IDh-xJ-izq" secondAttribute="bottom" constant="10" id="Ikd-NL-zra"/>
                             <constraint firstItem="UHa-ap-rPQ" firstAttribute="leading" secondItem="ufE-Gx-orG" secondAttribute="leading" constant="-10" id="MdW-3r-WNI"/>
                             <constraint firstItem="ufE-Gx-orG" firstAttribute="trailing" secondItem="IDh-xJ-izq" secondAttribute="trailing" constant="10" id="SjA-w4-fxl"/>
                             <constraint firstItem="ufE-Gx-orG" firstAttribute="trailing" secondItem="IRr-WZ-vLZ" secondAttribute="trailing" id="Wo7-0c-mj1"/>
@@ -1017,7 +1016,7 @@
         </scene>
     </scenes>
     <resources>
-        <image name="Gallery_3F" width="330" height="190"/>
+        <image name="Gallery_3F" width="173.33332824707031" height="142.33332824707031"/>
         <image name="addCard" width="77.333335876464844" height="22"/>
         <image name="backButton" width="29" height="29"/>
         <image name="backButtonWhite" width="13.333333015441895" height="25"/>
@@ -1026,7 +1025,6 @@
         <image name="confirmButton" width="31.333333969116211" height="25"/>
         <image name="editButton" width="28" height="22"/>
         <image name="fieldLogin" width="349.33334350585938" height="58.333332061767578"/>
-        <image name="greenCardTop" width="390" height="95"/>
         <image name="innerLabsBI" width="341.33334350585938" height="176.66667175292969"/>
         <image name="innerLabsNameCard" width="389.66665649414062" height="53"/>
         <image name="loginButton" width="349.33334350585938" height="58.333332061767578"/>
@@ -1038,6 +1036,7 @@
         <image name="showUserInfoButton" width="28" height="28"/>
         <image name="toCard" width="78" height="22"/>
         <image name="unCheckedBox" width="24.666666030883789" height="25.333333969116211"/>
+        <image name="yellowCardTop" width="390" height="95"/>
         <namedColor name="darkblack">
             <color red="0.14100000262260437" green="0.14100000262260437" blue="0.14100000262260437" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>

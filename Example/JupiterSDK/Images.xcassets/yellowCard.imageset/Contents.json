@@ -1,15 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "floor3.jpg",
+      "filename" : "yellowCard.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
+      "filename" : "yellowCard@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
+      "filename" : "yellowCard@3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }

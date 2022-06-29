@@ -1,5 +1,14 @@
 import Foundation
 
+let RF_URL = "https://where-run-user-skrgq3jc5a-du.a.run.app/RecordRF"
+let UV_URL = "https://where-run-user-skrgq3jc5a-du.a.run.app/RecordUV"
+let MARINER1_URL = "https://where-run-user-skrgq3jc5a-du.a.run.app/mariner1"
+let MARINER2_URL = "https://where-run-user-skrgq3jc5a-du.a.run.app/mariner2"
+let MARINER3_URL = "https://where-run-user-skrgq3jc5a-du.a.run.app/mariner3"
+let VENERA_URL = "https://where-run-user-skrgq3jc5a-du.a.run.app/venera"
+let MAGELLAN_URL = "https://where-run-user-skrgq3jc5a-du.a.run.app/magellan"
+let JUPITER_URL = "https://where-run-user-skrgq3jc5a-du.a.run.app/jupiter"
+
 struct Input: Codable {
     var user_id: String
     var index: Int

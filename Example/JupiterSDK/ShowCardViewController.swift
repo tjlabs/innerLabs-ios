@@ -188,8 +188,6 @@ class ShowCardViewController: UIViewController, AddCardDelegate {
                 order.append(data)
             }
             
-            print("Order :", order)
-            
             let input = OrderCard(user_id: uuid, card_order: order)
             Network.shared.orderCard(url: CARD_URL, input: input, completion: { statusCode, returnedString in
             })
@@ -223,8 +221,11 @@ extension ShowCardViewController: UICollectionViewDataSource {
         let sectorName: String = cardItemData[indexPath.item].sector_name
         let sectorID = cardItemData[indexPath.item].sector_id
         cell.nameLabel.text = sectorName
+        if (sectorID == 7) {
+            cell.nameLabel.textColor = .black
+        }
         
-        let ratio: Double = 7.6470
+        let ratio: Double = 8.05
         let width = collectionViewSize[0]
         cell.cardWidth.constant = collectionViewSize[0]
         cell.sectorShowImageLeading.constant = (width/ratio)
@@ -233,6 +234,8 @@ extension ShowCardViewController: UICollectionViewDataSource {
         
         if (indexPath.item == 0) {
             cell.sectorShowImage.image = sectorShowImages[indexPath.item]
+        } else if (sectorID == 7) {
+            cell.sectorShowImage.image = UIImage(named: "galleryShow")
         } else {
             let urlSectorShow = URL(string: "https://storage.googleapis.com/jupiter_image/card/\(sectorID)/edit_image.png")
             let resourceSectorShow = ImageResource(downloadURL: urlSectorShow!, cacheKey: "\(sectorID)Show")

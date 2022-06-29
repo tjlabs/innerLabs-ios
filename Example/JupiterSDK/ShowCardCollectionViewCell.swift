@@ -30,8 +30,6 @@ class ShowCardCollectionViewCell: UICollectionViewCell {
         super.awakeFromNib()
         
         cardUIView.backgroundColor = .clear
-//        print("Show Card Width :", self.frame.width)
-//        print("Leading Constant :", sectorShowImageLeading.constant)
     }
 
     @IBAction func tapDeleteButton(_ sender: UIButton) {

@@ -25,7 +25,7 @@ public class CoarseLevelDetectionService: NSObject {
     // --------------- //
     
     // ----- Timer ----- //
-    var timer = Timer()
+    var timer: Timer?
     var timerCounter: Int = 0
     var timerTimeOut: Int = 10
     let TIMER_INTERVAL: TimeInterval = 1/2 // second
@@ -93,13 +93,16 @@ public class CoarseLevelDetectionService: NSObject {
     }
     
     func startTimer() {
-        self.timer = Timer.scheduledTimer(timeInterval: TIMER_INTERVAL, target: self, selector: #selector(self.timerUpdate), userInfo: nil, repeats: true)
-        
-        timerCounter = 0
+        if (timer == nil) {
+            timer = Timer.scheduledTimer(timeInterval: TIMER_INTERVAL, target: self, selector: #selector(self.timerUpdate), userInfo: nil, repeats: true)
+        }
     }
-
+    
     func stopTimer() {
-        self.timer.invalidate()
+        if (timer != nil) {
+            timer!.invalidate()
+            timer = nil
+        }
     }
     
     @objc func timerUpdate() {
