@@ -36,6 +36,13 @@ public struct Output: Codable {
 }
 
 
+public struct InitUser: Codable {
+    var user_id: String
+    var device_model: String
+    var os_version: Int
+}
+
+
 struct SpatialForce: Codable {
     var user_id: String
     var mobile_time: Double

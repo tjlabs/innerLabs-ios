@@ -223,6 +223,8 @@ extension ShowCardViewController: UICollectionViewDataSource {
         cell.nameLabel.text = sectorName
         if (sectorID == 7) {
             cell.nameLabel.textColor = .black
+        } else {
+            cell.nameLabel.textColor = .white
         }
         
         let ratio: Double = 8.05
@@ -234,8 +236,6 @@ extension ShowCardViewController: UICollectionViewDataSource {
         
         if (indexPath.item == 0) {
             cell.sectorShowImage.image = sectorShowImages[indexPath.item]
-        } else if (sectorID == 7) {
-            cell.sectorShowImage.image = UIImage(named: "galleryShow")
         } else {
             let urlSectorShow = URL(string: "https://storage.googleapis.com/jupiter_image/card/\(sectorID)/edit_image.png")
             let resourceSectorShow = ImageResource(downloadURL: urlSectorShow!, cacheKey: "\(sectorID)Show")

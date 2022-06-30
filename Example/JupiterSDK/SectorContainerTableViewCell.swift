@@ -125,7 +125,6 @@ class SectorContainerTableViewCell: UITableViewCell {
     private func setLevelCollectionView() {
         levelCollectionView.delegate = self
         levelCollectionView.dataSource = self
-
         levelCollectionView.reloadData()
     }
     

@@ -374,13 +374,13 @@ public class Network {
             switch response.result {
             case .success(let res):
                 do {
-                    print("")
-                    print("====================================")
-                    print("응답 코드 :: ", response.response?.statusCode ?? 0)
-                    print("-------------------------------")
-                    print("응답 데이터 :: ", String(data: res, encoding: .utf8) ?? "")
-                    print("====================================")
-                    print("")
+//                    print("")
+//                    print("====================================")
+//                    print("응답 코드 :: ", response.response?.statusCode ?? 0)
+//                    print("-------------------------------")
+//                    print("응답 데이터 :: ", String(data: res, encoding: .utf8) ?? "")
+//                    print("====================================")
+//                    print("")
                     
                     let returnedString = String(decoding: response.data!, as: UTF8.self)
                     completion(200, returnedString)
@@ -400,13 +400,13 @@ public class Network {
                 }
                 break
             case .failure(let err):
-                print("")
-                print("====================================")
-                print("응답 코드 :: ", response.response?.statusCode ?? 0)
-                print("-------------------------------")
-                print("에 러 :: ", err.localizedDescription)
-                print("====================================")
-                print("")
+//                print("")
+//                print("====================================")
+//                print("응답 코드 :: ", response.response?.statusCode ?? 0)
+//                print("-------------------------------")
+//                print("에 러 :: ", err.localizedDescription)
+//                print("====================================")
+//                print("")
                 completion(200, "")
                 
                 break

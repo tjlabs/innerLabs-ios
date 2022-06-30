@@ -358,16 +358,16 @@ extension CardViewController: UICollectionViewDataSource, UICollectionViewDelega
         if (mod == 0) {
             cell.sectorImageView.image = sectorImages[mod]
         } else {
-            if (sectorID == 7) {
-                cell.sectorImageView.image = UIImage(named: "sectorGallery")
-            } else {
-                let urlSector = URL(string: "https://storage.googleapis.com/jupiter_image/card/\(sectorID)/main_image.png")
-                let resourceSector = ImageResource(downloadURL: urlSector!, cacheKey: "\(sectorID)Main")
-                cell.sectorImageView.kf.setImage(with: resourceSector, placeholder: nil, options: [.transition(.fade(1.2))], completionHandler: nil)
-            }
-//            let urlSector = URL(string: "https://storage.googleapis.com/jupiter_image/card/\(sectorID)/main_image.png")
-//            let resourceSector = ImageResource(downloadURL: urlSector!, cacheKey: "\(sectorID)Main")
-//            cell.sectorImageView.kf.setImage(with: resourceSector, placeholder: nil, options: [.transition(.fade(1.2))], completionHandler: nil)
+//            if (sectorID == 7) {
+//                cell.sectorImageView.image = UIImage(named: "sectorGallery")
+//            } else {
+//                let urlSector = URL(string: "https://storage.googleapis.com/jupiter_image/card/\(sectorID)/main_image.png")
+//                let resourceSector = ImageResource(downloadURL: urlSector!, cacheKey: "\(sectorID)Main")
+//                cell.sectorImageView.kf.setImage(with: resourceSector, placeholder: nil, options: [.transition(.fade(1.2))], completionHandler: nil)
+//            }
+            let urlSector = URL(string: "https://storage.googleapis.com/jupiter_image/card/\(sectorID)/main_image.png")
+            let resourceSector = ImageResource(downloadURL: urlSector!, cacheKey: "\(sectorID)Main")
+            cell.sectorImageView.kf.setImage(with: resourceSector, placeholder: nil, options: [.transition(.fade(1.2))], completionHandler: nil)
         }
         
         return cell

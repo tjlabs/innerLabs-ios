@@ -69,4 +69,10 @@ public class ServiceManager: NSObject {
     
     public func getResult(service: String) {
     }
+    
+    public func initUser(id: String) {
+        let deviceModel = deviceModel
+        let osVersion = osVersion
+        var initUser = InitUser(user_id: id, device_model: deviceModel, os_version: osVersion)
+    }
 }

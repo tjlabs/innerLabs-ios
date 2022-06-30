@@ -47,6 +47,7 @@
 		B3B4F85B28114EEB009F9E6C /* ShowCardCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B3B4F85928114EEB009F9E6C /* ShowCardCollectionViewCell.xib */; };
 		B3B7FBF52856DA4000E23EDF /* PopUpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3B7FBF42856DA4000E23EDF /* PopUpViewController.swift */; };
 		B3B7FBF72856F43200E23EDF /* GalleryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3B7FBF62856F43200E23EDF /* GalleryViewController.swift */; };
+		B3B9F4E5286C2EA300FEE914 /* Gallery_4F_Road.csv in Resources */ = {isa = PBXBuildFile; fileRef = B3B9F4E4286C2EA300FEE914 /* Gallery_4F_Road.csv */; };
 		B3BD699827E9A4A500A32A7A /* ColorPalette.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3BD699727E9A4A500A32A7A /* ColorPalette.swift */; };
 		B3BD699A27E9A4BE00A32A7A /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B3BD699927E9A4BE00A32A7A /* Colors.xcassets */; };
 		B3BD699F27E9A51100A32A7A /* UIViewControllerExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3BD699E27E9A51100A32A7A /* UIViewControllerExtension.swift */; };
@@ -140,6 +141,7 @@
 		B3B4F85928114EEB009F9E6C /* ShowCardCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ShowCardCollectionViewCell.xib; sourceTree = "<group>"; };
 		B3B7FBF42856DA4000E23EDF /* PopUpViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopUpViewController.swift; sourceTree = "<group>"; };
 		B3B7FBF62856F43200E23EDF /* GalleryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GalleryViewController.swift; sourceTree = "<group>"; };
+		B3B9F4E4286C2EA300FEE914 /* Gallery_4F_Road.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Gallery_4F_Road.csv; sourceTree = "<group>"; };
 		B3BD699727E9A4A500A32A7A /* ColorPalette.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorPalette.swift; sourceTree = "<group>"; };
 		B3BD699927E9A4BE00A32A7A /* Colors.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Colors.xcassets; sourceTree = "<group>"; };
 		B3BD699E27E9A51100A32A7A /* UIViewControllerExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIViewControllerExtension.swift; sourceTree = "<group>"; };
@@ -265,6 +267,7 @@
 				B3037A91281C06D50058D025 /* OverlayCustomView.xib */,
 				B3B156DD282397AF0058B538 /* ImageOverlay.swift */,
 				B3FD74EB2869A38800CD4D74 /* Gallery_3F.csv */,
+				B3B9F4E4286C2EA300FEE914 /* Gallery_4F_Road.csv */,
 				B3FD74EA2869A38800CD4D74 /* Gallery_4F.csv */,
 				B38807EB283333250029B174 /* KIST_RP_B1.csv */,
 				B38807EF283390280029B174 /* KIST_RP_1F.csv */,
@@ -521,6 +524,7 @@
 				607FACE01AFB9204008FA782 /* LaunchScreen.xib in Resources */,
 				607FACDD1AFB9204008FA782 /* Images.xcassets in Resources */,
 				B360D88F28090D6A0084FB22 /* NotoSansKR-Light.otf in Resources */,
+				B3B9F4E5286C2EA300FEE914 /* Gallery_4F_Road.csv in Resources */,
 				B38807F2283390280029B174 /* KIST_RP_1F.csv in Resources */,
 				B3BD69B027E9A78000A32A7A /* SectorContainerTableViewCell.xib in Resources */,
 				B3FD74EC2869A38800CD4D74 /* Gallery_4F.csv in Resources */,
