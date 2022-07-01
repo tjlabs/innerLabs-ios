@@ -154,7 +154,7 @@ public class NetworkManager {
     }
     
     
-    func putSpatialForce(url: String, input: [SpatialForce]){
+    func putReceivedForce(url: String, input: [ReceivedForce]){
         // [http 요청 헤더 지정]
         let header : HTTPHeaders = [
             "Content-Type" : "application/json"
@@ -215,7 +215,7 @@ public class NetworkManager {
         }
     }
     
-    func putMobileForce(url: String, input: [MobileForce]){
+    func putUserVelocity(url: String, input: [UserVelocity]){
         // [http 요청 헤더 지정]
         let header : HTTPHeaders = [
             "Content-Type" : "application/json"

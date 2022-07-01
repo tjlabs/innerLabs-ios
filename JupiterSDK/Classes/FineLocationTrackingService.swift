@@ -90,11 +90,13 @@ public class FineLocationTrackingService: NSObject {
     public var unitDistane: Double = 0
     
     // ----- Network ----- //
-    var spatialForceArray: [SpatialForce] = [SpatialForce(user_id: "", mobile_time: 0, ble: [:], pressure: 0)]
-    var mobileForceArray: [MobileForce] = [MobileForce(user_id: "", mobile_time: 0, index: 0, length: 0, heading: 0, looking_flag: true)]
+    var receivedForceArray: [ReceivedForce] = [ReceivedForce(user_id: "", mobile_time: 0, ble: [:], pressure: 0)]
+    var userVelocityArray: [UserVelocity] = [UserVelocity(user_id: "", mobile_time: 0, index: 0, length: 0, heading: 0, looking_flag: true)]
     // ------------------- //
     
-    public func startService() {
+    public func startService(id: String) {
+        self.uuid = id
+        
         initialzeSensors()
         startTimer()
         startBLE()
@@ -231,13 +233,13 @@ public class FineLocationTrackingService: NSObject {
             bleDictionary.keys.forEach { bleDictionary[$0] = bleDictionary[$0]! + 7 }
         }
         
-        let data = SpatialForce(user_id: uuid, mobile_time: timeStamp, ble: bleDictionary, pressure: self.pressure)
-        spatialForceArray.append(data)
-        if ((spatialForceArray.count-1) == SPATIAL_INPUT_NUM) {
-            spatialForceArray.remove(at: 0)
-            NetworkManager.shared.putSpatialForce(url: spatialURL, input: spatialForceArray)
+        let data = ReceivedForce(user_id: uuid, mobile_time: timeStamp, ble: bleDictionary, pressure: self.pressure)
+        receivedForceArray.append(data)
+        if ((receivedForceArray.count-1) == SPATIAL_INPUT_NUM) {
+            receivedForceArray.remove(at: 0)
+            NetworkManager.shared.putReceivedForce(url: spatialURL, input: receivedForceArray)
 
-            spatialForceArray = [SpatialForce(user_id: uuid, mobile_time: 0, ble: [:], pressure: 0)]
+            receivedForceArray = [ReceivedForce(user_id: uuid, mobile_time: 0, ble: [:], pressure: 0)]
         }
     }
     
@@ -246,13 +248,13 @@ public class FineLocationTrackingService: NSObject {
 //        let dt = timeStamp - mobilePastTime
         mobilePastTime = timeStamp
         
-        let data = MobileForce(user_id: uuid, mobile_time: timeStamp, index: 0, length: 0, heading: 0, looking_flag: true)
-        mobileForceArray.append(data)
-        if ((mobileForceArray.count-1) == unitModeInput) {
-            mobileForceArray.remove(at: 0)
-            NetworkManager.shared.putMobileForce(url: mobileURL, input: mobileForceArray)
+        let data = UserVelocity(user_id: uuid, mobile_time: timeStamp, index: 0, length: 0, heading: 0, looking_flag: true)
+        userVelocityArray.append(data)
+        if ((userVelocityArray.count-1) == unitModeInput) {
+            userVelocityArray.remove(at: 0)
+            NetworkManager.shared.putUserVelocity(url: mobileURL, input: userVelocityArray)
 
-            mobileForceArray = [MobileForce(user_id: uuid, mobile_time: 0, index: 0, length: 0, heading: 0, looking_flag: true)]
+            userVelocityArray = [UserVelocity(user_id: uuid, mobile_time: 0, index: 0, length: 0, heading: 0, looking_flag: true)]
         }
     }
 

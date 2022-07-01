@@ -9,6 +9,7 @@ import Foundation
 
 public class ServiceManager: NSObject {
     
+    var user_id: String = ""
     var deviceModel: String = ""
     var os: String = ""
     var osVersion: Int = 0
@@ -29,22 +30,22 @@ public class ServiceManager: NSObject {
         print("OS : \(osVersion)")
     }
     
-    public func startService(service: String) {
+    public func startService(id: String, service: String) {
         switch (service) {
         case "mariner1":
-            sectorDetectionService.startService()
+            sectorDetectionService.startService(id: id)
         case "mariner2":
-            buildingDetectionService.startService()
+            buildingDetectionService.startService(id: id)
         case "mariner3":
-            coarseLevelDetectionService.startService()
+            coarseLevelDetectionService.startService(id: id)
         case "venera":
-            fineLevelDetectionService.startService()
+            fineLevelDetectionService.startService(id: id)
         case "magellan":
-            coarseLocationEstimationService.startService()
+            coarseLocationEstimationService.startService(id: id)
         case "jupiter":
-            fineLocaationTrackingService.startService()
+            fineLocaationTrackingService.startService(id: id)
         default:
-            sectorDetectionService.startService()
+            sectorDetectionService.startService(id: id)
         }
     }
     

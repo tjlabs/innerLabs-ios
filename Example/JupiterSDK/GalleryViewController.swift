@@ -111,7 +111,7 @@ class GalleryViewController: UIViewController, WKNavigationDelegate, UIScrollVie
         setFloatingButton()
         
         // Enroll Service
-        sectorDetectionService.startService(service: "mariner1")
+        sectorDetectionService.startService(id: uuid, service: "mariner1")
     }
     
     func setCardData(cardData: CardItemData) {

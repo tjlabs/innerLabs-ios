@@ -52,10 +52,12 @@ public class CoarseLocationEstimationService: NSObject {
     
     
     // ----- Network ----- //
-    var inputArray: [SpatialForce] = [SpatialForce(user_id: "", mobile_time: 0, ble: [:], pressure: 0)]
+    var inputArray: [ReceivedForce] = [ReceivedForce(user_id: "", mobile_time: 0, ble: [:], pressure: 0)]
     // ------------------- //
     
-    public func startService() {
+    public func startService(id: String) {
+        self.uuid = id
+        
         initialzeSensors()
         startTimer()
         startBLE()
@@ -117,14 +119,14 @@ public class CoarseLocationEstimationService: NSObject {
             bleDictionary.keys.forEach { bleDictionary[$0] = bleDictionary[$0]! + 7 }
         }
         
-        let data = SpatialForce(user_id: uuid, mobile_time: timeStamp, ble: bleDictionary, pressure: self.pressure)
+        let data = ReceivedForce(user_id: uuid, mobile_time: timeStamp, ble: bleDictionary, pressure: self.pressure)
         
         inputArray.append(data)
         if ((inputArray.count-1) == unitModeInput) {
             inputArray.remove(at: 0)
-            NetworkManager.shared.putSpatialForce(url: url, input: inputArray)
+            NetworkManager.shared.putReceivedForce(url: url, input: inputArray)
 
-            inputArray = [SpatialForce(user_id: "", mobile_time: 0, ble: [:], pressure: 0)]
+            inputArray = [ReceivedForce(user_id: "", mobile_time: 0, ble: [:], pressure: 0)]
         }
     }
 

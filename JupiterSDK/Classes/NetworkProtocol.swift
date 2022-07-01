@@ -44,14 +44,14 @@ public struct InitUser: Codable {
 }
 
 
-struct SpatialForce: Codable {
+struct ReceivedForce: Codable {
     var user_id: String
     var mobile_time: Double
     var ble: [String: Double]
     var pressure: Double
 }
 
-struct MobileForce: Codable {
+struct UserVelocity: Codable {
     var user_id: String
     var mobile_time: Double
     var index: Double
