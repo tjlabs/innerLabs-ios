@@ -123,7 +123,7 @@ public class SectorDetectionService: NSObject {
         if ((inputArray.count-1) == unitModeInput) {
             inputArray.remove(at: 0)
             print("Sector Detection Service :", inputArray)
-//            NetworkManager.shared.postSpatialForce(url: url, input: inputArray)
+            NetworkManager.shared.putSpatialForce(url: RF_URL, input: inputArray)
 
             inputArray = [SpatialForce(user_id: "", mobile_time: 0, ble: [:], pressure: 0)]
         }

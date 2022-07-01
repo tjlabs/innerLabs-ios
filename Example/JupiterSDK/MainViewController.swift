@@ -181,7 +181,7 @@ class MainViewController: UIViewController, UITextFieldDelegate {
                             let id: Int = cardInfo.sector_id
                             let name: String = cardInfo.sector_name
                             let description: String = cardInfo.description
-                            var cardColor: String = cardInfo.card_color
+                            let cardColor: String = cardInfo.card_color
                             let mode: Int = cardInfo.mode_id
                             let service: String = cardInfo.service_request
                             let buildings_n_levels: [[String]] = cardInfo.building_level
@@ -217,10 +217,6 @@ class MainViewController: UIViewController, UITextFieldDelegate {
                             
                             KingfisherManager.shared.retrieveImage(with: resourceSector, completionHandler: nil)
                             KingfisherManager.shared.retrieveImage(with: resourceSectorShow, completionHandler: nil)
-                            
-                            if (id == 7) {
-                                cardColor = "yellow"
-                            }
                             
                             cardDatas.append(CardItemData(sector_id: id, sector_name: name, description: description, cardColor: cardColor, mode: mode, service: service, infoBuilding: infoBuilding, infoLevel: infoLevel))
                         }

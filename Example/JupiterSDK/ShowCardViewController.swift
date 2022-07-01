@@ -182,13 +182,15 @@ class ShowCardViewController: UIViewController, AddCardDelegate {
             self.showCardCollectionView.reloadData()
             
             // Save Card Order
-            var order = [[Int]]()
+            var order = [String: Int]()
             for i in 1..<cardItemData.count {
-                let data: [Int] = [cardItemData[i].sector_id, i]
-                order.append(data)
+                let id: String = String(cardItemData[i].sector_id)
+                let value: Int = i
+                
+                order[id] = value
             }
             
-            let input = OrderCard(user_id: uuid, card_order: order)
+            let input = OrderCard(user_id: uuid, card_orders: order)
             Network.shared.orderCard(url: CARD_URL, input: input, completion: { statusCode, returnedString in
             })
         }

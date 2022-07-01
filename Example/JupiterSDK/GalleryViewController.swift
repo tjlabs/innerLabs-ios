@@ -103,15 +103,15 @@ class GalleryViewController: UIViewController, WKNavigationDelegate, UIScrollVie
             runMode = "DR"
         }
         
-        jupiterService.uuid = uuid
-        jupiterService.mode = runMode
-        jupiterService.startService(parent: self)
+//        jupiterService.uuid = uuid
+//        jupiterService.mode = runMode
+//        jupiterService.startService(parent: self)
         
         // Floating Button
         setFloatingButton()
         
         // Enroll Service
-//        sectorDetectionService.startService(service: "mariner1")
+        sectorDetectionService.startService(service: "mariner1")
     }
     
     func setCardData(cardData: CardItemData) {
@@ -545,14 +545,13 @@ class GalleryViewController: UIViewController, WKNavigationDelegate, UIScrollVie
     
     func scrollToTop() {
         self.webView.scrollView.setContentOffset(CGPoint(x: 0, y: 0), animated: true)
-        imageDisappear(contentsHeight: (self.contentsHeight!.y/5), scrollPostion: 0)
+//        imageDisappear(contentsHeight: (self.contentsHeight!.y/5), scrollPostion: 0)
     }
     
     func scrollToBottom() {
         let bottomOffset = CGPoint(x: 0, y: self.webView.scrollView.contentSize.height - self.webView.scrollView.bounds.height + self.webView.scrollView.contentInset.bottom)
-
         self.webView.scrollView.setContentOffset(bottomOffset, animated: true)
-        imageDisappear(contentsHeight: (self.contentsHeight!.y/5), scrollPostion: (self.contentsHeight!.y/5))
+//        imageDisappear(contentsHeight: (self.contentsHeight!.y/5), scrollPostion: (self.contentsHeight!.y/5))
     }
     
     func scrollAuto(percentage: Double) {

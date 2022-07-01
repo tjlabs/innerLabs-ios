@@ -235,7 +235,7 @@ public class FineLocationTrackingService: NSObject {
         spatialForceArray.append(data)
         if ((spatialForceArray.count-1) == SPATIAL_INPUT_NUM) {
             spatialForceArray.remove(at: 0)
-            NetworkManager.shared.postSpatialForce(url: spatialURL, input: spatialForceArray)
+            NetworkManager.shared.putSpatialForce(url: spatialURL, input: spatialForceArray)
 
             spatialForceArray = [SpatialForce(user_id: uuid, mobile_time: 0, ble: [:], pressure: 0)]
         }
@@ -250,7 +250,7 @@ public class FineLocationTrackingService: NSObject {
         mobileForceArray.append(data)
         if ((mobileForceArray.count-1) == unitModeInput) {
             mobileForceArray.remove(at: 0)
-            NetworkManager.shared.postMobileForce(url: mobileURL, input: mobileForceArray)
+            NetworkManager.shared.putMobileForce(url: mobileURL, input: mobileForceArray)
 
             mobileForceArray = [MobileForce(user_id: uuid, mobile_time: 0, index: 0, length: 0, heading: 0, looking_flag: true)]
         }

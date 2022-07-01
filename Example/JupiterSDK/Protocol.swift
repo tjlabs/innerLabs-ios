@@ -46,7 +46,7 @@ struct DeleteCard: Codable {
 
 struct OrderCard: Codable {
     var user_id: String
-    var card_order: [[Int]]
+    var card_orders: [String: Int]
 }
 
 struct Scale: Codable {

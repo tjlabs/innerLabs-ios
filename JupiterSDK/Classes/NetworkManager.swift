@@ -154,7 +154,7 @@ public class NetworkManager {
     }
     
     
-    func postSpatialForce(url: String, input: [SpatialForce]){
+    func putSpatialForce(url: String, input: [SpatialForce]){
         // [http 요청 헤더 지정]
         let header : HTTPHeaders = [
             "Content-Type" : "application/json"
@@ -171,7 +171,7 @@ public class NetworkManager {
         
         AF.request(
             url, // [주소]
-            method: .post, // [전송 타입]
+            method: .put, // [전송 타입]
             parameters: input, // [전송 데이터]
             encoder: JSONParameterEncoder.default,
             headers: header // [헤더 지정]
@@ -184,8 +184,8 @@ public class NetworkManager {
                     print("")
                     print("====================================")
                     print("응답 코드 :: ", response.response?.statusCode ?? 0)
-                    print("-------------------------------")
-                    print("응답 데이터 :: ", String(data: res, encoding: .utf8) ?? "")
+//                    print("-------------------------------")
+//                    print("응답 데이터 :: ", String(data: res, encoding: .utf8) ?? "")
                     print("====================================")
                     print("")
                     
@@ -215,7 +215,7 @@ public class NetworkManager {
         }
     }
     
-    func postMobileForce(url: String, input: [MobileForce]){
+    func putMobileForce(url: String, input: [MobileForce]){
         // [http 요청 헤더 지정]
         let header : HTTPHeaders = [
             "Content-Type" : "application/json"
@@ -232,7 +232,7 @@ public class NetworkManager {
         
         AF.request(
             url, // [주소]
-            method: .post, // [전송 타입]
+            method: .put, // [전송 타입]
             parameters: input, // [전송 데이터]
             encoder: JSONParameterEncoder.default,
             headers: header // [헤더 지정]
