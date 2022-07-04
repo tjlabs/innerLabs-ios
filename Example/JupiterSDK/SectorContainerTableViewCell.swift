@@ -9,6 +9,7 @@
 import UIKit
 import JupiterSDK
 import Charts
+import Kingfisher
 import DropDown
 
 class SectorContainerTableViewCell: UITableViewCell {
@@ -129,26 +130,37 @@ class SectorContainerTableViewCell: UITableViewCell {
     }
     
     private func fetchLevel(building: String, level: String) {
-        let imageName: String = "\(currentBuilding)_\(currentLevel)"
-        
-        if let imageToDraw = UIImage(named: imageName) {
-            noImageLabel.isHidden = true
-            imageLevel.isHidden = false
-            imageLevel.image = imageToDraw
-        } else {
-            imageLevel.isHidden = true
-            noImageLabel.isHidden = false
-        }
+//        let imageName: String = "\(currentBuilding)_\(currentLevel)"
+//
+//        if let imageToDraw = UIImage(named: imageName) {
+//            noImageLabel.isHidden = true
+//            imageLevel.isHidden = false
+//            imageLevel.image = imageToDraw
+//        } else {
+//            imageLevel.isHidden = true
+//            noImageLabel.isHidden = false
+//        }
 //        imageLevel.image = UIImage(named: imageName)
 //        print("Width :", imageLevel.image!.size.width)
 //        print("Height :", imageLevel.image!.size.height)
         
-//        guard let urlLevel = URL(string: "https://storage.googleapis.com/jupiter_image/map/\(sectorID)/\(building)_\(level).png") else {
-//            return nil
-//        }
-        
-//        let resourceLevel = ImageResource(downloadURL: urlSector!, cacheKey: "\(sectorName)Main")
-//        cell.sectorImageView.kf.setImage(with: urlLevel, placeholder: nil, options: [.transition(.fade(1.2))], completionHandler: nil)
+        if let urlLevel = URL(string: "https://storage.googleapis.com/jupiter_image/map/\(sectorID)/\(building)_\(level).png") {
+            let data = try? Data(contentsOf: urlLevel)
+            if (data != nil) {
+                let resourceBuildingLevel = ImageResource(downloadURL: urlLevel, cacheKey: "\(sectorID)_\(building)_\(level)_image")
+                
+                noImageLabel.isHidden = true
+                imageLevel.isHidden = false
+                imageLevel.kf.setImage(with: resourceBuildingLevel, placeholder: nil, options: [.transition(.fade(0.8))], completionHandler: nil)
+            } else {
+                imageLevel.isHidden = true
+                noImageLabel.isHidden = false
+            }
+        } else {
+            imageLevel.isHidden = true
+            noImageLabel.isHidden = false
+        }
+
     }
     
     private func drawRP(RP_X: [Double], RP_Y: [Double], XY: [Double], limits: [Double]) {
@@ -328,6 +340,7 @@ class SectorContainerTableViewCell: UITableViewCell {
     
     internal func configure(cardData: CardItemData, RP: [String: [[Double]]], chartLimits: [String: [Double]], flag: Bool) {
         self.cardData = cardData
+        self.sectorID = cardData.sector_id
         self.buildings = cardData.infoBuilding
         self.levels = cardData.infoLevel
         self.RP = RP
