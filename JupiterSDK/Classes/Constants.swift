@@ -40,5 +40,5 @@ let DIFFERENCE_PV_THRESHOLD: Double = (MID_STEP_LENGTH - DEFAULT_STEP_LENGTH) / 
 
 let LOOKING_FLAG_STEP_CHECK_SIZE: Int = 3
 
-let MODE_PDR = "PDR"
-let MODE_DR = "DR"
+let MODE_PDR = "pdr"
+let MODE_DR = "dr"

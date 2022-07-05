@@ -32,17 +32,17 @@ public class ServiceManager: NSObject {
     
     public func startService(id: String, service: String) {
         switch (service) {
-        case "mariner1":
+        case "SD":
             sectorDetectionService.startService(id: id)
-        case "mariner2":
+        case "BD":
             buildingDetectionService.startService(id: id)
-        case "mariner3":
+        case "CLD":
             coarseLevelDetectionService.startService(id: id)
-        case "venera":
+        case "FLD":
             fineLevelDetectionService.startService(id: id)
-        case "magellan":
+        case "CLE":
             coarseLocationEstimationService.startService(id: id)
-        case "jupiter":
+        case "FLT":
             fineLocaationTrackingService.startService(id: id)
         default:
             sectorDetectionService.startService(id: id)
@@ -51,17 +51,17 @@ public class ServiceManager: NSObject {
     
     public func stopService(service: String) {
         switch (service) {
-        case "mariner1":
+        case "SD":
             sectorDetectionService.stopService()
-        case "mariner2":
+        case "BD":
             buildingDetectionService.stopService()
-        case "mariner3":
+        case "CLD":
             coarseLevelDetectionService.stopService()
-        case "venera":
+        case "FLD":
             fineLevelDetectionService.stopService()
-        case "magellan":
+        case "CLE":
             coarseLocationEstimationService.stopService()
-        case "jupiter":
+        case "FLT":
             fineLocaationTrackingService.stopService()
         default:
             sectorDetectionService.stopService()

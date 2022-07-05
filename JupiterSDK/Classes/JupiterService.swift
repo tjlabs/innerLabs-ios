@@ -102,11 +102,11 @@ public class JupiterService: NSObject {
             
             unitDRGenerator.setMode(mode: mode)
             
-            if (mode == "PDR") {
+            if (mode == "pdr") {
                 url = "https://where-run-ios-skrgq3jc5a-du.a.run.app/calc" // iOS
                 unitModeInput = PDR_INPUT_NUM
                 recentThreshold = 800
-            } else if (mode == "DR") {
+            } else if (mode == "dr") {
                 url = "https://where-run-ios-dr-skrgq3jc5a-du.a.run.app/calc"
                 unitModeInput = DR_INPUT_NUM
                 recentThreshold = 2000

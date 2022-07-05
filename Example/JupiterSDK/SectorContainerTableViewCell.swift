@@ -150,14 +150,17 @@ class SectorContainerTableViewCell: UITableViewCell {
             if (data != nil) {
                 let resourceBuildingLevel = ImageResource(downloadURL: urlLevel, cacheKey: "\(sectorID)_\(building)_\(level)_image")
                 
-                noImageLabel.isHidden = true
+                scatterChart.isHidden = false
                 imageLevel.isHidden = false
+                noImageLabel.isHidden = true
                 imageLevel.kf.setImage(with: resourceBuildingLevel, placeholder: nil, options: [.transition(.fade(0.8))], completionHandler: nil)
             } else {
+                scatterChart.isHidden = true
                 imageLevel.isHidden = true
                 noImageLabel.isHidden = false
             }
         } else {
+            scatterChart.isHidden = true
             imageLevel.isHidden = true
             noImageLabel.isHidden = false
         }

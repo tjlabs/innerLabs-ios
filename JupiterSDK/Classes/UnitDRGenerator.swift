@@ -33,7 +33,7 @@ public class UnitDRGenerator: NSObject {
     
     public func generateDRInfo(sensorData: SensorData) -> UnitDRInfo {
         if (unitMode != MODE_PDR && unitMode != MODE_DR) {
-            fatalError("Please check unitMode .. (PDR or DR)")
+            fatalError("Please check unitMode .. (pdr or dr)")
         }
         
         let currentTime = getCurrentTimeInMilliseconds()

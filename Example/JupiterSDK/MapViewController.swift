@@ -114,11 +114,7 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        if (cardData!.mode == "pdr") {
-            runMode = "PDR"
-        } else {
-            runMode = "DR"
-        }
+        runMode = cardData!.mode
         
         jupiterService.uuid = uuid
         jupiterService.mode = runMode

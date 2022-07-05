@@ -41,7 +41,8 @@ class GalleryViewController: UIViewController, WKNavigationDelegate, UIScrollVie
     var cardData: CardItemData?
     var page: Int = 0
     var uuid: String = ""
-    var runMode: String = "PDR"
+    var runMode: String = "pdr"
+    
     var RP = [String: [[Double]]]()
     var Road = [[Double]]()
     var roadLength: Int = 0
@@ -95,13 +96,9 @@ class GalleryViewController: UIViewController, WKNavigationDelegate, UIScrollVie
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        loadWebView(currentLevel: self.currentLevel)
+        runMode = cardData!.mode
         
-        if (cardData!.mode == "pdr") {
-            runMode = "PDR"
-        } else {
-            runMode = "DR"
-        }
+        loadWebView(currentLevel: self.currentLevel)
         
 //        jupiterService.uuid = uuid
 //        jupiterService.mode = runMode
@@ -111,7 +108,7 @@ class GalleryViewController: UIViewController, WKNavigationDelegate, UIScrollVie
         setFloatingButton()
         
         // Enroll Service
-        sectorDetectionService.startService(id: uuid, service: "mariner1")
+        sectorDetectionService.startService(id: uuid, service: "SD")
     }
     
     func setCardData(cardData: CardItemData) {

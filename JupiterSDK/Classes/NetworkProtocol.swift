@@ -2,11 +2,12 @@ import Foundation
 
 let RF_URL = "https://where-run-record-skrgq3jc5a-du.a.run.app/recordRF"
 let UV_URL = "https://where-run-record-skrgq3jc5a-du.a.run.app/recordUV"
-let MARINER1_URL = "https://where-run-user-skrgq3jc5a-du.a.run.app/mariner1"
-let MARINER2_URL = "https://where-run-user-skrgq3jc5a-du.a.run.app/mariner2"
-let MARINER3_URL = "https://where-run-user-skrgq3jc5a-du.a.run.app/mariner3"
-let VENERA_URL = "https://where-run-user-skrgq3jc5a-du.a.run.app/venera"
-let MAGELLAN_URL = "https://where-run-user-skrgq3jc5a-du.a.run.app/magellan"
+let SD_URL = "https://where-run-user-skrgq3jc5a-du.a.run.app/SD"
+let BD_URL = "https://where-run-user-skrgq3jc5a-du.a.run.app/BD"
+let CLD_URL = "https://where-run-user-skrgq3jc5a-du.a.run.app/CLD"
+let FLD_URL = "https://where-run-user-skrgq3jc5a-du.a.run.app/FLD"
+let CLE_URL = "https://where-run-user-skrgq3jc5a-du.a.run.app/CLE"
+let FLT_URL = "https://where-run-user-skrgq3jc5a-du.a.run.app/FLT"
 
 let JUPITER_URL = "https://where-run-user-skrgq3jc5a-du.a.run.app/jupiter"
 
