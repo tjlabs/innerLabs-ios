@@ -114,7 +114,7 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        if (cardData!.mode == 1 || cardData!.mode == 2) {
+        if (cardData!.mode == "pdr") {
             runMode = "PDR"
         } else {
             runMode = "DR"
@@ -167,7 +167,7 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
         self.buildings = cardData.infoBuilding
         self.levels = cardData.infoLevel
         
-        // Download RP
+        
         let numBuildings: Int = cardData.infoBuilding.count
         for building in 0..<numBuildings {
             let buildingName: String = cardData.infoBuilding[building]
@@ -176,12 +176,12 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
 
             for level in 0..<numLevels {
                 let levelName: String = levels[level]
-
-                let fileName: String = "\(cardData.sector_id)/\(buildingName)_\(levelName).txt"
-                let rpXY: [[Double]] = downloadRP(fileName: fileName)
-
+                
+                // Download RP
+//                let fileName: String = "\(cardData.sector_id)/\(buildingName)_\(levelName).txt"
+//                let rpXY: [[Double]] = downloadRP(fileName: fileName)
                 let key: String = "\(buildingName)_\(levelName)"
-                RP[key] = rpXY
+//                RP[key] = rpXY
                 
                 // Scale
                 let input = Scale(sector_id: cardData.sector_id, building_name: buildingName, level_name: levelName)
@@ -376,21 +376,6 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
         }
         
         return rpXY
-    }
-    
-    private func readFileURL(fileName: String) {
-//        let fileString: String = "https://storage.cloud.google.com/jupiter_image/rp/ios/" + fileName
-        let fileString: String = "https://storage.cloud.google.com/jupiter_image/rp/ios/1/L1_2F.txt"
-        print("File URL :", fileString)
-        if let url = URL(string: fileString) {
-            do {
-                let contents = try String(contentsOf: url, encoding: .utf8)
-            } catch {
-                // contents could not be loaded
-            }
-        } else {
-            // the URL was bad!
-        }
     }
 
     // Display Outputs

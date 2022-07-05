@@ -147,10 +147,10 @@ class MainViewController: UIViewController, UITextFieldDelegate {
                     
                     if (myCard.isEmpty) {
                         print("최초 사용자 입니다")
-                        cardDatas.append(CardItemData(sector_id: 0, sector_name: "JUPITER", description: "카드를 터치해주세요", cardColor: "purple", mode: 0, service: "NONE", infoBuilding: ["S3"], infoLevel: ["S3":["7F"]]))
+                        cardDatas.append(CardItemData(sector_id: 0, sector_name: "JUPITER", description: "카드를 터치해주세요", cardColor: "purple", mode: "pdr", service: "NONE", infoBuilding: ["S3"], infoLevel: ["S3":["7F"]]))
                     } else {
                         print("최초 사용자가 아닙니다")
-                        cardDatas.append(CardItemData(sector_id: 0, sector_name: "JUPITER", description: "카드를 터치해주세요", cardColor: "purple", mode: 0, service: "NONE", infoBuilding: ["S3"], infoLevel: ["S3":["7F"]]))
+                        cardDatas.append(CardItemData(sector_id: 0, sector_name: "JUPITER", description: "카드를 터치해주세요", cardColor: "purple", mode: "pdr", service: "NONE", infoBuilding: ["S3"], infoLevel: ["S3":["7F"]]))
                         
                         print("Sector List :", myCard)
                         
@@ -182,7 +182,7 @@ class MainViewController: UIViewController, UITextFieldDelegate {
                             let name: String = cardInfo.sector_name
                             let description: String = cardInfo.description
                             let cardColor: String = cardInfo.card_color
-                            let mode: Int = cardInfo.mode_id
+                            let mode: String = cardInfo.dead_reckoning
                             let service: String = cardInfo.service_request
                             let buildings_n_levels: [[String]] = cardInfo.building_level
                             

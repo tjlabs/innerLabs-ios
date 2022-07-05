@@ -65,7 +65,7 @@ class AddCardViewController: UIViewController, UITextFieldDelegate {
                 let name: String = addedCard.sector_name
                 let description: String = addedCard.description
                 let cardColor: String = addedCard.card_color
-                let mode: Int = addedCard.mode_id
+                let mode: String = addedCard.dead_reckoning
                 let service: String = addedCard.service_request
                 let buildings_n_levels: [[String]] = addedCard.building_level
                 
@@ -121,7 +121,7 @@ class AddCardViewController: UIViewController, UITextFieldDelegate {
     }
     
     func jsonToCard(json: String) -> AddCardSuccess {
-        let result = AddCardSuccess(message: "", sector_id: 100, sector_name: "", description: "", card_color: "", mode_id: 0, service_request: "", building_level: [[]])
+        let result = AddCardSuccess(message: "", sector_id: 100, sector_name: "", description: "", card_color: "", dead_reckoning: "pdr", service_request: "", building_level: [[]])
         let decoder = JSONDecoder()
 
         let jsonString = json

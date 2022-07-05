@@ -97,7 +97,7 @@ class GalleryViewController: UIViewController, WKNavigationDelegate, UIScrollVie
         
         loadWebView(currentLevel: self.currentLevel)
         
-        if (cardData!.mode == 1 || cardData!.mode == 2) {
+        if (cardData!.mode == "pdr") {
             runMode = "PDR"
         } else {
             runMode = "DR"
@@ -377,7 +377,7 @@ class GalleryViewController: UIViewController, WKNavigationDelegate, UIScrollVie
         itemToBottom.buttonColor = colorYellow
         itemToBottom.title = "To Bottom"
 //        itemToBottom.titleColor = .black
-        itemToBottom.icon = UIImage(named: "showInfoToggle")
+        itemToBottom.icon = UIImage(named: "arrowDown")
         itemToBottom.handler = { [self] itemToBottom in
             scrollToBottom()
             floaty.close()
@@ -388,22 +388,12 @@ class GalleryViewController: UIViewController, WKNavigationDelegate, UIScrollVie
         itemToTop.buttonColor = colorYellow
         itemToTop.title = "To Top"
 //        itemToTop.titleColor = .black
-        itemToTop.icon = UIImage(named: "closeInfoToggle")
+        itemToTop.icon = UIImage(named: "arrowUp")
         itemToTop.handler = { [self] itemToTop in
             scrollToTop()
             floaty.close()
         }
         floaty.addItem(item: itemToTop)
-        
-//        floaty.addItem("To Bottom", icon: UIImage(named: "showInfoToggle"), handler: { [self] item in
-//            scrollToBottom()
-//            floaty.close()
-//        })
-//
-//        floaty.addItem("To Top", icon: UIImage(named: "closeInfoToggle"), handler: { [self] item in
-//            scrollToTop()
-//            floaty.close()
-//        })
         
 //        floaty.addItem("Test", icon: UIImage(named: "showInfoToggle"), handler: { [self] item in
 //            let alert = UIAlertController(title: "Wow", message: "It's lunch time", preferredStyle: .alert)

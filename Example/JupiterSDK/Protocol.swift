@@ -10,12 +10,12 @@ struct CardItemData: Codable {
     public var sector_name: String
     public var description: String
     public var cardColor: String
-    public var mode: Int
+    public var mode: String
     public var service: String
     public var infoBuilding: [String]
     public var infoLevel: [String: [String]]
     
-    public init(sector_id: Int, sector_name: String, description: String, cardColor: String, mode: Int, service: String,
+    public init(sector_id: Int, sector_name: String, description: String, cardColor: String, mode: String, service: String,
                 infoBuilding: [String], infoLevel: [String:[String]]) {
         self.sector_id = sector_id
         self.sector_name = sector_name
@@ -61,7 +61,7 @@ struct AddCardSuccess: Codable {
     var sector_name: String
     var description: String
     var card_color: String
-    var mode_id: Int
+    var dead_reckoning: String
     var service_request: String
     var building_level: [[String]]
 }
@@ -88,11 +88,9 @@ struct CardInfo: Codable {
     var sector_name: String
     var description: String
     var card_color: String
-    var mode_id: Int
+    var dead_reckoning: String
     var service_request: String
     var building_level: [[String]]
-//    var infoLevel: String
-//    var infoBuilding: String
 }
 
 struct ResultToDisplay {
