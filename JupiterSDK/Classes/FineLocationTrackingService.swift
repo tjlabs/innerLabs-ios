@@ -13,6 +13,7 @@ public class FineLocationTrackingService: NSObject {
     }
     
     var uuid: String = ""
+    var sector_id: Int = 0
     var deviceModel: String = ""
     var os: String = ""
     var osVersion: Int = 0
@@ -45,8 +46,8 @@ public class FineLocationTrackingService: NSObject {
     
     
     // ----- Spatial Force ----- //
-    var spatialPastTime: Double = 0
-    var elapsedTime: Double = 0
+    var spatialPastTime: Int = 0
+    var elapsedTime: Int = 0
     
     var magX: Double = 0
     var magY: Double = 0
@@ -58,7 +59,7 @@ public class FineLocationTrackingService: NSObject {
     
     
     // ----- Mobile Force ----- //
-    var mobilePastTime: Double = 0
+    var mobilePastTime: Int = 0
     var accX: Double = 0
     var accY: Double = 0
     var accZ: Double = 0
@@ -94,8 +95,9 @@ public class FineLocationTrackingService: NSObject {
     var userVelocityArray: [UserVelocity] = [UserVelocity(user_id: "", mobile_time: 0, index: 0, length: 0, heading: 0, looking_flag: true)]
     // ------------------- //
     
-    public func startService(id: String) {
+    public func startService(id: String, sector_id: Int) {
         self.uuid = id
+        self.sector_id = sector_id
         
         initialzeSensors()
         startTimer()
@@ -266,8 +268,8 @@ public class FineLocationTrackingService: NSObject {
         bleManager.stopScan()
     }
 
-    func getCurrentTimeInMilliseconds() -> Double
+    func getCurrentTimeInMilliseconds() -> Int
     {
-        return Double(Date().timeIntervalSince1970 * 1000)
+        return Int(Date().timeIntervalSince1970 * 1000)
     }
 }

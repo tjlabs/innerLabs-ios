@@ -13,6 +13,7 @@ public class FineLevelDetectionService: NSObject {
     }
     
     var uuid: String = ""
+    var sector_id: Int = 0
     var deviceModel: String = ""
     var os: String = ""
     var osVersion: Int = 0
@@ -41,8 +42,8 @@ public class FineLevelDetectionService: NSObject {
     
     
     // ----- Spatial Force ----- //
-    var pastTime: Double = 0
-    var elapsedTime: Double = 0
+    var pastTime: Int = 0
+    var elapsedTime: Int = 0
     
     var magX: Double = 0
     var magY: Double = 0
@@ -53,10 +54,14 @@ public class FineLevelDetectionService: NSObject {
     
     // ----- Network ----- //
     var inputArray: [ReceivedForce] = [ReceivedForce(user_id: "", mobile_time: 0, ble: [:], pressure: 0)]
+    var fineLevel = FineLevelDetectionResult(mobile_time: 0, building_name: "", level_name: "", scc: 0, scr: 0, calculated_time: 0)
     // ------------------- //
     
-    public func startService(id: String) {
+    var isFirst: Bool = true
+    
+    public func startService(id: String, sector_id: Int) {
         self.uuid = id
+        self.sector_id = sector_id
         
         initialzeSensors()
         startTimer()
@@ -124,10 +129,32 @@ public class FineLevelDetectionService: NSObject {
         inputArray.append(data)
         if ((inputArray.count-1) == unitModeInput) {
             inputArray.remove(at: 0)
-            NetworkManager.shared.putReceivedForce(url: url, input: inputArray)
+            NetworkManager.shared.putReceivedForce(url: RF_URL, input: inputArray)
 
             inputArray = [ReceivedForce(user_id: "", mobile_time: 0, ble: [:], pressure: 0)]
+            
+            if (isFirst) {
+                getFineLevel()
+                
+                isFirst = false
+            }
         }
+    }
+    
+    func getResult() -> FineLevelDetectionResult {
+        getFineLevel()
+        
+        return self.fineLevel
+    }
+    
+    internal func getFineLevel() {
+        let currentTime: Int = getCurrentTimeInMilliseconds()
+        let input = FineLevelDetection(user_id: uuid, mobile_time: currentTime, sector_id: sector_id)
+        NetworkManager.shared.postFLD(url: FLD_URL, input: input, completion: { [self] statusCode, returnedString in
+            let result = jsonToResult(json: returnedString)
+            
+            self.fineLevel = result
+        })
     }
 
     func startBLE() {
@@ -138,8 +165,21 @@ public class FineLevelDetectionService: NSObject {
         bleManager.stopScan()
     }
 
-    func getCurrentTimeInMilliseconds() -> Double
+    func getCurrentTimeInMilliseconds() -> Int
     {
-        return Double(Date().timeIntervalSince1970 * 1000)
+        return Int(Date().timeIntervalSince1970 * 1000)
+    }
+    
+    func jsonToResult(json: String) -> FineLevelDetectionResult {
+        let result = FineLevelDetectionResult(mobile_time: 0, building_name: "", level_name: "", scc: 0, scr: 0, calculated_time: 0)
+        let decoder = JSONDecoder()
+
+        let jsonString = json
+
+        if let data = jsonString.data(using: .utf8), let decoded = try? decoder.decode(FineLevelDetectionResult.self, from: data) {
+            return decoded
+        }
+
+        return result
     }
 }

@@ -3,7 +3,7 @@ import Kingfisher
 import JupiterSDK
 
 
-class CardViewController: UIViewController, MapViewPageDelegate, GalleryViewPageDelegate, AddCardDelegate, ShowCardDelegate {
+class CardViewController: UIViewController, MapViewPageDelegate, ServiceViewPageDelegate, GalleryViewPageDelegate, AddCardDelegate, ShowCardDelegate {
     
     func sendCardItemData(data: [CardItemData]) {
         cardItemData = data
@@ -397,6 +397,12 @@ extension CardViewController: UICollectionViewDataSource, UICollectionViewDelega
             galleryVC.uuid = uuid
             galleryVC.page = currentPage
             self.navigationController?.pushViewController(galleryVC, animated: true)
+        } else if (sector_id == 8) {
+            guard let serviceVC = self.storyboard?.instantiateViewController(withIdentifier: "ServiceViewController") as? ServiceViewController else { return }
+            serviceVC.cardData = cardItemData[mod]
+            serviceVC.uuid = uuid
+            serviceVC.page = currentPage
+            self.navigationController?.pushViewController(serviceVC, animated: true)
         }
         else {
             guard let mapVC = self.storyboard?.instantiateViewController(withIdentifier: "MapViewController") as? MapViewController else { return }

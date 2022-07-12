@@ -17,6 +17,8 @@
 		9A16870CE33E63FE35238C05 /* Pods_JupiterSDK_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DB77B350B78C4D6D3DA0D745 /* Pods_JupiterSDK_Example.framework */; };
 		B3037A92281C06D50058D025 /* OverlayCustomView.xib in Resources */ = {isa = PBXBuildFile; fileRef = B3037A91281C06D50058D025 /* OverlayCustomView.xib */; };
 		B3037A94281C07060058D025 /* OverlayCustomView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3037A93281C07060058D025 /* OverlayCustomView.swift */; };
+		B31EC7D72876B42E00799659 /* S3_7F.csv in Resources */ = {isa = PBXBuildFile; fileRef = B31EC7D62876B42E00799659 /* S3_7F.csv */; };
+		B31EC7D92876C03A00799659 /* ServiceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B31EC7D82876C03A00799659 /* ServiceViewController.swift */; };
 		B340EE3328093FB20096E404 /* CardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B340EE3228093FB20096E404 /* CardViewController.swift */; };
 		B3455283282AB7B400F0DD3E /* ServiceInfoTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3455281282AB7B400F0DD3E /* ServiceInfoTableViewCell.swift */; };
 		B3455284282AB7B400F0DD3E /* ServiceInfoTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B3455282282AB7B400F0DD3E /* ServiceInfoTableViewCell.xib */; };
@@ -111,6 +113,8 @@
 		8B538B887A8FED7CB659550A /* Pods-JupiterSDK_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-JupiterSDK_Example.release.xcconfig"; path = "Target Support Files/Pods-JupiterSDK_Example/Pods-JupiterSDK_Example.release.xcconfig"; sourceTree = "<group>"; };
 		B3037A91281C06D50058D025 /* OverlayCustomView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = OverlayCustomView.xib; sourceTree = "<group>"; };
 		B3037A93281C07060058D025 /* OverlayCustomView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverlayCustomView.swift; sourceTree = "<group>"; };
+		B31EC7D62876B42E00799659 /* S3_7F.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = S3_7F.csv; sourceTree = "<group>"; };
+		B31EC7D82876C03A00799659 /* ServiceViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceViewController.swift; sourceTree = "<group>"; };
 		B340EE3228093FB20096E404 /* CardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardViewController.swift; sourceTree = "<group>"; };
 		B3455281282AB7B400F0DD3E /* ServiceInfoTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceInfoTableViewCell.swift; sourceTree = "<group>"; };
 		B3455282282AB7B400F0DD3E /* ServiceInfoTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ServiceInfoTableViewCell.xib; sourceTree = "<group>"; };
@@ -256,6 +260,7 @@
 				B3B7FBF42856DA4000E23EDF /* PopUpViewController.swift */,
 				B3CDBFC62860781500319C3E /* CollectViewController.swift */,
 				B3B7FBF62856F43200E23EDF /* GalleryViewController.swift */,
+				B31EC7D82876C03A00799659 /* ServiceViewController.swift */,
 				607FACD91AFB9204008FA782 /* Main.storyboard */,
 				B35272B1281F8DC300321CC6 /* SplashScreen.storyboard */,
 				607FACDE1AFB9204008FA782 /* LaunchScreen.xib */,
@@ -266,6 +271,7 @@
 				B3037A93281C07060058D025 /* OverlayCustomView.swift */,
 				B3037A91281C06D50058D025 /* OverlayCustomView.xib */,
 				B3B156DD282397AF0058B538 /* ImageOverlay.swift */,
+				B31EC7D62876B42E00799659 /* S3_7F.csv */,
 				B3FD74EB2869A38800CD4D74 /* Gallery_3F.csv */,
 				B3B9F4E4286C2EA300FEE914 /* Gallery_4F_Road.csv */,
 				B3FD74EA2869A38800CD4D74 /* Gallery_4F.csv */,
@@ -511,6 +517,7 @@
 				B360D89128090D6A0084FB22 /* NotoSansKR-Black.otf in Resources */,
 				B38807EC283333250029B174 /* KIST_RP_B1.csv in Resources */,
 				607FACDB1AFB9204008FA782 /* Main.storyboard in Resources */,
+				B31EC7D72876B42E00799659 /* S3_7F.csv in Resources */,
 				B360D88E28090D6A0084FB22 /* NotoSansKR-Bold.otf in Resources */,
 				B3D194DD282E2726004E6F9A /* JupiterGuideTableViewCell.xib in Resources */,
 				B3D194E3282E2B2B004E6F9A /* LocationTableViewCell.xib in Resources */,
@@ -669,6 +676,7 @@
 				B3BD69A127E9A52500A32A7A /* applyShadow.swift in Sources */,
 				B3AA004B28313CDF007CD284 /* UITextFieldExtension.swift in Sources */,
 				B3F370DA281BA1DD003A427F /* RobotView.swift in Sources */,
+				B31EC7D92876C03A00799659 /* ServiceViewController.swift in Sources */,
 				B3037A94281C07060058D025 /* OverlayCustomView.swift in Sources */,
 				B3B4F85A28114EEB009F9E6C /* ShowCardCollectionViewCell.swift in Sources */,
 				B3DE146D280E7146006DA43C /* AddCardViewController.swift in Sources */,

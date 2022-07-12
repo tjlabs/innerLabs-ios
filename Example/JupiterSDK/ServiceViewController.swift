@@ -1,8 +1,8 @@
 //
-//  MapViewController.swift
+//  ServiceViewController.swift
 //  JupiterSDK_Example
 //
-//  Created by 신동현 on 2022/05/09.
+//  Created by 신동현 on 2022/07/07.
 //  Copyright © 2022 CocoaPods. All rights reserved.
 //
 
@@ -13,25 +13,17 @@ import ExpyTableView
 import Charts
 import SwiftUI
 
-protocol MapViewPageDelegate {
+protocol ServiceViewPageDelegate {
     func sendPage(data: Int)
 }
 
-enum TableList{
-    case sector
-}
-
-enum ContainerTableViewState {
-    case expanded
-    case normal
-}
-
-class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewDataSource {
+class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewDataSource {
     
-    @IBOutlet var MapView: UIView!
+    @IBOutlet var ServiceView: UIView!
     
-    @IBOutlet weak var jupiterTableView: UITableView!
-    @IBOutlet weak var jupiterTableViewHeight: NSLayoutConstraint!
+    @IBOutlet weak var serviceTableView: UITableView!
+    @IBOutlet weak var serviceTableViewHeight: NSLayoutConstraint!
+    
     @IBOutlet weak var containerTableView: ExpyTableView!
     @IBOutlet weak var containerViewHeight: NSLayoutConstraint!
     
@@ -40,18 +32,20 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
     @IBOutlet weak var sectorNameLabel: UILabel!
     @IBOutlet weak var cardTopImage: UIImageView!
     
-    var jupiterService = JupiterService()
+    
+    var serviceManager = ServiceManager()
+    var serviceName = "FLD"
     var uuid: String = ""
     
     var timer = Timer()
     var timerCounter: Int = 0
     var timerTimeOut: Int = 10
-    let TIMER_INTERVAL: TimeInterval = 1/40 // second
+    let TIMER_INTERVAL: TimeInterval = 3 // second
     
     var pastTime: Double = 0
     var elapsedTime: Double = 0
     
-    var delegate : MapViewPageDelegate?
+    var delegate : ServiceViewPageDelegate?
     
     var cardData: CardItemData?
     var page: Int = 0
@@ -116,18 +110,17 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
         
         runMode = cardData!.mode
         
-        // Jupiter Service
-        jupiterService.uuid = uuid
-        jupiterService.mode = runMode
-        jupiterService.startService(parent: self)
+        // Service Manger
+        serviceManager.startService(id: uuid, sector_id: cardData!.sector_id, service: serviceName)
         startTimer()
         
         self.hideKeyboardWhenTappedAround()
     }
     
+
     @IBAction func tapBackButton(_ sender: UIButton) {
         self.delegate?.sendPage(data: page)
-        jupiterService.stopService()
+        serviceManager.stopService(service: serviceName)
         self.navigationController?.popViewController(animated: true)
     }
     
@@ -149,6 +142,7 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
             hideContainerTableView()
         }
     }
+    
     
     func setCardData(cardData: CardItemData) {
         self.sectorNameLabel.text = cardData.sector_name
@@ -175,8 +169,6 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
                 let levelName: String = levels[level]
                 
                 // Download RP
-//                let fileName: String = "\(cardData.sector_id)/\(buildingName)_\(levelName).txt"
-//                let rpXY: [[Double]] = downloadRP(fileName: fileName)
                 let key: String = "\(buildingName)_\(levelName)"
                 let rpXY = loadRP(fileName: key)
                 if (!rpXY.isEmpty) {
@@ -254,29 +246,29 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
     func fixChartHeight(flag: Bool) {
         if (flag) {
             if ( cardData?.sector_id == 1 || cardData?.sector_id == 2 ) {
-                jupiterTableViewHeight.constant = 480
+                serviceTableViewHeight.constant = 480
                 containerViewHeight.constant = 150
             } else if ( cardData?.sector_id == 3 || cardData?.sector_id == 4 || cardData?.sector_id == 5 || cardData?.sector_id == 6 ) {
                 let ratio: Double = 114900 / 68700
-                jupiterTableViewHeight.constant = jupiterTableView.bounds.width * ratio
+                serviceTableViewHeight.constant = serviceTableView.bounds.width * ratio
 
                 let window = UIApplication.shared.keyWindow
                 let bottomPadding = window?.safeAreaInsets.bottom ?? 0.0
                 
-                defaultHeight = MapView.bounds.height - 100 - jupiterTableViewHeight.constant - bottomPadding
+                defaultHeight = ServiceView.bounds.height - 100 - serviceTableViewHeight.constant - bottomPadding
                 
                 containerViewHeight.constant = defaultHeight
             }
         } else {
-            jupiterTableViewHeight.constant = 480
+            serviceTableViewHeight.constant = 480
             containerViewHeight.constant = 150
         }
     }
     
     func registerXib() {
         let sectorContainerTVC = UINib(nibName: SectorContainerTableViewCell.identifier, bundle: nil)
-        jupiterTableView.register(sectorContainerTVC, forCellReuseIdentifier: SectorContainerTableViewCell.identifier)
-        jupiterTableView.backgroundColor = .systemGray6
+        serviceTableView.register(sectorContainerTVC, forCellReuseIdentifier: SectorContainerTableViewCell.identifier)
+        serviceTableView.backgroundColor = .systemGray6
         
         let serviceInfoNib = UINib(nibName: "ServiceInfoTableViewCell", bundle: nil)
         containerTableView.register(serviceInfoNib, forCellReuseIdentifier: "ServiceInfoTableViewCell")
@@ -286,9 +278,9 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
     }
     
     func makeDelegate() {
-        jupiterTableView.dataSource = self
-        jupiterTableView.delegate = self
-        jupiterTableView.bounces = false
+        serviceTableView.dataSource = self
+        serviceTableView.delegate = self
+        serviceTableView.bounces = false
         
         containerTableView.dataSource = self
         containerTableView.delegate = self
@@ -297,7 +289,7 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
     
     func setTableView() {
         //테이블 뷰 셀 사이의 회색 선 없애기
-        jupiterTableView.separatorStyle = UITableViewCell.SeparatorStyle.none
+        serviceTableView.separatorStyle = UITableViewCell.SeparatorStyle.none
         containerTableView.separatorStyle = UITableViewCell.SeparatorStyle.none
     }
     
@@ -305,40 +297,6 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
         let path = Bundle.main.path(forResource: fileName, ofType: "csv")!
         let rpXY:[[Double]] = parseRP(url: URL(fileURLWithPath: path))
         
-        return rpXY
-    }
-    
-    private func downloadRP(fileName: String) -> [[Double]] {
-        var rpXY = [[Double]]()
-        
-        let url = "https://storage.cloud.google.com/jupiter_image/rp/ios/\(fileName)"
-        print("Download URL :", url)
-        // 파일매니저
-        let fileManager = FileManager.default
-        // 앱 경로
-        let appURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask)[0]
-        // 파일이름 url 의 맨 뒤 컴포넌트로 지정 (50MB.zip)
-        let fileName : String = URL(string: url)!.lastPathComponent
-        // 파일 경로 생성
-        let fileURL = appURL.appendingPathComponent(fileName)
-        // 파일 경로 지정 및 다운로드 옵션 설정 ( 이전 파일 삭제 , 디렉토리 생성 )
-        let destination: DownloadRequest.Destination = { _, _ in
-            return (fileURL, [.removePreviousFile, .createIntermediateDirectories])
-        }
-        // 다운로드 시작
-        AF.download(url, method: .get, parameters: nil, encoding: JSONEncoding.default, to: destination).downloadProgress { (progress) in
-        }.response{ [self] response in
-            if response.error != nil {
-                print("파일다운로드 실패")
-            } else{
-                print("파일다운로드 완료 :", fileURL)
-                
-                if (fileManager.fileExists(atPath: fileURL.path)) {
-                    // File 존재
-                    rpXY = parseRP(url: URL(fileURLWithPath: fileURL.path))
-                }
-            }
-        }
         return rpXY
     }
     
@@ -364,9 +322,6 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
                         
                         rpX.append(x)
                         rpY.append(y)
-                    } else {
-                        print("Error reading .csv file")
-                        return [[Double]]()
                     }
                 }
             }
@@ -400,66 +355,21 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
             elapsedTime += (dt*1e-3)
         }
         
-        // length, scc, status, mode, idx Tx, idx Rx, level
-//        let isStepDetected = jupiterService.unitDRInfo.isIndexChanged
-//
-//        let unitIdxTx = Int(jupiterService.unitDRInfo.index)
-//        let unitLength = jupiterService.unitDistane
-//        let status = jupiterService.unitDRInfo.lookingFlag
-//
-//        if (isStepDetected) {
-//            let buildingName: String = jupiterService.jupiterOutput.building
-//            let buildingLevels: [String] = cardData!.infoLevel[buildingName] ?? []
-//            displayLevelInfo(infoLevel: buildingLevels)
-//
-//            resultToDisplay.unitIndexTx = unitIdxTx
-//            resultToDisplay.unitLength = unitLength
-//            resultToDisplay.status = status
-//
-//            let x = jupiterService.jupiterOutput.x
-//            let y = jupiterService.jupiterOutput.y
-//
-//            let building = jupiterService.jupiterOutput.building
-//            let level = jupiterService.jupiterOutput.level
-//
-//            var levelOutput: String = ""
-//
-//            if (buildings.contains(building)) {
-//                if let levelList: [String] = levels[building] {
-//                    if (levelList.contains(level)) {
-//                        levelOutput = level
-//                    } else {
-//                        levelOutput = "Out of bounds"
-//                    }
-//                } else {
-//                    levelOutput = "Out of bounds"
-//                }
-//            } else {
-//                levelOutput = "Out of bounds"
-//            }
-//
-//            let unitIdxRx = jupiterService.jupiterOutput.index
-//            let scc = jupiterService.jupiterOutput.scc
-//
-//            coordToDisplay.x = x
-//            coordToDisplay.y = y
-//            coordToDisplay.building = building
-//            coordToDisplay.level = levelOutput
-//
-//            resultToDisplay.unitIndexRx = unitIdxRx
-//            resultToDisplay.level = levelOutput
-//            resultToDisplay.scc = scc
-//
-//            UIView.performWithoutAnimation {
-//                    self.jupiterTableView.reloadSections(IndexSet(0...0), with: .none)
-//            }
-//
-//            if (isOpen) {
-//                UIView.performWithoutAnimation {
-//                        self.containerTableView.reloadSections(IndexSet(0...0), with: .none)
-//                }
-//            }
-//        }
+        let result = serviceManager.getResult(sector_id: cardData!.sector_id, service: serviceName)
+        
+        print("Service Result :", result)
+        
+        UIView.performWithoutAnimation {
+            self.serviceTableView.reloadSections(IndexSet(0...0), with: .none)
+            
+        }
+        if (isOpen) {
+            UIView.performWithoutAnimation {
+                self.containerTableView.reloadSections(IndexSet(0...0), with: .none)
+                
+            }
+            
+        }
     }
     
     func jsonToScale(json: String) -> ScaleResponse {
@@ -526,11 +436,11 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
 }
 
 
-extension MapViewController: UITableViewDelegate {
+extension ServiceViewController: UITableViewDelegate {
     // 높이 지정 index별
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        if (tableView == jupiterTableView) {
-            return jupiterTableView.frame.height
+        if (tableView == serviceTableView) {
+            return serviceTableView.frame.height
             //        return UITableView.automaticDimension
         } else {
             if indexPath.row == 0 {
@@ -547,7 +457,7 @@ extension MapViewController: UITableViewDelegate {
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        if (tableView == jupiterTableView) {
+        if (tableView == serviceTableView) {
             return 1
         } else {
             return 2
@@ -555,7 +465,7 @@ extension MapViewController: UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if (tableView == jupiterTableView) {
+        if (tableView == serviceTableView) {
             
         } else {
 //            print("\(indexPath.section)섹션 \(indexPath.row)로우 선택됨")
@@ -563,9 +473,9 @@ extension MapViewController: UITableViewDelegate {
     }
 }
 
-extension MapViewController: UITableViewDataSource {
+extension ServiceViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if (tableView == jupiterTableView) {
+        if (tableView == serviceTableView) {
             return tableList.count
         } else {
             if section == 0 {
@@ -577,7 +487,7 @@ extension MapViewController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if (tableView == jupiterTableView) {
+        if (tableView == serviceTableView) {
             let tableList = tableList[indexPath.row]
             switch(tableList) {
             case .sector:
@@ -586,10 +496,7 @@ extension MapViewController: UITableViewDataSource {
                 
                 sectorContainerTVC.backgroundColor = .systemGray6
                 sectorContainerTVC.configure(cardData: cardData!, RP: RP, chartLimits: chartLimits, flag: isShowRP)
-                
-                if (cardData?.sector_id != 0 && cardData?.sector_id != 7) {
-                    sectorContainerTVC.updateCoord(data: coordToDisplay, flag: isShowRP)
-                }
+                sectorContainerTVC.updateCoord(data: coordToDisplay, flag: isShowRP)
                 
                 sectorContainerTVC.selectionStyle = .none
                 

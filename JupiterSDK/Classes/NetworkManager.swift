@@ -161,13 +161,13 @@ public class NetworkManager {
         ]
         
         // [http 요청 수행 실시]
-        print("")
-        print("====================================")
-        print("주 소 :: ", url)
-        print("-------------------------------")
-        print("데이터 :: ", input)
-        print("====================================")
-        print("")
+//        print("")
+//        print("====================================")
+//        print("주 소 :: ", url)
+//        print("-------------------------------")
+//        print("데이터 :: ", input)
+//        print("====================================")
+//        print("")
         
         AF.request(
             url, // [주소]
@@ -181,18 +181,19 @@ public class NetworkManager {
             switch response.result {
             case .success(let res):
                 do {
-                    print("")
-                    print("====================================")
-                    print("응답 코드 :: ", response.response?.statusCode ?? 0)
+//                    print("")
+//                    print("====================================")
+//                    print("응답 코드 :: ", response.response?.statusCode ?? 0)
 //                    print("-------------------------------")
 //                    print("응답 데이터 :: ", String(data: res, encoding: .utf8) ?? "")
-                    print("====================================")
-                    print("")
+//                    print("====================================")
+//                    print("")
                     
                     // [비동기 작업 수행]
                     DispatchQueue.main.async {
                         
                     }
+                    
                 }
                 catch (let err){
                     print("")
@@ -277,6 +278,324 @@ public class NetworkManager {
     }
     
     // Sector Detection Service
+    func postSD(url: String, input: SectorDetection, completion: @escaping (Int, String) -> Void) {
+        // [http 요청 헤더 지정]
+        let header : HTTPHeaders = [
+            "Content-Type" : "application/json"
+        ]
+        
+        // [http 요청 수행 실시]
+        print("")
+        print("====================================")
+        print("주 소 :: ", url)
+        print("-------------------------------")
+        print("데이터 :: ", input)
+        print("====================================")
+        print("")
+        
+        AF.request(
+            url, // [주소]
+            method: .post, // [전송 타입]
+            parameters: input, // [전송 데이터]
+            encoder: JSONParameterEncoder.default,
+            headers: header // [헤더 지정]
+        )
+        .validate(statusCode: 200..<300)
+        .responseData { response in
+            switch response.result {
+            case .success(let res):
+                do {
+                    print("")
+                    print("====================================")
+                    print("응답 코드 :: ", response.response?.statusCode ?? 0)
+                    print("-------------------------------")
+                    print("응답 데이터 :: ", String(data: res, encoding: .utf8) ?? "")
+                    print("====================================")
+                    print("")
+                    
+                    let returnedString = String(data: res, encoding: .utf8) ?? "Fail"
+                    completion(200, returnedString)
+                    
+                }
+                catch (let err){
+                    print("")
+                    print("====================================")
+                    print("catch :: ", err.localizedDescription)
+                    print("====================================")
+                    print("")
+                    completion(200, "Fail")
+                }
+                break
+            case .failure(let err):
+                print("")
+                print("====================================")
+                print("응답 코드 :: ", response.response?.statusCode ?? 0)
+                print("-------------------------------")
+                print("에 러 :: ", err.localizedDescription)
+                print("====================================")
+                print("")
+                completion(200, "Fail")
+                
+                break
+            }
+        }
+    }
+    
+    // Building Detection Service
+    func postBD(url: String, input: BuildingDetection, completion: @escaping (Int, String) -> Void) {
+        // [http 요청 헤더 지정]
+        let header : HTTPHeaders = [
+            "Content-Type" : "application/json"
+        ]
+        
+        // [http 요청 수행 실시]
+        print("")
+        print("====================================")
+        print("주 소 :: ", url)
+        print("-------------------------------")
+        print("데이터 :: ", input)
+        print("====================================")
+        print("")
+        
+        AF.request(
+            url, // [주소]
+            method: .post, // [전송 타입]
+            parameters: input, // [전송 데이터]
+            encoder: JSONParameterEncoder.default,
+            headers: header // [헤더 지정]
+        )
+        .validate(statusCode: 200..<300)
+        .responseData { response in
+            switch response.result {
+            case .success(let res):
+                do {
+                    print("")
+                    print("====================================")
+                    print("응답 코드 :: ", response.response?.statusCode ?? 0)
+                    print("-------------------------------")
+                    print("응답 데이터 :: ", String(data: res, encoding: .utf8) ?? "")
+                    print("====================================")
+                    print("")
+                    
+                    let returnedString = String(data: res, encoding: .utf8) ?? "Fail"
+                    completion(200, returnedString)
+                    
+                }
+                catch (let err){
+                    print("")
+                    print("====================================")
+                    print("catch :: ", err.localizedDescription)
+                    print("====================================")
+                    print("")
+                    completion(200, "Fail")
+                }
+                break
+            case .failure(let err):
+                print("")
+                print("====================================")
+                print("응답 코드 :: ", response.response?.statusCode ?? 0)
+                print("-------------------------------")
+                print("에 러 :: ", err.localizedDescription)
+                print("====================================")
+                print("")
+                completion(200, "Fail")
+                
+                break
+            }
+        }
+    }
+    
+    // Coarse Level Detection Service
+    func postCLD(url: String, input: CoarseLevelDetection, completion: @escaping (Int, String) -> Void) {
+        // [http 요청 헤더 지정]
+        let header : HTTPHeaders = [
+            "Content-Type" : "application/json"
+        ]
+        
+        // [http 요청 수행 실시]
+        print("")
+        print("====================================")
+        print("주 소 :: ", url)
+        print("-------------------------------")
+        print("데이터 :: ", input)
+        print("====================================")
+        print("")
+        
+        AF.request(
+            url, // [주소]
+            method: .post, // [전송 타입]
+            parameters: input, // [전송 데이터]
+            encoder: JSONParameterEncoder.default,
+            headers: header // [헤더 지정]
+        )
+        .validate(statusCode: 200..<300)
+        .responseData { response in
+            switch response.result {
+            case .success(let res):
+                do {
+                    print("")
+                    print("====================================")
+                    print("응답 코드 :: ", response.response?.statusCode ?? 0)
+                    print("-------------------------------")
+                    print("응답 데이터 :: ", String(data: res, encoding: .utf8) ?? "")
+                    print("====================================")
+                    print("")
+                    
+                    let returnedString = String(data: res, encoding: .utf8) ?? "Fail"
+                    completion(200, returnedString)
+                    
+                }
+                catch (let err){
+                    print("")
+                    print("====================================")
+                    print("catch :: ", err.localizedDescription)
+                    print("====================================")
+                    print("")
+                    completion(200, "Fail")
+                }
+                break
+            case .failure(let err):
+                print("")
+                print("====================================")
+                print("응답 코드 :: ", response.response?.statusCode ?? 0)
+                print("-------------------------------")
+                print("에 러 :: ", err.localizedDescription)
+                print("====================================")
+                print("")
+                completion(200, "Fail")
+                
+                break
+            }
+        }
+    }
+    
+    // Fine Level Detection Service
+    func postFLD(url: String, input: FineLevelDetection, completion: @escaping (Int, String) -> Void) {
+        // [http 요청 헤더 지정]
+        let header : HTTPHeaders = [
+            "Content-Type" : "application/json"
+        ]
+        
+        // [http 요청 수행 실시]
+        print("")
+        print("====================================")
+        print("주 소 :: ", url)
+        print("-------------------------------")
+        print("데이터 :: ", input)
+        print("====================================")
+        print("")
+        
+        AF.request(
+            url, // [주소]
+            method: .post, // [전송 타입]
+            parameters: input, // [전송 데이터]
+            encoder: JSONParameterEncoder.default,
+            headers: header // [헤더 지정]
+        )
+        .validate(statusCode: 200..<300)
+        .responseData { response in
+            switch response.result {
+            case .success(let res):
+                do {
+                    print("")
+                    print("====================================")
+                    print("응답 코드 :: ", response.response?.statusCode ?? 0)
+                    print("-------------------------------")
+                    print("응답 데이터 :: ", String(data: res, encoding: .utf8) ?? "")
+                    print("====================================")
+                    print("")
+                    
+                    let returnedString = String(data: res, encoding: .utf8) ?? "Fail"
+                    completion(200, returnedString)
+                    
+                }
+                catch (let err){
+                    print("")
+                    print("====================================")
+                    print("catch :: ", err.localizedDescription)
+                    print("====================================")
+                    print("")
+                    completion(200, "Fail")
+                }
+                break
+            case .failure(let err):
+                print("")
+                print("====================================")
+                print("응답 코드 :: ", response.response?.statusCode ?? 0)
+                print("-------------------------------")
+                print("에 러 :: ", err.localizedDescription)
+                print("====================================")
+                print("")
+                completion(200, "Fail")
+                
+                break
+            }
+        }
+    }
+    
+    // Coarse Location Estimation Service
+    func postCLE(url: String, input: CoarseLocationEstimation, completion: @escaping (Int, String) -> Void) {
+        // [http 요청 헤더 지정]
+        let header : HTTPHeaders = [
+            "Content-Type" : "application/json"
+        ]
+        
+        // [http 요청 수행 실시]
+        print("")
+        print("====================================")
+        print("주 소 :: ", url)
+        print("-------------------------------")
+        print("데이터 :: ", input)
+        print("====================================")
+        print("")
+        
+        AF.request(
+            url, // [주소]
+            method: .post, // [전송 타입]
+            parameters: input, // [전송 데이터]
+            encoder: JSONParameterEncoder.default,
+            headers: header // [헤더 지정]
+        )
+        .validate(statusCode: 200..<300)
+        .responseData { response in
+            switch response.result {
+            case .success(let res):
+                do {
+                    print("")
+                    print("====================================")
+                    print("응답 코드 :: ", response.response?.statusCode ?? 0)
+                    print("-------------------------------")
+                    print("응답 데이터 :: ", String(data: res, encoding: .utf8) ?? "")
+                    print("====================================")
+                    print("")
+                    
+                    let returnedString = String(data: res, encoding: .utf8) ?? "Fail"
+                    completion(200, returnedString)
+                    
+                }
+                catch (let err){
+                    print("")
+                    print("====================================")
+                    print("catch :: ", err.localizedDescription)
+                    print("====================================")
+                    print("")
+                    completion(200, "Fail")
+                }
+                break
+            case .failure(let err):
+                print("")
+                print("====================================")
+                print("응답 코드 :: ", response.response?.statusCode ?? 0)
+                print("-------------------------------")
+                print("에 러 :: ", err.localizedDescription)
+                print("====================================")
+                print("")
+                completion(200, "Fail")
+                
+                break
+            }
+        }
+    }
 }
 
 extension Encodable {

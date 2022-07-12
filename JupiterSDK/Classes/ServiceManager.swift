@@ -10,6 +10,7 @@ import Foundation
 public class ServiceManager: NSObject {
     
     var user_id: String = ""
+    var sector_id: Int = 0
     var deviceModel: String = ""
     var os: String = ""
     var osVersion: Int = 0
@@ -30,22 +31,22 @@ public class ServiceManager: NSObject {
         print("OS : \(osVersion)")
     }
     
-    public func startService(id: String, service: String) {
+    public func startService(id: String, sector_id: Int, service: String) {
         switch (service) {
         case "SD":
-            sectorDetectionService.startService(id: id)
+            sectorDetectionService.startService(id: id, sector_id: sector_id)
         case "BD":
-            buildingDetectionService.startService(id: id)
+            buildingDetectionService.startService(id: id, sector_id: sector_id)
         case "CLD":
-            coarseLevelDetectionService.startService(id: id)
+            coarseLevelDetectionService.startService(id: id, sector_id: sector_id)
         case "FLD":
-            fineLevelDetectionService.startService(id: id)
+            fineLevelDetectionService.startService(id: id, sector_id: sector_id)
         case "CLE":
-            coarseLocationEstimationService.startService(id: id)
+            coarseLocationEstimationService.startService(id: id, sector_id: sector_id)
         case "FLT":
-            fineLocaationTrackingService.startService(id: id)
+            fineLocaationTrackingService.startService(id: id, sector_id: sector_id)
         default:
-            sectorDetectionService.startService(id: id)
+            sectorDetectionService.startService(id: id, sector_id: sector_id)
         }
     }
     
@@ -68,7 +69,28 @@ public class ServiceManager: NSObject {
         }
     }
     
-    public func getResult(service: String) {
+    public func getResult(sector_id: Int, service: String) -> Any {
+        var result: Any?
+        
+        switch (service) {
+        case "SD":
+            result = sectorDetectionService.getResult()
+        case "BD":
+            result = buildingDetectionService.getResult()
+        case "CLD":
+            result = sectorDetectionService.getResult()
+        case "FLD":
+            result = fineLevelDetectionService.getResult()
+        case "CLE":
+            result = coarseLocationEstimationService.getResult()
+        case "FLT":
+            print("FLT Result")
+//            fineLocaationTrackingService.stopService()
+        default:
+            print("Service Unavailable")
+        }
+        
+        return result
     }
     
     public func initUser(id: String) {

@@ -13,6 +13,7 @@ public class BuildingDetectionService: NSObject {
     }
     
     var uuid: String = ""
+    var sector_id: Int = 0
     var deviceModel: String = ""
     var os: String = ""
     var osVersion: Int = 0
@@ -41,8 +42,8 @@ public class BuildingDetectionService: NSObject {
     
     
     // ----- Spatial Force ----- //
-    var pastTime: Double = 0
-    var elapsedTime: Double = 0
+    var pastTime: Int = 0
+    var elapsedTime: Int = 0
     
     var magX: Double = 0
     var magY: Double = 0
@@ -53,10 +54,12 @@ public class BuildingDetectionService: NSObject {
     
     // ----- Network ----- //
     var inputArray: [ReceivedForce] = [ReceivedForce(user_id: "", mobile_time: 0, ble: [:], pressure: 0)]
+    var building = BuildingDetectionResult(mobile_time: 0, building_name: "", calculated_time: 0)
     // ------------------- //
     
-    public func startService(id: String) {
+    public func startService(id: String, sector_id: Int) {
         self.uuid = id
+        self.sector_id = sector_id
         
         initialzeSensors()
         startTimer()
@@ -121,10 +124,26 @@ public class BuildingDetectionService: NSObject {
         inputArray.append(data)
         if ((inputArray.count-1) == unitModeInput) {
             inputArray.remove(at: 0)
-//            NetworkManager.shared.postSpatialForce(url: url, input: inputArray)
+            NetworkManager.shared.putReceivedForce(url: RF_URL, input: inputArray)
 
             inputArray = [ReceivedForce(user_id: "", mobile_time: 0, ble: [:], pressure: 0)]
         }
+    }
+    
+    func getResult() -> BuildingDetectionResult {
+        getBuilding()
+        
+        return self.building
+    }
+    
+    internal func getBuilding() {
+        let currentTime: Int = getCurrentTimeInMilliseconds()
+        let input = BuildingDetection(user_id: uuid, mobile_time: currentTime, sector_id: sector_id)
+        NetworkManager.shared.postBD(url: BD_URL, input: input, completion: { [self] statusCode, returnedString in
+            let result = jsonToResult(json: returnedString)
+            
+            self.building = result
+        })
     }
 
     func startBLE() {
@@ -135,8 +154,21 @@ public class BuildingDetectionService: NSObject {
         bleManager.stopScan()
     }
 
-    func getCurrentTimeInMilliseconds() -> Double
+    func getCurrentTimeInMilliseconds() -> Int
     {
-        return Double(Date().timeIntervalSince1970 * 1000)
+        return Int(Date().timeIntervalSince1970 * 1000)
+    }
+    
+    func jsonToResult(json: String) -> BuildingDetectionResult {
+        let result = BuildingDetectionResult(mobile_time: 0, building_name: "", calculated_time: 0)
+        let decoder = JSONDecoder()
+
+        let jsonString = json
+
+        if let data = jsonString.data(using: .utf8), let decoded = try? decoder.decode(BuildingDetectionResult.self, from: data) {
+            return decoded
+        }
+
+        return result
     }
 }

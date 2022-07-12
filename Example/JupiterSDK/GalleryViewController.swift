@@ -57,6 +57,7 @@ class GalleryViewController: UIViewController, WKNavigationDelegate, UIScrollVie
     var timer : Timer?
     let TIMER_INTERVAL: TimeInterval = 1/40 // second
     let jupiterService = JupiterService()
+    var levelBuffer = [String]()
     
     // Floating Button
     let floaty = Floaty()
@@ -100,15 +101,12 @@ class GalleryViewController: UIViewController, WKNavigationDelegate, UIScrollVie
         
         loadWebView(currentLevel: self.currentLevel)
         
-//        jupiterService.uuid = uuid
-//        jupiterService.mode = runMode
-//        jupiterService.startService(parent: self)
+        jupiterService.uuid = uuid
+        jupiterService.mode = runMode
+        jupiterService.startService(parent: self)
         
         // Floating Button
         setFloatingButton()
-        
-        // Enroll Service
-        sectorDetectionService.startService(id: uuid, service: "SD")
     }
     
     func setCardData(cardData: CardItemData) {
@@ -416,7 +414,7 @@ class GalleryViewController: UIViewController, WKNavigationDelegate, UIScrollVie
             scatterChart.isHidden = true
         } else {
             scatterChart.isHidden = false
-            drawRP(RP_X: rp[0], RP_Y: rp[1], XY: [0, 0])
+//            drawRP(RP_X: rp[0], RP_Y: rp[1], XY: [0, 0])
 //            drawUser(RP_X: rp[0], RP_Y: rp[1], XY: [0, 0])
         }
         
@@ -482,23 +480,49 @@ class GalleryViewController: UIViewController, WKNavigationDelegate, UIScrollVie
             let buildingLevels: [String] = cardData!.infoLevel[buildingName] ?? []
             
             if (!buildingLevels.isEmpty) {
-                let x = jupiterService.jupiterOutput.x
-                let y = jupiterService.jupiterOutput.y
-                
-                let unitIdxRx = jupiterService.jupiterOutput.index
-                let scc = jupiterService.jupiterOutput.scc
-                
                 let levelName: String = jupiterService.jupiterOutput.level
                 
-                if (levelName == "4F") {
-                    let idx = getNearestRoad(x: x, y: y, road: Road)
-                    if (idx != -1) {
-                        let percentage: Double = Double(idx)/Double(roadLength)
-                        scrollAuto(percentage: percentage)
+                levelBuffer.append(levelName)
+                if (levelBuffer.count > 5) {
+                    levelBuffer.removeFirst()
+                    
+                    if (detectFloorChange(buffer: levelBuffer)) {
+                        let rp: [[Double]] = RP[levelName] ?? [[Double]]()
+                        
+                        let x = jupiterService.jupiterOutput.x
+                        let y = jupiterService.jupiterOutput.y
+                        
+                        let unitIdxRx = jupiterService.jupiterOutput.index
+                        let scc = jupiterService.jupiterOutput.scc
+                        
+                        loadWebView(currentLevel: levelName)
+                        drawRP(RP_X: rp[0], RP_Y: rp[1], XY: [x, y])
+                        
+                        if (levelName == "4F") {
+                            let idx = getNearestRoad(x: x, y: y, road: Road)
+                            if (idx != -1) {
+                                let percentage: Double = Double(idx)/Double(roadLength)
+                                print("Percentage :", percentage)
+        //                        scrollAuto(percentage: percentage)
+                            }
+                            button4FSelected()
+                        } else {
+                            button3FSelected()
+                        }
                     }
                 }
             }
         }
+    }
+    
+    func detectFloorChange(buffer: [String]) -> Bool {
+        let levelLast: String = buffer.last!
+        let levelCount = buffer.filter{$0 == levelLast}.count
+        if (levelCount > 3) {
+            return true
+        }
+        
+        return false
     }
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
@@ -511,8 +535,8 @@ class GalleryViewController: UIViewController, WKNavigationDelegate, UIScrollVie
         contentsHeight = CGPoint(x: 0, y: self.webView.scrollView.contentSize.height - self.webView.scrollView.bounds.height + self.webView.scrollView.contentInset.bottom)
         guard let height = contentsHeight else { return }
         
-        print("Contents Height :", height.y)
-        print("Road Length :", roadLength)
+//        print("Contents Height :", height.y)
+//        print("Road Length :", roadLength)
     }
     
     func loadWebView(currentLevel: String) {

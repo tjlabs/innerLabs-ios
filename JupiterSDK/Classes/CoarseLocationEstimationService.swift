@@ -13,6 +13,7 @@ public class CoarseLocationEstimationService: NSObject {
     }
     
     var uuid: String = ""
+    var sector_id: Int = 0
     var deviceModel: String = ""
     var os: String = ""
     var osVersion: Int = 0
@@ -41,8 +42,8 @@ public class CoarseLocationEstimationService: NSObject {
     
     
     // ----- Spatial Force ----- //
-    var pastTime: Double = 0
-    var elapsedTime: Double = 0
+    var pastTime: Int = 0
+    var elapsedTime: Int = 0
     
     var magX: Double = 0
     var magY: Double = 0
@@ -53,10 +54,12 @@ public class CoarseLocationEstimationService: NSObject {
     
     // ----- Network ----- //
     var inputArray: [ReceivedForce] = [ReceivedForce(user_id: "", mobile_time: 0, ble: [:], pressure: 0)]
+    var coarseLocation = CoarseLocationEstimationResult(mobile_time: 0, building_name: "", level_name: "", scc: 0, scr: 0, x: 0, y: 0, calculated_time: 0)
     // ------------------- //
     
-    public func startService(id: String) {
+    public func startService(id: String, sector_id: Int) {
         self.uuid = id
+        self.sector_id = sector_id
         
         initialzeSensors()
         startTimer()
@@ -124,10 +127,26 @@ public class CoarseLocationEstimationService: NSObject {
         inputArray.append(data)
         if ((inputArray.count-1) == unitModeInput) {
             inputArray.remove(at: 0)
-            NetworkManager.shared.putReceivedForce(url: url, input: inputArray)
+            NetworkManager.shared.putReceivedForce(url: RF_URL, input: inputArray)
 
             inputArray = [ReceivedForce(user_id: "", mobile_time: 0, ble: [:], pressure: 0)]
         }
+    }
+    
+    func getResult() -> CoarseLocationEstimationResult {
+        getCoarseLocation()
+        
+        return self.coarseLocation
+    }
+    
+    internal func getCoarseLocation() {
+        let currentTime: Int = getCurrentTimeInMilliseconds()
+        let input = CoarseLocationEstimation(user_id: uuid, mobile_time: currentTime, sector_id: sector_id)
+        NetworkManager.shared.postCLE(url: FLD_URL, input: input, completion: { [self] statusCode, returnedString in
+            let result = jsonToResult(json: returnedString)
+            
+            self.coarseLocation = result
+        })
     }
 
     func startBLE() {
@@ -138,8 +157,21 @@ public class CoarseLocationEstimationService: NSObject {
         bleManager.stopScan()
     }
 
-    func getCurrentTimeInMilliseconds() -> Double
+    func getCurrentTimeInMilliseconds() -> Int
     {
-        return Double(Date().timeIntervalSince1970 * 1000)
+        return Int(Date().timeIntervalSince1970 * 1000)
+    }
+    
+    func jsonToResult(json: String) -> CoarseLocationEstimationResult {
+        let result = CoarseLocationEstimationResult(mobile_time: 0, building_name: "", level_name: "", scc: 0, scr: 0, x: 0, y: 0, calculated_time: 0)
+        let decoder = JSONDecoder()
+
+        let jsonString = json
+
+        if let data = jsonString.data(using: .utf8), let decoded = try? decoder.decode(CoarseLocationEstimationResult.self, from: data) {
+            return decoded
+        }
+
+        return result
     }
 }
