@@ -2,6 +2,7 @@ import Foundation
 
 let RF_URL = "https://where-run-record-skrgq3jc5a-du.a.run.app/recordRF"
 let UV_URL = "https://where-run-record-skrgq3jc5a-du.a.run.app/recordUV"
+
 let SD_URL = "https://where-run-ios-skrgq3jc5a-du.a.run.app/SD"
 let BD_URL = "https://where-run-ios-skrgq3jc5a-du.a.run.app/BD"
 let CLD_URL = "https://where-run-ios-skrgq3jc5a-du.a.run.app/CLD"
@@ -37,13 +38,11 @@ public struct Output: Codable {
     public var calculated_time: Double
 }
 
-
 public struct InitUser: Codable {
     var user_id: String
     var device_model: String
     var os_version: Int
 }
-
 
 struct ReceivedForce: Codable {
     var user_id: String
@@ -55,10 +54,10 @@ struct ReceivedForce: Codable {
 struct UserVelocity: Codable {
     var user_id: String
     var mobile_time: Int
-    var index: Double
+    var index: Int
     var length: Double
     var heading: Double
-    var looking_flag: Bool
+    var looking: Bool
 }
 
 // Sector Detection
@@ -68,9 +67,9 @@ struct SectorDetection: Codable {
 }
 
 public struct SectorDetectionResult: Codable {
-    var mobile_time: Int
-    var sector_name: String
-    var calculated_time: Double
+    public var mobile_time: Int
+    public var sector_name: String
+    public var calculated_time: Double
 }
 
 // Building Detection
@@ -81,9 +80,9 @@ struct BuildingDetection: Codable {
 }
 
 public struct BuildingDetectionResult: Codable {
-    var mobile_time: Int
-    var building_name: String
-    var calculated_time: Double
+    public var mobile_time: Int
+    public var building_name: String
+    public var calculated_time: Double
 }
 
 // Coarse Level Detection
@@ -94,10 +93,10 @@ struct CoarseLevelDetection: Codable {
 }
 
 public struct CoarseLevelDetectionResult: Codable {
-    var mobile_time: Int
-    var building_name: String
-    var level_name: String
-    var calculated_time: Double
+    public var mobile_time: Int
+    public var building_name: String
+    public var level_name: String
+    public var calculated_time: Double
 }
 
 
@@ -109,12 +108,12 @@ struct FineLevelDetection: Codable {
 }
 
 public struct FineLevelDetectionResult: Codable {
-    var mobile_time: Int
-    var building_name: String
-    var level_name: String
-    var scc: Double
-    var scr: Double
-    var calculated_time: Double
+    public var mobile_time: Int
+    public var building_name: String
+    public var level_name: String
+    public var scc: Double
+    public var scr: Double
+    public var calculated_time: Double
 }
 
 // Coarse Location Estimation
@@ -125,12 +124,33 @@ struct CoarseLocationEstimation: Codable {
 }
 
 public struct CoarseLocationEstimationResult: Codable {
+    public var mobile_time: Int
+    public var building_name: String
+    public var level_name: String
+    public var scc: Double
+    public var scr: Double
+    public var x: Int
+    public var y: Int
+    public var calculated_time: Double
+}
+
+
+// Fine Location Tracking
+struct FineLocationTracking: Codable {
+    var user_id: String
     var mobile_time: Int
-    var building_name: String
-    var level_name: String
-    var scc: Double
-    var scr: Double
-    var x: Int
-    var y: Int
-    var calculated_time: Double
+    var sector_id: Int
+}
+
+public struct FineLocationTrackingResult: Codable {
+    public var mobile_time: Int
+    public var building_name: String
+    public var level_name: String
+    public var scc: Double
+    public var scr: Double
+    public var x: Int
+    public var y: Int
+    public var absolute_heading: Double
+    public var phase: Int
+    public var calculated_time: Double
 }

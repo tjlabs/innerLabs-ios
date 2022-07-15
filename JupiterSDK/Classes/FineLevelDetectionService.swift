@@ -4,8 +4,6 @@ import CoreMotion
 public class FineLevelDetectionService: NSObject {
     
     public override init() {
-        super.init()
-        
         deviceModel = UIDevice.modelName
         os = UIDevice.current.systemVersion
         let arr = os.components(separatedBy: ".")
@@ -24,6 +22,7 @@ public class FineLevelDetectionService: NSObject {
     // ----- URL ----- //
     var url = ""
     // --------------- //
+    
     
     // ----- Timer ----- //
     var timer: Timer?

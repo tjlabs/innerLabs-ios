@@ -34,13 +34,13 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
     
     
     var serviceManager = ServiceManager()
-    var serviceName = "FLD"
+    var serviceName = "FLT"
     var uuid: String = ""
     
     var timer = Timer()
     var timerCounter: Int = 0
     var timerTimeOut: Int = 10
-    let TIMER_INTERVAL: TimeInterval = 3 // second
+    let TIMER_INTERVAL: TimeInterval = 1 // second
     
     var pastTime: Double = 0
     var elapsedTime: Double = 0
@@ -111,13 +111,13 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
         runMode = cardData!.mode
         
         // Service Manger
-        serviceManager.startService(id: uuid, sector_id: cardData!.sector_id, service: serviceName)
+        serviceManager.startService(id: uuid, sector_id: cardData!.sector_id, service: serviceName, mode: cardData!.mode)
         startTimer()
         
         self.hideKeyboardWhenTappedAround()
     }
     
-
+    
     @IBAction func tapBackButton(_ sender: UIButton) {
         self.delegate?.sendPage(data: page)
         serviceManager.stopService(service: serviceName)
@@ -164,7 +164,7 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
             let buildingName: String = cardData.infoBuilding[building]
             let levels: [String] = cardData.infoLevel[buildingName]!
             let numLevels: Int = levels.count
-
+            
             for level in 0..<numLevels {
                 let levelName: String = levels[level]
                 
@@ -251,7 +251,7 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
             } else if ( cardData?.sector_id == 3 || cardData?.sector_id == 4 || cardData?.sector_id == 5 || cardData?.sector_id == 6 ) {
                 let ratio: Double = 114900 / 68700
                 serviceTableViewHeight.constant = serviceTableView.bounds.width * ratio
-
+                
                 let window = UIApplication.shared.keyWindow
                 let bottomPadding = window?.safeAreaInsets.bottom ?? 0.0
                 
@@ -334,7 +334,7 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
         
         return rpXY
     }
-
+    
     // Display Outputs
     func startTimer() {
         self.timer = Timer.scheduledTimer(timeInterval: TIMER_INTERVAL, target: self, selector: #selector(self.timerUpdate), userInfo: nil, repeats: true)
@@ -355,33 +355,57 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
             elapsedTime += (dt*1e-3)
         }
         
-        let result = serviceManager.getResult(sector_id: cardData!.sector_id, service: serviceName)
+        let result: FineLocationTrackingResult = serviceManager.getResult(sector_id: cardData!.sector_id, service: serviceName) as! FineLocationTrackingResult
+        let building = result.building_name
+        let level = result.level_name
         
-        print("Service Result :", result)
+        let x = result.x
+        let y = result.y
         
-        UIView.performWithoutAnimation {
-            self.serviceTableView.reloadSections(IndexSet(0...0), with: .none)
-            
-        }
-        if (isOpen) {
-            UIView.performWithoutAnimation {
-                self.containerTableView.reloadSections(IndexSet(0...0), with: .none)
-                
+        if (result.scc > 0) {
+            print("Service Result :", result)
+            if (buildings.contains(building)) {
+                if let levelList: [String] = levels[building] {
+                    if (levelList.contains(level)) {
+                        coordToDisplay.x = Double(x)
+                        coordToDisplay.y = Double(y)
+                        coordToDisplay.building = building
+                        coordToDisplay.level = level
+                        
+                        UIView.performWithoutAnimation { self.serviceTableView.reloadSections(IndexSet(0...0), with: .none) }
+                    }
+                }
             }
-            
+        } else {
+            if (buildings.contains(building)) {
+                if let levelList: [String] = levels[building] {
+                    if (levelList.contains(level)) {
+                        coordToDisplay.x = 0
+                        coordToDisplay.y = 0
+                        coordToDisplay.building = building
+                        coordToDisplay.level = level
+                        
+                        UIView.performWithoutAnimation { self.serviceTableView.reloadSections(IndexSet(0...0), with: .none) }
+                    }
+                }
+            }
+        }
+        
+        if (isOpen) {
+            UIView.performWithoutAnimation { self.containerTableView.reloadSections(IndexSet(0...0), with: .none) }
         }
     }
     
     func jsonToScale(json: String) -> ScaleResponse {
         let result = ScaleResponse(image_scale: "")
         let decoder = JSONDecoder()
-
+        
         let jsonString = json
-
+        
         if let data = jsonString.data(using: .utf8), let decoded = try? decoder.decode(ScaleResponse.self, from: data) {
             return decoded
         }
-
+        
         return result
     }
     
@@ -468,7 +492,7 @@ extension ServiceViewController: UITableViewDelegate {
         if (tableView == serviceTableView) {
             
         } else {
-//            print("\(indexPath.section)섹션 \(indexPath.row)로우 선택됨")
+            //            print("\(indexPath.section)섹션 \(indexPath.row)로우 선택됨")
         }
     }
 }

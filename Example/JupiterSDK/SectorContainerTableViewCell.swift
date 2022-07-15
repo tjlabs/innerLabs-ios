@@ -42,7 +42,7 @@ class SectorContainerTableViewCell: UITableViewCell {
     
     private var matchedLevels = [String]()
     
-    private var currentBuilding: String = ""
+    private var currentBuilding: String = "Buildings"
     private var currentLevel: String = ""
     
     private var countLevelChanged: Int = 0
@@ -81,7 +81,12 @@ class SectorContainerTableViewCell: UITableViewCell {
         DropDown.appearance().setupCornerRadius(6)
         
         dropText.borderStyle = .none
-        dropText.text = "Buildings"
+        if (currentBuilding == "") {
+            dropText.text = "Buildings"
+        } else {
+            dropText.text = self.currentBuilding
+        }
+        
         dropText.textColor = .blue1
         
         dropDown.dismissMode = .automatic // 팝업을 닫을 모드 설정
@@ -209,15 +214,17 @@ class SectorContainerTableViewCell: UITableViewCell {
         let chartFlag: Bool = false
         
         // Configure Chart
-//        scatterChart.xAxis.axisMinimum = xMin + limits[0]
-//        scatterChart.xAxis.axisMaximum = xMax + limits[1]
-//        scatterChart.leftAxis.axisMinimum = yMin + limits[2]
-//        scatterChart.leftAxis.axisMaximum = yMax + limits[3]
-        
-        scatterChart.xAxis.axisMinimum = xMin-2
-        scatterChart.xAxis.axisMaximum = xMax+2
-        scatterChart.leftAxis.axisMinimum = yMin-6
-        scatterChart.leftAxis.axisMaximum = yMax+6
+        if (currentLevel == "7F") {
+            scatterChart.xAxis.axisMinimum = xMin-2
+            scatterChart.xAxis.axisMaximum = xMax+2
+            scatterChart.leftAxis.axisMinimum = yMin-6
+            scatterChart.leftAxis.axisMaximum = yMax+6
+        } else {
+            scatterChart.xAxis.axisMinimum = xMin + limits[0]
+            scatterChart.xAxis.axisMaximum = xMax + limits[1]
+            scatterChart.leftAxis.axisMinimum = yMin + limits[2]
+            scatterChart.leftAxis.axisMaximum = yMax + limits[3]
+        }
         
 //        if (currentLevel == "B1") {
 //            scatterChart.xAxis.axisMinimum = xMin-6
@@ -336,6 +343,7 @@ class SectorContainerTableViewCell: UITableViewCell {
         self.chartLimits = chartLimits
         self.flagRP = flag
         
+        initDropDown()
         setDropDown()
     }
     

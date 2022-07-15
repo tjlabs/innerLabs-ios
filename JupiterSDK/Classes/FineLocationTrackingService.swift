@@ -5,7 +5,7 @@ public class FineLocationTrackingService: NSObject {
     
     public override init() {
         super.init()
-        
+
         deviceModel = UIDevice.modelName
         os = UIDevice.current.systemVersion
         let arr = os.components(separatedBy: ".")
@@ -23,22 +23,19 @@ public class FineLocationTrackingService: NSObject {
     
     var recentThreshold: Double = 800 // ms
     
-    // ----- URL ----- //
-    var spatialURL = ""
-    var mobileURL = ""
-    // --------------- //
-    
     // ----- Timer ----- //
-    var spatialTimer: Timer?
-    var mobileTimer: Timer?
-    let SPATIAL_TIMER_INTERVAL: TimeInterval = 1/5 // second
-    let MOBILE_TIMER_INTERVAL: TimeInterval = 1/40 // second
+    var receivedForceTimer: Timer?
+    var userVelocityTimer: Timer?
+    let RF_TIMER_INTERVAL: TimeInterval = 1/5 // second
+    let UV_TIMER_INTERVAL: TimeInterval = 1/40 // second
     
     let SENSOR_INTERVAL: TimeInterval = 1/200
     // ------------------ //
     
     
     // ----- Sensor Manager ----- //
+    var sensorData = SensorData()
+    
     let motionManager = CMMotionManager()
     let motionAltimeter = CMAltimeter()
     var bleManager = BLECentralManager()
@@ -81,8 +78,8 @@ public class FineLocationTrackingService: NSObject {
     var yaw: Double = 0
     
     var unitModeInput: Int = 5
-    let PDR_INPUT_NUM: Int = 1
-    let DR_INPUT_NUM: Int = 5
+    let PDR_INPUT_NUM: Int = 5
+    let DR_INPUT_NUM: Int = 10
     // ------------------------ //
     
     
@@ -90,14 +87,19 @@ public class FineLocationTrackingService: NSObject {
     public var unitDRGenerator = UnitDRGenerator()
     public var unitDistane: Double = 0
     
+    var onStartFlag: Bool = false
+    
     // ----- Network ----- //
     var receivedForceArray: [ReceivedForce] = [ReceivedForce(user_id: "", mobile_time: 0, ble: [:], pressure: 0)]
-    var userVelocityArray: [UserVelocity] = [UserVelocity(user_id: "", mobile_time: 0, index: 0, length: 0, heading: 0, looking_flag: true)]
+    var userVelocityArray: [UserVelocity] = [UserVelocity(user_id: "", mobile_time: 0, index: 0, length: 0, heading: 0, looking: true)]
+    
+    var fineLocationTracking = FineLocationTrackingResult(mobile_time: 0, building_name: "", level_name: "", scc: 0, scr: 0, x: 0, y: 0, absolute_heading: 0, phase: 0, calculated_time: 0)
     // ------------------- //
     
-    public func startService(id: String, sector_id: Int) {
+    public func startService(id: String, sector_id: Int, mode: String) {
         self.uuid = id
         self.sector_id = sector_id
+        self.mode = mode
         
         initialzeSensors()
         startTimer()
@@ -105,37 +107,42 @@ public class FineLocationTrackingService: NSObject {
         
         unitDRGenerator.setMode(mode: mode)
         
-        if (mode == "PDR") {
-            mobileURL = "https://where-run-ios-skrgq3jc5a-du.a.run.app/calc"
+        if (mode == "pdr") {
             unitModeInput = PDR_INPUT_NUM
             recentThreshold = 800
-        } else if (mode == "DR") {
-            mobileURL = "https://where-run-ios-dr-skrgq3jc5a-du.a.run.app/calc"
+        } else if (mode == "dr") {
             unitModeInput = DR_INPUT_NUM
             recentThreshold = 2000
         }
         
         unitDRGenerator.setDRModel()
-//        onStartFlag = true
+        
+        onStartFlag = true
     }
     
     public func stopService() {
         stopTimer()
         stopBLE()
+        
+        unitDRInfo = UnitDRInfo()
+        onStartFlag = false
     }
     
-    func initialzeSensors() {
+    public func initialzeSensors() {
         if motionManager.isAccelerometerAvailable {
             motionManager.accelerometerUpdateInterval = SENSOR_INTERVAL
             motionManager.startAccelerometerUpdates(to: .main) { [self] (data, error) in
                 if let accX = data?.acceleration.x {
                     self.accX = accX
+                    sensorData.acc[0] = accX*G
                 }
                 if let accY = data?.acceleration.y {
                     self.accY = accY
+                    sensorData.acc[1] = accY*G
                 }
                 if let accZ = data?.acceleration.z {
                     self.accZ = accZ
+                    sensorData.acc[2] = -accZ*G
                 }
             }
         }
@@ -145,12 +152,15 @@ public class FineLocationTrackingService: NSObject {
             motionManager.startGyroUpdates(to: .main) { [self] (data, error) in
                 if let gyroX = data?.rotationRate.x {
                     self.gyroX = gyroX
+                    sensorData.gyro[0] = gyroX
                 }
                 if let gyroY = data?.rotationRate.y {
                     self.gyroY = gyroY
+                    sensorData.gyro[1] = gyroY
                 }
                 if let gyroZ = data?.rotationRate.z {
                     self.gyroZ = gyroZ
+                    sensorData.gyro[2] = gyroZ
                 }
             }
         }
@@ -160,12 +170,15 @@ public class FineLocationTrackingService: NSObject {
             motionManager.startMagnetometerUpdates(to: .main) { [self] (data, error) in
                 if let magX = data?.magneticField.x {
                     self.magX = magX
+                    sensorData.mag[0] = magX
                 }
                 if let magY = data?.magneticField.y {
                     self.magY = magY
+                    sensorData.mag[1] = magY
                 }
                 if let magZ = data?.magneticField.z {
                     self.magZ = magZ
+                    sensorData.mag[2] = magZ
                 }
             }
         }
@@ -175,6 +188,7 @@ public class FineLocationTrackingService: NSObject {
                 if let pressure = data?.pressure {
                     let pressure_: Double = Double(pressure)*10
                     self.pressure = pressure_
+                    sensorData.pressure[0] = pressure_
                 }
             }
         }
@@ -194,6 +208,26 @@ public class FineLocationTrackingService: NSObject {
                 self.roll = m.attitude.roll
                 self.pitch = m.attitude.pitch
                 self.yaw = m.attitude.yaw
+                
+                sensorData.userAcc[0] = m.userAcceleration.x
+                sensorData.userAcc[1] = m.userAcceleration.y
+                sensorData.userAcc[2] = m.userAcceleration.z
+                
+                sensorData.att[0] = m.attitude.roll
+                sensorData.att[1] = m.attitude.pitch
+                sensorData.att[2] = m.attitude.yaw
+                
+                sensorData.rotationMatrix[0][0] = m.attitude.rotationMatrix.m11
+                sensorData.rotationMatrix[0][1] = m.attitude.rotationMatrix.m12
+                sensorData.rotationMatrix[0][2] = m.attitude.rotationMatrix.m13
+                                
+                sensorData.rotationMatrix[1][0] = m.attitude.rotationMatrix.m21
+                sensorData.rotationMatrix[1][1] = m.attitude.rotationMatrix.m22
+                sensorData.rotationMatrix[1][2] = m.attitude.rotationMatrix.m23
+                                
+                sensorData.rotationMatrix[2][0] = m.attitude.rotationMatrix.m31
+                sensorData.rotationMatrix[2][1] = m.attitude.rotationMatrix.m32
+                sensorData.rotationMatrix[2][2] = m.attitude.rotationMatrix.m33
             }
         
             if let e = error {
@@ -204,30 +238,29 @@ public class FineLocationTrackingService: NSObject {
     
     
     func startTimer() {
-        if (spatialTimer == nil) {
-            spatialTimer = Timer.scheduledTimer(timeInterval: SPATIAL_TIMER_INTERVAL, target: self, selector: #selector(self.spatialTimerUpdate), userInfo: nil, repeats: true)
+        if (receivedForceTimer == nil) {
+            receivedForceTimer = Timer.scheduledTimer(timeInterval: RF_TIMER_INTERVAL, target: self, selector: #selector(self.receivedForceTimerUpdate), userInfo: nil, repeats: true)
         }
         
-        if (mobileTimer == nil) {
-            mobileTimer = Timer.scheduledTimer(timeInterval: MOBILE_TIMER_INTERVAL, target: self, selector: #selector(self.mobileTimerUpdate), userInfo: nil, repeats: true)
+        if (userVelocityTimer == nil) {
+            userVelocityTimer = Timer.scheduledTimer(timeInterval: UV_TIMER_INTERVAL, target: self, selector: #selector(self.userVelocityTimerUpdate), userInfo: nil, repeats: true)
         }
     }
 
     func stopTimer() {
-        if (spatialTimer != nil) {
-            spatialTimer!.invalidate()
-            spatialTimer = nil
+        if (receivedForceTimer != nil) {
+            receivedForceTimer!.invalidate()
+            receivedForceTimer = nil
         }
         
-        if (mobileTimer != nil) {
-            mobileTimer!.invalidate()
-            mobileTimer = nil
+        if (userVelocityTimer != nil) {
+            userVelocityTimer!.invalidate()
+            userVelocityTimer = nil
         }
     }
     
-    @objc func spatialTimerUpdate() {
+    @objc func receivedForceTimerUpdate() {
         let timeStamp = getCurrentTimeInMilliseconds()
-//        let dt = timeStamp - spatialPastTime
         spatialPastTime = timeStamp
         
         var bleDictionary = bleManager.bleFinal
@@ -239,25 +272,54 @@ public class FineLocationTrackingService: NSObject {
         receivedForceArray.append(data)
         if ((receivedForceArray.count-1) == SPATIAL_INPUT_NUM) {
             receivedForceArray.remove(at: 0)
-            NetworkManager.shared.putReceivedForce(url: spatialURL, input: receivedForceArray)
+            NetworkManager.shared.putReceivedForce(url: RF_URL, input: receivedForceArray)
 
             receivedForceArray = [ReceivedForce(user_id: uuid, mobile_time: 0, ble: [:], pressure: 0)]
         }
     }
     
-    @objc func mobileTimerUpdate() {
+    @objc func userVelocityTimerUpdate() {
         let timeStamp = getCurrentTimeInMilliseconds()
-//        let dt = timeStamp - mobilePastTime
         mobilePastTime = timeStamp
         
-        let data = UserVelocity(user_id: uuid, mobile_time: timeStamp, index: 0, length: 0, heading: 0, looking_flag: true)
-        userVelocityArray.append(data)
-        if ((userVelocityArray.count-1) == unitModeInput) {
-            userVelocityArray.remove(at: 0)
-            NetworkManager.shared.putUserVelocity(url: mobileURL, input: userVelocityArray)
-
-            userVelocityArray = [UserVelocity(user_id: uuid, mobile_time: 0, index: 0, length: 0, heading: 0, looking_flag: true)]
+        if (onStartFlag) {
+            unitDRInfo = unitDRGenerator.generateDRInfo(sensorData: sensorData)
         }
+        
+        if (unitDRInfo.isIndexChanged) {
+            let data = UserVelocity(user_id: uuid, mobile_time: timeStamp, index: unitDRInfo.index, length: unitDRInfo.length, heading: unitDRInfo.heading, looking: unitDRInfo.lookingFlag)
+            
+            userVelocityArray.append(data)
+            if ((userVelocityArray.count-1) == unitModeInput) {
+                userVelocityArray.remove(at: 0)
+                NetworkManager.shared.putUserVelocity(url: UV_URL, input: userVelocityArray)
+                
+                var lengthSum: Double = 0
+                for idx in 0..<userVelocityArray.count {
+                    lengthSum += userVelocityArray[idx].length
+                }
+                unitDistane = lengthSum
+
+                userVelocityArray = [UserVelocity(user_id: uuid, mobile_time: 0, index: 0, length: 0, heading: 0, looking: true)]
+                
+                getFineLocation()
+            }
+        }
+        
+    }
+    
+    func getResult() -> FineLocationTrackingResult {
+        return self.fineLocationTracking
+    }
+    
+    internal func getFineLocation() {
+        let currentTime: Int = getCurrentTimeInMilliseconds()
+        let input = FineLocationTracking(user_id: uuid, mobile_time: currentTime, sector_id: sector_id)
+        NetworkManager.shared.postFLT(url: FLT_URL, input: input, completion: { [self] statusCode, returnedString in
+            let result = jsonToResult(json: returnedString)
+            
+            self.fineLocationTracking = result
+        })
     }
 
     func startBLE() {
@@ -271,5 +333,18 @@ public class FineLocationTrackingService: NSObject {
     func getCurrentTimeInMilliseconds() -> Int
     {
         return Int(Date().timeIntervalSince1970 * 1000)
+    }
+    
+    func jsonToResult(json: String) -> FineLocationTrackingResult {
+        let result = FineLocationTrackingResult(mobile_time: 0, building_name: "", level_name: "", scc: 0, scr: 0, x: 0, y: 0, absolute_heading: 0, phase: 0, calculated_time: 0)
+        let decoder = JSONDecoder()
+
+        let jsonString = json
+
+        if let data = jsonString.data(using: .utf8), let decoded = try? decoder.decode(FineLocationTrackingResult.self, from: data) {
+            return decoded
+        }
+
+        return result
     }
 }

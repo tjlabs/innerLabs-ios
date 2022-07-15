@@ -9,18 +9,44 @@ import Foundation
 
 public class ServiceManager: NSObject {
     
+//    public var observers: [Observer]
+    
+    lazy var sectorDetectionService = SectorDetectionService()
+    lazy var buildingDetectionService = BuildingDetectionService()
+    lazy var coarseLevelDetectionService = CoarseLevelDetectionService()
+    lazy var fineLevelDetectionService = FineLevelDetectionService()
+    lazy var coarseLocationEstimationService = CoarseLocationEstimationService()
+    lazy var fineLocationTrackingService = FineLocationTrackingService()
+    
+    // Check Subscriber
+//    public func subscribe(observer: Observer, id: String, sector_id: Int, service: String, mode: String) {
+//        self.observers.append(observer)
+//
+//        if (service == "FLD") {
+//            fineLevelDetectionService.startService(id: id, sector_id: sector_id, service: service)
+//        }
+//    }
+//
+//    public func unsubscribe(observer: Observer, service: String) {
+//        if let index = self.observers.firstIndex(where: { $0.service == observer.service }) {
+//            self.observers.remove(at: index)
+//        }
+//    }
+//
+//    public func notify(message: String) {
+//        for observer in observers {
+//            observer.update(message: message)
+//        }
+//    }
+    
     var user_id: String = ""
     var sector_id: Int = 0
+    var mode: String = ""
+    var service: String = ""
+    
     var deviceModel: String = ""
     var os: String = ""
     var osVersion: Int = 0
-    
-    let sectorDetectionService = SectorDetectionService()
-    let buildingDetectionService = BuildingDetectionService()
-    let coarseLevelDetectionService = CoarseLevelDetectionService()
-    let fineLevelDetectionService = FineLevelDetectionService()
-    let coarseLocationEstimationService = CoarseLocationEstimationService()
-    let fineLocaationTrackingService = FineLocationTrackingService()
     
     public override init() {
         deviceModel = UIDevice.modelName
@@ -31,7 +57,18 @@ public class ServiceManager: NSObject {
         print("OS : \(osVersion)")
     }
     
-    public func startService(id: String, sector_id: Int, service: String) {
+//    public init(observers: [Observer]) {
+//        self.observers = observers
+//
+//        deviceModel = UIDevice.modelName
+//        os = UIDevice.current.systemVersion
+//        let arr = os.components(separatedBy: ".")
+//        print("Device Model : \(deviceModel)")
+//        osVersion = Int(arr[0]) ?? 0
+//        print("OS : \(osVersion)")
+//    }
+    
+    public func startService(id: String, sector_id: Int, service: String, mode: String) {
         switch (service) {
         case "SD":
             sectorDetectionService.startService(id: id, sector_id: sector_id)
@@ -44,12 +81,12 @@ public class ServiceManager: NSObject {
         case "CLE":
             coarseLocationEstimationService.startService(id: id, sector_id: sector_id)
         case "FLT":
-            fineLocaationTrackingService.startService(id: id, sector_id: sector_id)
+            fineLocationTrackingService.startService(id: id, sector_id: sector_id, mode: mode)
         default:
             sectorDetectionService.startService(id: id, sector_id: sector_id)
         }
     }
-    
+
     public func stopService(service: String) {
         switch (service) {
         case "SD":
@@ -63,15 +100,15 @@ public class ServiceManager: NSObject {
         case "CLE":
             coarseLocationEstimationService.stopService()
         case "FLT":
-            fineLocaationTrackingService.stopService()
+            fineLocationTrackingService.stopService()
         default:
             sectorDetectionService.stopService()
         }
     }
-    
+
     public func getResult(sector_id: Int, service: String) -> Any {
         var result: Any?
-        
+
         switch (service) {
         case "SD":
             result = sectorDetectionService.getResult()
@@ -84,12 +121,11 @@ public class ServiceManager: NSObject {
         case "CLE":
             result = coarseLocationEstimationService.getResult()
         case "FLT":
-            print("FLT Result")
-//            fineLocaationTrackingService.stopService()
+            result = fineLocationTrackingService.getResult()
         default:
             print("Service Unavailable")
         }
-        
+
         return result
     }
     
