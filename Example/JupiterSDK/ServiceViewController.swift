@@ -34,7 +34,7 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
     
     
     var serviceManager = ServiceManager()
-    var serviceName = "FLT"
+    var serviceName = "FLD"
     var uuid: String = ""
     
     var timer = Timer()
@@ -111,7 +111,8 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
         runMode = cardData!.mode
         
         // Service Manger
-        serviceManager.startService(id: uuid, sector_id: cardData!.sector_id, service: serviceName, mode: cardData!.mode)
+        serviceManager.initUser(id: uuid, sector_id: cardData!.sector_id, service: serviceName, mode: cardData!.mode)
+        serviceManager.startService()
         startTimer()
         
         self.hideKeyboardWhenTappedAround()
@@ -120,7 +121,7 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
     
     @IBAction func tapBackButton(_ sender: UIButton) {
         self.delegate?.sendPage(data: page)
-        serviceManager.stopService(service: serviceName)
+        serviceManager.stopService()
         self.navigationController?.popViewController(animated: true)
     }
     
@@ -355,41 +356,45 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
             elapsedTime += (dt*1e-3)
         }
         
-        let result: FineLocationTrackingResult = serviceManager.getResult(sector_id: cardData!.sector_id, service: serviceName) as! FineLocationTrackingResult
-        let building = result.building_name
-        let level = result.level_name
+        serviceManager.getResult(completion : { statusCode, returnedString in
+            print("Service Result :", returnedString)
+        })
         
-        let x = result.x
-        let y = result.y
-        
-        if (result.scc > 0) {
-            print("Service Result :", result)
-            if (buildings.contains(building)) {
-                if let levelList: [String] = levels[building] {
-                    if (levelList.contains(level)) {
-                        coordToDisplay.x = Double(x)
-                        coordToDisplay.y = Double(y)
-                        coordToDisplay.building = building
-                        coordToDisplay.level = level
-                        
-                        UIView.performWithoutAnimation { self.serviceTableView.reloadSections(IndexSet(0...0), with: .none) }
-                    }
-                }
-            }
-        } else {
-            if (buildings.contains(building)) {
-                if let levelList: [String] = levels[building] {
-                    if (levelList.contains(level)) {
-                        coordToDisplay.x = 0
-                        coordToDisplay.y = 0
-                        coordToDisplay.building = building
-                        coordToDisplay.level = level
-                        
-                        UIView.performWithoutAnimation { self.serviceTableView.reloadSections(IndexSet(0...0), with: .none) }
-                    }
-                }
-            }
-        }
+//        let result: FineLocationTrackingResult = serviceManager.getResult(sector_id: cardData!.sector_id, service: serviceName) as! FineLocationTrackingResult
+//        let building = result.building_name
+//        let level = result.level_name
+//
+//        let x = result.x
+//        let y = result.y
+//
+//        if (result.scc > 0) {
+//            print("Service Result :", result)
+//            if (buildings.contains(building)) {
+//                if let levelList: [String] = levels[building] {
+//                    if (levelList.contains(level)) {
+//                        coordToDisplay.x = Double(x)
+//                        coordToDisplay.y = Double(y)
+//                        coordToDisplay.building = building
+//                        coordToDisplay.level = level
+//
+//                        UIView.performWithoutAnimation { self.serviceTableView.reloadSections(IndexSet(0...0), with: .none) }
+//                    }
+//                }
+//            }
+//        } else {
+//            if (buildings.contains(building)) {
+//                if let levelList: [String] = levels[building] {
+//                    if (levelList.contains(level)) {
+//                        coordToDisplay.x = 0
+//                        coordToDisplay.y = 0
+//                        coordToDisplay.building = building
+//                        coordToDisplay.level = level
+//
+//                        UIView.performWithoutAnimation { self.serviceTableView.reloadSections(IndexSet(0...0), with: .none) }
+//                    }
+//                }
+//            }
+//        }
         
         if (isOpen) {
             UIView.performWithoutAnimation { self.containerTableView.reloadSections(IndexSet(0...0), with: .none) }

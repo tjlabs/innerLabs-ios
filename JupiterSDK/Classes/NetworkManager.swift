@@ -515,7 +515,7 @@ public class NetworkManager {
                     print("catch :: ", err.localizedDescription)
                     print("====================================")
                     print("")
-                    completion(200, "Fail")
+                    completion(999, "Fail")
                 }
                 break
             case .failure(let err):
@@ -526,7 +526,7 @@ public class NetworkManager {
                 print("에 러 :: ", err.localizedDescription)
                 print("====================================")
                 print("")
-                completion(200, "Fail")
+                completion(999, "Fail")
                 
                 break
             }

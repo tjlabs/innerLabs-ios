@@ -199,7 +199,6 @@
 		1C94C507EEEE4D1F332EC9BF3A445A0E /* GULAppEnvironmentUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 5AADF9AE3256A10072656AD9759E224E /* GULAppEnvironmentUtil.m */; };
 		1D1065C434D262C14BA229AEA8CEFF8B /* FIRBundleUtil.h in Headers */ = {isa = PBXBuildFile; fileRef = C3DBA0901E05A3AEE87DF567483DDDE5 /* FIRBundleUtil.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		1DB2CC2C8CCF5E895AB0148B13D6116F /* GPBMessage_PackagePrivate.h in Headers */ = {isa = PBXBuildFile; fileRef = 694CB31B8F0703A218107C83C6D52B5D /* GPBMessage_PackagePrivate.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		1DD25CA0463736173F8E19E7BE7BABB8 /* FineLevelDetectionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 302113DB3A9C7D1A7FE185C794A3E2B5 /* FineLevelDetectionService.swift */; };
 		1E10F77F3F4A028A0EBD52F2A22EB004 /* dr_model.tflite in Resources */ = {isa = PBXBuildFile; fileRef = 1367DCE80713BBF19EAE90542713963B /* dr_model.tflite */; };
 		1E2E651EC38C46FBFE5339DABB20C419 /* FBLPromise+Then.m in Sources */ = {isa = PBXBuildFile; fileRef = 95B83316008D2A1063EE6001171DC8BF /* FBLPromise+Then.m */; };
 		1ECEE55342995B1B1E579575F2806E7A /* ArrayExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = B13684134142182E910A5289E7E70F63 /* ArrayExtension.swift */; };
@@ -479,7 +478,6 @@
 		7670BC83F31BCF00FB0A163DD33AE2E8 /* TFLQuantizationParameters.h in Headers */ = {isa = PBXBuildFile; fileRef = 64C76AB6B53CE89506F4FBADC886283D /* TFLQuantizationParameters.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		76B2C1775284AABDA696C77C8AC56003 /* GULKeychainUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 284C5A7BC1686510D6DC389D9D73E411 /* GULKeychainUtils.m */; };
 		76BF6925C2FA4A4E460BE0681E2C9936 /* Duration.pbobjc.h in Headers */ = {isa = PBXBuildFile; fileRef = E8A2623BD1E38FCBFF4EAA34A485FD56 /* Duration.pbobjc.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		77B5BAE4D88D84309BA1F5DECEB724EB /* CoarseLevelDetectionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4376191E3B33AF2D1EAB08C02A200DD7 /* CoarseLevelDetectionService.swift */; };
 		7899A9D1751880EC7A2649DF35617F67 /* Sequence+KeyPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59B42666A316BC4D173027E3158083AB /* Sequence+KeyPath.swift */; };
 		7930C94414B4C661867AC4FBE82E996C /* URLEncodedFormEncoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C1EA4B0BB6B294159291B2D03473E00 /* URLEncodedFormEncoder.swift */; };
 		7A16430C7FB8DBC4A36FD0AAEBD32DEF /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5A5D0233B6B609A5D636666991257832 /* Foundation.framework */; };
@@ -506,7 +504,6 @@
 		808C960C82D708FC1A42C581D6CB4940 /* URLSessionConfiguration+Alamofire.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C6D12365F1149627EDE660AE1F5B27C /* URLSessionConfiguration+Alamofire.swift */; };
 		8091A6D5D32B94B079733D9D09EAE747 /* FloatyDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A526ABBCA87B065626FBBA405FDA97C9 /* FloatyDelegate.swift */; };
 		80A3949EB4773E6B7F4BA9D08797753D /* FIRInstallations.h in Headers */ = {isa = PBXBuildFile; fileRef = 8977A6598AC259C763030B689E8A0F7F /* FIRInstallations.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		80A9CB725A141BF5E6A9AF679A6066B8 /* SectorDetectionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D224D815BEA6B8ECCC0CBB95A4E6A43E /* SectorDetectionService.swift */; };
 		80E88D848625ADD942D49552233940C3 /* XAxisRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AA0AFB91BBB9DFDD7767C6B7AB757BA /* XAxisRenderer.swift */; };
 		813658CD460B269CD52FE04BD96E5FE3 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5A5D0233B6B609A5D636666991257832 /* Foundation.framework */; };
 		81B8D2B7CEB25C2448B0BC9B33591A65 /* Session.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D5F59942A8A0D3B9A41BB83BDFE98FC /* Session.swift */; };
@@ -581,7 +578,6 @@
 		98F570DA48370453D648BD526FDAAEAA /* LayoutConstraintItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FCD0AB086CD9D55B1227ADE2BC5419A /* LayoutConstraintItem.swift */; };
 		99288EBF5E5716EF2F27C0978E602446 /* AxisValueFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D0693D1AB027D707260DA51B67DF057 /* AxisValueFormatter.swift */; };
 		99D058E53EFEE3AC4857CDE3DBA5C004 /* ParameterEncoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93D0A4A06F19EA041C04D612B0B1339F /* ParameterEncoder.swift */; };
-		99E0737AAA66F395FBA7725D8EC9ED74 /* BuildingDetectionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9D9D73D713A9D091B8CBEA9633EB1B1 /* BuildingDetectionService.swift */; };
 		9B0A78AC22E7EDA755F51D86527E2D9C /* Source.swift in Sources */ = {isa = PBXBuildFile; fileRef = 169AE7D8C3B701D2A3124D941E7465A8 /* Source.swift */; };
 		9BCAF45D55CDD35A801F95CFE539AE56 /* Platform+Touch Handling.swift in Sources */ = {isa = PBXBuildFile; fileRef = 013A546CFB52629975253E0574BD409D /* Platform+Touch Handling.swift */; };
 		9C1BB87C8747E2BCADE0614ECF5E25BD /* FIRInstanceIDTokenDeleteOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 2BDEA43607DFFFF5916BD7DCBF95D6EA /* FIRInstanceIDTokenDeleteOperation.m */; };
@@ -755,7 +751,6 @@
 		D3A6E8C13CA832C499CD75F58706A3CE /* FIRInstanceIDCheckinStore.m in Sources */ = {isa = PBXBuildFile; fileRef = E86C783571830F2BDD6F8AC9CFA72B30 /* FIRInstanceIDCheckinStore.m */; };
 		D44078A1F1CDB70D6EE87689EE274CAD /* AnimatedMoveViewJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CF04AD46184246365DFD1399D00C9DC /* AnimatedMoveViewJob.swift */; };
 		D462F0019DEF30C3A67AF7052160E9D0 /* FirebaseCore-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 0D549D0D9909E66FC9485D8D36503CB6 /* FirebaseCore-dummy.m */; };
-		D474003A503006345966A6C711763B05 /* CoarseLocationEstimationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1219D4E7607364694D3054DA52A61904 /* CoarseLocationEstimationService.swift */; };
 		D5E408DC982132099F7383A42C8DDE39 /* GDTCOREventTransformer.h in Headers */ = {isa = PBXBuildFile; fileRef = F730DAD0D09E88D8019F536A23F13580 /* GDTCOREventTransformer.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D5FE268634CB88872AE59DB82774FFA4 /* FIRInstallationsStore.m in Sources */ = {isa = PBXBuildFile; fileRef = 2473853D5148C59B6BF1AEDEB0DA0011 /* FIRInstallationsStore.m */; };
 		D603AA58EF97D461A57B2B1BCB883868 /* AVAssetImageDataProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41A815E4724F32942FFA897814EB260F /* AVAssetImageDataProvider.swift */; };
@@ -1471,7 +1466,6 @@
 		11AC782F0FD46B66BD0CB30F7A2AF433 /* GooglePlaces.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = GooglePlaces.debug.xcconfig; sourceTree = "<group>"; };
 		11C898E0735EDFEE977101248035FD26 /* LineChartData.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = LineChartData.swift; path = Source/Charts/Data/Implementations/Standard/LineChartData.swift; sourceTree = "<group>"; };
 		11DBC882EB187C2305EB7E84F3C600DB /* NetworkReachabilityManager.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = NetworkReachabilityManager.swift; path = Source/NetworkReachabilityManager.swift; sourceTree = "<group>"; };
-		1219D4E7607364694D3054DA52A61904 /* CoarseLocationEstimationService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = CoarseLocationEstimationService.swift; path = JupiterSDK/Classes/CoarseLocationEstimationService.swift; sourceTree = "<group>"; };
 		12260796C3691069865F1F6466C6F895 /* GULSecureCoding.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GULSecureCoding.h; path = GoogleUtilities/Environment/Private/GULSecureCoding.h; sourceTree = "<group>"; };
 		124FE39B7F9A0AA5CFA4CADE27F3B04D /* GPBDescriptor.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = GPBDescriptor.m; path = objectivec/GPBDescriptor.m; sourceTree = "<group>"; };
 		1276BD68ED864A4375DF100632841010 /* ImageFormat.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ImageFormat.swift; path = Sources/Image/ImageFormat.swift; sourceTree = "<group>"; };
@@ -1581,7 +1575,6 @@
 		2DFEE7BC62185B2355850F0685AA2317 /* ConstraintMaker.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ConstraintMaker.swift; path = Sources/ConstraintMaker.swift; sourceTree = "<group>"; };
 		2E92DB8374604FA8A4F3A040789951C0 /* FIRComponentType.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = FIRComponentType.h; path = FirebaseCore/Sources/Private/FIRComponentType.h; sourceTree = "<group>"; };
 		2F38EC4731C908EC150265EF914BE0DA /* TensorFlowLiteC.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = TensorFlowLiteC.framework; path = Frameworks/TensorFlowLiteC.framework; sourceTree = "<group>"; };
-		302113DB3A9C7D1A7FE185C794A3E2B5 /* FineLevelDetectionService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = FineLevelDetectionService.swift; path = JupiterSDK/Classes/FineLevelDetectionService.swift; sourceTree = "<group>"; };
 		303FDFC1B264F9F02E59748E4C2BAEEE /* Platform+Graphics.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "Platform+Graphics.swift"; path = "Source/Charts/Utils/Platform+Graphics.swift"; sourceTree = "<group>"; };
 		305689EEDEBE4FE39DAADD7D608CFA73 /* FIRInstanceID+Private.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "FIRInstanceID+Private.m"; path = "Firebase/InstanceID/FIRInstanceID+Private.m"; sourceTree = "<group>"; };
 		30BCAEE35D2212A68A074E9A8CC41635 /* DropDownCell.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = DropDownCell.swift; path = DropDown/src/DropDownCell.swift; sourceTree = "<group>"; };
@@ -1658,7 +1651,6 @@
 		42D177CC547A6AA23DFC53DFF47CD766 /* FIRInstanceIDTokenManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = FIRInstanceIDTokenManager.h; path = Firebase/InstanceID/FIRInstanceIDTokenManager.h; sourceTree = "<group>"; };
 		431591DC58C8FEAC3FF37206D0D615C2 /* GPBType.pbobjc.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GPBType.pbobjc.h; path = objectivec/GPBType.pbobjc.h; sourceTree = "<group>"; };
 		43597AAFCC9A4741E5DF6983A76E9B68 /* FIRInstanceIDCheckinPreferences.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = FIRInstanceIDCheckinPreferences.m; path = Firebase/InstanceID/FIRInstanceIDCheckinPreferences.m; sourceTree = "<group>"; };
-		4376191E3B33AF2D1EAB08C02A200DD7 /* CoarseLevelDetectionService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = CoarseLevelDetectionService.swift; path = JupiterSDK/Classes/CoarseLevelDetectionService.swift; sourceTree = "<group>"; };
 		4402CD9240E447A075EAB4F9FE69B3FD /* BubbleChartRenderer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BubbleChartRenderer.swift; path = Source/Charts/Renderers/BubbleChartRenderer.swift; sourceTree = "<group>"; };
 		441C90C95C33AECFAD585AC3EA98F33D /* BarLineScatterCandleBubbleRenderer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BarLineScatterCandleBubbleRenderer.swift; path = Source/Charts/Renderers/BarLineScatterCandleBubbleRenderer.swift; sourceTree = "<group>"; };
 		44D3D88F04FE7E28E1224D17BD928C87 /* FIRLogger.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = FIRLogger.h; path = FirebaseCore/Sources/Private/FIRLogger.h; sourceTree = "<group>"; };
@@ -2198,7 +2190,6 @@
 		D0DFC7B3A7B3AE0F60DD07CE1B9DF0A7 /* FBLPromise+Testing.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "FBLPromise+Testing.m"; path = "Sources/FBLPromises/FBLPromise+Testing.m"; sourceTree = "<group>"; };
 		D10E820224B76973B4CB9C32F80067A3 /* GoogleMapsCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GoogleMapsCore.framework; path = Maps/Frameworks/GoogleMapsCore.framework; sourceTree = "<group>"; };
 		D10F51184C42639B71944210BCF67775 /* StringEncoding+Alamofire.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "StringEncoding+Alamofire.swift"; path = "Source/StringEncoding+Alamofire.swift"; sourceTree = "<group>"; };
-		D224D815BEA6B8ECCC0CBB95A4E6A43E /* SectorDetectionService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = SectorDetectionService.swift; path = JupiterSDK/Classes/SectorDetectionService.swift; sourceTree = "<group>"; };
 		D23F0585577830D7913E82576AC4F00E /* Highlight.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Highlight.swift; path = Source/Charts/Highlight/Highlight.swift; sourceTree = "<group>"; };
 		D259111A1006880683D27EC8FE82CB71 /* KingfisherManager.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = KingfisherManager.swift; path = Sources/General/KingfisherManager.swift; sourceTree = "<group>"; };
 		D39465E59893ABB19C355EC3F1A05D3C /* FIRInstanceIDAPNSInfo.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = FIRInstanceIDAPNSInfo.m; path = Firebase/InstanceID/FIRInstanceIDAPNSInfo.m; sourceTree = "<group>"; };
@@ -2286,7 +2277,6 @@
 		E86C783571830F2BDD6F8AC9CFA72B30 /* FIRInstanceIDCheckinStore.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = FIRInstanceIDCheckinStore.m; path = Firebase/InstanceID/FIRInstanceIDCheckinStore.m; sourceTree = "<group>"; };
 		E87957895B5440CC6411120D8EE970AD /* Floaty-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Floaty-Info.plist"; sourceTree = "<group>"; };
 		E8A2623BD1E38FCBFF4EAA34A485FD56 /* Duration.pbobjc.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = Duration.pbobjc.h; path = objectivec/google/protobuf/Duration.pbobjc.h; sourceTree = "<group>"; };
-		E9D9D73D713A9D091B8CBEA9633EB1B1 /* BuildingDetectionService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BuildingDetectionService.swift; path = JupiterSDK/Classes/BuildingDetectionService.swift; sourceTree = "<group>"; };
 		E9DE1B11890B4F804CA0816CDF79EA9B /* GPBTimestamp.pbobjc.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = GPBTimestamp.pbobjc.m; path = objectivec/GPBTimestamp.pbobjc.m; sourceTree = "<group>"; };
 		E9E71CB0235787CB75075DAD4636570C /* FirebaseCoreDiagnostics.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = FirebaseCoreDiagnostics.modulemap; sourceTree = "<group>"; };
 		E9F492C76BE3C8F87562D3B717729B28 /* Highlighter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Highlighter.swift; path = Source/Charts/Highlight/Highlighter.swift; sourceTree = "<group>"; };
@@ -4074,16 +4064,12 @@
 				B13684134142182E910A5289E7E70F63 /* ArrayExtension.swift */,
 				73A9F00E076D7788171696C7E92BC0AE /* BluetoothManager.swift */,
 				B3FD74E62865569B00CD4D74 /* ServiceManager.swift */,
-				E9D9D73D713A9D091B8CBEA9633EB1B1 /* BuildingDetectionService.swift */,
 				452085B1AE5E27D5921197D5A0A8E9F5 /* CalculateFunctions.swift */,
-				4376191E3B33AF2D1EAB08C02A200DD7 /* CoarseLevelDetectionService.swift */,
-				1219D4E7607364694D3054DA52A61904 /* CoarseLocationEstimationService.swift */,
 				FDA0E740D13F054A0526866C376FB1D0 /* Constants.swift */,
 				D8D9D47F12187E434DD7AC9EA4F67D35 /* DeviceModel.swift */,
 				1367DCE80713BBF19EAE90542713963B /* dr_model.tflite */,
 				93D72AA0B03A86CC8E56C30CB5046B90 /* DRDistanceEstimator.swift */,
 				8B1DDF3E03CC5A3FFD1F9D193B923DAF /* Entity.swift */,
-				302113DB3A9C7D1A7FE185C794A3E2B5 /* FineLevelDetectionService.swift */,
 				4EEEFC98ADB72E6CD3F5A9C17B0E2244 /* FineLocationTrackingService.swift */,
 				46DB86C0F466AFBA98677300128DFA99 /* HeadingFunctions.swift */,
 				C33E821EC98CF025E5D3C82AA9126670 /* JupiterService.swift */,
@@ -4094,7 +4080,6 @@
 				4574EDDC4FC1B0B9B2406F1DE859994D /* PacingDetectFunctions.swift */,
 				7B96ECEE511CBCD4EBF7DE5411F3B7C2 /* PDRDistanceEstimator.swift */,
 				1A980E02E7465C9585BEAD88A70C4166 /* PeakValleyDetector.swift */,
-				D224D815BEA6B8ECCC0CBB95A4E6A43E /* SectorDetectionService.swift */,
 				29F4497CA9AE74FB7A953BC1EE10EEF9 /* SensorData.swift */,
 				299427A9F079D9D9F60A532BF7829A7A /* StepLengthEstimator.swift */,
 				B9FD39D1556754A8FBA7D78EF891BCA9 /* StringExtension.swift */,
@@ -5925,16 +5910,12 @@
 			files = (
 				1ECEE55342995B1B1E579575F2806E7A /* ArrayExtension.swift in Sources */,
 				008A5D244B806A7A15AB9E585EAE4E0C /* BluetoothManager.swift in Sources */,
-				99E0737AAA66F395FBA7725D8EC9ED74 /* BuildingDetectionService.swift in Sources */,
 				2ED54413B3AC62BC9A4EDD174A3A7E37 /* CalculateFunctions.swift in Sources */,
-				77B5BAE4D88D84309BA1F5DECEB724EB /* CoarseLevelDetectionService.swift in Sources */,
-				D474003A503006345966A6C711763B05 /* CoarseLocationEstimationService.swift in Sources */,
 				B3FD74E72865569B00CD4D74 /* ServiceManager.swift in Sources */,
 				04EAD93F699E2BE0DB044C12AEAAD4C5 /* Constants.swift in Sources */,
 				D8DE3D76413876ADD0786A84F7CF6E9D /* DeviceModel.swift in Sources */,
 				AEF05C463DCF504FEFB9D02EC2FD011A /* DRDistanceEstimator.swift in Sources */,
 				A0223DADD306CC31B6FC5FD7811DCCBD /* Entity.swift in Sources */,
-				1DD25CA0463736173F8E19E7BE7BABB8 /* FineLevelDetectionService.swift in Sources */,
 				5CBCD1841AEFD2F96A1A413B51DA2279 /* FineLocationTrackingService.swift in Sources */,
 				1A556D756F0364DAAD91C23F4F84C880 /* HeadingFunctions.swift in Sources */,
 				8CF5E0D13D4344D510D101EA0405013C /* JupiterSDK-dummy.m in Sources */,
@@ -5947,7 +5928,6 @@
 				9427008C817C6B4C05A4FB87E5C38B2E /* PacingDetectFunctions.swift in Sources */,
 				33067405CCF5EB3BD9E0A93D3DD94B22 /* PDRDistanceEstimator.swift in Sources */,
 				8EDEEC3127ED87EEA4DE278388AB3411 /* PeakValleyDetector.swift in Sources */,
-				80A9CB725A141BF5E6A9AF679A6066B8 /* SectorDetectionService.swift in Sources */,
 				63BED228596E5A03A11731C945895A7A /* SensorData.swift in Sources */,
 				C858609462361154CAC5883ADB6F2197 /* StepLengthEstimator.swift in Sources */,
 				D04EFB5793E69CA666706FA1EA099E7D /* StringExtension.swift in Sources */,
