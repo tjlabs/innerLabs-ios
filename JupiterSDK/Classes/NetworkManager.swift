@@ -13,7 +13,7 @@ public class NetworkManager {
     static let shared = NetworkManager()
     
     // Jupiter
-    var jupiterResult: Output = Output(mobile_time: 0, index: 0, building: "", level: "", x: 0, y: 0, scc: 0, scr: 0, phase: 0, calculated_time: 0)
+    var jupiterResult: Output = Output()
     
     func postInput(url: String, input: [Input]){
         // [http 요청 헤더 지정]
@@ -141,7 +141,7 @@ public class NetworkManager {
     }
     
     func jsonToOutput(json: String) -> Output {
-        let result = Output(mobile_time: 0, index: 0, building: "", level: "", x: 0, y: 0, scc: 0, scr: 0, phase: 0, calculated_time: 0)
+        let result = Output()
         let decoder = JSONDecoder()
         
         let jsonString = json
@@ -643,7 +643,7 @@ public class NetworkManager {
                     print("catch :: ", err.localizedDescription)
                     print("====================================")
                     print("")
-                    completion(200, "Fail")
+                    completion(500, "Fail")
                 }
                 break
             case .failure(let err):
@@ -654,7 +654,7 @@ public class NetworkManager {
                 print("에 러 :: ", err.localizedDescription)
                 print("====================================")
                 print("")
-                completion(200, "Fail")
+                completion(500, "Fail")
                 
                 break
             }

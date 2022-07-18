@@ -7,6 +7,9 @@
 
 import Foundation
 
+let R2D: Double = 180 / Double.pi
+let D2R: Double = Double.pi / 180
+
 let SAMPLE_HZ: Double = 40
 
 let OUTPUT_SAMPLE_HZ: Double = 10

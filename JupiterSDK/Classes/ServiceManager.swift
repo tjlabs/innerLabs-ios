@@ -97,6 +97,29 @@ public class ServiceManager: NSObject {
     var onStartFlag: Bool = false
     
     var recentThreshold: Double = 800 // ms
+    
+    var preUnitHeading: Double = 0
+    var kalmanP: Double = 1
+    var kalmanQ: Double = 0.3
+    var kalmanR: Double = 3
+    var kalmanK: Double = 1
+    
+    var updateHeading: Double = 0
+    var headingKalmanP: Double = 0.5
+    var headingKalmanQ: Double = 0.5
+    var headingKalmanR: Double = 1
+    var headingKalmanK: Double = 1
+    
+    var timeUpdatePosition = KalmanOutput()
+    var measurementUpdatePosition = KalmanOutput()
+    var timeUpdateOutput = Output()
+    var measurementUpdateOutput = Output()
+    var latestOutput = Output()
+    
+    var timeUpdateFlag: Bool = false
+    var measurementUpdateFlag: Bool = false
+    
+    var preOutputIndex = 0
     // --------------------------------- //
     
     public override init() {
@@ -134,45 +157,9 @@ public class ServiceManager: NSObject {
         stopTimer()
         stopBLE()
         
-        onStartFlag = false
-    }
-
-    public func getResult(completion: @escaping (Int, String) -> Void) {
-        let currentTime: Int = getCurrentTimeInMilliseconds()
-        
-        switch(self.service) {
-        case "SD":
-            let input = SectorDetection(user_id: self.user_id, mobile_time: currentTime)
-            NetworkManager.shared.postSD(url: SD_URL, input: input, completion: { statusCode, returnedString in
-                completion(statusCode, returnedString)
-            })
-        case "BD":
-            let input = BuildingDetection(user_id: self.user_id, mobile_time: currentTime, sector_id: self.sector_id)
-            NetworkManager.shared.postBD(url: BD_URL, input: input, completion: { statusCode, returnedString in
-                completion(statusCode, returnedString)
-            })
-        case "CLD":
-            let input = CoarseLevelDetection(user_id: self.user_id, mobile_time: currentTime, sector_id: self.sector_id)
-            NetworkManager.shared.postCLD(url: CLD_URL, input: input, completion: { statusCode, returnedString in
-                completion(statusCode, returnedString)
-            })
-        case "FLD":
-            let input = FineLevelDetection(user_id: self.user_id, mobile_time: currentTime, sector_id: self.sector_id)
-            NetworkManager.shared.postFLD(url: FLD_URL, input: input, completion: { statusCode, returnedString in
-                completion(statusCode, returnedString)
-            })
-        case "CLE":
-            let input = CoarseLocationEstimation(user_id: self.user_id, mobile_time: currentTime, sector_id: self.sector_id)
-            NetworkManager.shared.postCLE(url: CLE_URL, input: input, completion: { statusCode, returnedString in
-                completion(statusCode, returnedString)
-            })
-        case "FLT":
-            let input = FineLocationTracking(user_id: self.user_id, mobile_time: currentTime, sector_id: self.sector_id)
-            NetworkManager.shared.postFLT(url: FLT_URL, input: input, completion: { statusCode, returnedString in
-                completion(statusCode, returnedString)
-            })
-        default:
-            print("(Error) Fail to initialize the service")
+        if (self.service == "FLT") {
+            unitDRInfo = UnitDRInfo()
+            onStartFlag = false
         }
     }
     
@@ -210,6 +197,45 @@ public class ServiceManager: NSObject {
         
         self.SPATIAL_INPUT_NUM = numInput
         self.RF_INTERVAL = interval
+    }
+    
+    public func getResult(completion: @escaping (Int, String) -> Void) {
+        let currentTime: Int = getCurrentTimeInMilliseconds()
+        
+        switch(self.service) {
+        case "SD":
+            let input = SectorDetection(user_id: self.user_id, mobile_time: currentTime)
+            NetworkManager.shared.postSD(url: SD_URL, input: input, completion: { statusCode, returnedString in
+                completion(statusCode, returnedString)
+            })
+        case "BD":
+            let input = BuildingDetection(user_id: self.user_id, mobile_time: currentTime, sector_id: self.sector_id)
+            NetworkManager.shared.postBD(url: BD_URL, input: input, completion: { statusCode, returnedString in
+                completion(statusCode, returnedString)
+            })
+        case "CLD":
+            let input = CoarseLevelDetection(user_id: self.user_id, mobile_time: currentTime, sector_id: self.sector_id)
+            NetworkManager.shared.postCLD(url: CLD_URL, input: input, completion: { statusCode, returnedString in
+                completion(statusCode, returnedString)
+            })
+        case "FLD":
+            let input = FineLevelDetection(user_id: self.user_id, mobile_time: currentTime, sector_id: self.sector_id)
+            NetworkManager.shared.postFLD(url: FLD_URL, input: input, completion: { statusCode, returnedString in
+                completion(statusCode, returnedString)
+            })
+        case "CLE":
+            let input = CoarseLocationEstimation(user_id: self.user_id, mobile_time: currentTime, sector_id: self.sector_id)
+            NetworkManager.shared.postCLE(url: CLE_URL, input: input, completion: { statusCode, returnedString in
+                completion(statusCode, returnedString)
+            })
+        case "FLT":
+            let input = FineLocationTracking(user_id: self.user_id, mobile_time: currentTime, sector_id: self.sector_id)
+            NetworkManager.shared.postFLT(url: FLT_URL, input: input, completion: { statusCode, returnedString in
+                completion(statusCode, returnedString)
+            })
+        default:
+            completion(500, "(Error) Fail to initialize the service")
+        }
     }
     
     internal func initialzeSensors() {
@@ -351,14 +377,14 @@ public class ServiceManager: NSObject {
     }
     
     @objc func receivedForceTimerUpdate() {
-        let timeStamp = getCurrentTimeInMilliseconds()
+        let currentTime = getCurrentTimeInMilliseconds()
         
         var bleDictionary = bleManager.bleFinal
         if (deviceModel == "iPhone 13 Mini" || deviceModel == "iPhone 12 mini") {
             bleDictionary.keys.forEach { bleDictionary[$0] = bleDictionary[$0]! + 7 }
         }
         
-        let data = ReceivedForce(user_id: self.user_id, mobile_time: timeStamp, ble: bleDictionary, pressure: self.pressure)
+        let data = ReceivedForce(user_id: self.user_id, mobile_time: currentTime, ble: bleDictionary, pressure: self.pressure)
         
         inputReceivedForce.append(data)
         if ((inputReceivedForce.count-1) == SPATIAL_INPUT_NUM) {
@@ -370,15 +396,14 @@ public class ServiceManager: NSObject {
     }
     
     @objc func userVelocityTimerUpdate() {
-        let timeStamp = getCurrentTimeInMilliseconds()
-        mobilePastTime = timeStamp
+        let currentTime = getCurrentTimeInMilliseconds()
         
         if (onStartFlag) {
             unitDRInfo = unitDRGenerator.generateDRInfo(sensorData: sensorData)
         }
         
         if (unitDRInfo.isIndexChanged) {
-            let data = UserVelocity(user_id: user_id, mobile_time: timeStamp, index: unitDRInfo.index, length: unitDRInfo.length, heading: unitDRInfo.heading, looking: unitDRInfo.lookingFlag)
+            let data = UserVelocity(user_id: user_id, mobile_time: currentTime, index: unitDRInfo.index, length: unitDRInfo.length, heading: unitDRInfo.heading, looking: unitDRInfo.lookingFlag)
             
             inputUserVelocity.append(data)
             if ((inputUserVelocity.count-1) == UV_INPUT_NUM) {
@@ -393,11 +418,118 @@ public class ServiceManager: NSObject {
 
                 inputUserVelocity = [UserVelocity(user_id: user_id, mobile_time: 0, index: 0, length: 0, heading: 0, looking: true)]
             }
+            
+            let input = FineLocationTracking(user_id: user_id, mobile_time: currentTime, sector_id: sector_id)
+            NetworkManager.shared.postFLT(url: FLT_URL, input: input, completion: { [self] statusCode, returnedString in
+                if (statusCode == 200) {
+                    // Measurement Update
+                    let result = jsonToResult(json: returnedString)
+                    latestOutput.phase = result.phase
+                    latestOutput.x = Double(result.x)
+                    latestOutput.y = Double(result.y)
+                    
+                    if (latestOutput.phase == 1 && latestOutput.index >= preOutputIndex && !(latestOutput.x == 0 && latestOutput.y == 0)) {
+                        if(measurementUpdateFlag) {
+                            measurementUpdateOutput = latestOutput
+                            measurementUpdate(timeUpdatePosition: timeUpdatePosition, serverOutput: latestOutput)
+                            measurementUpdateOutput.x = measurementUpdatePosition.x
+                            measurementUpdateOutput.y = measurementUpdatePosition.y
+                        }
+                        
+                        timeUpdateOutput = latestOutput
+                        
+                        if (!measurementUpdateFlag) {
+                            timeUpdatePosition = KalmanOutput(x: timeUpdateOutput.x, y: timeUpdateOutput.y, heading: timeUpdateOutput.search_direction)
+                            timeUpdateFlag = true
+                        }
+                    } else {
+                        kalmanInit()
+                        timeUpdateFlag = false
+                        measurementUpdateFlag = false
+                    }
+                    
+                    if (latestOutput.index >= preOutputIndex) {
+                        preOutputIndex = latestOutput.index
+                    }
+                }
+            })
+            
+            // Time Update
+            let diffHeading = unitDRInfo.heading - preUnitHeading
+            let curUnitDRLength = unitDRInfo.length
+            
+            if (timeUpdateFlag) {
+                timeUpdatePosition = timeUpdate(length: curUnitDRLength, timeUpdatePosition: timeUpdatePosition, diffHeading: diffHeading)
+                timeUpdateOutput.x = timeUpdatePosition.x
+                timeUpdateOutput.y = timeUpdatePosition.y
+                timeUpdateOutput.index = unitDRInfo.index
+                
+                measurementUpdateFlag = true
+            } else {
+                
+            }
+            preUnitHeading = unitDRInfo.heading
         }
     }
     
     func getCurrentTimeInMilliseconds() -> Int
     {
         return Int(Date().timeIntervalSince1970 * 1000)
+    }
+    
+    // ------------------------------------------------------------------------------------//
+    // ------------------------------ Fine Location Tracking ------------------------------//
+    // ------------------------------------------------------------------------------------//
+    
+    internal func kalmanInit() {
+        kalmanP = 1
+        kalmanQ = 0.3
+        kalmanR = 3
+        kalmanK = 1
+
+        headingKalmanP = 0.5
+        headingKalmanQ = 0.5
+        headingKalmanR = 1
+        headingKalmanK = 1
+    }
+    
+    internal func timeUpdate(length: Double, timeUpdatePosition: KalmanOutput, diffHeading: Double) -> KalmanOutput {
+        var updatePosition: KalmanOutput = timeUpdatePosition
+        
+        updateHeading = timeUpdatePosition.heading + diffHeading
+        
+        updatePosition.x = (timeUpdatePosition.x + length*cos(updateHeading*D2R))
+        updatePosition.y = (timeUpdatePosition.y + length*sin(updateHeading*D2R))
+        updatePosition.heading = updateHeading
+        
+        kalmanP += kalmanQ
+        headingKalmanP += headingKalmanQ
+        
+        return updatePosition
+    }
+    
+    internal func measurementUpdate(timeUpdatePosition: KalmanOutput, serverOutput: Output) {
+        kalmanK = kalmanP / (kalmanP + kalmanR)
+        headingKalmanK = headingKalmanP / (headingKalmanP + headingKalmanR)
+
+        measurementUpdatePosition.x = timeUpdatePosition.x + kalmanK * (serverOutput.x - timeUpdatePosition.x)
+        measurementUpdatePosition.y = timeUpdatePosition.y + kalmanK * (serverOutput.y - timeUpdatePosition.y)
+        updateHeading = timeUpdatePosition.heading + headingKalmanK * (serverOutput.search_direction - timeUpdatePosition.heading)
+        
+        kalmanP -= kalmanK * kalmanP
+        headingKalmanP -= headingKalmanK * headingKalmanP
+    }
+    
+    func jsonToResult(json: String) -> FineLocationTrackingResult {
+        let result = FineLocationTrackingResult(mobile_time: 0, building_name: "", level_name: "", scc: 0, scr: 0, x: 0, y: 0, absolute_heading: 0, phase: 0, calculated_time: 0)
+        let decoder = JSONDecoder()
+
+        let jsonString = json
+
+        if let data = jsonString.data(using: .utf8), let decoded = try? decoder.decode(FineLocationTrackingResult.self, from: data) {
+            return decoded
+        }
+
+        return result
     }
 }

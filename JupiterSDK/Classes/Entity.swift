@@ -48,6 +48,17 @@ public struct SensorAxisValue: Equatable {
     public var norm: Double = 0
 }
 
+public struct KalmanOutput: Equatable {
+    public var x: Double = 0
+    public var y: Double = 0
+    public var heading: Double = 0
+    
+    public func toString() -> String {
+        return "{x : \(x), y : \(y), search_direction : \(heading)}"
+    }
+}
+
+
 public struct UnitDRInfo {
     public var index: Int = 0
     public var length: Double = 0
