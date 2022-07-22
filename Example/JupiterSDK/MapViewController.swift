@@ -181,6 +181,16 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
                 let rpXY = loadRP(fileName: key)
                 if (!rpXY.isEmpty) {
                     RP[key] = rpXY
+                    
+                    let xAxisValue: [Double] = rpXY[0]
+                    let yAxisValue: [Double] = rpXY[1]
+                    
+                    let xMin = xAxisValue.min()!
+                    let xMax = xAxisValue.max()!
+                    let yMin = yAxisValue.min()!
+                    let yMax = yAxisValue.max()!
+                    
+                    print("(\(key)) Min Max : [\(xMin), \(xMax), \(yMin), \(yMax)]")
                 }
                 
                 // Scale
@@ -364,9 +374,6 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
                         
                         rpX.append(x)
                         rpY.append(y)
-                    } else {
-                        print("Error reading .csv file")
-                        return [[Double]]()
                     }
                 }
             }
@@ -374,8 +381,6 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
         } catch {
             print("Error reading .csv file")
         }
-        
-        print("RP Result :", rpXY)
         
         return rpXY
     }
@@ -401,65 +406,65 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
         }
         
         // length, scc, status, mode, idx Tx, idx Rx, level
-//        let isStepDetected = jupiterService.unitDRInfo.isIndexChanged
-//
-//        let unitIdxTx = Int(jupiterService.unitDRInfo.index)
-//        let unitLength = jupiterService.unitDistane
-//        let status = jupiterService.unitDRInfo.lookingFlag
-//
-//        if (isStepDetected) {
-//            let buildingName: String = jupiterService.jupiterOutput.building
-//            let buildingLevels: [String] = cardData!.infoLevel[buildingName] ?? []
-//            displayLevelInfo(infoLevel: buildingLevels)
-//
-//            resultToDisplay.unitIndexTx = unitIdxTx
-//            resultToDisplay.unitLength = unitLength
-//            resultToDisplay.status = status
-//
-//            let x = jupiterService.jupiterOutput.x
-//            let y = jupiterService.jupiterOutput.y
-//
-//            let building = jupiterService.jupiterOutput.building
-//            let level = jupiterService.jupiterOutput.level
-//
-//            var levelOutput: String = ""
-//
-//            if (buildings.contains(building)) {
-//                if let levelList: [String] = levels[building] {
-//                    if (levelList.contains(level)) {
-//                        levelOutput = level
-//                    } else {
-//                        levelOutput = "Out of bounds"
-//                    }
-//                } else {
-//                    levelOutput = "Out of bounds"
-//                }
-//            } else {
-//                levelOutput = "Out of bounds"
-//            }
-//
-//            let unitIdxRx = jupiterService.jupiterOutput.index
-//            let scc = jupiterService.jupiterOutput.scc
-//
-//            coordToDisplay.x = x
-//            coordToDisplay.y = y
-//            coordToDisplay.building = building
-//            coordToDisplay.level = levelOutput
-//
-//            resultToDisplay.unitIndexRx = unitIdxRx
-//            resultToDisplay.level = levelOutput
-//            resultToDisplay.scc = scc
-//
-//            UIView.performWithoutAnimation {
-//                    self.jupiterTableView.reloadSections(IndexSet(0...0), with: .none)
-//            }
-//
-//            if (isOpen) {
-//                UIView.performWithoutAnimation {
-//                        self.containerTableView.reloadSections(IndexSet(0...0), with: .none)
-//                }
-//            }
-//        }
+        let isStepDetected = jupiterService.unitDRInfo.isIndexChanged
+
+        let unitIdxTx = Int(jupiterService.unitDRInfo.index)
+        let unitLength = jupiterService.unitDistane
+        let status = jupiterService.unitDRInfo.lookingFlag
+
+        if (isStepDetected) {
+            let buildingName: String = jupiterService.jupiterOutput.building
+            let buildingLevels: [String] = cardData!.infoLevel[buildingName] ?? []
+            displayLevelInfo(infoLevel: buildingLevels)
+
+            resultToDisplay.unitIndexTx = unitIdxTx
+            resultToDisplay.unitLength = unitLength
+            resultToDisplay.status = String(status)
+
+            let x = jupiterService.jupiterOutput.x
+            let y = jupiterService.jupiterOutput.y
+
+            let building = jupiterService.jupiterOutput.building
+            let level = jupiterService.jupiterOutput.level
+
+            var levelOutput: String = ""
+
+            if (buildings.contains(building)) {
+                if let levelList: [String] = levels[building] {
+                    if (levelList.contains(level)) {
+                        levelOutput = level
+                    } else {
+                        levelOutput = "Out of bounds"
+                    }
+                } else {
+                    levelOutput = "Out of bounds"
+                }
+            } else {
+                levelOutput = "Out of bounds"
+            }
+
+            let unitIdxRx = jupiterService.jupiterOutput.index
+            let scc = jupiterService.jupiterOutput.scc
+
+            coordToDisplay.x = x
+            coordToDisplay.y = y
+            coordToDisplay.building = building
+            coordToDisplay.level = levelOutput
+
+            resultToDisplay.unitIndexRx = unitIdxRx
+            resultToDisplay.level = levelOutput
+            resultToDisplay.scc = scc
+
+            UIView.performWithoutAnimation {
+                    self.jupiterTableView.reloadSections(IndexSet(0...0), with: .none)
+            }
+
+            if (isOpen) {
+                UIView.performWithoutAnimation {
+                        self.containerTableView.reloadSections(IndexSet(0...0), with: .none)
+                }
+            }
+        }
     }
     
     func jsonToScale(json: String) -> ScaleResponse {

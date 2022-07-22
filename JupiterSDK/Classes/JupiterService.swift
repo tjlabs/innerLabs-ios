@@ -51,7 +51,7 @@ public class JupiterService: NSObject {
     public var sensorData = SensorData()
     public var unitDRInfo = UnitDRInfo()
     public var unitDistane: Double = 0
-    public var jupiterOutput = Output(x: 0, y: 0, mobile_time: 0, scc: 0, scr: 0, index: 0, search_direction: 0, building: "", level: "", phase: 0, calculated_time: 0)
+    public var jupiterOutput = Output(x: 0, y: 0, mobile_time: 0, scc: 0, scr: 0, index: 0, absolute_heading: 0, building: "", level: "", phase: 0, calculated_time: 0)
     
     public var testQueue = LinkedList<TimestampDouble>()
     

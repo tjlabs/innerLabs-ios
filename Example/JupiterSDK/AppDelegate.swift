@@ -22,6 +22,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         GMSServices.provideAPIKey("AIzaSyAGA86GDZ3me4mkBHHdKcv_KSgGqzXveLU")
         FirebaseApp.configure()
         
+//        print("Environment :", Environment.apiKey)
+        
         return true
     }
     
@@ -46,7 +48,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationWillTerminate(_ application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     }
-    
     
 }
 

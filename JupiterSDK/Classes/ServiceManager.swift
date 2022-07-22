@@ -8,11 +8,16 @@
 import Foundation
 import CoreMotion
 
-public class ServiceManager: NSObject {
+public class ServiceManager: Observation {
     
-    // ------------------------------------------------------------------------------ //
-    // ----------------------------------- Common ----------------------------------- //
-    // ------------------------------------------------------------------------------ //
+    var finalOutput = FineLocationTrackingResult()
+    
+    func tracking() {
+        for observer in observers {
+            observer.update(result: finalOutput)
+        }
+    }
+    
     let G: Double = 9.81
     
     var user_id: String = ""
@@ -33,15 +38,12 @@ public class ServiceManager: NSObject {
     // ------------------------ //
     
     // ----- Spatial Force ----- //
-    var spatialPastTime: Int = 0
-    var elapsedTime: Int = 0
-    
     var magX: Double = 0
     var magY: Double = 0
     var magZ: Double = 0
     var pressure: Double = 0
     
-    var SPATIAL_INPUT_NUM: Int = 5
+    var SPATIAL_INPUT_NUM: Int = 7
     // --------------------- //
     
     
@@ -93,33 +95,23 @@ public class ServiceManager: NSObject {
     // ----- Fine Location Tracking ----- //
     var unitDRInfo = UnitDRInfo()
     var unitDRGenerator = UnitDRGenerator()
+    
     var unitDistane: Double = 0
     var onStartFlag: Bool = false
     
     var recentThreshold: Double = 800 // ms
     
+    var preOutputMobileTime: Int = 0
     var preUnitHeading: Double = 0
-    var kalmanP: Double = 1
-    var kalmanQ: Double = 0.3
-    var kalmanR: Double = 3
-    var kalmanK: Double = 1
-    
-    var updateHeading: Double = 0
-    var headingKalmanP: Double = 0.5
-    var headingKalmanQ: Double = 0.5
-    var headingKalmanR: Double = 1
-    var headingKalmanK: Double = 1
-    
-    var timeUpdatePosition = KalmanOutput()
-    var measurementUpdatePosition = KalmanOutput()
-    var timeUpdateOutput = Output()
-    var measurementUpdateOutput = Output()
-    var latestOutput = Output()
     
     var timeUpdateFlag: Bool = false
     var measurementUpdateFlag: Bool = false
     
-    var preOutputIndex = 0
+    var floorUpdateRequestTimer: Double = 0
+    var floorUpdateRequestFlag: Bool = false
+    let FLOOR_UPDATE_REQUEST_TIME: Double = 15
+    
+    public var displayOutput = ServiceResult()
     // --------------------------------- //
     
     public override init() {
@@ -131,7 +123,7 @@ public class ServiceManager: NSObject {
         print("OS : \(osVersion)")
     }
     
-    public func startService() {
+    public func initService() {
         initialzeSensors()
         startTimer()
         startBLE()
@@ -153,6 +145,44 @@ public class ServiceManager: NSObject {
         }
     }
 
+    public func startService(id: String, sector_id: Int, service: String, mode: String) {
+        self.user_id = id
+        self.sector_id = sector_id
+        self.service = service
+        self.mode = mode
+        
+        var interval: Double = 1/2
+        var numInput = 7
+        
+        switch(service) {
+        case "SD":
+            numInput = 7
+            interval = 1/2
+        case "BD":
+            numInput = 7
+            interval = 1/2
+        case "CLD":
+            numInput = 7
+            interval = 1/2
+        case "FLD":
+            numInput = 7
+            interval = 1/2
+        case "CLE":
+            numInput = 7
+            interval = 1/2
+        case "FLT":
+            numInput = 6
+            interval = 1/5
+        default:
+            print("(Error) Fail to initialize the service")
+        }
+        
+        self.SPATIAL_INPUT_NUM = numInput
+        self.RF_INTERVAL = interval
+        
+        self.initService()
+    }
+    
     public func stopService() {
         stopTimer()
         stopBLE()
@@ -161,42 +191,6 @@ public class ServiceManager: NSObject {
             unitDRInfo = UnitDRInfo()
             onStartFlag = false
         }
-    }
-    
-    public func initUser(id: String, sector_id: Int, service: String, mode: String) {
-        self.user_id = id
-        self.sector_id = sector_id
-        self.service = service
-        self.mode = mode
-        
-        var interval: Double = 1/2
-        var numInput = 5
-        
-        switch(service) {
-        case "SD":
-            numInput = 5
-            interval = 1/2
-        case "BD":
-            numInput = 5
-            interval = 1/2
-        case "CLD":
-            numInput = 5
-            interval = 1/2
-        case "FLD":
-            numInput = 5
-            interval = 1/2
-        case "CLE":
-            numInput = 5
-            interval = 1/2
-        case "FLT":
-            numInput = 5
-            interval = 1/5
-        default:
-            print("(Error) Fail to initialize the service")
-        }
-        
-        self.SPATIAL_INPUT_NUM = numInput
-        self.RF_INTERVAL = interval
     }
     
     public func getResult(completion: @escaping (Int, String) -> Void) {
@@ -228,13 +222,8 @@ public class ServiceManager: NSObject {
             NetworkManager.shared.postCLE(url: CLE_URL, input: input, completion: { statusCode, returnedString in
                 completion(statusCode, returnedString)
             })
-        case "FLT":
-            let input = FineLocationTracking(user_id: self.user_id, mobile_time: currentTime, sector_id: self.sector_id)
-            NetworkManager.shared.postFLT(url: FLT_URL, input: input, completion: { statusCode, returnedString in
-                completion(statusCode, returnedString)
-            })
         default:
-            completion(500, "(Error) Fail to initialize the service")
+            completion(500, "(Error) Fail to get result")
         }
     }
     
@@ -359,7 +348,8 @@ public class ServiceManager: NSObject {
             receivedForceTimer = Timer.scheduledTimer(timeInterval: RF_INTERVAL, target: self, selector: #selector(self.receivedForceTimerUpdate), userInfo: nil, repeats: true)
         }
         
-        if (userVelocityTimer == nil) {
+        if (userVelocityTimer == nil && self.service == "FLT") {
+            floorUpdateRequestFlag = true
             userVelocityTimer = Timer.scheduledTimer(timeInterval: UV_INTERVAL, target: self, selector: #selector(self.userVelocityTimerUpdate), userInfo: nil, repeats: true)
         }
     }
@@ -371,6 +361,7 @@ public class ServiceManager: NSObject {
         }
         
         if (userVelocityTimer != nil) {
+            floorUpdateRequestFlag = false
             userVelocityTimer!.invalidate()
             userVelocityTimer = nil
         }
@@ -398,12 +389,36 @@ public class ServiceManager: NSObject {
     @objc func userVelocityTimerUpdate() {
         let currentTime = getCurrentTimeInMilliseconds()
         
+        if(floorUpdateRequestFlag) {
+            floorUpdateRequestTimer += UV_INTERVAL
+            if (floorUpdateRequestTimer > FLOOR_UPDATE_REQUEST_TIME) {
+                let input = FineLocationTracking(user_id: user_id, mobile_time: currentTime, sector_id: sector_id)
+                
+                NetworkManager.shared.postFLT(url: FLT_URL, input: input, completion: { [self] statusCode, returnedString in
+                    if (statusCode == 200) {
+                        let result = jsonToResult(json: returnedString)
+                        finalOutput = result
+
+                        self.tracking()
+                    }
+                })
+                floorUpdateRequestTimer = 0
+            }
+        }
+        
         if (onStartFlag) {
             unitDRInfo = unitDRGenerator.generateDRInfo(sensorData: sensorData)
         }
         
         if (unitDRInfo.isIndexChanged) {
+            displayOutput.index = unitDRInfo.index
+            displayOutput.length = unitDRInfo.length
+            
             let data = UserVelocity(user_id: user_id, mobile_time: currentTime, index: unitDRInfo.index, length: unitDRInfo.length, heading: unitDRInfo.heading, looking: unitDRInfo.lookingFlag)
+            
+            // Heading
+            let diffHeading = unitDRInfo.heading - preUnitHeading
+            let curUnitDRLength = unitDRInfo.length
             
             inputUserVelocity.append(data)
             if ((inputUserVelocity.count-1) == UV_INPUT_NUM) {
@@ -417,57 +432,48 @@ public class ServiceManager: NSObject {
                 unitDistane = lengthSum
 
                 inputUserVelocity = [UserVelocity(user_id: user_id, mobile_time: 0, index: 0, length: 0, heading: 0, looking: true)]
+                
+                // Request Fine Location Tracking
+                floorUpdateRequestFlag = true
+                floorUpdateRequestTimer = 0
+                
+                let input = FineLocationTracking(user_id: user_id, mobile_time: currentTime, sector_id: sector_id)
+                NetworkManager.shared.postFLT(url: FLT_URL, input: input, completion: { [self] statusCode, returnedString in
+                    if (statusCode == 200) {
+                        let result = jsonToResult(json: returnedString)
+                        
+                        displayOutput.scc = result.scc
+                        displayOutput.phase = String(result.phase)
+                        
+                        // Kalman Filter
+                        if (result.mobile_time > preOutputMobileTime) {
+                            if (result.phase == 4) {
+                                if (!(result.x == 0 && result.y == 0)) {
+                                    
+                                    // Measurment Update
+                                    if (KalmanFilter.shared.measurementUpdateFlag) {
+                                        finalOutput = KalmanFilter.shared.measurementUpdate(timeUpdatePosition: KalmanFilter.shared.timeUpdatePosition, serverOutput: result)
+                                        self.tracking()
+                                    }
+                                    KalmanFilter.shared.timeUpdatePositionInit(serverOutput: result)
+                                }
+                            } else {
+                                KalmanFilter.shared.kalmanInit()
+                                finalOutput = result
+                                self.tracking()
+                            }
+                            preOutputMobileTime = result.mobile_time
+                        }
+                    }
+                })
             }
-            
-            let input = FineLocationTracking(user_id: user_id, mobile_time: currentTime, sector_id: sector_id)
-            NetworkManager.shared.postFLT(url: FLT_URL, input: input, completion: { [self] statusCode, returnedString in
-                if (statusCode == 200) {
-                    // Measurement Update
-                    let result = jsonToResult(json: returnedString)
-                    latestOutput.phase = result.phase
-                    latestOutput.x = Double(result.x)
-                    latestOutput.y = Double(result.y)
-                    
-                    if (latestOutput.phase == 1 && latestOutput.index >= preOutputIndex && !(latestOutput.x == 0 && latestOutput.y == 0)) {
-                        if(measurementUpdateFlag) {
-                            measurementUpdateOutput = latestOutput
-                            measurementUpdate(timeUpdatePosition: timeUpdatePosition, serverOutput: latestOutput)
-                            measurementUpdateOutput.x = measurementUpdatePosition.x
-                            measurementUpdateOutput.y = measurementUpdatePosition.y
-                        }
-                        
-                        timeUpdateOutput = latestOutput
-                        
-                        if (!measurementUpdateFlag) {
-                            timeUpdatePosition = KalmanOutput(x: timeUpdateOutput.x, y: timeUpdateOutput.y, heading: timeUpdateOutput.search_direction)
-                            timeUpdateFlag = true
-                        }
-                    } else {
-                        kalmanInit()
-                        timeUpdateFlag = false
-                        measurementUpdateFlag = false
-                    }
-                    
-                    if (latestOutput.index >= preOutputIndex) {
-                        preOutputIndex = latestOutput.index
-                    }
-                }
-            })
             
             // Time Update
-            let diffHeading = unitDRInfo.heading - preUnitHeading
-            let curUnitDRLength = unitDRInfo.length
-            
-            if (timeUpdateFlag) {
-                timeUpdatePosition = timeUpdate(length: curUnitDRLength, timeUpdatePosition: timeUpdatePosition, diffHeading: diffHeading)
-                timeUpdateOutput.x = timeUpdatePosition.x
-                timeUpdateOutput.y = timeUpdatePosition.y
-                timeUpdateOutput.index = unitDRInfo.index
-                
-                measurementUpdateFlag = true
-            } else {
-                
+            if (KalmanFilter.shared.timeUpdateFlag) {
+                finalOutput = KalmanFilter.shared.timeUpdate(length: curUnitDRLength, diffHeading: diffHeading, mobileTime: currentTime)
+                self.tracking()
             }
+            
             preUnitHeading = unitDRInfo.heading
         }
     }
@@ -475,49 +481,6 @@ public class ServiceManager: NSObject {
     func getCurrentTimeInMilliseconds() -> Int
     {
         return Int(Date().timeIntervalSince1970 * 1000)
-    }
-    
-    // ------------------------------------------------------------------------------------//
-    // ------------------------------ Fine Location Tracking ------------------------------//
-    // ------------------------------------------------------------------------------------//
-    
-    internal func kalmanInit() {
-        kalmanP = 1
-        kalmanQ = 0.3
-        kalmanR = 3
-        kalmanK = 1
-
-        headingKalmanP = 0.5
-        headingKalmanQ = 0.5
-        headingKalmanR = 1
-        headingKalmanK = 1
-    }
-    
-    internal func timeUpdate(length: Double, timeUpdatePosition: KalmanOutput, diffHeading: Double) -> KalmanOutput {
-        var updatePosition: KalmanOutput = timeUpdatePosition
-        
-        updateHeading = timeUpdatePosition.heading + diffHeading
-        
-        updatePosition.x = (timeUpdatePosition.x + length*cos(updateHeading*D2R))
-        updatePosition.y = (timeUpdatePosition.y + length*sin(updateHeading*D2R))
-        updatePosition.heading = updateHeading
-        
-        kalmanP += kalmanQ
-        headingKalmanP += headingKalmanQ
-        
-        return updatePosition
-    }
-    
-    internal func measurementUpdate(timeUpdatePosition: KalmanOutput, serverOutput: Output) {
-        kalmanK = kalmanP / (kalmanP + kalmanR)
-        headingKalmanK = headingKalmanP / (headingKalmanP + headingKalmanR)
-
-        measurementUpdatePosition.x = timeUpdatePosition.x + kalmanK * (serverOutput.x - timeUpdatePosition.x)
-        measurementUpdatePosition.y = timeUpdatePosition.y + kalmanK * (serverOutput.y - timeUpdatePosition.y)
-        updateHeading = timeUpdatePosition.heading + headingKalmanK * (serverOutput.search_direction - timeUpdatePosition.heading)
-        
-        kalmanP -= kalmanK * kalmanP
-        headingKalmanP -= headingKalmanK * headingKalmanP
     }
     
     func jsonToResult(json: String) -> FineLocationTrackingResult {

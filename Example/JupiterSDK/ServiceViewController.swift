@@ -17,7 +17,36 @@ protocol ServiceViewPageDelegate {
     func sendPage(data: Int)
 }
 
-class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewDataSource {
+class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewDataSource, Observer {
+    
+    func update(result: FineLocationTrackingResult) {
+        print("(\(self.serviceName) Result) -> \(result)")
+        
+        let building = result.building_name
+        let level = result.level_name
+        
+        let x = result.x
+        let y = result.y
+
+        if (buildings.contains(building)) {
+            if let levelList: [String] = levels[building] {
+                if (levelList.contains(level)) {
+                    coordToDisplay.x = Double(x)
+                    coordToDisplay.y = Double(y)
+                    coordToDisplay.building = building
+                    coordToDisplay.level = level
+
+                    UIView.performWithoutAnimation { self.serviceTableView.reloadSections(IndexSet(0...0), with: .none) }
+                }
+            }
+            
+            if (isOpen) {
+                UIView.performWithoutAnimation {
+                        self.containerTableView.reloadSections(IndexSet(0...0), with: .none)
+                }
+            }
+        }
+    }
     
     @IBOutlet var ServiceView: UIView!
     
@@ -32,9 +61,8 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
     @IBOutlet weak var sectorNameLabel: UILabel!
     @IBOutlet weak var cardTopImage: UIImageView!
     
-    
     var serviceManager = ServiceManager()
-    var serviceName = "FLD"
+    var serviceName = "FLT"
     var uuid: String = ""
     
     var timer = Timer()
@@ -111,8 +139,8 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
         runMode = cardData!.mode
         
         // Service Manger
-        serviceManager.initUser(id: uuid, sector_id: cardData!.sector_id, service: serviceName, mode: cardData!.mode)
-        serviceManager.startService()
+        serviceManager.startService(id: uuid, sector_id: cardData!.sector_id, service: serviceName, mode: cardData!.mode)
+        serviceManager.addObserver(self)
         startTimer()
         
         self.hideKeyboardWhenTappedAround()
@@ -356,49 +384,14 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
             elapsedTime += (dt*1e-3)
         }
         
-        serviceManager.getResult(completion : { statusCode, returnedString in
-            print("Service Result :", returnedString)
-        })
+        resultToDisplay.unitIndexTx = serviceManager.displayOutput.index
+        resultToDisplay.unitIndexRx = serviceManager.displayOutput.index
+        resultToDisplay.unitLength = serviceManager.displayOutput.length
+        resultToDisplay.status = serviceManager.displayOutput.phase
         
-//        let result: FineLocationTrackingResult = serviceManager.getResult(sector_id: cardData!.sector_id, service: serviceName) as! FineLocationTrackingResult
-//        let building = result.building_name
-//        let level = result.level_name
-//
-//        let x = result.x
-//        let y = result.y
-//
-//        if (result.scc > 0) {
-//            print("Service Result :", result)
-//            if (buildings.contains(building)) {
-//                if let levelList: [String] = levels[building] {
-//                    if (levelList.contains(level)) {
-//                        coordToDisplay.x = Double(x)
-//                        coordToDisplay.y = Double(y)
-//                        coordToDisplay.building = building
-//                        coordToDisplay.level = level
-//
-//                        UIView.performWithoutAnimation { self.serviceTableView.reloadSections(IndexSet(0...0), with: .none) }
-//                    }
-//                }
-//            }
-//        } else {
-//            if (buildings.contains(building)) {
-//                if let levelList: [String] = levels[building] {
-//                    if (levelList.contains(level)) {
-//                        coordToDisplay.x = 0
-//                        coordToDisplay.y = 0
-//                        coordToDisplay.building = building
-//                        coordToDisplay.level = level
-//
-//                        UIView.performWithoutAnimation { self.serviceTableView.reloadSections(IndexSet(0...0), with: .none) }
-//                    }
-//                }
-//            }
+//        if (isOpen) {
+//            UIView.performWithoutAnimation { self.containerTableView.reloadSections(IndexSet(0...0), with: .none) }
 //        }
-        
-        if (isOpen) {
-            UIView.performWithoutAnimation { self.containerTableView.reloadSections(IndexSet(0...0), with: .none) }
-        }
     }
     
     func jsonToScale(json: String) -> ScaleResponse {

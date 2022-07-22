@@ -99,7 +99,7 @@ struct ResultToDisplay {
     var unitIndexTx: Int = 0
     var unitIndexRx: Int = 0
     var unitLength: Double = 0
-    var status: Bool = false
+    var status: String = ""
     var level: String = ""
     var scc: Double = 0
 }

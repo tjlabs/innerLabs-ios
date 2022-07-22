@@ -58,7 +58,6 @@ public struct KalmanOutput: Equatable {
     }
 }
 
-
 public struct UnitDRInfo {
     public var index: Int = 0
     public var length: Double = 0
@@ -69,4 +68,11 @@ public struct UnitDRInfo {
     public func toString() -> String {
         return "{index : \(index), length : \(length), heading : \(heading), lookingFlag : \(lookingFlag), isStepDetected : \(isIndexChanged)}"
     }
+}
+
+public struct ServiceResult {
+    public var index: Int = 0
+    public var length: Double = 0
+    public var scc: Double = 0
+    public var phase: String = ""
 }

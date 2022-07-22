@@ -32,7 +32,7 @@ public struct Output: Codable {
     public var scc: Double = 0
     public var scr: Double = 0
     public var index: Int = 0
-    public var search_direction: Double = 0
+    public var absolute_heading: Double = 0
     public var building : String = ""
     public var level : String = ""
     public var phase : Int = 0
@@ -144,14 +144,14 @@ struct FineLocationTracking: Codable {
 }
 
 public struct FineLocationTrackingResult: Codable {
-    public var mobile_time: Int
-    public var building_name: String
-    public var level_name: String
-    public var scc: Double
-    public var scr: Double
-    public var x: Int
-    public var y: Int
-    public var absolute_heading: Double
-    public var phase: Int
-    public var calculated_time: Double
+    public var mobile_time: Int = 0
+    public var building_name: String = ""
+    public var level_name: String = ""
+    public var scc: Double = 0
+    public var scr: Double = 0
+    public var x: Int = 0
+    public var y: Int = 0
+    public var absolute_heading: Double = 0
+    public var phase: Int = 0
+    public var calculated_time: Double = 0
 }
