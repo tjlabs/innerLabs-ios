@@ -1,6 +1,5 @@
 import Foundation
 
-//let JUPITER_URL = "https://where-run-card-skrgq3jc5a-du.a.run.app/cards"
 let USER_URL = "https://where-run-user-skrgq3jc5a-du.a.run.app/user"
 let CARD_URL = "https://where-run-user-skrgq3jc5a-du.a.run.app/card"
 let SCALE_URL = "https://where-run-user-skrgq3jc5a-du.a.run.app/scale"

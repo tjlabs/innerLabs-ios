@@ -20,7 +20,7 @@ protocol ServiceViewPageDelegate {
 class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewDataSource, Observer {
     
     func update(result: FineLocationTrackingResult) {
-        print("(\(self.serviceName) Result) -> \(result)")
+//        print("(\(self.serviceName) Result) -> \(result)")
         
         let building = result.building_name
         let level = result.level_name
@@ -68,7 +68,7 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
     var timer = Timer()
     var timerCounter: Int = 0
     var timerTimeOut: Int = 10
-    let TIMER_INTERVAL: TimeInterval = 1 // second
+    let TIMER_INTERVAL: TimeInterval = 1/10 // second
     
     var pastTime: Double = 0
     var elapsedTime: Double = 0
@@ -384,10 +384,16 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
             elapsedTime += (dt*1e-3)
         }
         
+        resultToDisplay.level = serviceManager.displayOutput.level
+//        resultToDisplay.numLevels
+//        resultToDisplay.infoLevels
+        
         resultToDisplay.unitIndexTx = serviceManager.displayOutput.index
         resultToDisplay.unitIndexRx = serviceManager.displayOutput.index
         resultToDisplay.unitLength = serviceManager.displayOutput.length
+        resultToDisplay.scc = serviceManager.displayOutput.scc
         resultToDisplay.status = serviceManager.displayOutput.phase
+        
         
 //        if (isOpen) {
 //            UIView.performWithoutAnimation { self.containerTableView.reloadSections(IndexSet(0...0), with: .none) }

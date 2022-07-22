@@ -82,7 +82,8 @@ public class KalmanFilter: NSObject {
         
         measurementUpdateFlag = true
         
-        print("Kalman Check (Time Update) : \(timeUpdatePosition.x) , \(timeUpdatePosition.y) , \(timeUpdatePosition.heading))")
+//        print("Kalman Check (Time Update) -> P :\(kalmanP) , P(Heading) :\(headingKalmanP)")
+//        print("Kalman Check (Time Update) -> x :\(timeUpdatePosition.x) , y :\(timeUpdatePosition.y) , heading :\(timeUpdatePosition.heading))")
         
         return timeUpdateOutput
     }
@@ -103,7 +104,8 @@ public class KalmanFilter: NSObject {
         kalmanP -= kalmanK * kalmanP
         headingKalmanP -= headingKalmanK * headingKalmanP
         
-        print("Kalman Check (Meas Update) : \(measurementPosition.x) , \(measurementPosition.y) , \(updateHeading))")
+//        print("Kalman Check (Meas Update) -> P :\(kalmanP) , K :\(kalmanK) , P(Heading) :\(headingKalmanP) , K(Heading) :\(headingKalmanK)")
+//        print("Kalman Check (Meas Update) : \(measurementPosition.x) , \(measurementPosition.y) , \(updateHeading))")
         
         return measurementOutput
 

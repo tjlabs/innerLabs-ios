@@ -75,4 +75,6 @@ public struct ServiceResult {
     public var length: Double = 0
     public var scc: Double = 0
     public var phase: String = ""
+    
+    public var level: String = ""
 }

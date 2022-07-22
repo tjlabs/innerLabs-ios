@@ -442,6 +442,7 @@ public class ServiceManager: Observation {
                     if (statusCode == 200) {
                         let result = jsonToResult(json: returnedString)
                         
+                        displayOutput.level = result.level_name
                         displayOutput.scc = result.scc
                         displayOutput.phase = String(result.phase)
                         
