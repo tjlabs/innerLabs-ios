@@ -4089,10 +4089,10 @@
 				B5A508730BA942BD77479E072B14AF5E /* UnitAttitudeEstimator.swift */,
 				68D3C55105DC75B32CCEF0CB39507721 /* UnitDRGenerator.swift */,
 				17E0853620C1BC0CA5B96DB0FF331EDF /* UnitStatusEstimator.swift */,
+				B30E4443288E8434001D80EB /* KalmanFilter.swift */,
 				B3C697AC287E7635007211D0 /* Observer.swift */,
 				C5C5F92DB48587DFE2DF421186596ADA /* Pod */,
 				4133CFE9D14C87DC1A20E865236A9150 /* Support Files */,
-				B30E4443288E8434001D80EB /* KalmanFilter.swift */,
 			);
 			name = JupiterSDK;
 			path = ../..;

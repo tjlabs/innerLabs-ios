@@ -16,7 +16,7 @@ public class UnitStatusEstimator: NSObject {
     public func estimateStatus(Attitude: Attitude, isIndexChanged: Bool, unitMode: String) -> Bool {
         if (unitMode == MODE_PDR) {
             if (isIndexChanged) {
-                var isLookingAttitude = (abs(Attitude.Roll) < degree2radian(degree: 25) && Attitude.Pitch > degree2radian(degree: -20) && Attitude.Pitch < degree2radian(degree: 80))
+                let isLookingAttitude = (abs(Attitude.Roll) < degree2radian(degree: 25) && Attitude.Pitch > degree2radian(degree: -20) && Attitude.Pitch < degree2radian(degree: 80))
                 
                 updateIsLookingAttitudeQueue(lookingFlag: isLookingAttitude)
                 let flag: Bool = checkLookingAttitude(lookingFlagStepQueue: lookingFlagStepQueue)
