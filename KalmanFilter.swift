@@ -7,7 +7,7 @@
 
 import Foundation
 
-public class KalmanFilter: NSObject {
+public class KalmanFilter {
     
     static let shared = KalmanFilter()
     
@@ -30,10 +30,6 @@ public class KalmanFilter: NSObject {
 
     var timeUpdateOutput = FineLocationTrackingResult()
     var measurementOutput = FineLocationTrackingResult()
-    
-    override init() {
-        
-    }
     
     func kalmanInit() {
         kalmanP = 1
