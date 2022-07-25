@@ -665,10 +665,10 @@
 		B2162A26B36709F6F1B6976DF1A65DAB /* DataRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2763920C448A38C458B17B1244DE0686 /* DataRenderer.swift */; };
 		B25E07EA645911443A38DA1E68166156 /* Box.swift in Sources */ = {isa = PBXBuildFile; fileRef = 681221C202407A754A4E7013B8F12A25 /* Box.swift */; };
 		B2DD7CF96035374C7AC80D88B8904691 /* ShapeRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAA0B541C2EC74C5F60D6FCC600C76D0 /* ShapeRenderer.swift */; };
+		B30E4444288E8434001D80EB /* KalmanFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = B30E4443288E8434001D80EB /* KalmanFilter.swift */; };
 		B33C12F7E72FFEC11917BCFB7DEDA2C5 /* GoogleDataTransport-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = B9E343B2D72FDE953EBB0E2DE8691EE5 /* GoogleDataTransport-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B3658C29BBDE1033F6269A92E612CB30 /* Request.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80F9A77C9E1876E9111E49BAFD76B9C7 /* Request.swift */; };
 		B3C697AD287E7635007211D0 /* Observer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3C697AC287E7635007211D0 /* Observer.swift */; };
-		B3E0A4FA288A378D00B88E08 /* KalmanFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3E0A4F9288A378D00B88E08 /* KalmanFilter.swift */; };
 		B3FD74E72865569B00CD4D74 /* ServiceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3FD74E62865569B00CD4D74 /* ServiceManager.swift */; };
 		B4015BE1313094DACA3DBB86191C5030 /* CombinedHighlighter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A37E135E354B1FEBD48E3E32624CF418 /* CombinedHighlighter.swift */; };
 		B43017FEC99D227D4CDD81DD2C27D9D9 /* ConstraintMakerPrioritizable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C6911374A4DD905651538FA96E7CB52 /* ConstraintMakerPrioritizable.swift */; };
@@ -2072,8 +2072,8 @@
 		B26024DFC649D1BC4DACE1CE08F96176 /* RadarChartView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = RadarChartView.swift; path = Source/Charts/Charts/RadarChartView.swift; sourceTree = "<group>"; };
 		B2DF673022B52EA41409C88E7E279E33 /* GPBRootObject.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GPBRootObject.h; path = objectivec/GPBRootObject.h; sourceTree = "<group>"; };
 		B30AF29C3010D6E1398931DCF7286340 /* TensorFlowLiteObjC */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = TensorFlowLiteObjC; path = TFLTensorFlowLite.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		B30E4443288E8434001D80EB /* KalmanFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = KalmanFilter.swift; path = JupiterSDK/Classes/KalmanFilter.swift; sourceTree = "<group>"; };
 		B3C697AC287E7635007211D0 /* Observer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Observer.swift; path = JupiterSDK/Classes/Observer.swift; sourceTree = "<group>"; };
-		B3E0A4F9288A378D00B88E08 /* KalmanFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KalmanFilter.swift; sourceTree = "<group>"; };
 		B3E37AFCDE4AA44279DA9F47F7D7A9A2 /* TFLQuantizationParameters.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = TFLQuantizationParameters.m; path = tensorflow/lite/experimental/objc/sources/TFLQuantizationParameters.m; sourceTree = "<group>"; };
 		B3FD74E62865569B00CD4D74 /* ServiceManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ServiceManager.swift; path = JupiterSDK/Classes/ServiceManager.swift; sourceTree = "<group>"; };
 		B401AA435D744AADEB9AFC273376A72E /* ResourceBundle-JupiterSDK-JupiterSDK-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "ResourceBundle-JupiterSDK-JupiterSDK-Info.plist"; sourceTree = "<group>"; };
@@ -4066,7 +4066,6 @@
 				B13684134142182E910A5289E7E70F63 /* ArrayExtension.swift */,
 				73A9F00E076D7788171696C7E92BC0AE /* BluetoothManager.swift */,
 				B3FD74E62865569B00CD4D74 /* ServiceManager.swift */,
-				B3E0A4F9288A378D00B88E08 /* KalmanFilter.swift */,
 				452085B1AE5E27D5921197D5A0A8E9F5 /* CalculateFunctions.swift */,
 				FDA0E740D13F054A0526866C376FB1D0 /* Constants.swift */,
 				D8D9D47F12187E434DD7AC9EA4F67D35 /* DeviceModel.swift */,
@@ -4093,6 +4092,7 @@
 				B3C697AC287E7635007211D0 /* Observer.swift */,
 				C5C5F92DB48587DFE2DF421186596ADA /* Pod */,
 				4133CFE9D14C87DC1A20E865236A9150 /* Support Files */,
+				B30E4443288E8434001D80EB /* KalmanFilter.swift */,
 			);
 			name = JupiterSDK;
 			path = ../..;
@@ -5918,7 +5918,7 @@
 				04EAD93F699E2BE0DB044C12AEAAD4C5 /* Constants.swift in Sources */,
 				D8DE3D76413876ADD0786A84F7CF6E9D /* DeviceModel.swift in Sources */,
 				AEF05C463DCF504FEFB9D02EC2FD011A /* DRDistanceEstimator.swift in Sources */,
-				B3E0A4FA288A378D00B88E08 /* KalmanFilter.swift in Sources */,
+				B30E4444288E8434001D80EB /* KalmanFilter.swift in Sources */,
 				A0223DADD306CC31B6FC5FD7811DCCBD /* Entity.swift in Sources */,
 				5CBCD1841AEFD2F96A1A413B51DA2279 /* FineLocationTrackingService.swift in Sources */,
 				1A556D756F0364DAAD91C23F4F84C880 /* HeadingFunctions.swift in Sources */,
