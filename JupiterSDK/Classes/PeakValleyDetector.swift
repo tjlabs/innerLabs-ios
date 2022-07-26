@@ -1,6 +1,10 @@
 import Foundation
 import Darwin
 
+public enum Type {
+    case NONE, PEAK, VALLEY
+}
+
 public class PeakValleyDetector: NSObject {
     
     public override init() {

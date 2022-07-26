@@ -734,7 +734,6 @@
 		CB6446D74739A04B352AAABCB70F54BE /* GPBDictionary.m in Sources */ = {isa = PBXBuildFile; fileRef = D48DE8DC9D9F4AAE6B13E7C8EFA9C2E4 /* GPBDictionary.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		CB70C7355F7270B043AD1ADD9EECB728 /* GPBType.pbobjc.m in Sources */ = {isa = PBXBuildFile; fileRef = 96281B4143578B1083F2EE6B1E60BE18 /* GPBType.pbobjc.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		CBB5CDC3EA49C4008474DBD3CA4C1A01 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 21B277C9D47856938CA02CBE628BEB90 /* Security.framework */; };
-		CBBED94839D97E1AC9A547AFDD1EE258 /* Type.swift in Sources */ = {isa = PBXBuildFile; fileRef = 477ACEF53196060CD43DABE38B097167 /* Type.swift */; };
 		CD7AC3E1C98EA54F7C05C36C52805220 /* CacheSerializer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFAA8BA87990CCC7C746DE283529E613 /* CacheSerializer.swift */; };
 		CEBFFEED65D877702B2F36102528CF6D /* EventMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DD7A0870E500795FCA5C8CD2E9A14D8 /* EventMonitor.swift */; };
 		CF491A4A998823F62438EFF79A37028E /* ViewPortHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8890E1F1BDEA49482A26C793A7591D90 /* ViewPortHandler.swift */; };
@@ -1665,7 +1664,6 @@
 		46D7901407E6F562FD38185BD2C925AD /* FIRInstallationsStoredItem.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = FIRInstallationsStoredItem.h; path = FirebaseInstallations/Source/Library/InstallationsStore/FIRInstallationsStoredItem.h; sourceTree = "<group>"; };
 		46DB86C0F466AFBA98677300128DFA99 /* HeadingFunctions.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = HeadingFunctions.swift; path = JupiterSDK/Classes/HeadingFunctions.swift; sourceTree = "<group>"; };
 		477103CDA831320CD1736712C15128FC /* GULLogger.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = GULLogger.m; path = GoogleUtilities/Logger/GULLogger.m; sourceTree = "<group>"; };
-		477ACEF53196060CD43DABE38B097167 /* Type.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Type.swift; path = JupiterSDK/Classes/Type.swift; sourceTree = "<group>"; };
 		48204DCC30D53311A9A8CE0CFB509071 /* GDTCCTCompressionHelper.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GDTCCTCompressionHelper.h; path = GoogleDataTransport/GDTCCTLibrary/Private/GDTCCTCompressionHelper.h; sourceTree = "<group>"; };
 		48BF7756FC001BDE8136B36FAFE16AD0 /* Firebase.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = Firebase.h; path = CoreOnly/Sources/Firebase.h; sourceTree = "<group>"; };
 		48DEEF62D0C28848B16D76BE19B8A764 /* FirebaseMLModelInterpreter.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FirebaseMLModelInterpreter.framework; path = Frameworks/FirebaseMLModelInterpreter.framework; sourceTree = "<group>"; };
@@ -4082,7 +4080,6 @@
 				29F4497CA9AE74FB7A953BC1EE10EEF9 /* SensorData.swift */,
 				299427A9F079D9D9F60A532BF7829A7A /* StepLengthEstimator.swift */,
 				B9FD39D1556754A8FBA7D78EF891BCA9 /* StringExtension.swift */,
-				477ACEF53196060CD43DABE38B097167 /* Type.swift */,
 				B5A508730BA942BD77479E072B14AF5E /* UnitAttitudeEstimator.swift */,
 				68D3C55105DC75B32CCEF0CB39507721 /* UnitDRGenerator.swift */,
 				17E0853620C1BC0CA5B96DB0FF331EDF /* UnitStatusEstimator.swift */,
@@ -5931,7 +5928,6 @@
 				63BED228596E5A03A11731C945895A7A /* SensorData.swift in Sources */,
 				C858609462361154CAC5883ADB6F2197 /* StepLengthEstimator.swift in Sources */,
 				D04EFB5793E69CA666706FA1EA099E7D /* StringExtension.swift in Sources */,
-				CBBED94839D97E1AC9A547AFDD1EE258 /* Type.swift in Sources */,
 				F44C794692C1A439577C63766C64C185 /* UnitAttitudeEstimator.swift in Sources */,
 				37558D82EF8C86CD2C58D342A3A07683 /* UnitDRGenerator.swift in Sources */,
 				9E4985D306575D72EC636068CC6DEDCE /* UnitStatusEstimator.swift in Sources */,
