@@ -1,12 +1,17 @@
-//
-//  NetworkManager.swift
-//  JupiterSDK
-//
-//  Created by 신동현 on 2022/04/14.
-//
-
 import Foundation
 import Alamofire
+
+let RF_URL = "https://where-run-record-skrgq3jc5a-du.a.run.app/recordRF"
+let UV_URL = "https://where-run-record-skrgq3jc5a-du.a.run.app/recordUV"
+
+let SD_URL = "https://where-run-ios-skrgq3jc5a-du.a.run.app/SD"
+let BD_URL = "https://where-run-ios-skrgq3jc5a-du.a.run.app/BD"
+let CLD_URL = "https://where-run-ios-skrgq3jc5a-du.a.run.app/CLD"
+let FLD_URL = "https://where-run-ios-skrgq3jc5a-du.a.run.app/FLD"
+let CLE_URL = "https://where-run-ios-skrgq3jc5a-du.a.run.app/CLE"
+let FLT_URL = "https://where-run-ios-skrgq3jc5a-du.a.run.app/FLT"
+
+let JUPITER_URL = "https://where-run-user-skrgq3jc5a-du.a.run.app/jupiter"
 
 public class NetworkManager {
     

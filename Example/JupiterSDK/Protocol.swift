@@ -98,7 +98,7 @@ struct ResultToDisplay {
     var unitIndexTx: Int = 0
     var unitIndexRx: Int = 0
     var unitLength: Double = 0
-    var status: String = ""
+    var phase: String = ""
     var level: String = ""
     var scc: Double = 0
 }

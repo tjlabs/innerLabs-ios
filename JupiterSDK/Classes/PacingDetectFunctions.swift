@@ -1,10 +1,3 @@
-//
-//  PacingDetectFunctions.swift
-//  JupiterSDK
-//
-//  Created by 신동현 on 2022/03/23.
-//
-
 import Foundation
 
 public class PacingDetectFunctions: NSObject {
@@ -29,7 +22,7 @@ public class PacingDetectFunctions: NSObject {
         
         return diffStepLengthVariance >= 0.09
     }
-//
+
     public func calDiffDoubleBuffer(buffer: [Double]) -> [Double] {
         var diffBuffer: [Double] = []
         for i in 1..<buffer.count {

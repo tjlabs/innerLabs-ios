@@ -419,7 +419,7 @@ class MapViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewD
 
             resultToDisplay.unitIndexTx = unitIdxTx
             resultToDisplay.unitLength = unitLength
-            resultToDisplay.status = String(status)
+            resultToDisplay.phase = String(status)
 
             let x = jupiterService.jupiterOutput.x
             let y = jupiterService.jupiterOutput.y

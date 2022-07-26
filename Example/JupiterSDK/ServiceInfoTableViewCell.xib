@@ -173,7 +173,7 @@
                                                         <nil key="textColor"/>
                                                         <nil key="highlightedColor"/>
                                                     </label>
-                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Status" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="eDy-RX-BRd">
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Phase" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="eDy-RX-BRd">
                                                         <rect key="frame" x="0.0" y="70.5" width="40" height="19.5"/>
                                                         <fontDescription key="fontDescription" name="NotoSansKR-Medium" family="Noto Sans KR" pointSize="12"/>
                                                         <nil key="textColor"/>
@@ -249,8 +249,8 @@
                 <outlet property="lengthLabel" destination="16X-Is-xDc" id="3Cy-Iv-4Jj"/>
                 <outlet property="modeLabel" destination="7vu-W1-fKQ" id="FZh-rE-lwT"/>
                 <outlet property="numberOfLevelsLabel" destination="cBR-N1-ENg" id="Gc6-tZ-miv"/>
+                <outlet property="phaseLabel" destination="dXb-og-9Fo" id="1wi-Z3-0DR"/>
                 <outlet property="sccLabel" destination="5lP-mv-shI" id="CfH-5E-Tgn"/>
-                <outlet property="statusLabel" destination="dXb-og-9Fo" id="XR4-Vm-QdY"/>
             </connections>
             <point key="canvasLocation" x="131.8840579710145" y="116.51785714285714"/>
         </tableViewCell>

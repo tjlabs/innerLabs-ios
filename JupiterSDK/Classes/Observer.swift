@@ -1,10 +1,3 @@
-//
-//  Example.swift
-//  JupiterSDK
-//
-//  Created by 신동현 on 2022/07/13.
-//
-
 import Foundation
 
 

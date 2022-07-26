@@ -1,10 +1,3 @@
-//
-//  Constants.swift
-//  JupiterSDK
-//
-//  Created by 신동현 on 2022/05/17.
-//
-
 import Foundation
 
 let R2D: Double = 180 / Double.pi

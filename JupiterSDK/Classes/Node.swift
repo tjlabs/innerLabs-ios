@@ -1,5 +1,3 @@
-
-
 import Foundation
 
 public class Node<Value> { // Node 클래스를 <Value> 라는 Generics 타입으로, public 으로 모든 모듈에서 접근 가능하도록 정의합니다.

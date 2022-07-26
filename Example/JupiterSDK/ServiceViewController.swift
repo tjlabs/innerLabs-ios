@@ -384,20 +384,21 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
             elapsedTime += (dt*1e-3)
         }
         
-        resultToDisplay.level = serviceManager.displayOutput.level
-//        resultToDisplay.numLevels
-//        resultToDisplay.infoLevels
-        
-        resultToDisplay.unitIndexTx = serviceManager.displayOutput.index
-        resultToDisplay.unitIndexRx = serviceManager.displayOutput.index
-        resultToDisplay.unitLength = serviceManager.displayOutput.length
-        resultToDisplay.scc = serviceManager.displayOutput.scc
-        resultToDisplay.status = serviceManager.displayOutput.phase
-        
-        
-//        if (isOpen) {
-//            UIView.performWithoutAnimation { self.containerTableView.reloadSections(IndexSet(0...0), with: .none) }
-//        }
+        if (serviceManager.displayOutput.isIndexChanged) {
+            resultToDisplay.level = serviceManager.displayOutput.level
+    //        resultToDisplay.numLevels
+    //        resultToDisplay.infoLevels
+            
+            resultToDisplay.unitIndexTx = serviceManager.displayOutput.index
+            resultToDisplay.unitIndexRx = serviceManager.displayOutput.index
+            resultToDisplay.unitLength = serviceManager.displayOutput.length
+            resultToDisplay.scc = serviceManager.displayOutput.scc
+            resultToDisplay.phase = serviceManager.displayOutput.phase
+            
+            if (isOpen) {
+                UIView.performWithoutAnimation { self.containerTableView.reloadSections(IndexSet(0...0), with: .none) }
+            }
+        }
     }
     
     func jsonToScale(json: String) -> ScaleResponse {

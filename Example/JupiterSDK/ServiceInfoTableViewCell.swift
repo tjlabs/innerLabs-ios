@@ -21,7 +21,7 @@ class ServiceInfoTableViewCell: UITableViewCell {
     @IBOutlet weak var modeLabel: UILabel!
     @IBOutlet weak var lengthLabel: UILabel!
     @IBOutlet weak var sccLabel: UILabel!
-    @IBOutlet weak var statusLabel: UILabel!
+    @IBOutlet weak var phaseLabel: UILabel!
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -46,6 +46,6 @@ class ServiceInfoTableViewCell: UITableViewCell {
         } else {
             self.sccLabel.text = "Unvalid"
         }
-        self.statusLabel.text = String(data.status)
+        self.phaseLabel.text = String(data.phase)
     }
 }

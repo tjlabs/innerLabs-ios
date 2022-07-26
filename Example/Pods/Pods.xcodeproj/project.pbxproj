@@ -272,7 +272,6 @@
 		35546A6397D5958C4158BFC31A9D09AC /* FBLPromise+Await.m in Sources */ = {isa = PBXBuildFile; fileRef = E40609D9F6EC948F32FE981D1EE955BD /* FBLPromise+Await.m */; };
 		35BFC4C3A46CF7EEC15BEA91AC6CE39B /* HorizontalBarHighlighter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 078648F10E9668FCFD4698CAFB615CF5 /* HorizontalBarHighlighter.swift */; };
 		35D1A719F4B5978AB70FC2394D9DDB7A /* FIRCoreDiagnostics.m in Sources */ = {isa = PBXBuildFile; fileRef = 6CCEB8683A87FDA25C97CFFEF11EB8FD /* FIRCoreDiagnostics.m */; };
-		360C713143C1700B1A2E9998A9CF9E2A /* NetworkStruct.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69A349957F08E82EF96ACCC8DDEAD3BA /* NetworkStruct.swift */; };
 		3641D2A955EB369FD725C07BAF82E96F /* Renderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 975839ADD07350F6D1A153974749BD9C /* Renderer.swift */; };
 		3660B4F629053ABC3C1DF69366770289 /* ConstraintConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8142796C5DD1FFB21163309D953D0E69 /* ConstraintConfig.swift */; };
 		36C984AD054E5583FE9616330CEA84E6 /* GTMNSData+zlib.h in Headers */ = {isa = PBXBuildFile; fileRef = 6B7C56809F4A4AD6FDB54F96EBD9521F /* GTMNSData+zlib.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -1786,7 +1785,6 @@
 		68F7DE635B9CA2EA957B1F8F72CCF8CB /* Resource.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Resource.swift; path = Sources/General/ImageSource/Resource.swift; sourceTree = "<group>"; };
 		694CB31B8F0703A218107C83C6D52B5D /* GPBMessage_PackagePrivate.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GPBMessage_PackagePrivate.h; path = objectivec/GPBMessage_PackagePrivate.h; sourceTree = "<group>"; };
 		699129D99CBBE376A87900A9C6C4DADC /* TensorFlowLiteSwift-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "TensorFlowLiteSwift-dummy.m"; sourceTree = "<group>"; };
-		69A349957F08E82EF96ACCC8DDEAD3BA /* NetworkStruct.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = NetworkStruct.swift; path = JupiterSDK/Classes/NetworkStruct.swift; sourceTree = "<group>"; };
 		69DD27673DDFC41CB4986242DB8B4AFF /* Pods-JupiterSDK_Example-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-JupiterSDK_Example-Info.plist"; sourceTree = "<group>"; };
 		69F8CD1A64B20B07680AD6B254D1589E /* GTMNSDictionary+URLArguments.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "GTMNSDictionary+URLArguments.m"; path = "Foundation/GTMNSDictionary+URLArguments.m"; sourceTree = "<group>"; };
 		69FA4FE2D8A877A2B6A63E0985DA7A42 /* DPDConstants.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = DPDConstants.swift; path = DropDown/helpers/DPDConstants.swift; sourceTree = "<group>"; };
@@ -4077,7 +4075,6 @@
 				C33E821EC98CF025E5D3C82AA9126670 /* JupiterService.swift */,
 				DFEDAD5A2AA952C9EC10987454ABEA4B /* LinkedList.swift */,
 				1C1A9681687C6220D822345B81291E3B /* NetworkManager.swift */,
-				69A349957F08E82EF96ACCC8DDEAD3BA /* NetworkStruct.swift */,
 				A13FDE9B434FFE738B0A06C57F3329F8 /* Node.swift */,
 				4574EDDC4FC1B0B9B2406F1DE859994D /* PacingDetectFunctions.swift */,
 				7B96ECEE511CBCD4EBF7DE5411F3B7C2 /* PDRDistanceEstimator.swift */,
@@ -5926,7 +5923,6 @@
 				C5B552B6AAD75A7C3040786638020E50 /* JupiterService.swift in Sources */,
 				B8C934E816827EF316ACB0A110F428A3 /* LinkedList.swift in Sources */,
 				AD71BB9D99A19D71DCBE333D7B558403 /* NetworkManager.swift in Sources */,
-				360C713143C1700B1A2E9998A9CF9E2A /* NetworkStruct.swift in Sources */,
 				067A66DD355B19F8281DF88AEF73393A /* Node.swift in Sources */,
 				B3C697AD287E7635007211D0 /* Observer.swift in Sources */,
 				9427008C817C6B4C05A4FB87E5C38B2E /* PacingDetectFunctions.swift in Sources */,

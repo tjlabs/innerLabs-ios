@@ -1,10 +1,3 @@
-//
-//  ServiceManager.swift
-//  JupiterSDK
-//
-//  Created by 신동현 on 2022/06/24.
-//
-
 import Foundation
 import CoreMotion
 
@@ -411,6 +404,7 @@ public class ServiceManager: Observation {
         }
         
         if (unitDRInfo.isIndexChanged) {
+            displayOutput.isIndexChanged = unitDRInfo.isIndexChanged
             displayOutput.index = unitDRInfo.index
             displayOutput.length = unitDRInfo.length
             

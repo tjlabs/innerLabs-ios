@@ -1,4 +1,3 @@
-
 import Foundation
 
 public struct LinkedList<Value> { // 전체 연결리스트를 관리하는 하는 LinkedList 구조체

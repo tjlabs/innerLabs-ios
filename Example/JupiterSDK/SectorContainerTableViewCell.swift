@@ -1,11 +1,3 @@
-//
-//  MapContainerTableViewCell.swift
-//  JupiterSDK_Example
-//
-//  Created by 신동현 on 2022/03/22.
-//  Copyright © 2022 CocoaPods. All rights reserved.
-//
-
 import UIKit
 import JupiterSDK
 import Charts
@@ -304,7 +296,7 @@ class SectorContainerTableViewCell: UITableViewCell {
         let chartFlag: Bool = false
         
         // Configure Chart
-        print("Limits :", limits)
+//        print("Limits :", limits)
         scatterChart.xAxis.axisMinimum = xMin + limits[0]
         scatterChart.xAxis.axisMaximum = xMax + limits[1]
         scatterChart.leftAxis.axisMinimum = yMin + limits[2]
