@@ -323,7 +323,9 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
     }
     
     private func loadRP(fileName: String) -> [[Double]] {
-        let path = Bundle.main.path(forResource: fileName, ofType: "csv")!
+        guard let path = Bundle.main.path(forResource: fileName, ofType: "csv") else {
+            return [[Double]]()
+        }
         let rpXY:[[Double]] = parseRP(url: URL(fileURLWithPath: path))
         
         return rpXY

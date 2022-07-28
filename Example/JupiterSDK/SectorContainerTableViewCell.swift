@@ -142,6 +142,8 @@ class SectorContainerTableViewCell: UITableViewCell {
 //        print("Height :", imageLevel.image!.size.height)
         
         // Building -> Level Image Download From URL
+        noImageLabel.text = "해당 \(level) 이미지가 없습니다"
+        
         if (!flag) {
             if let urlLevel = URL(string: "https://storage.googleapis.com/jupiter_image/map/\(sectorID)/\(building)_\(level).png") {
                 let data = try? Data(contentsOf: urlLevel)
