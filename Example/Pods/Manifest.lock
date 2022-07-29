@@ -76,7 +76,7 @@ PODS:
   - GoogleUtilities/UserDefaults (6.7.2):
     - GoogleUtilities/Logger
   - GTMSessionFetcher/Core (1.7.2)
-  - JupiterSDK (1.5):
+  - JupiterSDK (1.6.0):
     - Alamofire
     - Firebase/MLModelInterpreter (= 6.25.0)
     - FirebaseMLCommon
@@ -90,6 +90,7 @@ PODS:
   - Protobuf (3.21.1)
   - SnapKit (5.6.0)
   - SwiftAlgorithms (1.0.0)
+  - SwiftCSVExport (2.6.0)
   - TensorFlowLiteC (1.14.0)
   - TensorFlowLiteObjC (1.14.0):
     - TensorFlowLiteC (= 1.14.0)
@@ -109,6 +110,7 @@ DEPENDENCIES:
   - JupiterSDK (from `../`)
   - Kingfisher
   - SnapKit
+  - SwiftCSVExport (= 2.6.0)
   - TensorFlowLiteSwift
 
 SPEC REPOS:
@@ -138,6 +140,7 @@ SPEC REPOS:
     - Protobuf
     - SnapKit
     - SwiftAlgorithms
+    - SwiftCSVExport
     - TensorFlowLiteC
     - TensorFlowLiteObjC
     - TensorFlowLiteSwift
@@ -166,17 +169,18 @@ SPEC CHECKSUMS:
   GoogleToolboxForMac: 8bef7c7c5cf7291c687cf5354f39f9db6399ad34
   GoogleUtilities: 7f2f5a07f888cdb145101d6042bc4422f57e70b3
   GTMSessionFetcher: 5595ec75acf5be50814f81e9189490412bad82ba
-  JupiterSDK: e8e10ad1af04f5572a13ce85814739af304e5afe
+  JupiterSDK: c0d1dfbedd9dab32f9cce523f2e37b1c3e15da29
   Kingfisher: 184d4d1a8c36666e663caf8e08abe87898595c53
   nanopb: 59317e09cf1f1a0af72f12af412d54edf52603fc
   PromisesObjC: 3113f7f76903778cf4a0586bd1ab89329a0b7b97
   Protobuf: 9e88c1e667d75aa2491d211f26ccddde4e8ad4cf
   SnapKit: e01d52ebb8ddbc333eefe2132acf85c8227d9c25
   SwiftAlgorithms: 38dda4731d19027fdeee1125f973111bf3386b53
+  SwiftCSVExport: d9db3fb80484115028792f8d539445e3fb2c0ecb
   TensorFlowLiteC: a6702011fb661928634e59565b5fe262f69692d0
   TensorFlowLiteObjC: ece71b1e78f3df5952996c1606934b1d5538c875
   TensorFlowLiteSwift: ac8c816ae2d65f631a96151e7991c46412aec7eb
 
-PODFILE CHECKSUM: 2ef6482c54ad72dbef642629a0b2d6a03712b57d
+PODFILE CHECKSUM: 758e74f8b11b0c55f4066ee918b9cc84887716ac
 
 COCOAPODS: 1.11.3

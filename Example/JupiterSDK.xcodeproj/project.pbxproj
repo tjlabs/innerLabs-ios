@@ -17,6 +17,7 @@
 		9A16870CE33E63FE35238C05 /* Pods_JupiterSDK_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DB77B350B78C4D6D3DA0D745 /* Pods_JupiterSDK_Example.framework */; };
 		B3037A92281C06D50058D025 /* OverlayCustomView.xib in Resources */ = {isa = PBXBuildFile; fileRef = B3037A91281C06D50058D025 /* OverlayCustomView.xib */; };
 		B3037A94281C07060058D025 /* OverlayCustomView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3037A93281C07060058D025 /* OverlayCustomView.swift */; };
+		B30EED7C28936CB5009A3EDA /* TipsTownViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B30EED7B28936CB5009A3EDA /* TipsTownViewController.swift */; };
 		B31EC7D92876C03A00799659 /* ServiceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B31EC7D82876C03A00799659 /* ServiceViewController.swift */; };
 		B340EE3328093FB20096E404 /* CardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B340EE3228093FB20096E404 /* CardViewController.swift */; };
 		B3455283282AB7B400F0DD3E /* ServiceInfoTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3455281282AB7B400F0DD3E /* ServiceInfoTableViewCell.swift */; };
@@ -114,6 +115,7 @@
 		8B538B887A8FED7CB659550A /* Pods-JupiterSDK_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-JupiterSDK_Example.release.xcconfig"; path = "Target Support Files/Pods-JupiterSDK_Example/Pods-JupiterSDK_Example.release.xcconfig"; sourceTree = "<group>"; };
 		B3037A91281C06D50058D025 /* OverlayCustomView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = OverlayCustomView.xib; sourceTree = "<group>"; };
 		B3037A93281C07060058D025 /* OverlayCustomView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverlayCustomView.swift; sourceTree = "<group>"; };
+		B30EED7B28936CB5009A3EDA /* TipsTownViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TipsTownViewController.swift; sourceTree = "<group>"; };
 		B31EC7D82876C03A00799659 /* ServiceViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceViewController.swift; sourceTree = "<group>"; };
 		B340EE3228093FB20096E404 /* CardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardViewController.swift; sourceTree = "<group>"; };
 		B3455281282AB7B400F0DD3E /* ServiceInfoTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceInfoTableViewCell.swift; sourceTree = "<group>"; };
@@ -263,6 +265,7 @@
 				B3CDBFC62860781500319C3E /* CollectViewController.swift */,
 				B3B7FBF62856F43200E23EDF /* GalleryViewController.swift */,
 				B31EC7D82876C03A00799659 /* ServiceViewController.swift */,
+				B30EED7B28936CB5009A3EDA /* TipsTownViewController.swift */,
 				B3E0A4F52887E51700B88E08 /* Environment.swift */,
 				607FACD91AFB9204008FA782 /* Main.storyboard */,
 				B35272B1281F8DC300321CC6 /* SplashScreen.storyboard */,
@@ -620,6 +623,7 @@
 				"${BUILT_PRODUCTS_DIR}/Protobuf/Protobuf.framework",
 				"${BUILT_PRODUCTS_DIR}/SnapKit/SnapKit.framework",
 				"${BUILT_PRODUCTS_DIR}/SwiftAlgorithms/Algorithms.framework",
+				"${BUILT_PRODUCTS_DIR}/SwiftCSVExport/SwiftCSVExport.framework",
 				"${BUILT_PRODUCTS_DIR}/nanopb/nanopb.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
@@ -637,6 +641,7 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Protobuf.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SnapKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Algorithms.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftCSVExport.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/nanopb.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -703,6 +708,7 @@
 				B388AC31282BF6A3001C3D71 /* RobotTableViewCell.swift in Sources */,
 				B3BD69B427E9A8AD00A32A7A /* LevelCollectionViewCell.swift in Sources */,
 				607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */,
+				B30EED7C28936CB5009A3EDA /* TipsTownViewController.swift in Sources */,
 				B3BD69A627E9A55400A32A7A /* UIViewExtension.swift in Sources */,
 				B3BD699827E9A4A500A32A7A /* ColorPalette.swift in Sources */,
 				B3B7FBF52856DA4000E23EDF /* PopUpViewController.swift in Sources */,

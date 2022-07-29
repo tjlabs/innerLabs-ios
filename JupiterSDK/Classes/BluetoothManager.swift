@@ -68,7 +68,8 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
     let oneServiceUUID   = CBUUID(string: TJLABS_UUID)
     
     var bleDictionary = [String: [[Double]]]()
-    var bleFinal = [String: Double]()
+    var bleRaw = [String: Double]()
+    var bleAvg = [String: Double]()
     var scanCount: Double = 0
     
     override init() {
@@ -182,8 +183,8 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
                     
                     trimBleData()
                     
-//                    bleFinal = latestBleData(bleDictionary: bleDictionary)
-                    bleFinal = avgBleData(bleDictionary: bleDictionary)
+                    bleRaw = latestBleData(bleDictionary: bleDictionary)
+                    bleAvg = avgBleData(bleDictionary: bleDictionary)
                     
                     NotificationCenter.default.post(name: .scanInfo, object: nil, userInfo: userInfo)
                 }

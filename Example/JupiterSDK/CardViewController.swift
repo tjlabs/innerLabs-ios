@@ -381,13 +381,6 @@ extension CardViewController: UICollectionViewDataSource, UICollectionViewDelega
         let sector_id = cardItemData[mod].sector_id
         
         if (sector_id == 0) {
-           // to CardBackViewController
-//           guard let cardBackVC = self.storyboard?.instantiateViewController(withIdentifier: "CardBackViewController") as? CardBackViewController else { return }
-//           cardBackVC.cardData = cardItemData[mod]
-//           cardBackVC.uuid = uuid
-//           cardBackVC.page = currentPage
-//           self.navigationController?.pushViewController(cardBackVC, animated: true)
-            
             guard let guideVC = self.storyboard?.instantiateViewController(withIdentifier: "GuideViewController") as? GuideViewController else { return }
             guideVC.page = currentPage
             self.navigationController?.pushViewController(guideVC, animated: true)
@@ -398,19 +391,32 @@ extension CardViewController: UICollectionViewDataSource, UICollectionViewDelega
             galleryVC.page = currentPage
             self.navigationController?.pushViewController(galleryVC, animated: true)
         } else if (sector_id == 8) {
+            guard let tipstownVC = self.storyboard?.instantiateViewController(withIdentifier: "TipsTownViewController") as? TipsTownViewController else { return }
+            tipstownVC.cardData = cardItemData[mod]
+            tipstownVC.userId = uuid
+            tipstownVC.page = currentPage
+            self.navigationController?.pushViewController(tipstownVC, animated: true)
+        } else {
             guard let serviceVC = self.storyboard?.instantiateViewController(withIdentifier: "ServiceViewController") as? ServiceViewController else { return }
             serviceVC.cardData = cardItemData[mod]
             serviceVC.uuid = uuid
             serviceVC.page = currentPage
             self.navigationController?.pushViewController(serviceVC, animated: true)
         }
-        else {
-            guard let mapVC = self.storyboard?.instantiateViewController(withIdentifier: "MapViewController") as? MapViewController else { return }
-            mapVC.cardData = cardItemData[mod]
-            mapVC.uuid = uuid
-            mapVC.page = currentPage
-            self.navigationController?.pushViewController(mapVC, animated: true)
-        }
+//        else if (sector_id == 8) {
+//            guard let serviceVC = self.storyboard?.instantiateViewController(withIdentifier: "ServiceViewController") as? ServiceViewController else { return }
+//            serviceVC.cardData = cardItemData[mod]
+//            serviceVC.uuid = uuid
+//            serviceVC.page = currentPage
+//            self.navigationController?.pushViewController(serviceVC, animated: true)
+//        }
+//        else {
+//            guard let mapVC = self.storyboard?.instantiateViewController(withIdentifier: "MapViewController") as? MapViewController else { return }
+//            mapVC.cardData = cardItemData[mod]
+//            mapVC.uuid = uuid
+//            mapVC.page = currentPage
+//            self.navigationController?.pushViewController(mapVC, animated: true)
+//        }
     }
     
 }

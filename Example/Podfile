@@ -7,6 +7,7 @@ target 'JupiterSDK_Example' do
   use_frameworks!
   pod 'JupiterSDK', :path => '../'
   pod 'Alamofire'
+  pod 'SwiftCSVExport' , '= 2.6.0'
   pod 'GoogleMaps', '4.0.0'
   pod 'GooglePlaces', '4.0.0'
   pod 'Charts' 

@@ -263,7 +263,7 @@ public class FineLocationTrackingService: NSObject {
         let timeStamp = getCurrentTimeInMilliseconds()
         spatialPastTime = timeStamp
         
-        var bleDictionary = bleManager.bleFinal
+        var bleDictionary = bleManager.bleAvg
         if (deviceModel == "iPhone 13 Mini" || deviceModel == "iPhone 12 mini") {
             bleDictionary.keys.forEach { bleDictionary[$0] = bleDictionary[$0]! + 7 }
         }

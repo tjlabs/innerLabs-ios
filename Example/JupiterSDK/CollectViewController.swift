@@ -7,12 +7,22 @@
 //
 
 import UIKit
+import CoreMotion
 
 protocol CollectViewPageDelegate {
     func sendPage(data: Int)
 }
 
 class CollectViewController: UIViewController {
+    
+//    let motionManager = CMMotionManager()
+//    let motionAltimeter = CMAltimeter()
+//    var bleManager = BLECentralManager()
+    
+    var delegate : CollectViewPageDelegate?
+    var cardData: CardItemData?
+    var page: Int = 0
+    var uuid: String = ""
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(false)
@@ -24,16 +34,18 @@ class CollectViewController: UIViewController {
         super.viewDidLoad()
     }
     
-    var delegate : CollectViewPageDelegate?
     
-    var cardData: CardItemData?
-    var page: Int = 0
-    var uuid: String = ""
     
     func setCardData(cardData: CardItemData) {
 //        self.sectorNameLabel.text = cardData.sector_name
         
 //        let imageName: String = cardData.cardColor + "CardTop"
 //        self.cardTopImage.image = UIImage(named: imageName)!
+    }
+    
+    
+    @IBAction func tapBackButton(_ sender: UIButton) {
+        self.delegate?.sendPage(data: page)
+        self.navigationController?.popViewController(animated: true)
     }
 }
