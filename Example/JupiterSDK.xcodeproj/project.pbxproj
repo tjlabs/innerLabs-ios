@@ -18,6 +18,7 @@
 		B3037A92281C06D50058D025 /* OverlayCustomView.xib in Resources */ = {isa = PBXBuildFile; fileRef = B3037A91281C06D50058D025 /* OverlayCustomView.xib */; };
 		B3037A94281C07060058D025 /* OverlayCustomView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3037A93281C07060058D025 /* OverlayCustomView.swift */; };
 		B30EED7C28936CB5009A3EDA /* TipsTownViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B30EED7B28936CB5009A3EDA /* TipsTownViewController.swift */; };
+		B30EED872893B64C009A3EDA /* CollectViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B30EED862893B64C009A3EDA /* CollectViewController.swift */; };
 		B31EC7D92876C03A00799659 /* ServiceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B31EC7D82876C03A00799659 /* ServiceViewController.swift */; };
 		B340EE3328093FB20096E404 /* CardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B340EE3228093FB20096E404 /* CardViewController.swift */; };
 		B3455283282AB7B400F0DD3E /* ServiceInfoTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3455281282AB7B400F0DD3E /* ServiceInfoTableViewCell.swift */; };
@@ -64,7 +65,6 @@
 		B3BD69B527E9A8AD00A32A7A /* LevelCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B3BD69B327E9A8AD00A32A7A /* LevelCollectionViewCell.xib */; };
 		B3C09C64280E941B00E6F55F /* ShowCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3C09C63280E941B00E6F55F /* ShowCardViewController.swift */; };
 		B3CC3C07283231E000D50522 /* PrivacyPolicyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3CC3C06283231E000D50522 /* PrivacyPolicyViewController.swift */; };
-		B3CDBFC72860781500319C3E /* CollectViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3CDBFC62860781500319C3E /* CollectViewController.swift */; };
 		B3D194DC282E2726004E6F9A /* JupiterGuideTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3D194DA282E2726004E6F9A /* JupiterGuideTableViewCell.swift */; };
 		B3D194DD282E2726004E6F9A /* JupiterGuideTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B3D194DB282E2726004E6F9A /* JupiterGuideTableViewCell.xib */; };
 		B3D194DF282E2782004E6F9A /* GuideViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3D194DE282E2782004E6F9A /* GuideViewController.swift */; };
@@ -116,6 +116,7 @@
 		B3037A91281C06D50058D025 /* OverlayCustomView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = OverlayCustomView.xib; sourceTree = "<group>"; };
 		B3037A93281C07060058D025 /* OverlayCustomView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverlayCustomView.swift; sourceTree = "<group>"; };
 		B30EED7B28936CB5009A3EDA /* TipsTownViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TipsTownViewController.swift; sourceTree = "<group>"; };
+		B30EED862893B64C009A3EDA /* CollectViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectViewController.swift; sourceTree = "<group>"; };
 		B31EC7D82876C03A00799659 /* ServiceViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceViewController.swift; sourceTree = "<group>"; };
 		B340EE3228093FB20096E404 /* CardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardViewController.swift; sourceTree = "<group>"; };
 		B3455281282AB7B400F0DD3E /* ServiceInfoTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceInfoTableViewCell.swift; sourceTree = "<group>"; };
@@ -162,7 +163,6 @@
 		B3BD69B327E9A8AD00A32A7A /* LevelCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = LevelCollectionViewCell.xib; sourceTree = "<group>"; };
 		B3C09C63280E941B00E6F55F /* ShowCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowCardViewController.swift; sourceTree = "<group>"; };
 		B3CC3C06283231E000D50522 /* PrivacyPolicyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrivacyPolicyViewController.swift; sourceTree = "<group>"; };
-		B3CDBFC62860781500319C3E /* CollectViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectViewController.swift; sourceTree = "<group>"; };
 		B3D194DA282E2726004E6F9A /* JupiterGuideTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JupiterGuideTableViewCell.swift; sourceTree = "<group>"; };
 		B3D194DB282E2726004E6F9A /* JupiterGuideTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = JupiterGuideTableViewCell.xib; sourceTree = "<group>"; };
 		B3D194DE282E2782004E6F9A /* GuideViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GuideViewController.swift; sourceTree = "<group>"; };
@@ -242,6 +242,7 @@
 		607FACD21AFB9204008FA782 /* Example for JupiterSDK */ = {
 			isa = PBXGroup;
 			children = (
+				B30EED7F289381F9009A3EDA /* Collect */,
 				B3D194D9282E270C004E6F9A /* Guide */,
 				B3455280282AACD000F0DD3E /* Output */,
 				B345527F282AA00700F0DD3E /* Network */,
@@ -262,7 +263,6 @@
 				B3D194DE282E2782004E6F9A /* GuideViewController.swift */,
 				B3CC3C06283231E000D50522 /* PrivacyPolicyViewController.swift */,
 				B3B7FBF42856DA4000E23EDF /* PopUpViewController.swift */,
-				B3CDBFC62860781500319C3E /* CollectViewController.swift */,
 				B3B7FBF62856F43200E23EDF /* GalleryViewController.swift */,
 				B31EC7D82876C03A00799659 /* ServiceViewController.swift */,
 				B30EED7B28936CB5009A3EDA /* TipsTownViewController.swift */,
@@ -329,6 +329,14 @@
 				33536F035F43D878561B6254 /* LICENSE */,
 			);
 			name = "Podspec Metadata";
+			sourceTree = "<group>";
+		};
+		B30EED7F289381F9009A3EDA /* Collect */ = {
+			isa = PBXGroup;
+			children = (
+				B30EED862893B64C009A3EDA /* CollectViewController.swift */,
+			);
+			name = Collect;
 			sourceTree = "<group>";
 		};
 		B345527F282AA00700F0DD3E /* Network */ = {
@@ -682,6 +690,7 @@
 				B3B156DE282397AF0058B538 /* ImageOverlay.swift in Sources */,
 				B3BD69AF27E9A78000A32A7A /* SectorContainerTableViewCell.swift in Sources */,
 				B3BD69A127E9A52500A32A7A /* applyShadow.swift in Sources */,
+				B30EED872893B64C009A3EDA /* CollectViewController.swift in Sources */,
 				B3AA004B28313CDF007CD284 /* UITextFieldExtension.swift in Sources */,
 				B3F370DA281BA1DD003A427F /* RobotView.swift in Sources */,
 				B31EC7D92876C03A00799659 /* ServiceViewController.swift in Sources */,
@@ -698,7 +707,6 @@
 				B340EE3328093FB20096E404 /* CardViewController.swift in Sources */,
 				B3D194E2282E2B2B004E6F9A /* LocationTableViewCell.swift in Sources */,
 				B3DE146F280E7556006DA43C /* UIApplicationExtension.swift in Sources */,
-				B3CDBFC72860781500319C3E /* CollectViewController.swift in Sources */,
 				B3D194DC282E2726004E6F9A /* JupiterGuideTableViewCell.swift in Sources */,
 				B3F370D6281B9DC5003A427F /* OutputView.swift in Sources */,
 				B3F5C780282A5519009BEDB9 /* Protocol.swift in Sources */,

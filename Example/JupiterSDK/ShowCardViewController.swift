@@ -236,8 +236,10 @@ extension ShowCardViewController: UICollectionViewDataSource {
         
         cell.cardShowImage.image = cardShowImages[indexPath.item]
         
-        if (indexPath.item == 0) {
+        if (sectorID == 0) {
             cell.sectorShowImage.image = sectorShowImages[indexPath.item]
+        } else if (sectorID == 10) {
+            
         } else {
             let urlSectorShow = URL(string: "https://storage.googleapis.com/jupiter_image/card/\(sectorID)/edit_image.png")
             let resourceSectorShow = ImageResource(downloadURL: urlSectorShow!, cacheKey: "\(sectorID)Show")

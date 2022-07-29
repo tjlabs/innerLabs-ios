@@ -157,23 +157,6 @@ class MainViewController: UIViewController, UITextFieldDelegate {
                         KingfisherManager.shared.cache.clearMemoryCache()
                         KingfisherManager.shared.cache.clearDiskCache { print("Clear Cache Done !") }
                         
-//                        if let order = defaults.dictionary(forKey: "CardOrder") {
-//                            if (order[self.uuid] != nil) {
-//                                let savedCardOrder: [Int] = order[self.uuid] as! [Int]
-//                                print("Saved Card Order :", savedCardOrder)
-//
-//                                for i in 0..<savedCardOrder.count {
-//                                    let id: Int = savedCardOrder[i]
-//                                    for j in 0..<myCard.count {
-//                                        if (myCard[j].sector_id == id) {
-//                                            reorderedCard.append(myCard[j])
-//                                        }
-//                                    }
-//                                }
-//                            }
-//                        } else {
-//                            reorderedCard = myCard
-//                        }
                         reorderedCard = myCard
                         
                         for card in 0..<reorderedCard.count {
@@ -208,15 +191,17 @@ class MainViewController: UIViewController, UITextFieldDelegate {
                                 }
                             }
                             
-                            // KingFisher Image Download
-                            let urlSector = URL(string: "https://storage.googleapis.com/jupiter_image/card/\(id)/main_image.png")
-                            let urlSectorShow = URL(string: "https://storage.googleapis.com/jupiter_image/card/\(id)/edit_image.png")
-                            
-                            let resourceSector = ImageResource(downloadURL: urlSector!, cacheKey: "\(id)Main")
-                            let resourceSectorShow = ImageResource(downloadURL: urlSectorShow!, cacheKey: "\(id)Show")
-                            
-                            KingfisherManager.shared.retrieveImage(with: resourceSector, completionHandler: nil)
-                            KingfisherManager.shared.retrieveImage(with: resourceSectorShow, completionHandler: nil)
+                            if (id != 10) {
+                                // KingFisher Image Download
+                                let urlSector = URL(string: "https://storage.googleapis.com/jupiter_image/card/\(id)/main_image.png")
+                                let urlSectorShow = URL(string: "https://storage.googleapis.com/jupiter_image/card/\(id)/edit_image.png")
+                                
+                                let resourceSector = ImageResource(downloadURL: urlSector!, cacheKey: "\(id)Main")
+                                let resourceSectorShow = ImageResource(downloadURL: urlSectorShow!, cacheKey: "\(id)Show")
+                                
+                                KingfisherManager.shared.retrieveImage(with: resourceSector, completionHandler: nil)
+                                KingfisherManager.shared.retrieveImage(with: resourceSectorShow, completionHandler: nil)
+                            }
                             
                             cardDatas.append(CardItemData(sector_id: id, sector_name: name, description: description, cardColor: cardColor, mode: mode, service: service, infoBuilding: infoBuilding, infoLevel: infoLevel))
                         }

@@ -24,6 +24,7 @@ public class ServiceManager: Observation {
     
     // ----- Sensor & BLE ----- //
     var sensorData = SensorData()
+    public var collectData = CollectData()
     
     let motionManager = CMMotionManager()
     let motionAltimeter = CMAltimeter()
@@ -76,6 +77,8 @@ public class ServiceManager: Observation {
     var UV_INTERVAL: TimeInterval = 1/40 // second
     
     let SENSOR_INTERVAL: TimeInterval = 1/200
+    
+    var collectTimer: Timer?
     // ------------------ //
     
     // ----- Network ----- //
@@ -186,6 +189,25 @@ public class ServiceManager: Observation {
         }
     }
     
+    public func initCollect() {
+        unitDRGenerator.setMode(mode: "pdr")
+        
+        initialzeSensors()
+        startCollectTimer()
+        startBLE()
+    }
+    
+    public func startCollect() {
+        onStartFlag = true
+    }
+    
+    public func stopCollect() {
+        stopCollectTimer()
+        stopBLE()
+        
+        onStartFlag = false
+    }
+    
     public func getResult(completion: @escaping (Int, String) -> Void) {
         let currentTime: Int = getCurrentTimeInMilliseconds()
         
@@ -227,14 +249,17 @@ public class ServiceManager: Observation {
                 if let accX = data?.acceleration.x {
                     self.accX = accX
                     sensorData.acc[0] = accX*G
+                    collectData.acc[0] = accX*G
                 }
                 if let accY = data?.acceleration.y {
                     self.accY = accY
                     sensorData.acc[1] = accY*G
+                    collectData.acc[1] = accY*G
                 }
                 if let accZ = data?.acceleration.z {
                     self.accZ = accZ
                     sensorData.acc[2] = -accZ*G
+                    collectData.acc[2] = -accZ*G
                 }
             }
         }
@@ -245,14 +270,17 @@ public class ServiceManager: Observation {
                 if let gyroX = data?.rotationRate.x {
                     self.gyroX = gyroX
                     sensorData.gyro[0] = gyroX
+                    collectData.gyro[0] = gyroX
                 }
                 if let gyroY = data?.rotationRate.y {
                     self.gyroY = gyroY
                     sensorData.gyro[1] = gyroY
+                    collectData.gyro[1] = gyroY
                 }
                 if let gyroZ = data?.rotationRate.z {
                     self.gyroZ = gyroZ
                     sensorData.gyro[2] = gyroZ
+                    collectData.gyro[2] = gyroZ
                 }
             }
         }
@@ -263,14 +291,17 @@ public class ServiceManager: Observation {
                 if let magX = data?.magneticField.x {
                     self.magX = magX
                     sensorData.mag[0] = magX
+                    collectData.mag[0] = magX
                 }
                 if let magY = data?.magneticField.y {
                     self.magY = magY
                     sensorData.mag[1] = magY
+                    collectData.mag[1] = magY
                 }
                 if let magZ = data?.magneticField.z {
                     self.magZ = magZ
                     sensorData.mag[2] = magZ
+                    collectData.mag[2] = magZ
                 }
             }
         }
@@ -281,6 +312,7 @@ public class ServiceManager: Observation {
                     let pressure_: Double = Double(pressure)*10
                     self.pressure = pressure_
                     sensorData.pressure[0] = pressure_
+                    collectData.pressure[0] = pressure_
                 }
             }
         }
@@ -305,9 +337,17 @@ public class ServiceManager: Observation {
                 sensorData.userAcc[1] = m.userAcceleration.y
                 sensorData.userAcc[2] = m.userAcceleration.z
                 
+                collectData.userAcc[0] = m.userAcceleration.x
+                collectData.userAcc[1] = m.userAcceleration.y
+                collectData.userAcc[2] = m.userAcceleration.z
+                
                 sensorData.att[0] = m.attitude.roll
                 sensorData.att[1] = m.attitude.pitch
                 sensorData.att[2] = m.attitude.yaw
+                
+                collectData.att[0] = m.attitude.roll
+                collectData.att[1] = m.attitude.pitch
+                collectData.att[2] = m.attitude.yaw
                 
                 sensorData.rotationMatrix[0][0] = m.attitude.rotationMatrix.m11
                 sensorData.rotationMatrix[0][1] = m.attitude.rotationMatrix.m12
@@ -320,6 +360,18 @@ public class ServiceManager: Observation {
                 sensorData.rotationMatrix[2][0] = m.attitude.rotationMatrix.m31
                 sensorData.rotationMatrix[2][1] = m.attitude.rotationMatrix.m32
                 sensorData.rotationMatrix[2][2] = m.attitude.rotationMatrix.m33
+                
+                collectData.rotationMatrix[0][0] = m.attitude.rotationMatrix.m11
+                collectData.rotationMatrix[0][1] = m.attitude.rotationMatrix.m12
+                collectData.rotationMatrix[0][2] = m.attitude.rotationMatrix.m13
+                                
+                collectData.rotationMatrix[1][0] = m.attitude.rotationMatrix.m21
+                collectData.rotationMatrix[1][1] = m.attitude.rotationMatrix.m22
+                collectData.rotationMatrix[1][2] = m.attitude.rotationMatrix.m23
+                                
+                collectData.rotationMatrix[2][0] = m.attitude.rotationMatrix.m31
+                collectData.rotationMatrix[2][1] = m.attitude.rotationMatrix.m32
+                collectData.rotationMatrix[2][2] = m.attitude.rotationMatrix.m33
             }
         
             if let e = error {
@@ -357,6 +409,19 @@ public class ServiceManager: Observation {
             floorUpdateRequestFlag = false
             userVelocityTimer!.invalidate()
             userVelocityTimer = nil
+        }
+    }
+    
+    func startCollectTimer() {
+        if (collectTimer == nil) {
+            collectTimer = Timer.scheduledTimer(timeInterval: UV_INTERVAL, target: self, selector: #selector(self.collectTimerUpdate), userInfo: nil, repeats: true)
+        }
+    }
+    
+    func stopCollectTimer() {
+        if (collectTimer != nil) {
+            collectTimer!.invalidate()
+            collectTimer = nil
         }
     }
     
@@ -470,6 +535,28 @@ public class ServiceManager: Observation {
             }
             
             preUnitHeading = unitDRInfo.heading
+        }
+    }
+    
+    @objc func collectTimerUpdate() {
+        let currentTime = getCurrentTimeInMilliseconds()
+        
+        collectData.time = currentTime
+        
+        collectData.bleRaw = bleManager.bleRaw
+        collectData.bleAvg = bleManager.bleAvg
+        
+        if (onStartFlag) {
+            unitDRInfo = unitDRGenerator.generateDRInfo(sensorData: sensorData)
+        }
+        
+        collectData.isIndexChanged = false
+        if (unitDRInfo.isIndexChanged) {
+            collectData.isIndexChanged = unitDRInfo.isIndexChanged
+            collectData.index = unitDRInfo.index
+            collectData.length = unitDRInfo.length
+            collectData.heading = unitDRInfo.heading
+            collectData.lookingFlag = unitDRInfo.lookingFlag
         }
     }
     

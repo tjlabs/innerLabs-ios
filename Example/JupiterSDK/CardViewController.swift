@@ -355,9 +355,12 @@ extension CardViewController: UICollectionViewDataSource, UICollectionViewDelega
         
 //        cell.sectorNameLeading.constant = floor((cell.sectorImageView.frame.size.width - cell.sectorImageView.frame.size.height * 0.6)/2)
         
-        if (mod == 0) {
+        if (sectorID == 0) {
             cell.sectorImageView.image = sectorImages[mod]
-        } else {
+        } else if (sectorID == 10) {
+            cell.sectorImageView.image = nil
+        }
+        else {
 //            if (sectorID == 7) {
 //                cell.sectorImageView.image = UIImage(named: "sectorGallery")
 //            } else {
@@ -384,7 +387,14 @@ extension CardViewController: UICollectionViewDataSource, UICollectionViewDelega
             guard let guideVC = self.storyboard?.instantiateViewController(withIdentifier: "GuideViewController") as? GuideViewController else { return }
             guideVC.page = currentPage
             self.navigationController?.pushViewController(guideVC, animated: true)
-        } else if (sector_id == 7) {
+        } else if (sector_id == 10) {
+            guard let collectVC = self.storyboard?.instantiateViewController(withIdentifier: "CollectViewController") as? CollectViewController else { return }
+            collectVC.cardData = cardItemData[mod]
+            collectVC.userId = uuid
+            collectVC.page = currentPage
+            self.navigationController?.pushViewController(collectVC, animated: true)
+        }
+        else if (sector_id == 7) {
             guard let galleryVC = self.storyboard?.instantiateViewController(withIdentifier: "GalleryViewController") as? GalleryViewController else { return }
             galleryVC.cardData = cardItemData[mod]
             galleryVC.uuid = uuid

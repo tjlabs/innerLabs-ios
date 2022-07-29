@@ -55,6 +55,7 @@ class AddCardViewController: UIViewController, UITextFieldDelegate {
             if (message.count < 5) {
                 message = jsonToFail(json: returnedString).message
             }
+            
             switch (message) {
             case "Update Success":
                 self.responseLabel.text = "\(addedCard.sector_name) 카드가 정상적으로 추가됐습니다"
@@ -91,15 +92,17 @@ class AddCardViewController: UIViewController, UITextFieldDelegate {
                     }
                 }
                 
-                // KingFisher Image Download
-                let urlSector = URL(string: "https://storage.googleapis.com/jupiter_image/card/\(id)/main_image.png")
-                let urlSectorShow = URL(string: "https://storage.googleapis.com/jupiter_image/card/\(id)/edit_image.png")
-                
-                let resourceSector = ImageResource(downloadURL: urlSector!, cacheKey: "\(id)Main")
-                let resourceSectorShow = ImageResource(downloadURL: urlSectorShow!, cacheKey: "\(id)Show")
-                
-                KingfisherManager.shared.retrieveImage(with: resourceSector, completionHandler: nil)
-                KingfisherManager.shared.retrieveImage(with: resourceSectorShow, completionHandler: nil)
+                if (id != 10) {
+                    // KingFisher Image Download
+                    let urlSector = URL(string: "https://storage.googleapis.com/jupiter_image/card/\(id)/main_image.png")
+                    let urlSectorShow = URL(string: "https://storage.googleapis.com/jupiter_image/card/\(id)/edit_image.png")
+                    
+                    let resourceSector = ImageResource(downloadURL: urlSector!, cacheKey: "\(id)Main")
+                    let resourceSectorShow = ImageResource(downloadURL: urlSectorShow!, cacheKey: "\(id)Show")
+                    
+                    KingfisherManager.shared.retrieveImage(with: resourceSector, completionHandler: nil)
+                    KingfisherManager.shared.retrieveImage(with: resourceSectorShow, completionHandler: nil)
+                }
                 
                 self.cardItemData.append(CardItemData(sector_id: id, sector_name: name, description: description, cardColor: cardColor, mode: mode, service: service, infoBuilding: infoBuilding, infoLevel: infoLevel))
                 
