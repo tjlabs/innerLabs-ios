@@ -35,6 +35,9 @@ class CollectViewController: UIViewController {
     @IBOutlet var collectView: UIView!
     @IBOutlet weak var bleView: UIView!
     
+    @IBOutlet weak var wardView1: UIView!
+    @IBOutlet weak var wardView2: UIView!
+    @IBOutlet weak var wardView3: UIView!
     
     var serviceManager = ServiceManager()
     
@@ -51,11 +54,25 @@ class CollectViewController: UIViewController {
     var saveFlag: Bool = false
     var isWriting: Bool = false
     
+    // Ward Info
+    @IBOutlet weak var bleName1: UILabel!
+    @IBOutlet weak var bleRssi1: UILabel!
+    
+    @IBOutlet weak var bleName2: UILabel!
+    @IBOutlet weak var bleRssi2: UILabel!
+    
+    @IBOutlet weak var bleName3: UILabel!
+    @IBOutlet weak var bleRssi3: UILabel!
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(false)
         
         let width = collectView.frame.size.width
         let height = collectView.frame.size.height
+        
+        wardView1.isHidden = true
+        wardView2.isHidden = true
+        wardView3.isHidden = true
     }
 
     override func viewDidLoad() {
@@ -64,8 +81,6 @@ class CollectViewController: UIViewController {
         serviceManager.initCollect()
         
         startTimer()
-        
-        print("CollectView Size :", collectView.frame.size)
     }
     
     @IBAction func tapBackButton(_ sender: UIButton) {
@@ -180,6 +195,56 @@ class CollectViewController: UIViewController {
     @objc func timerUpdate() {
 //        print("Sensor :", serviceManager.collectData.acc)
 //        print("BLE :", serviceManager.collectData.bleAvg)
+        let bleAvg: [String: Double] = serviceManager.collectData.bleAvg
+        let sprtedBleAvg = bleAvg.sorted { $0.1 > $1.1 }
+        
+        var top3ID = [String]()
+        var top3Rssi = [Double]()
+        var top3AvgRssi = [Double]()
+        
+        for i in 0..<sprtedBleAvg.count {
+            let idFull: String = sprtedBleAvg[i].key
+            let id = idFull.components(separatedBy: "-")
+            top3ID.append(id[2])
+            
+            top3AvgRssi.append(sprtedBleAvg[i].value)
+        }
+        
+        if (bleAvg.count > 2) {
+            wardView1.isHidden = false
+            wardView2.isHidden = false
+            wardView3.isHidden = false
+            
+            bleName1.text = top3ID[0]
+            bleRssi1.text = String(format: "%.1f", top3AvgRssi[0])
+            
+            bleName2.text = top3ID[1]
+            bleRssi2.text = String(format: "%.1f", top3AvgRssi[1])
+            
+            bleName3.text = top3ID[2]
+            bleRssi3.text = String(format: "%.1f", top3AvgRssi[2])
+        } else if (bleAvg.count == 2) {
+            wardView1.isHidden = false
+            wardView2.isHidden = false
+            wardView3.isHidden = true
+            
+            bleName1.text = top3ID[0]
+            bleRssi1.text = String(format: "%.1f", top3AvgRssi[0])
+            
+            bleName2.text = top3ID[1]
+            bleRssi2.text = String(format: "%.1f", top3AvgRssi[1])
+        } else if (bleAvg.count == 1) {
+            wardView1.isHidden = false
+            wardView2.isHidden = true
+            wardView3.isHidden = true
+            
+            bleName1.text = top3ID[0]
+            bleRssi1.text = String(format: "%.1f", top3AvgRssi[0])
+        } else {
+            wardView1.isHidden = true
+            wardView2.isHidden = true
+            wardView3.isHidden = true
+        }
         
         if (saveFlag) {
 //            writeData(collectData: serviceManager.collectData)
