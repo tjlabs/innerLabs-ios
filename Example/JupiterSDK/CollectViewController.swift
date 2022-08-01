@@ -32,6 +32,10 @@ class Measurements {
 }
 
 class CollectViewController: UIViewController {
+    @IBOutlet var collectView: UIView!
+    @IBOutlet weak var bleView: UIView!
+    
+    
     var serviceManager = ServiceManager()
     
     var delegate : ServiceViewPageDelegate?
@@ -50,6 +54,8 @@ class CollectViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(false)
         
+        let width = collectView.frame.size.width
+        let height = collectView.frame.size.height
     }
 
     override func viewDidLoad() {
@@ -58,6 +64,8 @@ class CollectViewController: UIViewController {
         serviceManager.initCollect()
         
         startTimer()
+        
+        print("CollectView Size :", collectView.frame.size)
     }
     
     @IBAction func tapBackButton(_ sender: UIButton) {
@@ -170,8 +178,8 @@ class CollectViewController: UIViewController {
     }
 
     @objc func timerUpdate() {
-        print("Sensor :", serviceManager.collectData.acc)
-        print("BLE :", serviceManager.collectData.bleAvg)
+//        print("Sensor :", serviceManager.collectData.acc)
+//        print("BLE :", serviceManager.collectData.bleAvg)
         
         if (saveFlag) {
 //            writeData(collectData: serviceManager.collectData)
