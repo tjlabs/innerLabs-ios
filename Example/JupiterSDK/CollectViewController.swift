@@ -1,6 +1,7 @@
 import UIKit
 import SwiftCSVExport
 import JupiterSDK
+import Charts
 
 class Measurements {
     var time: Int = 0
@@ -64,6 +65,11 @@ class CollectViewController: UIViewController {
     @IBOutlet weak var bleName3: UILabel!
     @IBOutlet weak var bleRssi3: UILabel!
     
+    @IBOutlet weak var index: UILabel!
+    @IBOutlet weak var length: UILabel!
+    
+    @IBOutlet weak var scatterChart: ScatterChartView!
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(false)
         
@@ -101,12 +107,13 @@ class CollectViewController: UIViewController {
             sender.backgroundColor = .blue3
             isWriting = true
             
-            serviceManager.startCollect()
+            startToSave()
         }
         else {
             sender.backgroundColor = .systemGray4
             isWriting = false
             
+            saveData()
             serviceManager.stopCollect()
         }
     }
@@ -191,10 +198,51 @@ class CollectViewController: UIViewController {
 
         data.add(listPropertiesWithValues(meas))
     }
+    
+    func saveData() {
+        let header = ["time","accX","accY","accZ","gyroX","gyroY","gyroZ","magX","magY","magZ","roll","pitch","yaw","qx","qy","qz","qw","pressure","ble"]
+        
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd-HH-mm"
+        dateFormatter.locale = Locale(identifier:"ko_KR")
+        let nowDate = Date()
+        let convertNowStr = dateFormatter.string(from: nowDate)
+        
+        // Create a object for write CSV
+        let writeCSVObj = CSV()
+        writeCSVObj.rows = self.data
+        writeCSVObj.delimiter = DividerType.comma.rawValue
+        writeCSVObj.fields = header as NSArray
+        writeCSVObj.name = "iosData_" + convertNowStr
+        
+        // Write File using CSV class object
+        let output = CSVExport.export(writeCSVObj)
+        if output.result.isSuccess {
+            guard let filePath =  output.filePath else {
+                print("Export Error: \(String(describing: output.message))")
+                return
+            }
+            
+            print("File Path: \(filePath)")
+            self.readCSVPath(filePath)
+        } else {
+            print("Export Error: \(String(describing: output.message))")
+        }
+    }
+    
+    func readCSVPath(_ filePath: String) {
+        
+        let request = NSURLRequest(url:  URL(fileURLWithPath: filePath) )
+        
+        // Read File and convert as CSV class object
+        _ = CSVExport.readCSVObject(filePath);
+        
+        // Use 'SwiftLoggly' pod framework to print the Dictionary
+        //        loggly(LogType.Info, text: readCSVObj.name)
+        //        loggly(LogType.Info, text: readCSVObj.delimiter)
+    }
 
     @objc func timerUpdate() {
-//        print("Sensor :", serviceManager.collectData.acc)
-//        print("BLE :", serviceManager.collectData.bleAvg)
         let bleAvg: [String: Double] = serviceManager.collectData.bleAvg
         let sprtedBleAvg = bleAvg.sorted { $0.1 > $1.1 }
         
@@ -247,10 +295,11 @@ class CollectViewController: UIViewController {
         }
         
         if (saveFlag) {
-//            writeData(collectData: serviceManager.collectData)
+            writeData(collectData: serviceManager.collectData)
             
             if (serviceManager.collectData.isIndexChanged) {
-                print("PDR :",serviceManager.collectData.index)
+                index.text = String(serviceManager.collectData.index)
+                length.text = String(format: "%.4f", serviceManager.collectData.length)
             }
         }
     }

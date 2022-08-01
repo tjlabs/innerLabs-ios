@@ -202,8 +202,8 @@ public class ServiceManager: Observation {
     }
     
     public func stopCollect() {
-        stopCollectTimer()
-        stopBLE()
+//        stopCollectTimer()
+//        stopBLE()
         
         onStartFlag = false
     }
