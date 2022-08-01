@@ -1500,8 +1500,8 @@
                         <outlet property="bleRssi3" destination="aoH-Oa-QYb" id="Pn1-aC-t6B"/>
                         <outlet property="bleView" destination="UkF-tN-BaX" id="Xh6-g2-ojy"/>
                         <outlet property="collectView" destination="aVh-vd-k6Y" id="nNX-rK-i5g"/>
-                        <outlet property="index" destination="rkP-gW-zdD" id="Zqt-wu-tc2"/>
-                        <outlet property="length" destination="UE8-37-kaY" id="3lB-LS-1To"/>
+                        <outlet property="indexLabel" destination="rkP-gW-zdD" id="TNO-v5-4zF"/>
+                        <outlet property="lengthLabel" destination="UE8-37-kaY" id="tg4-0p-i9W"/>
                         <outlet property="scatterChart" destination="bES-u2-ZAf" id="4DU-Bc-o0d"/>
                         <outlet property="wardView1" destination="MJv-L5-2Zv" id="nMg-Am-NVm"/>
                         <outlet property="wardView2" destination="IdW-aw-3lM" id="u74-SS-2O1"/>

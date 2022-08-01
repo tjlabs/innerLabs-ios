@@ -33,6 +33,9 @@ class Measurements {
 }
 
 class CollectViewController: UIViewController {
+    let R2D: Double = 180 / Double.pi
+    let D2R: Double = Double.pi / 180
+    
     @IBOutlet var collectView: UIView!
     @IBOutlet weak var bleView: UIView!
     
@@ -65,10 +68,15 @@ class CollectViewController: UIViewController {
     @IBOutlet weak var bleName3: UILabel!
     @IBOutlet weak var bleRssi3: UILabel!
     
-    @IBOutlet weak var index: UILabel!
-    @IBOutlet weak var length: UILabel!
+    @IBOutlet weak var indexLabel: UILabel!
+    @IBOutlet weak var lengthLabel: UILabel!
     
     @IBOutlet weak var scatterChart: ScatterChartView!
+    var x: Double = 0
+    var y: Double = 0
+    var heading: Double = 0
+    var xAxisValue = [Double]()
+    var yAxisValue = [Double]()
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(false)
@@ -90,8 +98,7 @@ class CollectViewController: UIViewController {
     }
     
     @IBAction func tapBackButton(_ sender: UIButton) {
-        self.delegate?.sendPage(data: page)
-        self.navigationController?.popViewController(animated: true)
+        goToBack()
     }
     
     @IBAction func tapStartButton(_ sender: UIButton) {
@@ -115,7 +122,14 @@ class CollectViewController: UIViewController {
             
             saveData()
             serviceManager.stopCollect()
+            
+            goToBack()
         }
+    }
+    
+    func goToBack() {
+        self.delegate?.sendPage(data: page)
+        self.navigationController?.popViewController(animated: true)
     }
     
     func startTimer() {
@@ -298,9 +312,70 @@ class CollectViewController: UIViewController {
             writeData(collectData: serviceManager.collectData)
             
             if (serviceManager.collectData.isIndexChanged) {
-                index.text = String(serviceManager.collectData.index)
-                length.text = String(format: "%.4f", serviceManager.collectData.length)
+                let index = serviceManager.collectData.index
+                let length = serviceManager.collectData.length
+                indexLabel.text = String(index)
+                lengthLabel.text = String(format: "%.4f", length)
+                let currentHeading: Double = serviceManager.collectData.heading + 90
+//                print("Heading :", currentHeading)
+                
+                x = x + (length * cos(currentHeading*D2R))
+                y = y + (length * sin(currentHeading*D2R))
+                
+                xAxisValue.append(x)
+                yAxisValue.append(y)
+                
+                if (xAxisValue.count > 12) {
+                    xAxisValue.removeFirst()
+                    yAxisValue.removeFirst()
+                }
+
+                
+                let values1 = (0..<xAxisValue.count).map { (i) -> ChartDataEntry in
+                    return ChartDataEntry(x: xAxisValue[i], y: yAxisValue[i])
+                }
+                
+                let set1 = ScatterChartDataSet(entries: values1, label: "Trajectory")
+                set1.drawValuesEnabled = false
+                set1.setScatterShape(.circle)
+                set1.setColor(UIColor.systemRed)
+                set1.scatterShapeSize = 15
+                
+                let chartData = ScatterChartData(dataSet: set1)
+                setChartFlag(chartFlag: false)
+                
+                let xMin = x - 12
+                let xMax = x + 12
+                let yMin = y - 12
+                let yMax = y + 12
+                
+                scatterChart.xAxis.axisMinimum = xMin
+                scatterChart.xAxis.axisMaximum = xMax
+                scatterChart.leftAxis.axisMinimum = yMin
+                scatterChart.leftAxis.axisMaximum = yMax
+                
+                scatterChart.data = chartData
             }
         }
+    }
+    
+    public func setChartFlag(chartFlag: Bool) {
+        scatterChart.xAxis.drawGridLinesEnabled = chartFlag
+        scatterChart.leftAxis.drawGridLinesEnabled = chartFlag
+        scatterChart.rightAxis.drawGridLinesEnabled = chartFlag
+        
+        scatterChart.xAxis.drawAxisLineEnabled = chartFlag
+        scatterChart.leftAxis.drawAxisLineEnabled = chartFlag
+        scatterChart.rightAxis.drawAxisLineEnabled = chartFlag
+        
+        scatterChart.xAxis.centerAxisLabelsEnabled = chartFlag
+        scatterChart.leftAxis.centerAxisLabelsEnabled = chartFlag
+        scatterChart.rightAxis.centerAxisLabelsEnabled = chartFlag
+
+        scatterChart.xAxis.drawLabelsEnabled = chartFlag
+        scatterChart.leftAxis.drawLabelsEnabled = chartFlag
+        scatterChart.rightAxis.drawLabelsEnabled = chartFlag
+        
+        scatterChart.legend.enabled = chartFlag
     }
 }
