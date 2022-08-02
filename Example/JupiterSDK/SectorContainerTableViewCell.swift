@@ -219,7 +219,7 @@ class SectorContainerTableViewCell: UITableViewCell {
             scatterChart.leftAxis.axisMaximum = limits[3]
         }
         
-        print("\(currentBuilding) \(currentLevel) Limits : \(limits[0]) , \(limits[1]), \(limits[2]), \(limits[3])")
+//        print("\(currentBuilding) \(currentLevel) Limits : \(limits[0]) , \(limits[1]), \(limits[2]), \(limits[3])")
         
         scatterChart.xAxis.drawGridLinesEnabled = chartFlag
         scatterChart.leftAxis.drawGridLinesEnabled = chartFlag
@@ -261,7 +261,7 @@ class SectorContainerTableViewCell: UITableViewCell {
         
         let chartFlag: Bool = false
         
-        print("\(currentBuilding) \(currentLevel) Limits : \(limits[0]) , \(limits[1]), \(limits[2]), \(limits[3])")
+//        print("\(currentBuilding) \(currentLevel) Limits : \(limits[0]) , \(limits[1]), \(limits[2]), \(limits[3])")
         
         // Configure Chart
         scatterChart.xAxis.axisMinimum = limits[0]

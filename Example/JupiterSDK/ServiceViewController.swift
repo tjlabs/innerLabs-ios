@@ -20,7 +20,7 @@ protocol ServiceViewPageDelegate {
 class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewDataSource, Observer {
     
     func update(result: FineLocationTrackingResult) {
-//        print("(\(self.serviceName) Result) -> \(result)")
+        print("(\(self.serviceName) Result) -> \(result)")
         
         let building = result.building_name
         let level = result.level_name

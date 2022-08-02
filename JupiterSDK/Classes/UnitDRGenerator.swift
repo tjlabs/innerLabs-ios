@@ -15,7 +15,6 @@ public class UnitDRGenerator: NSObject {
     public let pdrDistanceEstimator = PDRDistanceEstimator()
     public let drDistanceEstimator = DRDistanceEstimator()
     
-    
     public func setMode(mode: String) {
         unitMode = mode
     }

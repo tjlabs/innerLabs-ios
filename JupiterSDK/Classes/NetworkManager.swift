@@ -610,13 +610,13 @@ public class NetworkManager {
         ]
         
         // [http 요청 수행 실시]
-        print("")
-        print("====================================")
-        print("주 소 :: ", url)
-        print("-------------------------------")
-        print("데이터 :: ", input)
-        print("====================================")
-        print("")
+//        print("")
+//        print("====================================")
+//        print("주 소 :: ", url)
+//        print("-------------------------------")
+//        print("데이터 :: ", input)
+//        print("====================================")
+//        print("")
         
         AF.request(
             url, // [주소]
@@ -630,13 +630,13 @@ public class NetworkManager {
             switch response.result {
             case .success(let res):
                 do {
-                    print("")
-                    print("====================================")
-                    print("응답 코드 :: ", response.response?.statusCode ?? 0)
-                    print("-------------------------------")
-                    print("응답 데이터 :: ", String(data: res, encoding: .utf8) ?? "")
-                    print("====================================")
-                    print("")
+//                    print("")
+//                    print("====================================")
+//                    print("응답 코드 :: ", response.response?.statusCode ?? 0)
+//                    print("-------------------------------")
+//                    print("응답 데이터 :: ", String(data: res, encoding: .utf8) ?? "")
+//                    print("====================================")
+//                    print("")
                     
                     let returnedString = String(data: res, encoding: .utf8) ?? "Fail"
                     completion(200, returnedString)
