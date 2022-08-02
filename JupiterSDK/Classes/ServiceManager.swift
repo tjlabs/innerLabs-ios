@@ -77,6 +77,8 @@ public class ServiceManager: Observation {
     var userVelocityTimer: Timer?
     var UV_INTERVAL: TimeInterval = 1/40 // second
     
+    var kfTimer: Timer?
+    
     let SENSOR_INTERVAL: TimeInterval = 1/200
     
     var collectTimer: Timer?
@@ -110,7 +112,7 @@ public class ServiceManager: Observation {
     
     public var displayOutput = ServiceResult()
     // --------------------------------- //
-    
+    var runKalmanFilter: Bool = false
     var kalmanP: Double = 1
     var kalmanQ: Double = 0.3
     var kalmanR: Double = 3
@@ -415,6 +417,10 @@ public class ServiceManager: Observation {
             floorUpdateRequestFlag = true
             userVelocityTimer = Timer.scheduledTimer(timeInterval: UV_INTERVAL, target: self, selector: #selector(self.userVelocityTimerUpdate), userInfo: nil, repeats: true)
         }
+        
+//        if (kfTimer == nil && self.service == "FLT") {
+//            kfTimer = Timer.scheduledTimer(timeInterval: UV_INTERVAL, target: self, selector: #selector(self.kfUpdate), userInfo: nil, repeats: true)
+//        }
     }
     
     func stopTimer() {
@@ -428,6 +434,11 @@ public class ServiceManager: Observation {
             userVelocityTimer!.invalidate()
             userVelocityTimer = nil
         }
+        
+//        if (kfTimer != nil) {
+//            kfTimer!.invalidate()
+//            kfTimer = nil
+//        }
     }
     
     func startCollectTimer() {
@@ -492,7 +503,7 @@ public class ServiceManager: Observation {
             
             let data = UserVelocity(user_id: user_id, mobile_time: currentTime, index: unitDRInfo.index, length: unitDRInfo.length, heading: unitDRInfo.heading, looking: unitDRInfo.lookingFlag)
             
-            // Heading
+            // Kalman Filter
             let diffHeading = unitDRInfo.heading - preUnitHeading
             let curUnitDRLength = unitDRInfo.length
             
@@ -506,10 +517,10 @@ public class ServiceManager: Observation {
                     lengthSum += inputUserVelocity[idx].length
                 }
                 unitDistane = lengthSum
-
-                inputUserVelocity = [UserVelocity(user_id: user_id, mobile_time: 0, index: 0, length: 0, heading: 0, looking: true)]
                 
-                // Request Fine Location Tracking
+                inputUserVelocity = [UserVelocity(user_id: user_id, mobile_time: 0, index: 0, length: 0, heading: 0, looking: true)]
+//                self.runKalmanFilter = true
+                
                 floorUpdateRequestFlag = true
                 floorUpdateRequestTimer = 0
                 
@@ -517,27 +528,24 @@ public class ServiceManager: Observation {
                 NetworkManager.shared.postFLT(url: FLT_URL, input: input, completion: { [self] statusCode, returnedString in
                     if (statusCode == 200) {
                         let result = jsonToResult(json: returnedString)
-//
+
                         displayOutput.level = result.level_name
                         displayOutput.scc = result.scc
                         displayOutput.phase = String(result.phase)
                         
-//                        self.tracking(input: result)
-//
-//                        // Kalman Filter
+                        // Kalman Filter
                         if (result.mobile_time > preOutputMobileTime) {
                             if (result.phase == 4) {
                                 if (!(result.x == 0 && result.y == 0)) {
                                     // Measurment Update
                                     if (measurementUpdateFlag) {
-//                                        let muOutput = measurementUpdate(timeUpdatePosition: timeUpdatePosition, serverOutput: result)
-//                                        self.tracking(input: muOutput)
+                                        let muOutput = measurementUpdate(timeUpdatePosition: timeUpdatePosition, serverOutput: result)
+                                        self.tracking(input: muOutput)
                                     }
                                     timeUpdatePositionInit(serverOutput: result)
                                 }
                             } else {
                                 kalmanInit()
-//                                self.tracking(input: result)
                             }
                             preOutputMobileTime = result.mobile_time
                         }
@@ -545,12 +553,60 @@ public class ServiceManager: Observation {
                 })
             }
             
-            // Time Update
-//            if (timeUpdateFlag) {
-//                let tuOutput = timeUpdate(length: curUnitDRLength, diffHeading: diffHeading, mobileTime: currentTime)
-//                self.tracking(input: tuOutput)
-//            }
+            if (timeUpdateFlag) {
+                let tuOutput = timeUpdate(length: curUnitDRLength, diffHeading: diffHeading, mobileTime: currentTime)
+                self.tracking(input: tuOutput)
+            }
+            preUnitHeading = unitDRInfo.heading
+        }
+    }
+    
+    @objc func kfUpdate() {
+        if (unitDRInfo.isIndexChanged) {
+            let currentTime = getCurrentTimeInMilliseconds()
             
+            // Heading
+            let diffHeading = unitDRInfo.heading - preUnitHeading
+            let curUnitDRLength = unitDRInfo.length
+            
+            // Time Update
+            if (true) {
+                let tuOutput = timeUpdate(length: curUnitDRLength, diffHeading: diffHeading, mobileTime: currentTime)
+//                self.tracking(input: tuOutput)
+            }
+            
+            if (self.runKalmanFilter) {
+                self.runKalmanFilter = false
+
+                let input = FineLocationTracking(user_id: user_id, mobile_time: currentTime, sector_id: sector_id)
+                NetworkManager.shared.postFLT(url: FLT_URL, input: input, completion: { [self] statusCode, returnedString in
+                    if (statusCode == 200) {
+                        let result = jsonToResult(json: returnedString)
+
+                        displayOutput.level = result.level_name
+                        displayOutput.scc = result.scc
+                        displayOutput.phase = String(result.phase)
+                        
+//                        self.tracking(input: result)
+                        // Kalman Filter
+                        if (result.mobile_time > preOutputMobileTime) {
+                            if (result.phase == 4) {
+                                if (!(result.x == 0 && result.y == 0)) {
+                                    // Measurment Update
+                                    if (measurementUpdateFlag) {
+                                        let muOutput = measurementUpdate(timeUpdatePosition: timeUpdatePosition, serverOutput: result)
+//                                        self.tracking(input: muOutput)
+                                    }
+                                    timeUpdatePositionInit(serverOutput: result)
+                                }
+                            } else {
+                                kalmanInit()
+                            }
+                            preOutputMobileTime = result.mobile_time
+                        }
+                    }
+                })
+            }
             preUnitHeading = unitDRInfo.heading
         }
     }

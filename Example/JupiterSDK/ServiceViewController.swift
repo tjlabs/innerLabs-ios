@@ -19,6 +19,8 @@ protocol ServiceViewPageDelegate {
 
 class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewDataSource, Observer {
     
+    var needUpdate: Bool = false
+    
     func update(result: FineLocationTrackingResult) {
         print("(\(self.serviceName) Result) -> \(result)")
         
@@ -36,13 +38,7 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
                     coordToDisplay.x = Double(x)
                     coordToDisplay.y = Double(y)
                     
-                    UIView.performWithoutAnimation { self.serviceTableView.reloadSections(IndexSet(0...0), with: .none) }
-                }
-            }
-            
-            if (isOpen) {
-                UIView.performWithoutAnimation {
-                        self.containerTableView.reloadSections(IndexSet(0...0), with: .none)
+                    self.needUpdate = true
                 }
             }
         }
@@ -406,6 +402,11 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
             resultToDisplay.scc = serviceManager.displayOutput.scc
             resultToDisplay.phase = serviceManager.displayOutput.phase
             
+            if (self.needUpdate) {
+                self.needUpdate = false
+                UIView.performWithoutAnimation { self.serviceTableView.reloadSections(IndexSet(0...0), with: .none) }
+            }
+            
             if (isOpen) {
                 UIView.performWithoutAnimation { self.containerTableView.reloadSections(IndexSet(0...0), with: .none) }
             }
@@ -508,7 +509,7 @@ extension ServiceViewController: UITableViewDelegate {
         if (tableView == serviceTableView) {
             
         } else {
-            //            print("\(indexPath.section)섹션 \(indexPath.row)로우 선택됨")
+//            print("\(indexPath.section)섹션 \(indexPath.row)로우 선택됨")
         }
     }
 }
