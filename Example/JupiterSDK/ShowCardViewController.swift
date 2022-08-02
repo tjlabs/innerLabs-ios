@@ -82,6 +82,9 @@ class ShowCardViewController: UIViewController, AddCardDelegate {
             case 0:
                 sectorImage = UIImage(named: "tjlabsShow")!
                 sectorShowImages.append(sectorImage)
+            case 10:
+                sectorImage = UIImage(named: "tjlabsShow")!
+                sectorShowImages.append(sectorImage)
             default:
                 sectorImage = UIImage(named: "tjlabsShow")!
                 sectorShowImages.append(sectorImage)
@@ -239,7 +242,7 @@ extension ShowCardViewController: UICollectionViewDataSource {
         if (sectorID == 0) {
             cell.sectorShowImage.image = sectorShowImages[indexPath.item]
         } else if (sectorID == 10) {
-            
+            cell.sectorShowImage.image = sectorShowImages[indexPath.item]
         } else {
             let urlSectorShow = URL(string: "https://storage.googleapis.com/jupiter_image/card/\(sectorID)/edit_image.png")
             let resourceSectorShow = ImageResource(downloadURL: urlSectorShow!, cacheKey: "\(sectorID)Show")

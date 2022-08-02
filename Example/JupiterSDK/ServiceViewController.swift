@@ -31,11 +31,11 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
         if (buildings.contains(building)) {
             if let levelList: [String] = levels[building] {
                 if (levelList.contains(level)) {
-                    coordToDisplay.x = Double(x)
-                    coordToDisplay.y = Double(y)
                     coordToDisplay.building = building
                     coordToDisplay.level = level
-
+                    coordToDisplay.x = Double(x)
+                    coordToDisplay.y = Double(y)
+                    
                     UIView.performWithoutAnimation { self.serviceTableView.reloadSections(IndexSet(0...0), with: .none) }
                 }
             }
@@ -357,11 +357,20 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
                 }
             }
             rpXY = [rpX, rpY]
+            
+            let xMin = rpXY[0].min()!
+            let xMax = rpXY[0].max()!
+            let yMin = rpXY[1].min()!
+            let yMax = rpXY[1].max()!
+            
+            print("Parsing Complete")
+            print("Min Max : \(xMin), \(xMax), \(yMin), \(yMax)")
+            
         } catch {
             print("Error reading .csv file")
         }
         
-        print("RP Result :", rpXY)
+//        print("RP Result :", rpXY)
         
         return rpXY
     }

@@ -127,49 +127,48 @@ class SectorContainerTableViewCell: UITableViewCell {
     }
     
     private func fetchLevel(building: String, level: String, flag: Bool) {
-//        let imageName: String = "\(currentBuilding)_\(currentLevel)"
-//
-//        if let imageToDraw = UIImage(named: imageName) {
-//            noImageLabel.isHidden = true
-//            imageLevel.isHidden = false
-//            imageLevel.image = imageToDraw
-//        } else {
-//            imageLevel.isHidden = true
-//            noImageLabel.isHidden = false
-//        }
-//        imageLevel.image = UIImage(named: imageName)
-//        print("Width :", imageLevel.image!.size.width)
-//        print("Height :", imageLevel.image!.size.height)
-        
         // Building -> Level Image Download From URL
         noImageLabel.text = "해당 \(level) 이미지가 없습니다"
         
-        if (!flag) {
-            if let urlLevel = URL(string: "https://storage.googleapis.com/jupiter_image/map/\(sectorID)/\(building)_\(level).png") {
-                let data = try? Data(contentsOf: urlLevel)
-                if (data != nil) {
-                    let resourceBuildingLevel = ImageResource(downloadURL: urlLevel, cacheKey: "\(sectorID)_\(building)_\(level)_image")
-                    
+        // 빌딩 -> 층 이미지 보이기
+        if let urlLevel = URL(string: "https://storage.googleapis.com/jupiter_image/map/\(sectorID)/\(building)_\(level).png") {
+            let data = try? Data(contentsOf: urlLevel)
+            if (data != nil) {
+                // 빌딩 -> 층 이미지가 있는 경우
+                let resourceBuildingLevel = ImageResource(downloadURL: urlLevel, cacheKey: "\(sectorID)_\(building)_\(level)_image")
+                
+//                scatterChart.isHidden = false
+                imageLevel.isHidden = false
+                noImageLabel.isHidden = true
+                imageLevel.kf.setImage(with: resourceBuildingLevel, placeholder: nil, options: [.transition(.fade(0.8))], completionHandler: nil)
+            } else {
+                // 빌딩 -> 층 이미지가 없는 경우
+                if (flag) {
                     scatterChart.isHidden = false
                     imageLevel.isHidden = false
                     noImageLabel.isHidden = true
-                    imageLevel.kf.setImage(with: resourceBuildingLevel, placeholder: nil, options: [.transition(.fade(0.8))], completionHandler: nil)
+                    
+                    imageLevel.image = UIImage(named: "emptyLevel")
                 } else {
                     scatterChart.isHidden = true
                     imageLevel.isHidden = true
                     noImageLabel.isHidden = false
                 }
+                
+            }
+        } else {
+            // 빌딩 -> 층 이미지가 없는 경우
+            if (flag) {
+                scatterChart.isHidden = false
+                imageLevel.isHidden = false
+                noImageLabel.isHidden = true
+                
+                imageLevel.image = UIImage(named: "emptyLevel")
             } else {
                 scatterChart.isHidden = true
                 imageLevel.isHidden = true
                 noImageLabel.isHidden = false
             }
-        } else {
-            scatterChart.isHidden = false
-            imageLevel.isHidden = false
-            noImageLabel.isHidden = true
-            
-            imageLevel.image = UIImage(named: "emptyLevel")
         }
     }
     
@@ -214,40 +213,13 @@ class SectorContainerTableViewCell: UITableViewCell {
             scatterChart.leftAxis.axisMinimum = yMin-6
             scatterChart.leftAxis.axisMaximum = yMax+6
         } else {
-            scatterChart.xAxis.axisMinimum = xMin + limits[0]
-            scatterChart.xAxis.axisMaximum = xMax + limits[1]
-            scatterChart.leftAxis.axisMinimum = yMin + limits[2]
-            scatterChart.leftAxis.axisMaximum = yMax + limits[3]
+            scatterChart.xAxis.axisMinimum = limits[0]
+            scatterChart.xAxis.axisMaximum = limits[1]
+            scatterChart.leftAxis.axisMinimum = limits[2]
+            scatterChart.leftAxis.axisMaximum = limits[3]
         }
         
-//        if (currentLevel == "B1") {
-//            scatterChart.xAxis.axisMinimum = xMin-6
-//            scatterChart.xAxis.axisMaximum = xMax+9.5
-//            scatterChart.leftAxis.axisMinimum = yMin-40
-//            scatterChart.leftAxis.axisMaximum = yMax+38.5
-//        }
-//        else if (currentLevel == "B2") {
-//            scatterChart.xAxis.axisMinimum = xMin-28
-//            scatterChart.xAxis.axisMaximum = xMax+12
-//            scatterChart.leftAxis.axisMinimum = yMin-2
-//            scatterChart.leftAxis.axisMaximum = yMax+39.5
-//        }
-//        else if (currentLevel == "B3") {
-//            scatterChart.xAxis.axisMinimum = xMin-3.8
-//            scatterChart.xAxis.axisMaximum = xMax+6
-//            scatterChart.leftAxis.axisMinimum = yMin-11.3
-//            scatterChart.leftAxis.axisMaximum = yMax+1.5
-//        } else if (currentLevel == "B4") {
-//            scatterChart.xAxis.axisMinimum = xMin-9
-//            scatterChart.xAxis.axisMaximum = xMax
-//            scatterChart.leftAxis.axisMinimum = yMin-15
-//            scatterChart.leftAxis.axisMaximum = yMax+25.5
-//        } else {
-//            scatterChart.xAxis.axisMinimum = xMin-10
-//            scatterChart.xAxis.axisMaximum = xMax+10
-//            scatterChart.leftAxis.axisMinimum = yMin-10
-//            scatterChart.leftAxis.axisMaximum = yMax+10
-//        }
+        print("\(currentBuilding) \(currentLevel) Limits : \(limits[0]) , \(limits[1]), \(limits[2]), \(limits[3])")
         
         scatterChart.xAxis.drawGridLinesEnabled = chartFlag
         scatterChart.leftAxis.drawGridLinesEnabled = chartFlag
@@ -272,10 +244,7 @@ class SectorContainerTableViewCell: UITableViewCell {
         scatterChart.data = chartData
     }
     
-    private func drawUser(RP_X: [Double], RP_Y: [Double], XY: [Double], limits: [Double]) {
-        let xAxisValue: [Double] = RP_X
-        let yAxisValue: [Double] = RP_Y
-        
+    private func drawUser(XY: [Double], limits: [Double]) {
         let values1 = (0..<1).map { (i) -> ChartDataEntry in
             return ChartDataEntry(x: XY[0], y: XY[1])
         }
@@ -290,20 +259,15 @@ class SectorContainerTableViewCell: UITableViewCell {
         let chartData = ScatterChartData(dataSet: set1)
         chartData.setDrawValues(false)
         
-        let xMin = xAxisValue.min()!
-        let xMax = xAxisValue.max()!
-        let yMin = yAxisValue.min()!
-        let yMax = yAxisValue.max()!
-        
         let chartFlag: Bool = false
         
-        // Configure Chart
-//        print("Limits :", limits)
-        scatterChart.xAxis.axisMinimum = xMin + limits[0]
-        scatterChart.xAxis.axisMaximum = xMax + limits[1]
-        scatterChart.leftAxis.axisMinimum = yMin + limits[2]
-        scatterChart.leftAxis.axisMaximum = yMax + limits[3]
+        print("\(currentBuilding) \(currentLevel) Limits : \(limits[0]) , \(limits[1]), \(limits[2]), \(limits[3])")
         
+        // Configure Chart
+        scatterChart.xAxis.axisMinimum = limits[0]
+        scatterChart.xAxis.axisMaximum = limits[1]
+        scatterChart.leftAxis.axisMinimum = limits[2]
+        scatterChart.leftAxis.axisMaximum = limits[3]
         
         scatterChart.xAxis.drawGridLinesEnabled = chartFlag
         scatterChart.leftAxis.drawGridLinesEnabled = chartFlag
@@ -362,25 +326,31 @@ class SectorContainerTableViewCell: UITableViewCell {
         let condition: ((String, [[Double]])) -> Bool = {
             $0.0.contains(key)
         }
+        let rp: [[Double]] = RP?[key] ?? [[Double]]()
+        var limits: [Double] = chartLimits?[key] ?? [0, 0, 0, 0]
         
-        if (RP!.contains(where: condition)) {
-            let rp: [[Double]] = RP?[key] ?? [[Double]]()
-            
-            let limits: [Double] = chartLimits?[key] ?? [0, 0, 0, 0]
-            
-            if (rp.isEmpty) {
-                scatterChart.isHidden = true
-            } else {
-                scatterChart.isHidden = false
-                if (flag) {
-                    drawRP(RP_X: rp[0], RP_Y: rp[1], XY: XY, limits: limits)
+        if (flag) {
+            if (RP!.contains(where: condition)) {
+                if (rp.isEmpty) {
+                    scatterChart.isHidden = true
                 } else {
-                    drawUser(RP_X: rp[0], RP_Y: rp[1], XY: XY, limits: limits)
+                    scatterChart.isHidden = false
+//                    if (currentLevel == "2F") {
+//                        limits = [-6.0 , 35.0, -7.0, 65.0]
+//                    }
+                    drawRP(RP_X: rp[0], RP_Y: rp[1], XY: XY, limits: limits)
                 }
             }
-            
         } else {
-            scatterChart.isHidden = false
+            if (buildings.contains(currentBuilding)) {
+                scatterChart.isHidden = false
+                drawUser(XY: XY, limits: limits)
+//                if let levelList: [String] = levels[currentBuilding] {
+//                    if (levelList.contains(currentBuilding)) {
+//                        drawUser(XY: XY, limits: limits)
+//                    }
+//                }
+            }
         }
             
         levelCollectionView.reloadData()
@@ -404,7 +374,7 @@ extension SectorContainerTableViewCell : UICollectionViewDelegate{
             if (flagRP) {
                 drawRP(RP_X: rp[0], RP_Y: rp[1], XY: XY, limits: limits)
             } else {
-                drawUser(RP_X: rp[0], RP_Y: rp[1], XY: XY, limits: limits)
+                drawUser(XY: XY, limits: limits)
             }
             
             fetchLevel(building: currentBuilding, level: currentLevel, flag: flagRP)
