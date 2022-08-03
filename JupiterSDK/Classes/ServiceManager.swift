@@ -546,6 +546,7 @@ public class ServiceManager: Observation {
                                 }
                             } else {
                                 kalmanInit()
+                                self.tracking(input: result)
                             }
                             preOutputMobileTime = result.mobile_time
                         }
@@ -557,6 +558,7 @@ public class ServiceManager: Observation {
                 let tuOutput = timeUpdate(length: curUnitDRLength, diffHeading: diffHeading, mobileTime: currentTime)
                 self.tracking(input: tuOutput)
             }
+            
             preUnitHeading = unitDRInfo.heading
         }
     }

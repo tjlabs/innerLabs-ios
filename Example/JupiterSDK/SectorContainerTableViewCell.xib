@@ -100,7 +100,7 @@
                         <color key="backgroundColor" name="blue4"/>
                     </view>
                     <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="해당 층 이미지가 없습니다" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Wax-W6-UQd">
-                        <rect key="frame" x="16" y="367.5" width="288" height="20"/>
+                        <rect key="frame" x="16" y="365" width="288" height="25"/>
                         <fontDescription key="fontDescription" name="NotoSansKR-Medium" family="Noto Sans KR" pointSize="17"/>
                         <nil key="textColor"/>
                         <nil key="highlightedColor"/>
