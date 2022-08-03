@@ -7,7 +7,6 @@ public class ServiceManager: Observation {
     
     func tracking(input: FineLocationTrackingResult) {
         for observer in observers {
-            print("Final Output -> ", input)
             observer.update(result: input)
         }
     }

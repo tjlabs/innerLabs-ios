@@ -64,7 +64,7 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
     var uuid: String = ""
     var sectorID: Int = 0
     
-    var timer = Timer()
+    var timer: Timer?
     var timerCounter: Int = 0
     var timerTimeOut: Int = 10
     let TIMER_INTERVAL: TimeInterval = 1/10 // second
@@ -76,8 +76,6 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
     
     var cardData: CardItemData?
     var page: Int = 0
-    
-    var referencePoints = [[Double]]()
     
     var RP = [String: [[Double]]]()
     var chartLimits = [String: [Double]]()
@@ -91,7 +89,6 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
     var buildings = [String]()
     var currentBuilding: String = ""
     var levels = [String:[String]]()
-    
     var levelList = [String]()
     var currentLevel: String = ""
     
@@ -116,6 +113,10 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
     
     let dropDown = DropDown()
     
+    // Switch
+    @IBOutlet weak var switchButton: CustomSwitchButton!
+    var modeAuto: Bool = false
+    
     // View
     var defaultHeight: CGFloat = 100
     
@@ -132,6 +133,10 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
         
         initDropDown()
         setDropDown()
+        
+        switchButton.delegate = self
+        let switchColor: (UIColor, UIColor) = (#colorLiteral(red: 0.5291011186, green: 0.7673488115, blue: 1, alpha: 1), #colorLiteral(red: 0.2705247761, green: 0.3820963617, blue: 1, alpha: 1))
+        switchButton.onColor = switchColor
         
         if (cardData?.sector_id != 0 && cardData?.sector_id != 7) {
             let firstBuilding: String = (cardData?.infoBuilding[0])!
@@ -155,10 +160,11 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
         runMode = cardData!.mode
         
         // Service Manger
-        serviceManager.startService(id: uuid, sector_id: cardData!.sector_id, service: serviceName, mode: cardData!.mode)
-        serviceManager.addObserver(self)
-        startTimer()
+//        serviceManager.startService(id: uuid, sector_id: cardData!.sector_id, service: serviceName, mode: cardData!.mode)
+//        serviceManager.addObserver(self)
+//        startTimer()
         
+        serviceManager.addObserver(self)
         self.hideKeyboardWhenTappedAround()
     }
     
@@ -442,20 +448,22 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
         } catch {
             print("Error reading .csv file")
         }
-//        print("RP Result :", rpXY)
         
         return rpXY
     }
     
     // Display Outputs
     func startTimer() {
-        self.timer = Timer.scheduledTimer(timeInterval: TIMER_INTERVAL, target: self, selector: #selector(self.timerUpdate), userInfo: nil, repeats: true)
-        
-        timerCounter = 0
+        if (timer == nil) {
+            self.timer = Timer.scheduledTimer(timeInterval: TIMER_INTERVAL, target: self, selector: #selector(self.timerUpdate), userInfo: nil, repeats: true)
+        }
     }
     
     func stopTimer() {
-        self.timer.invalidate()
+        if (timer != nil) {
+            self.timer!.invalidate()
+            self.timer = nil
+        }
     }
     
     @objc func timerUpdate() {
@@ -469,8 +477,10 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
         
         if (serviceManager.displayOutput.isIndexChanged) {
             resultToDisplay.level = serviceManager.displayOutput.level
-    //        resultToDisplay.numLevels
-    //        resultToDisplay.infoLevels
+            
+            displayLevelInfo(infoLevel: levels[currentBuilding] ?? [])
+            resultToDisplay.numLevels = self.numLevels
+            resultToDisplay.infoLevels = self.infoOfLevels
             
             resultToDisplay.unitIndexTx = serviceManager.displayOutput.index
             resultToDisplay.unitIndexRx = serviceManager.displayOutput.index
@@ -504,18 +514,19 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
         // 빌딩 -> 층 이미지 보이기
         if let urlLevel = URL(string: "https://storage.googleapis.com/jupiter_image/map/\(sectorID)/\(building)_\(level).png") {
             let data = try? Data(contentsOf: urlLevel)
+            
             if (data != nil) {
                 // 빌딩 -> 층 이미지가 있는 경우
                 let resourceBuildingLevel = ImageResource(downloadURL: urlLevel, cacheKey: "\(sectorID)_\(building)_\(level)_image")
                 
-                scatterChart.isHidden = false
+//                scatterChart.isHidden = false
                 imageLevel.isHidden = false
                 noImageLabel.isHidden = true
                 imageLevel.kf.setImage(with: resourceBuildingLevel, placeholder: nil, options: [.transition(.fade(0.8))], completionHandler: nil)
             } else {
                 // 빌딩 -> 층 이미지가 없는 경우
                 if (flag) {
-                    scatterChart.isHidden = false
+//                    scatterChart.isHidden = false
                     imageLevel.isHidden = false
                     noImageLabel.isHidden = true
                     
@@ -530,7 +541,7 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
         } else {
             // 빌딩 -> 층 이미지가 없는 경우
             if (flag) {
-                scatterChart.isHidden = false
+//                scatterChart.isHidden = false
                 imageLevel.isHidden = false
                 noImageLabel.isHidden = true
                 
@@ -576,6 +587,7 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
         let yMax = yAxisValue.max()!
         
         let chartFlag: Bool = false
+        scatterChart.isHidden = false
         
         // Configure Chart
         if (currentLevel == "7F") {
@@ -631,6 +643,7 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
         chartData.setDrawValues(false)
         
         let chartFlag: Bool = false
+        scatterChart.isHidden = false
         
 //        print("\(currentBuilding) \(currentLevel) Limits : \(limits[0]) , \(limits[1]), \(limits[2]), \(limits[3])")
         
@@ -692,7 +705,6 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
                 if (rp.isEmpty) {
                     scatterChart.isHidden = true
                 } else {
-                    scatterChart.isHidden = false
 //                    if (currentLevel == "2F") {
 //                        limits = [-6.0 , 35.0, -7.0, 65.0]
 //                    }
@@ -701,15 +713,39 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
             }
         } else {
             if (buildings.contains(currentBuilding)) {
-                scatterChart.isHidden = false
                 drawUser(XY: XY, limits: limits)
             }
         }
+        
+        dropText.text = currentBuilding
+//        levelCollectionView.reloadData()
     }
     
     func getCurrentTimeInMilliseconds() -> Double
     {
         return Double(Date().timeIntervalSince1970 * 1000)
+    }
+    
+    func hideDropDonw(flag: Bool) {
+        if (flag) {
+            // Hide
+            UIView.animate(withDuration: 0.5, animations: {self.dropView.alpha = 0.0}, completion: { isFinished in if isFinished {
+                self.dropView.isHidden = true
+            }})
+            
+            UIView.animate(withDuration: 0.5, animations: {self.levelCollectionView.alpha = 0.0}, completion: { isFinished in if isFinished {
+                self.levelCollectionView.isHidden = true
+            }})
+        } else {
+            // Show
+            UIView.animate(withDuration: 0.5, animations: {self.dropView.alpha = 1.0}, completion: { isFinished in if isFinished {
+                self.dropView.isHidden = false
+            }})
+            
+            UIView.animate(withDuration: 0.5, animations: {self.levelCollectionView.alpha = 1.0}, completion: { isFinished in if isFinished {
+                self.levelCollectionView.isHidden = false
+            }})
+        }
     }
     
     
@@ -819,6 +855,10 @@ extension ServiceViewController : UICollectionViewDelegate{
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         currentLevel = levels[currentBuilding]![indexPath.row]
         
+        displayLevelInfo(infoLevel: levels[currentBuilding]!)
+        resultToDisplay.numLevels = self.numLevels
+        resultToDisplay.infoLevels = self.infoOfLevels
+        
         let key = "\(currentBuilding)_\(currentLevel)"
         let rp: [[Double]] = RP[key] ?? [[Double]]()
         
@@ -828,11 +868,9 @@ extension ServiceViewController : UICollectionViewDelegate{
             // RP가 없어서 그리지 않음
             scatterChart.isHidden = true
         } else {
-            scatterChart.isHidden = false
             if (isShowRP) {
                 drawRP(RP_X: rp[0], RP_Y: rp[1], XY: XY, limits: limits)
             }
-            
             fetchLevel(building: currentBuilding, level: currentLevel, flag: isShowRP)
         }
         
@@ -882,5 +920,26 @@ extension ServiceViewController : UICollectionViewDelegateFlowLayout{
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
         return UIEdgeInsets(top: 0.01, left: 20, bottom: 0, right: 20)
+    }
+}
+
+extension ServiceViewController: CustomSwitchButtonDelegate {
+    func isOnValueChange(isOn: Bool) {
+        self.modeAuto = isOn
+        
+        if (isOn) {
+            self.hideDropDonw(flag: true)
+            
+            serviceManager = ServiceManager()
+            serviceManager.addObserver(self)
+            serviceManager.startService(id: uuid, sector_id: cardData!.sector_id, service: serviceName, mode: cardData!.mode)
+            self.startTimer()
+        } else {
+            self.hideDropDonw(flag: false)
+            
+            serviceManager.removeObserver(self)
+            serviceManager.stopService()
+            self.stopTimer()
+        }
     }
 }

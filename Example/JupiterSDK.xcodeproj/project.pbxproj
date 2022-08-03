@@ -242,7 +242,7 @@
 		607FACD21AFB9204008FA782 /* Example for JupiterSDK */ = {
 			isa = PBXGroup;
 			children = (
-				B30EED7F289381F9009A3EDA /* Collect */,
+				B30EED7F289381F9009A3EDA /* ViewController */,
 				B3D194D9282E270C004E6F9A /* Guide */,
 				B3455280282AACD000F0DD3E /* Output */,
 				B345527F282AA00700F0DD3E /* Network */,
@@ -251,21 +251,10 @@
 				B3BD69A227E9A53C00A32A7A /* Utils */,
 				B3BD699627E9A48E00A32A7A /* Color */,
 				607FACD51AFB9204008FA782 /* AppDelegate.swift */,
-				607FACD71AFB9204008FA782 /* MainViewController.swift */,
-				B3B361052829522A00B8E876 /* MapViewController.swift */,
-				B340EE3228093FB20096E404 /* CardViewController.swift */,
 				B3844E8C28099EE3007A5215 /* CardCollectionViewCell.swift */,
 				B3844E8D28099EE3007A5215 /* CardCollectionViewCell.xib */,
-				B3C09C63280E941B00E6F55F /* ShowCardViewController.swift */,
 				B3B4F85828114EEB009F9E6C /* ShowCardCollectionViewCell.swift */,
 				B3B4F85928114EEB009F9E6C /* ShowCardCollectionViewCell.xib */,
-				B3DE146C280E7146006DA43C /* AddCardViewController.swift */,
-				B3D194DE282E2782004E6F9A /* GuideViewController.swift */,
-				B3CC3C06283231E000D50522 /* PrivacyPolicyViewController.swift */,
-				B3B7FBF42856DA4000E23EDF /* PopUpViewController.swift */,
-				B3B7FBF62856F43200E23EDF /* GalleryViewController.swift */,
-				B31EC7D82876C03A00799659 /* ServiceViewController.swift */,
-				B30EED7B28936CB5009A3EDA /* TipsTownViewController.swift */,
 				B3E0A4F52887E51700B88E08 /* Environment.swift */,
 				607FACD91AFB9204008FA782 /* Main.storyboard */,
 				B35272B1281F8DC300321CC6 /* SplashScreen.storyboard */,
@@ -331,12 +320,23 @@
 			name = "Podspec Metadata";
 			sourceTree = "<group>";
 		};
-		B30EED7F289381F9009A3EDA /* Collect */ = {
+		B30EED7F289381F9009A3EDA /* ViewController */ = {
 			isa = PBXGroup;
 			children = (
+				607FACD71AFB9204008FA782 /* MainViewController.swift */,
+				B3B361052829522A00B8E876 /* MapViewController.swift */,
+				B340EE3228093FB20096E404 /* CardViewController.swift */,
+				B3C09C63280E941B00E6F55F /* ShowCardViewController.swift */,
+				B3DE146C280E7146006DA43C /* AddCardViewController.swift */,
+				B3D194DE282E2782004E6F9A /* GuideViewController.swift */,
+				B3CC3C06283231E000D50522 /* PrivacyPolicyViewController.swift */,
+				B3B7FBF42856DA4000E23EDF /* PopUpViewController.swift */,
+				B3B7FBF62856F43200E23EDF /* GalleryViewController.swift */,
+				B31EC7D82876C03A00799659 /* ServiceViewController.swift */,
+				B30EED7B28936CB5009A3EDA /* TipsTownViewController.swift */,
 				B30EED862893B64C009A3EDA /* CollectViewController.swift */,
 			);
-			name = Collect;
+			name = ViewController;
 			sourceTree = "<group>";
 		};
 		B345527F282AA00700F0DD3E /* Network */ = {
