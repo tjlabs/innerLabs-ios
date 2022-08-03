@@ -24,7 +24,7 @@ class MainViewController: UIViewController, UITextFieldDelegate {
     @IBOutlet weak var guideLabel: UILabel!
     
     @IBOutlet weak var saveUuidButton: UIButton!
-    
+    @IBOutlet weak var registerButton: UIButton!
     
     var isSaveUuid: Bool = false
     var uuid: String = ""
@@ -46,6 +46,11 @@ class MainViewController: UIViewController, UITextFieldDelegate {
         }
         
         codeTextField.delegate = self
+        
+        registerButton.showsTouchWhenHighlighted = true
+        registerButton.layer.shadowOpacity = 0.5
+        registerButton.layer.shadowOffset = CGSize(width: 5, height: 5)
+        registerButton.layer.shadowRadius = 2
         
         deviceModel = UIDevice.modelName
         os = UIDevice.current.systemVersion
@@ -74,6 +79,9 @@ class MainViewController: UIViewController, UITextFieldDelegate {
             let login = Login(user_id: uuid, device_model: deviceModel, os_version: osVersion)
             postLogin(url: USER_URL, input: login)
         }
+    }
+    
+    @IBAction func tapRegisterButton(_ sender: UIButton) {
     }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {

@@ -62,8 +62,8 @@ class TipsTownViewController: UIViewController {
         runMode = cardData!.mode
         
         // Service Manger
-//        serviceManager.startService(id: userId, sector_id: cardData!.sector_id, service: serviceName, mode: cardData!.mode)
-        serviceManager.startService(id: userId, sector_id: 1, service: serviceName, mode: cardData!.mode)
+        serviceManager.startService(id: userId, sector_id: cardData!.sector_id, service: serviceName, mode: cardData!.mode)
+//        serviceManager.startService(id: userId, sector_id: 1, service: serviceName, mode: cardData!.mode)
         
         // Floating Button
         setFloatingButton()

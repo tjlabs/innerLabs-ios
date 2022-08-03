@@ -84,8 +84,6 @@ public class ServiceManager: Observation {
     // ----- Network ----- //
     var inputReceivedForce: [ReceivedForce] = [ReceivedForce(user_id: "", mobile_time: 0, ble: [:], pressure: 0)]
     var inputUserVelocity: [UserVelocity] = [UserVelocity(user_id: "", mobile_time: 0, index: 0, length: 0, heading: 0, looking: true)]
-    
-    var resultSD = SectorDetectionResult(mobile_time: 0, sector_name: "", calculated_time: 0)
     // ------------------- //
     
     // ----- Fine Location Tracking ----- //
