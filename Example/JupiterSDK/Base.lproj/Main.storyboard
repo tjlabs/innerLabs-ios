@@ -740,14 +740,15 @@
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="YIV-i1-CYk">
-                                        <rect key="frame" x="320" y="61.666666666666657" width="50" height="22"/>
+                                        <rect key="frame" x="320" y="39.333333333333336" width="50" height="66.666666666666657"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="50" id="BgK-Ac-znT"/>
                                         </constraints>
                                         <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                                        <state key="normal" image="showInfoButton"/>
+                                        <state key="normal" image="myLocation"/>
                                         <state key="selected" image="closeInfoButton"/>
                                         <connections>
+                                            <action selector="tapAuthButton:" destination="grH-5N-O1E" eventType="touchUpInside" id="rJw-qL-3GL"/>
                                             <action selector="tapShowButton:" destination="LqI-KL-YbA" eventType="touchUpInside" id="2et-Pd-Pgi"/>
                                             <action selector="tapShowButton:" destination="1nM-eT-fBa" eventType="touchUpInside" id="o0h-n3-3hc"/>
                                         </connections>
@@ -774,21 +775,39 @@
                                     <constraint firstAttribute="height" constant="300" id="QrN-9i-w3l"/>
                                 </constraints>
                             </imageView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Building" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="svg-iR-jcD">
+                                <rect key="frame" x="143" y="520" width="104" height="37"/>
+                                <fontDescription key="fontDescription" name="NotoSansKR-Bold" family="Noto Sans KR" pointSize="25"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Level" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="YCj-83-vVf">
+                                <rect key="frame" x="169.66666666666666" y="577" width="51" height="29"/>
+                                <fontDescription key="fontDescription" name="NotoSansKR-Medium" family="Noto Sans KR" pointSize="20"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="ebV-UM-hsf"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
+                            <constraint firstItem="svg-iR-jcD" firstAttribute="top" secondItem="oCo-Cm-Mtk" secondAttribute="bottom" constant="120" id="5oc-kV-8Fg"/>
+                            <constraint firstItem="YCj-83-vVf" firstAttribute="centerX" secondItem="oCo-Cm-Mtk" secondAttribute="centerX" id="6dQ-KX-avh"/>
                             <constraint firstItem="oCo-Cm-Mtk" firstAttribute="leading" secondItem="ebV-UM-hsf" secondAttribute="leading" id="8L1-Id-LrF"/>
                             <constraint firstItem="IWm-qu-nwG" firstAttribute="leading" secondItem="ebV-UM-hsf" secondAttribute="leading" id="Cj2-22-sq6"/>
+                            <constraint firstItem="svg-iR-jcD" firstAttribute="centerX" secondItem="oCo-Cm-Mtk" secondAttribute="centerX" id="Ckq-tv-cCm"/>
                             <constraint firstItem="ebV-UM-hsf" firstAttribute="trailing" secondItem="oCo-Cm-Mtk" secondAttribute="trailing" id="HNQ-iq-MoU"/>
                             <constraint firstItem="IWm-qu-nwG" firstAttribute="trailing" secondItem="ebV-UM-hsf" secondAttribute="trailing" id="Mkk-Fx-q1t"/>
                             <constraint firstItem="oCo-Cm-Mtk" firstAttribute="top" secondItem="IWm-qu-nwG" secondAttribute="bottom" id="a3a-5d-qhh"/>
                             <constraint firstItem="IWm-qu-nwG" firstAttribute="top" secondItem="rGs-rA-5Vg" secondAttribute="top" id="eZ8-L6-F6z"/>
+                            <constraint firstItem="YCj-83-vVf" firstAttribute="top" secondItem="svg-iR-jcD" secondAttribute="bottom" constant="20" id="qpF-bH-tNM"/>
                         </constraints>
                     </view>
                     <connections>
                         <outlet property="TipsTownView" destination="rGs-rA-5Vg" id="YDk-Xd-Vqh"/>
+                        <outlet property="buildingLabel" destination="svg-iR-jcD" id="6Mw-Kr-JDm"/>
                         <outlet property="cardTopImage" destination="yps-pR-LbM" id="PTA-nT-iFr"/>
+                        <outlet property="levelLabel" destination="YCj-83-vVf" id="95C-u8-MJi"/>
                         <outlet property="sectorNameLabel" destination="BSV-5y-8ZE" id="uYJ-sU-kH9"/>
                     </connections>
                 </viewController>
@@ -1250,7 +1269,7 @@
                                             </stackView>
                                         </subviews>
                                     </stackView>
-                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="bES-u2-ZAf" customClass="ScatterChartView" customModule="Charts">
+                                    <view userInteractionEnabled="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="bES-u2-ZAf" customClass="ScatterChartView" customModule="Charts">
                                         <rect key="frame" x="5" y="32.333333333333314" width="360" height="332.66666666666669"/>
                                         <color key="backgroundColor" systemColor="systemGray6Color"/>
                                     </view>
@@ -1850,6 +1869,7 @@
         <image name="innerLabsNameCard" width="389.66665649414062" height="53"/>
         <image name="loginButton" width="349.33334350585938" height="58.333332061767578"/>
         <image name="logoutButton" width="34" height="40"/>
+        <image name="myLocation" width="66.666664123535156" height="66.666664123535156"/>
         <image name="orangeCardTop" width="390" height="95"/>
         <image name="purpleCardTop" width="390" height="95"/>
         <image name="showCard" width="78" height="22"/>

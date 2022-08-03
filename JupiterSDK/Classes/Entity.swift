@@ -137,6 +137,12 @@ public struct SectorDetectionResult: Codable {
     public var mobile_time: Int
     public var sector_name: String
     public var calculated_time: Double
+    
+    public init() {
+        self.mobile_time = 0
+        self.sector_name = ""
+        self.calculated_time = 0
+    }
 }
 
 // Building Detection
@@ -150,6 +156,12 @@ public struct BuildingDetectionResult: Codable {
     public var mobile_time: Int
     public var building_name: String
     public var calculated_time: Double
+    
+    public init() {
+        self.mobile_time = 0
+        self.building_name = ""
+        self.calculated_time = 0
+    }
 }
 
 // Coarse Level Detection
@@ -164,6 +176,13 @@ public struct CoarseLevelDetectionResult: Codable {
     public var building_name: String
     public var level_name: String
     public var calculated_time: Double
+    
+    public init() {
+        self.mobile_time = 0
+        self.building_name = ""
+        self.level_name = ""
+        self.calculated_time = 0
+    }
 }
 
 
@@ -175,12 +194,21 @@ struct FineLevelDetection: Codable {
 }
 
 public struct FineLevelDetectionResult: Codable {
-    public var mobile_time: Int
-    public var building_name: String
-    public var level_name: String
-    public var scc: Double
-    public var scr: Double
-    public var calculated_time: Double
+    public var mobile_time: Int = 0
+    public var building_name: String = ""
+    public var level_name: String = ""
+    public var scc: Double = 0
+    public var scr: Double = 0
+    public var calculated_time: Double = 0
+    
+    public init() {
+        self.mobile_time = 0
+        self.building_name = ""
+        self.level_name = ""
+        self.scc = 0
+        self.scr = 0
+        self.calculated_time = 0
+    }
 }
 
 // Coarse Location Estimation
@@ -199,6 +227,17 @@ public struct CoarseLocationEstimationResult: Codable {
     public var x: Int
     public var y: Int
     public var calculated_time: Double
+    
+    public init() {
+        self.mobile_time = 0
+        self.building_name = ""
+        self.level_name = ""
+        self.scc = 0
+        self.scr = 0
+        self.x = 0
+        self.y = 0
+        self.calculated_time = 0
+    }
 }
 
 
@@ -221,4 +260,3 @@ public struct FineLocationTrackingResult: Codable {
     public var phase: Int = 0
     public var calculated_time: Double = 0
 }
-

@@ -8,6 +8,7 @@
 
 import UIKit
 import JupiterSDK
+import Floaty
 
 class TipsTownViewController: UIViewController {
 
@@ -15,6 +16,9 @@ class TipsTownViewController: UIViewController {
     
     @IBOutlet weak var sectorNameLabel: UILabel!
     @IBOutlet weak var cardTopImage: UIImageView!
+    
+    @IBOutlet weak var buildingLabel: UILabel!
+    @IBOutlet weak var levelLabel: UILabel!
     
     var serviceManager = ServiceManager()
     var serviceName = "FLD"
@@ -27,7 +31,6 @@ class TipsTownViewController: UIViewController {
     var buildings = [String]()
     var currentBuilding: String = ""
     var levels = [String: [String]]()
-    
     var levelList = [String]()
     var currentLevel: String = ""
     
@@ -36,6 +39,9 @@ class TipsTownViewController: UIViewController {
     
     // View
     var defaultHeight: CGFloat = 100
+    
+    // Floating Button
+    let floaty = Floaty()
     
     override func viewWillAppear(_ animated: Bool) {
         
@@ -56,7 +62,11 @@ class TipsTownViewController: UIViewController {
         runMode = cardData!.mode
         
         // Service Manger
-        serviceManager.startService(id: userId, sector_id: cardData!.sector_id, service: serviceName, mode: cardData!.mode)
+//        serviceManager.startService(id: userId, sector_id: cardData!.sector_id, service: serviceName, mode: cardData!.mode)
+        serviceManager.startService(id: userId, sector_id: 1, service: serviceName, mode: cardData!.mode)
+        
+        // Floating Button
+        setFloatingButton()
         
         self.hideKeyboardWhenTappedAround()
     }
@@ -67,6 +77,18 @@ class TipsTownViewController: UIViewController {
         self.navigationController?.popViewController(animated: true)
     }
     
+    @IBAction func tapAuthButton(_ sender: UIButton) {
+        serviceManager.getResult(completion: { [self] statusCode, returnedString in
+            if (statusCode == 200) {
+                let result = jsonToResult(json: returnedString)
+                
+                if (result.building_name != "") {
+                    self.buildingLabel.text = result.building_name
+                    self.levelLabel.text = result.level_name
+                }
+            }
+        })
+    }
     
     func setCardData(cardData: CardItemData) {
         self.sectorNameLabel.text = cardData.sector_name
@@ -83,5 +105,39 @@ class TipsTownViewController: UIViewController {
             let levels: [String] = cardData.infoLevel[buildingName]!
             let numLevels: Int = levels.count
         }
+    }
+    
+    func setFloatingButton() {
+        let colorPurple = UIColor(red: 168/255, green: 89/255, blue: 230/255, alpha: 1.0)
+        
+        floaty.buttonColor = colorPurple
+        floaty.plusColor = .white
+//        floaty.itemButtonColor = .white
+        floaty.openAnimationType = .slideLeft
+        
+        let itemToBottom = FloatyItem()
+        itemToBottom.buttonColor = colorPurple
+        itemToBottom.title = "Chat"
+        itemToBottom.titleColor = .black
+        itemToBottom.icon = UIImage(named: "chat")
+        itemToBottom.handler = { [self] itemToBottom in
+            floaty.close()
+        }
+        floaty.addItem(item: itemToBottom)
+        
+        self.view.addSubview(floaty)
+    }
+    
+    func jsonToResult(json: String) -> FineLevelDetectionResult {
+        let result = FineLevelDetectionResult.init()
+        let decoder = JSONDecoder()
+
+        let jsonString = json
+
+        if let data = jsonString.data(using: .utf8), let decoded = try? decoder.decode(FineLevelDetectionResult.self, from: data) {
+            return decoded
+        }
+
+        return result
     }
 }

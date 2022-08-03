@@ -342,7 +342,7 @@ class CollectViewController: UIViewController {
                 set1.scatterShapeSize = 15
                 
                 let chartData = ScatterChartData(dataSet: set1)
-                setChartFlag(chartFlag: false)
+                setChartFlag(chartFlag: true)
                 
                 let xMin = x - 12
                 let xMax = x + 12
