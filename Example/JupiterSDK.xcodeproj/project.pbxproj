@@ -31,12 +31,12 @@
 		B360D89128090D6A0084FB22 /* NotoSansKR-Black.otf in Resources */ = {isa = PBXBuildFile; fileRef = B360D88B28090D690084FB22 /* NotoSansKR-Black.otf */; };
 		B360D89228090D6A0084FB22 /* NotoSansKR-Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = B360D88C28090D6A0084FB22 /* NotoSansKR-Medium.otf */; };
 		B360D89328090D6A0084FB22 /* NotoSansKR-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = B360D88D28090D6A0084FB22 /* NotoSansKR-Regular.otf */; };
+		B36B964E289A024900951457 /* L1_2F.csv in Resources */ = {isa = PBXBuildFile; fileRef = B36B964D289A024900951457 /* L1_2F.csv */; };
 		B3844E8E28099EE3007A5215 /* CardCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3844E8C28099EE3007A5215 /* CardCollectionViewCell.swift */; };
 		B3844E8F28099EE3007A5215 /* CardCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B3844E8D28099EE3007A5215 /* CardCollectionViewCell.xib */; };
 		B38807EC283333250029B174 /* L8_B1.csv in Resources */ = {isa = PBXBuildFile; fileRef = B38807EB283333250029B174 /* L8_B1.csv */; };
 		B38807F2283390280029B174 /* L1_1F.csv in Resources */ = {isa = PBXBuildFile; fileRef = B38807EF283390280029B174 /* L1_1F.csv */; };
 		B38807F3283390280029B174 /* L1_3F.csv in Resources */ = {isa = PBXBuildFile; fileRef = B38807F0283390280029B174 /* L1_3F.csv */; };
-		B38807F4283390280029B174 /* L1_2F.csv in Resources */ = {isa = PBXBuildFile; fileRef = B38807F1283390280029B174 /* L1_2F.csv */; };
 		B388AC31282BF6A3001C3D71 /* RobotTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B388AC2F282BF6A3001C3D71 /* RobotTableViewCell.swift */; };
 		B388AC32282BF6A3001C3D71 /* RobotTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B388AC30282BF6A3001C3D71 /* RobotTableViewCell.xib */; };
 		B3AA004928313C97007CD284 /* UILabelExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3AA004828313C97007CD284 /* UILabelExtension.swift */; };
@@ -129,12 +129,12 @@
 		B360D88B28090D690084FB22 /* NotoSansKR-Black.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "NotoSansKR-Black.otf"; sourceTree = "<group>"; };
 		B360D88C28090D6A0084FB22 /* NotoSansKR-Medium.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "NotoSansKR-Medium.otf"; sourceTree = "<group>"; };
 		B360D88D28090D6A0084FB22 /* NotoSansKR-Regular.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "NotoSansKR-Regular.otf"; sourceTree = "<group>"; };
+		B36B964D289A024900951457 /* L1_2F.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = L1_2F.csv; sourceTree = "<group>"; };
 		B3844E8C28099EE3007A5215 /* CardCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardCollectionViewCell.swift; sourceTree = "<group>"; };
 		B3844E8D28099EE3007A5215 /* CardCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CardCollectionViewCell.xib; sourceTree = "<group>"; };
 		B38807EB283333250029B174 /* L8_B1.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = L8_B1.csv; sourceTree = "<group>"; };
 		B38807EF283390280029B174 /* L1_1F.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = L1_1F.csv; sourceTree = "<group>"; };
 		B38807F0283390280029B174 /* L1_3F.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = L1_3F.csv; sourceTree = "<group>"; };
-		B38807F1283390280029B174 /* L1_2F.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = L1_2F.csv; sourceTree = "<group>"; };
 		B388AC2F282BF6A3001C3D71 /* RobotTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RobotTableViewCell.swift; sourceTree = "<group>"; };
 		B388AC30282BF6A3001C3D71 /* RobotTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = RobotTableViewCell.xib; sourceTree = "<group>"; };
 		B3AA004828313C97007CD284 /* UILabelExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UILabelExtension.swift; sourceTree = "<group>"; };
@@ -283,7 +283,7 @@
 				B3FD74EA2869A38800CD4D74 /* Gallery_4F.csv */,
 				B38807EB283333250029B174 /* L8_B1.csv */,
 				B38807EF283390280029B174 /* L1_1F.csv */,
-				B38807F1283390280029B174 /* L1_2F.csv */,
+				B36B964D289A024900951457 /* L1_2F.csv */,
 				B38807F0283390280029B174 /* L1_3F.csv */,
 				B3DD33D3285F08AE00866506 /* COEX_B2.csv */,
 				B3B3610828295E1400B8E876 /* Autoway_RP_B3.csv */,
@@ -522,7 +522,6 @@
 			files = (
 				B360D89228090D6A0084FB22 /* NotoSansKR-Medium.otf in Resources */,
 				B3B3610928295E1400B8E876 /* Autoway_RP_B3.csv in Resources */,
-				B38807F4283390280029B174 /* L1_2F.csv in Resources */,
 				B360D89328090D6A0084FB22 /* NotoSansKR-Regular.otf in Resources */,
 				B388AC32282BF6A3001C3D71 /* RobotTableViewCell.xib in Resources */,
 				B3F370D8281BA1CC003A427F /* RobotView.xib in Resources */,
@@ -550,6 +549,7 @@
 				B3BD69B027E9A78000A32A7A /* SectorContainerTableViewCell.xib in Resources */,
 				B3FD74EC2869A38800CD4D74 /* Gallery_4F.csv in Resources */,
 				B38807F3283390280029B174 /* L1_3F.csv in Resources */,
+				B36B964E289A024900951457 /* L1_2F.csv in Resources */,
 				B3844E8F28099EE3007A5215 /* CardCollectionViewCell.xib in Resources */,
 				B3DD33D4285F08AE00866506 /* COEX_B2.csv in Resources */,
 				B3037A92281C06D50058D025 /* OverlayCustomView.xib in Resources */,

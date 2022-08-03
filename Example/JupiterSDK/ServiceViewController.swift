@@ -22,7 +22,6 @@ protocol ServiceViewPageDelegate {
 class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewDataSource, Observer {
     
     func update(result: FineLocationTrackingResult) {
-//        print("FLT Result ->", result)
         let building = result.building_name
         let level = result.level_name
         
@@ -443,7 +442,6 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
         } catch {
             print("Error reading .csv file")
         }
-        
 //        print("RP Result :", rpXY)
         
         return rpXY
@@ -479,9 +477,6 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
             resultToDisplay.unitLength = serviceManager.displayOutput.length
             resultToDisplay.scc = serviceManager.displayOutput.scc
             resultToDisplay.phase = serviceManager.displayOutput.phase
-            
-//            fetchLevel(building: currentBuilding, level: currentLevel, flag: isShowRP)
-//            updateCoord(data: coordToDisplay, flag: isShowRP)
             
             if (isOpen) {
                 UIView.performWithoutAnimation { self.containerTableView.reloadSections(IndexSet(0...0), with: .none) }
@@ -595,7 +590,7 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
             scatterChart.leftAxis.axisMaximum = limits[3]
         }
         
-//        print("\(currentBuilding) \(currentLevel) Limits : \(limits[0]) , \(limits[1]), \(limits[2]), \(limits[3])")
+        print("\(currentBuilding) \(currentLevel) Limits : \(limits[0]) , \(limits[1]), \(limits[2]), \(limits[3])")
         
         scatterChart.xAxis.drawGridLinesEnabled = chartFlag
         scatterChart.leftAxis.drawGridLinesEnabled = chartFlag
@@ -827,18 +822,16 @@ extension ServiceViewController : UICollectionViewDelegate{
         let key = "\(currentBuilding)_\(currentLevel)"
         let rp: [[Double]] = RP[key] ?? [[Double]]()
         
-        let limits: [Double] = chartLimits[key] ?? [0, 0, 0, 0]
+        var limits: [Double] = chartLimits[key] ?? [0, 0, 0, 0]
         
         if (rp.isEmpty) {
             // RP가 없어서 그리지 않음
             scatterChart.isHidden = true
         } else {
             scatterChart.isHidden = false
-//            if (isShowRP) {
-////                drawRP(RP_X: rp[0], RP_Y: rp[1], XY: XY, limits: limits)
-//            } else {
-//                drawUser(XY: XY, limits: limits)
-//            }
+            if (isShowRP) {
+                drawRP(RP_X: rp[0], RP_Y: rp[1], XY: XY, limits: limits)
+            }
             
             fetchLevel(building: currentBuilding, level: currentLevel, flag: isShowRP)
         }
