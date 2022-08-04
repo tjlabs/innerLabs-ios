@@ -19,6 +19,12 @@ target 'JupiterSDK_Example' do
   pod 'FirebaseMLCommon'
   pod 'Firebase/MLModelInterpreter', '6.25.0'
   pod 'TensorFlowLiteSwift'
+  pod 'TextFieldEffects'
+  
+  # Fierbase
+#  pod 'FirebaseAnalytics'
+#  pod 'FirebaseAuth'
+#  pod 'FirebaseFirestore'
 
   post_install do |installer|
     installer.pods_project.targets.each do |target|

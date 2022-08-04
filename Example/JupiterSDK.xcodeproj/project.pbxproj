@@ -70,6 +70,8 @@
 		B3D194DF282E2782004E6F9A /* GuideViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3D194DE282E2782004E6F9A /* GuideViewController.swift */; };
 		B3D194E2282E2B2B004E6F9A /* LocationTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3D194E0282E2B2B004E6F9A /* LocationTableViewCell.swift */; };
 		B3D194E3282E2B2B004E6F9A /* LocationTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B3D194E1282E2B2B004E6F9A /* LocationTableViewCell.xib */; };
+		B3D488F0289B4D5500A8154C /* UIColorExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3D488EF289B4D5500A8154C /* UIColorExtension.swift */; };
+		B3D488F4289B55BF00A8154C /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = B3D488F3289B55BF00A8154C /* GoogleService-Info.plist */; };
 		B3DD33D4285F08AE00866506 /* COEX_B2.csv in Resources */ = {isa = PBXBuildFile; fileRef = B3DD33D3285F08AE00866506 /* COEX_B2.csv */; };
 		B3DE146D280E7146006DA43C /* AddCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3DE146C280E7146006DA43C /* AddCardViewController.swift */; };
 		B3DE146F280E7556006DA43C /* UIApplicationExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3DE146E280E7556006DA43C /* UIApplicationExtension.swift */; };
@@ -168,6 +170,8 @@
 		B3D194DE282E2782004E6F9A /* GuideViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GuideViewController.swift; sourceTree = "<group>"; };
 		B3D194E0282E2B2B004E6F9A /* LocationTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationTableViewCell.swift; sourceTree = "<group>"; };
 		B3D194E1282E2B2B004E6F9A /* LocationTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = LocationTableViewCell.xib; sourceTree = "<group>"; };
+		B3D488EF289B4D5500A8154C /* UIColorExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIColorExtension.swift; sourceTree = "<group>"; };
+		B3D488F3289B55BF00A8154C /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		B3DD33D3285F08AE00866506 /* COEX_B2.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = COEX_B2.csv; sourceTree = "<group>"; };
 		B3DE146C280E7146006DA43C /* AddCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddCardViewController.swift; sourceTree = "<group>"; };
 		B3DE146E280E7556006DA43C /* UIApplicationExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIApplicationExtension.swift; sourceTree = "<group>"; };
@@ -277,6 +281,7 @@
 				B3DD33D3285F08AE00866506 /* COEX_B2.csv */,
 				B3B3610828295E1400B8E876 /* Autoway_RP_B3.csv */,
 				B3B3610A28295E1D00B8E876 /* Autoway_RP_B4.csv */,
+				B3D488F3289B55BF00A8154C /* GoogleService-Info.plist */,
 				607FACDC1AFB9204008FA782 /* Images.xcassets */,
 				607FACD31AFB9204008FA782 /* Supporting Files */,
 			);
@@ -395,6 +400,7 @@
 				B3AA004828313C97007CD284 /* UILabelExtension.swift */,
 				B3BD69A027E9A52500A32A7A /* applyShadow.swift */,
 				B3FD74E8286989A600CD4D74 /* CustomSwitchButton.swift */,
+				B3D488EF289B4D5500A8154C /* UIColorExtension.swift */,
 			);
 			name = Utils;
 			sourceTree = "<group>";
@@ -547,6 +553,7 @@
 				B3B9F4E5286C2EA300FEE914 /* Gallery_4F_Road.csv in Resources */,
 				B38807F2283390280029B174 /* L1_1F.csv in Resources */,
 				B3BD69B027E9A78000A32A7A /* SectorContainerTableViewCell.xib in Resources */,
+				B3D488F4289B55BF00A8154C /* GoogleService-Info.plist in Resources */,
 				B3FD74EC2869A38800CD4D74 /* Gallery_4F.csv in Resources */,
 				B38807F3283390280029B174 /* L1_3F.csv in Resources */,
 				B36B964E289A024900951457 /* L1_2F.csv in Resources */,
@@ -711,6 +718,7 @@
 				B3F370D6281B9DC5003A427F /* OutputView.swift in Sources */,
 				B3F5C780282A5519009BEDB9 /* Protocol.swift in Sources */,
 				B3CC3C07283231E000D50522 /* PrivacyPolicyViewController.swift in Sources */,
+				B3D488F0289B4D5500A8154C /* UIColorExtension.swift in Sources */,
 				B3F5C77E282A5408009BEDB9 /* Network.swift in Sources */,
 				B3BD69A427E9A54700A32A7A /* StringExtension.swift in Sources */,
 				B388AC31282BF6A3001C3D71 /* RobotTableViewCell.swift in Sources */,
