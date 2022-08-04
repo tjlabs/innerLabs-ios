@@ -33,8 +33,8 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
                 if (levelList.contains(level)) {
                     coordToDisplay.building = building
                     coordToDisplay.level = level
-                    coordToDisplay.x = Double(x)
-                    coordToDisplay.y = Double(y)
+                    coordToDisplay.x = x
+                    coordToDisplay.y = y
                     
                     updateCoord(data: coordToDisplay, flag: isShowRP)
                 }
@@ -240,13 +240,17 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
                             chartLimits[key] = [0, 0, 0, 0]
                         } else {
                             let os = scaleString.components(separatedBy: "/")
-                            let arr = os[1].components(separatedBy: " ")
-                            var data = [Double]()
+                            let iosScale = os[1].components(separatedBy: " ")
                             
-                            for i in 0..<arr.count {
-                                data.append(Double(arr[i])!)
+                            var data = [Double]()
+                            if (iosScale.count < 4) {
+                                chartLimits[key] = [0, 0, 0, 0]
+                            } else {
+                                for i in 0..<iosScale.count {
+                                    data.append(Double(iosScale[i])!)
+                                }
+                                chartLimits[key] = data
                             }
-                            chartLimits[key] = data
                         }
                     }
                 })

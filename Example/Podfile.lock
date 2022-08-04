@@ -11,6 +11,11 @@ PODS:
   - Firebase/MLModelInterpreter (6.25.0):
     - Firebase/CoreOnly
     - FirebaseMLModelInterpreter (~> 0.19.0)
+  - FirebaseABTesting (3.2.0):
+    - FirebaseAnalyticsInterop (~> 1.3)
+    - FirebaseCore (~> 6.1)
+    - Protobuf (>= 3.9.2, ~> 3.9)
+  - FirebaseAnalyticsInterop (1.5.0)
   - FirebaseCore (6.7.1):
     - FirebaseCoreDiagnostics (~> 1.3)
     - FirebaseCoreDiagnosticsInterop (~> 1.2)
@@ -47,6 +52,13 @@ PODS:
     - GoogleUtilities/UserDefaults (~> 6.0)
     - GTMSessionFetcher/Core (~> 1.1)
     - TensorFlowLiteObjC (~> 1.14.0)
+  - FirebaseRemoteConfig (4.5.0):
+    - FirebaseABTesting (~> 3.1)
+    - FirebaseAnalyticsInterop (~> 1.4)
+    - FirebaseCore (~> 6.2)
+    - FirebaseInstallations (~> 1.1)
+    - GoogleUtilities/Environment (~> 6.2)
+    - "GoogleUtilities/NSData+zlib (~> 6.2)"
   - Floaty (4.2.0)
   - GoogleDataTransport (7.5.1):
     - nanopb (~> 1.30906.0)
@@ -73,10 +85,11 @@ PODS:
     - PromisesObjC (~> 1.2)
   - GoogleUtilities/Logger (6.7.2):
     - GoogleUtilities/Environment
+  - "GoogleUtilities/NSData+zlib (6.7.2)"
   - GoogleUtilities/UserDefaults (6.7.2):
     - GoogleUtilities/Logger
   - GTMSessionFetcher/Core (1.7.2)
-  - JupiterSDK (1.6.0):
+  - JupiterSDK (1.6.1):
     - Alamofire
     - Firebase/MLModelInterpreter (= 6.25.0)
     - FirebaseMLCommon
@@ -96,6 +109,7 @@ PODS:
     - TensorFlowLiteC (= 1.14.0)
   - TensorFlowLiteSwift (1.14.0):
     - TensorFlowLiteC (= 1.14.0)
+  - TextFieldEffects (1.6.0)
 
 DEPENDENCIES:
   - Alamofire
@@ -104,6 +118,7 @@ DEPENDENCIES:
   - ExpyTableView
   - Firebase/MLModelInterpreter (= 6.25.0)
   - FirebaseMLCommon
+  - FirebaseRemoteConfig
   - Floaty (~> 4.2.0)
   - GoogleMaps (= 4.0.0)
   - GooglePlaces (= 4.0.0)
@@ -112,6 +127,7 @@ DEPENDENCIES:
   - SnapKit
   - SwiftCSVExport (= 2.6.0)
   - TensorFlowLiteSwift
+  - TextFieldEffects
 
 SPEC REPOS:
   trunk:
@@ -120,6 +136,8 @@ SPEC REPOS:
     - DropDown
     - ExpyTableView
     - Firebase
+    - FirebaseABTesting
+    - FirebaseAnalyticsInterop
     - FirebaseCore
     - FirebaseCoreDiagnostics
     - FirebaseCoreDiagnosticsInterop
@@ -127,6 +145,7 @@ SPEC REPOS:
     - FirebaseInstanceID
     - FirebaseMLCommon
     - FirebaseMLModelInterpreter
+    - FirebaseRemoteConfig
     - Floaty
     - GoogleDataTransport
     - GoogleMaps
@@ -144,6 +163,7 @@ SPEC REPOS:
     - TensorFlowLiteC
     - TensorFlowLiteObjC
     - TensorFlowLiteSwift
+    - TextFieldEffects
 
 EXTERNAL SOURCES:
   JupiterSDK:
@@ -155,6 +175,8 @@ SPEC CHECKSUMS:
   DropDown: 8a2116376c1981888557f72ec2ffc9a5e0e456ec
   ExpyTableView: 19cf224c2ff04b1ec215ec52bc4ba6f81fa809ed
   Firebase: 5719b4f965f76643241a1bb8244483ff6117db39
+  FirebaseABTesting: 821a3a3e4a145987e80fee3657c4de1cb9adf693
+  FirebaseAnalyticsInterop: 3f86269c38ae41f47afeb43ebf32a001f58fcdae
   FirebaseCore: 6023faeada5afa95a349fccafb40900e32e9ac42
   FirebaseCoreDiagnostics: 770ac5958e1372ce67959ae4b4f31d8e127c3ac1
   FirebaseCoreDiagnosticsInterop: 296e2c5f5314500a850ad0b83e9e7c10b011a850
@@ -162,6 +184,7 @@ SPEC CHECKSUMS:
   FirebaseInstanceID: cef67c4967c7cecb56ea65d8acbb4834825c587b
   FirebaseMLCommon: 850f595135e066b989f90323c970499a4d8afbf9
   FirebaseMLModelInterpreter: 00dc6b246167a350a91be2d2667736d290700366
+  FirebaseRemoteConfig: 1725314c4b89d8853c876099ded037f11bee26db
   Floaty: e2bd5a0f6f7f70899e26ff2da31081c8bee8d1b0
   GoogleDataTransport: f56af7caa4ed338dc8e138a5d7c5973e66440833
   GoogleMaps: b7f7fc569a9b354a3af0d9729dbec40957b7d41e
@@ -169,7 +192,7 @@ SPEC CHECKSUMS:
   GoogleToolboxForMac: 8bef7c7c5cf7291c687cf5354f39f9db6399ad34
   GoogleUtilities: 7f2f5a07f888cdb145101d6042bc4422f57e70b3
   GTMSessionFetcher: 5595ec75acf5be50814f81e9189490412bad82ba
-  JupiterSDK: c0d1dfbedd9dab32f9cce523f2e37b1c3e15da29
+  JupiterSDK: 8f03c75dea378b2a7e1b6a542f8b48978a758d07
   Kingfisher: 184d4d1a8c36666e663caf8e08abe87898595c53
   nanopb: 59317e09cf1f1a0af72f12af412d54edf52603fc
   PromisesObjC: 3113f7f76903778cf4a0586bd1ab89329a0b7b97
@@ -180,7 +203,8 @@ SPEC CHECKSUMS:
   TensorFlowLiteC: a6702011fb661928634e59565b5fe262f69692d0
   TensorFlowLiteObjC: ece71b1e78f3df5952996c1606934b1d5538c875
   TensorFlowLiteSwift: ac8c816ae2d65f631a96151e7991c46412aec7eb
+  TextFieldEffects: 529b8aff706fb40f82c41c780c0777941a893796
 
-PODFILE CHECKSUM: 758e74f8b11b0c55f4066ee918b9cc84887716ac
+PODFILE CHECKSUM: d4b0788946cddd1d0c7890020d2c901426b2630f
 
 COCOAPODS: 1.11.3

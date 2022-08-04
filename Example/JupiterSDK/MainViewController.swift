@@ -261,5 +261,4 @@ class MainViewController: UIViewController, UITextFieldDelegate {
         
         return result
     }
-    
 }

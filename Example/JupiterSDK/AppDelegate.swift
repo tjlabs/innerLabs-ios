@@ -22,6 +22,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         GMSServices.provideAPIKey("AIzaSyAGA86GDZ3me4mkBHHdKcv_KSgGqzXveLU")
         FirebaseApp.configure()
         
+        self.window?.rootViewController = UIStoryboard.init(name: "SplashScreen", bundle: nil).instantiateInitialViewController()
+        RemoteConfigManager.sharedManager.launching(completionHandler: { (config) in }, forceUpdate: {
+            (forceUpdate) in
+            if !forceUpdate {
+                let vc = UIStoryboard.init(name: "Main", bundle: nil).instantiateInitialViewController()
+                
+                self.window?.rootViewController = vc
+                self.window?.makeKeyAndVisible()
+            }
+        })
 //        print("Environment :", Environment.apiKey)
         
         return true
@@ -48,6 +58,5 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationWillTerminate(_ application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     }
-    
 }
 

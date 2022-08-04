@@ -24,7 +24,6 @@
 		B3455283282AB7B400F0DD3E /* ServiceInfoTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3455281282AB7B400F0DD3E /* ServiceInfoTableViewCell.swift */; };
 		B3455284282AB7B400F0DD3E /* ServiceInfoTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B3455282282AB7B400F0DD3E /* ServiceInfoTableViewCell.xib */; };
 		B35272B2281F8DC300321CC6 /* SplashScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B35272B1281F8DC300321CC6 /* SplashScreen.storyboard */; };
-		B360D8652807C6090084FB22 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = B360D8642807C6090084FB22 /* GoogleService-Info.plist */; };
 		B360D88E28090D6A0084FB22 /* NotoSansKR-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = B360D88828090D680084FB22 /* NotoSansKR-Bold.otf */; };
 		B360D88F28090D6A0084FB22 /* NotoSansKR-Light.otf in Resources */ = {isa = PBXBuildFile; fileRef = B360D88928090D680084FB22 /* NotoSansKR-Light.otf */; };
 		B360D89028090D6A0084FB22 /* NotoSansKR-Thin.otf in Resources */ = {isa = PBXBuildFile; fileRef = B360D88A28090D690084FB22 /* NotoSansKR-Thin.otf */; };
@@ -71,7 +70,8 @@
 		B3D194E2282E2B2B004E6F9A /* LocationTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3D194E0282E2B2B004E6F9A /* LocationTableViewCell.swift */; };
 		B3D194E3282E2B2B004E6F9A /* LocationTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B3D194E1282E2B2B004E6F9A /* LocationTableViewCell.xib */; };
 		B3D488F0289B4D5500A8154C /* UIColorExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3D488EF289B4D5500A8154C /* UIColorExtension.swift */; };
-		B3D488F4289B55BF00A8154C /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = B3D488F3289B55BF00A8154C /* GoogleService-Info.plist */; };
+		B3D488F6289B8B4900A8154C /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = B3D488F5289B8B4900A8154C /* GoogleService-Info.plist */; };
+		B3D48909289B96F900A8154C /* RemoteConfigManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3D48908289B96F900A8154C /* RemoteConfigManager.swift */; };
 		B3DD33D4285F08AE00866506 /* COEX_B2.csv in Resources */ = {isa = PBXBuildFile; fileRef = B3DD33D3285F08AE00866506 /* COEX_B2.csv */; };
 		B3DE146D280E7146006DA43C /* AddCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3DE146C280E7146006DA43C /* AddCardViewController.swift */; };
 		B3DE146F280E7556006DA43C /* UIApplicationExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3DE146E280E7556006DA43C /* UIApplicationExtension.swift */; };
@@ -171,7 +171,8 @@
 		B3D194E0282E2B2B004E6F9A /* LocationTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationTableViewCell.swift; sourceTree = "<group>"; };
 		B3D194E1282E2B2B004E6F9A /* LocationTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = LocationTableViewCell.xib; sourceTree = "<group>"; };
 		B3D488EF289B4D5500A8154C /* UIColorExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIColorExtension.swift; sourceTree = "<group>"; };
-		B3D488F3289B55BF00A8154C /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		B3D488F5289B8B4900A8154C /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		B3D48908289B96F900A8154C /* RemoteConfigManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteConfigManager.swift; sourceTree = "<group>"; };
 		B3DD33D3285F08AE00866506 /* COEX_B2.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = COEX_B2.csv; sourceTree = "<group>"; };
 		B3DE146C280E7146006DA43C /* AddCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddCardViewController.swift; sourceTree = "<group>"; };
 		B3DE146E280E7556006DA43C /* UIApplicationExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIApplicationExtension.swift; sourceTree = "<group>"; };
@@ -255,6 +256,7 @@
 				B3BD69A227E9A53C00A32A7A /* Utils */,
 				B3BD699627E9A48E00A32A7A /* Color */,
 				607FACD51AFB9204008FA782 /* AppDelegate.swift */,
+				B3D48908289B96F900A8154C /* RemoteConfigManager.swift */,
 				B3844E8C28099EE3007A5215 /* CardCollectionViewCell.swift */,
 				B3844E8D28099EE3007A5215 /* CardCollectionViewCell.xib */,
 				B3B4F85828114EEB009F9E6C /* ShowCardCollectionViewCell.swift */,
@@ -281,7 +283,7 @@
 				B3DD33D3285F08AE00866506 /* COEX_B2.csv */,
 				B3B3610828295E1400B8E876 /* Autoway_RP_B3.csv */,
 				B3B3610A28295E1D00B8E876 /* Autoway_RP_B4.csv */,
-				B3D488F3289B55BF00A8154C /* GoogleService-Info.plist */,
+				B3D488F5289B8B4900A8154C /* GoogleService-Info.plist */,
 				607FACDC1AFB9204008FA782 /* Images.xcassets */,
 				607FACD31AFB9204008FA782 /* Supporting Files */,
 			);
@@ -553,14 +555,13 @@
 				B3B9F4E5286C2EA300FEE914 /* Gallery_4F_Road.csv in Resources */,
 				B38807F2283390280029B174 /* L1_1F.csv in Resources */,
 				B3BD69B027E9A78000A32A7A /* SectorContainerTableViewCell.xib in Resources */,
-				B3D488F4289B55BF00A8154C /* GoogleService-Info.plist in Resources */,
+				B3D488F6289B8B4900A8154C /* GoogleService-Info.plist in Resources */,
 				B3FD74EC2869A38800CD4D74 /* Gallery_4F.csv in Resources */,
 				B38807F3283390280029B174 /* L1_3F.csv in Resources */,
 				B36B964E289A024900951457 /* L1_2F.csv in Resources */,
 				B3844E8F28099EE3007A5215 /* CardCollectionViewCell.xib in Resources */,
 				B3DD33D4285F08AE00866506 /* COEX_B2.csv in Resources */,
 				B3037A92281C06D50058D025 /* OverlayCustomView.xib in Resources */,
-				B360D8652807C6090084FB22 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -639,6 +640,7 @@
 				"${BUILT_PRODUCTS_DIR}/SnapKit/SnapKit.framework",
 				"${BUILT_PRODUCTS_DIR}/SwiftAlgorithms/Algorithms.framework",
 				"${BUILT_PRODUCTS_DIR}/SwiftCSVExport/SwiftCSVExport.framework",
+				"${BUILT_PRODUCTS_DIR}/TextFieldEffects/TextFieldEffects.framework",
 				"${BUILT_PRODUCTS_DIR}/nanopb/nanopb.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
@@ -657,6 +659,7 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SnapKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Algorithms.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftCSVExport.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/TextFieldEffects.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/nanopb.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -722,6 +725,7 @@
 				B3F5C77E282A5408009BEDB9 /* Network.swift in Sources */,
 				B3BD69A427E9A54700A32A7A /* StringExtension.swift in Sources */,
 				B388AC31282BF6A3001C3D71 /* RobotTableViewCell.swift in Sources */,
+				B3D48909289B96F900A8154C /* RemoteConfigManager.swift in Sources */,
 				B3BD69B427E9A8AD00A32A7A /* LevelCollectionViewCell.swift in Sources */,
 				607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */,
 				B30EED7C28936CB5009A3EDA /* TipsTownViewController.swift in Sources */,
@@ -886,7 +890,7 @@
 				DEVELOPMENT_TEAM = G75UAV755N;
 				INFOPLIST_FILE = JupiterSDK/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 1.8;
+				MARKETING_VERSION = 1.8.1;
 				MODULE_NAME = ExampleApp;
 				PRODUCT_BUNDLE_IDENTIFIER = com.tjlabscorp.ios.innerLabs;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -904,7 +908,7 @@
 				DEVELOPMENT_TEAM = G75UAV755N;
 				INFOPLIST_FILE = JupiterSDK/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 1.8;
+				MARKETING_VERSION = 1.8.1;
 				MODULE_NAME = ExampleApp;
 				PRODUCT_BUNDLE_IDENTIFIER = com.tjlabscorp.ios.innerLabs;
 				PRODUCT_NAME = "$(TARGET_NAME)";

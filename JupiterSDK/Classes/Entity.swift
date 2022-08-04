@@ -168,7 +168,6 @@ public struct BuildingDetectionResult: Codable {
 struct CoarseLevelDetection: Codable {
     var user_id: String
     var mobile_time: Int
-    var sector_id: Int
 }
 
 public struct CoarseLevelDetectionResult: Codable {
@@ -254,8 +253,8 @@ public struct FineLocationTrackingResult: Codable {
     public var level_name: String = ""
     public var scc: Double = 0
     public var scr: Double = 0
-    public var x: Int = 0
-    public var y: Int = 0
+    public var x: Double = 0
+    public var y: Double = 0
     public var absolute_heading: Double = 0
     public var phase: Int = 0
     public var calculated_time: Double = 0

@@ -10,6 +10,7 @@ let CLD_URL = "https://where-run-ios-skrgq3jc5a-du.a.run.app/CLD"
 let FLD_URL = "https://where-run-ios-skrgq3jc5a-du.a.run.app/FLD"
 let CLE_URL = "https://where-run-ios-skrgq3jc5a-du.a.run.app/CLE"
 let FLT_URL = "https://where-run-ios-skrgq3jc5a-du.a.run.app/FLT"
+let CLC_URL = "https://where-run-ios-skrgq3jc5a-du.a.run.app/CLC"
 
 let JUPITER_URL = "https://where-run-user-skrgq3jc5a-du.a.run.app/jupiter"
 

@@ -79,6 +79,7 @@ public class ServiceManager: Observation {
     let SENSOR_INTERVAL: TimeInterval = 1/200
     
     var collectTimer: Timer?
+    var interruptTimer: Timer?
     // ------------------ //
     
     // ----- Network ----- //
@@ -98,15 +99,16 @@ public class ServiceManager: Observation {
     var preOutputMobileTime: Int = 0
     var preUnitHeading: Double = 0
     
-//    var timeUpdateFlag: Bool = false
-//    var measurementUpdateFlag: Bool = false
-    
     var floorUpdateRequestTimer: Double = 0
     var floorUpdateRequestFlag: Bool = false
     let FLOOR_UPDATE_REQUEST_TIME: Double = 15
     
     public var displayOutput = ServiceResult()
     // --------------------------------- //
+
+//    var timeUpdateFlag: Bool = false
+//    var measurementUpdateFlag: Bool = false
+//
 //    var kalmanP: Double = 1
 //    var kalmanQ: Double = 0.3
 //    var kalmanR: Double = 3
@@ -117,7 +119,7 @@ public class ServiceManager: Observation {
 //    var headingKalmanQ: Double = 0.5
 //    var headingKalmanR: Double = 1
 //    var headingKalmanK: Double = 1
-
+//
 //    var timeUpdatePosition = KalmanOutput()
 //    var measurementPosition = KalmanOutput()
 //
@@ -237,7 +239,7 @@ public class ServiceManager: Observation {
                 completion(statusCode, returnedString)
             })
         case "CLD":
-            let input = CoarseLevelDetection(user_id: self.user_id, mobile_time: currentTime, sector_id: self.sector_id)
+            let input = CoarseLevelDetection(user_id: self.user_id, mobile_time: currentTime)
             NetworkManager.shared.postCLD(url: CLD_URL, input: input, completion: { statusCode, returnedString in
                 completion(statusCode, returnedString)
             })
@@ -411,6 +413,10 @@ public class ServiceManager: Observation {
             floorUpdateRequestFlag = true
             userVelocityTimer = Timer.scheduledTimer(timeInterval: UV_INTERVAL, target: self, selector: #selector(self.userVelocityTimerUpdate), userInfo: nil, repeats: true)
         }
+        
+        if (interruptTimer == nil && self.service == "FLT") {
+            interruptTimer = Timer.scheduledTimer(timeInterval: 5, target: self, selector: #selector(self.runInterrupt), userInfo: nil, repeats: true)
+        }
     }
     
     func stopTimer() {
@@ -423,6 +429,11 @@ public class ServiceManager: Observation {
             floorUpdateRequestFlag = false
             userVelocityTimer!.invalidate()
             userVelocityTimer = nil
+        }
+        
+        if (interruptTimer != nil) {
+            interruptTimer!.invalidate()
+            interruptTimer = nil
         }
     }
     
@@ -569,6 +580,13 @@ public class ServiceManager: Observation {
         }
     }
     
+    @objc func runInterrupt() {
+        let currentTime = getCurrentTimeInMilliseconds()
+        
+        let input = CoarseLevelDetection(user_id: user_id, mobile_time: currentTime)
+        NetworkManager.shared.postCLD(url: CLC_URL, input: input, completion: { statusCode, returnedString in })
+    }
+    
     func getCurrentTimeInMilliseconds() -> Int
     {
         return Int(Date().timeIntervalSince1970 * 1000)
@@ -631,8 +649,8 @@ public class ServiceManager: Observation {
 //        kalmanP += kalmanQ
 //        headingKalmanP += headingKalmanQ
 //
-//        timeUpdateOutput.x = Int(timeUpdatePosition.x)
-//        timeUpdateOutput.y = Int(timeUpdatePosition.y)
+//        timeUpdateOutput.x = timeUpdatePosition.x
+//        timeUpdateOutput.y = timeUpdatePosition.y
 //        timeUpdateOutput.mobile_time = mobileTime
 //
 //        measurementUpdateFlag = true
@@ -653,8 +671,8 @@ public class ServiceManager: Observation {
 //        measurementPosition.y = timeUpdatePosition.y + kalmanK * (Double(serverOutput.y) - timeUpdatePosition.y)
 //        updateHeading = timeUpdatePosition.heading + headingKalmanK * (serverOutput.absolute_heading - timeUpdatePosition.heading)
 //
-//        measurementOutput.x = Int(measurementPosition.x)
-//        measurementOutput.y = Int(measurementPosition.y)
+//        measurementOutput.x = measurementPosition.x
+//        measurementOutput.y = measurementPosition.y
 //        kalmanP -= kalmanK * kalmanP
 //        headingKalmanP -= headingKalmanK * headingKalmanP
 //
