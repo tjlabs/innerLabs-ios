@@ -5,11 +5,6 @@ public class FineLocationTrackingService: NSObject {
     
     public override init() {
         super.init()
-
-        deviceModel = UIDevice.modelName
-        os = UIDevice.current.systemVersion
-        let arr = os.components(separatedBy: ".")
-        osVersion = Int(arr[0]) ?? 0
     }
     
     var uuid: String = ""

@@ -44,7 +44,9 @@ Pod::Spec.new do |s|
   # s.frameworks = 'UIKit', 'MapKit'
   s.static_framework = true
   s.dependency 'Alamofire'
-  s.dependency 'FirebaseMLCommon'
-  s.dependency 'Firebase/MLModelInterpreter', '6.25.0'
+  s.dependency 'FirebaseMLModelDownloader', '9.4.0-beta'
+  s.dependency 'TensorFlowLiteSwift'
+#  s.dependency 'FirebaseMLCommon'
+#  s.dependency 'Firebase/MLModelInterpreter', '6.25.0'
   
 end

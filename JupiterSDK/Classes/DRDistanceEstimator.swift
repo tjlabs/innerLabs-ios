@@ -1,5 +1,8 @@
 import Foundation
-import FirebaseMLModelInterpreter
+import FirebaseCore
+import FirebaseMLModelDownloader
+import TensorFlowLite
+//import FirebaseMLModelInterpreter
 
 public class DRDistanceEstimator: NSObject {
     
@@ -10,13 +13,14 @@ public class DRDistanceEstimator: NSObject {
     public let CF = CalculateFunctions()
     public let PDF = PacingDetectFunctions()
     
-    public var interpreter: ModelInterpreter!
-    public var ioOptions = ModelInputOutputOptions()
+    public var interpreter: Interpreter!
+//    public var interpreter: ModelInterpreter!
+//    public var ioOptions = ModelInputOutputOptions()
     
     public var epoch = 0
     public var index = 0
     public var finalUnitResult = UnitDistance()
-    public var output: [Float] = [0,0,0]
+    public var output: [Float] = [0,0]
     
     public var accQueue = LinkedList<SensorAxisValue>()
     public var gyroQueue = LinkedList<SensorAxisValue>()
@@ -35,23 +39,23 @@ public class DRDistanceEstimator: NSObject {
     public var distance: Double = 0
     
     public func loadModel() {
-        let customBundle = Bundle(for: DRDistanceEstimator.self)
-        guard let resourceBundleURL = customBundle.url(forResource: "JupiterSDK", withExtension: "bundle") else { fatalError("JupiterSDK.bundle not found!") }
-        print("resourceBundleURL :",resourceBundleURL)
-        guard let resourceBundle = Bundle(url: resourceBundleURL) else { return }
-        print("resourceBundle :", resourceBundle)
-        
-        guard let modelPath = resourceBundle.path(forResource: "dr_model", ofType: "tflite") else { fatalError("Load Model Error") }
-        let localModel = CustomLocalModel(modelPath: modelPath)
-        
-        do {
-            try ioOptions.setInputFormat(index: 0, type: .float32, dimensions: [1, 10])
-            try ioOptions.setOutputFormat(index: 0, type: .float32, dimensions: [1, 2])
-        } catch let error as NSError {
-            print("Failed to set input or output format with error: \(error.localizedDescription)")
-        }
-        
-        interpreter = ModelInterpreter.modelInterpreter(localModel: localModel)
+//        let customBundle = Bundle(for: DRDistanceEstimator.self)
+//        guard let resourceBundleURL = customBundle.url(forResource: "JupiterSDK", withExtension: "bundle") else { fatalError("JupiterSDK.bundle not found!") }
+//        print("resourceBundleURL :",resourceBundleURL)
+//        guard let resourceBundle = Bundle(url: resourceBundleURL) else { return }
+//        print("resourceBundle :", resourceBundle)
+//        
+//        guard let modelPath = resourceBundle.path(forResource: "dr_model", ofType: "tflite") else { fatalError("Load Model Error") }
+//        let localModel = CustomLocalModel(modelPath: modelPath)
+//        
+//        do {
+//            try ioOptions.setInputFormat(index: 0, type: .float32, dimensions: [1, 10])
+//            try ioOptions.setOutputFormat(index: 0, type: .float32, dimensions: [1, 2])
+//        } catch let error as NSError {
+//            print("Failed to set input or output format with error: \(error.localizedDescription)")
+//        }
+//        
+//        interpreter = ModelInterpreter.modelInterpreter(localModel: localModel)
         
         // Add
 //        let downloadConditions = ModelDownloadConditions(allowsCellularAccess: false)
@@ -64,10 +68,40 @@ public class DRDistanceEstimator: NSObject {
 //                      }) { result in
 //                // Handle download result.
 //                switch result {
-//                case let .success(model): // Use model.
-//                case let .failure(error): // Handle error.
+//                case let .success(model):
+//                    print(model)
+//                    self.interpreter = try Interpreter(modelPath: model.path)
+//                    // Use model.
+//                case let .failure(error):
+//                    // Handle error.
+//                    print("Load Model Error")
 //                }
 //            }
+        
+        let conditions = ModelDownloadConditions(allowsCellularAccess: false)
+        ModelDownloader.modelDownloader()
+            .getModel(name: "dr_model",
+                      downloadType: .localModelUpdateInBackground,
+                      conditions: conditions) { result in
+                switch (result) {
+                case .success(let customModel):
+                    do {
+                        // Download complete. Depending on your app, you could enable the ML
+                        // feature, or switch from the local model to the remote model, etc.
+
+                        // The CustomModel object contains the local path of the model file,
+                        // which you can use to instantiate a TensorFlow Lite interpreter.
+                        self.interpreter = try Interpreter(modelPath: customModel.path)
+                        print("Custom Model : ", customModel.path)
+                        print("Custom Model : ", self.interpreter)
+                    } catch {
+                        // Error. Bad model file?
+                    }
+                case .failure(let error):
+                    // Download was unsuccessful. Don't enable ML features.
+                    print("Load Model Error : ", error)
+                }
+        }
     }
     
     public func argmax(array: [Float]) -> Int {
@@ -155,7 +189,7 @@ public class DRDistanceEstimator: NSObject {
                                 Float(magVar.y/magNormalizeConstant),
                                 Float(magVar.z/magNormalizeConstant)]
         
-        let inputs = ModelInputs()
+//        let inputs = ModelInputs()
         var inputData = Data()
         
         for i in 0..<input.count {
@@ -169,35 +203,68 @@ public class DRDistanceEstimator: NSObject {
         finalUnitResult.isIndexChanged = false
         
         if (mlpEpochCount == 0) {
-            // ---------- //
             do {
-                try inputs.addInput(inputData)
-            } catch let error {
-                print("add input failure: \(error)")
+                try interpreter.allocateTensors()
+            } catch {
+                print("Allocate Error")
             }
             
-            interpreter.run(inputs: inputs, options: ioOptions) {
-                outputs, error in
-                guard error == nil, let outputs = outputs else {
-                    print("interpreter error")
-                    if (error != nil) {
-                        print(error!)
-                    }
-                    return
-                }
-                
-                do {
-                    let result = try outputs.output(index: 0) as! [[NSNumber]]
-                    let floatArray = result[0].map {
-                        a in
-                        a.floatValue
-                    }
-                    // print("Model Result :", floatArray)
-                    self.output = floatArray
-                } catch {
-                    //error
-                }
+            do {
+                try interpreter.copy(inputData, toInputAt: 0)
+            } catch {
+                print("Copy Error")
             }
+            
+            do {
+                try interpreter.invoke()
+            } catch {
+                print("Invoke Error")
+            }
+            
+            do {
+                let outputTensor = try interpreter.output(at: 0)
+//                let probabilities: [Float] = outputTensor.data
+                
+                let outputSize = outputTensor.shape.dimensions.reduce(1, {x, y in x*y})
+                let outputData = UnsafeMutableBufferPointer<Float32>.allocate(capacity: outputSize)
+                outputTensor.data.copyBytes(to: outputData)
+                
+                for i in 0..<outputData.count {
+                    output[i] = outputData[i]
+                }
+            } catch {
+                print("Output Error")
+            }
+            
+            // ---------- //
+//            do {
+//                try inputs.addInput(inputData)
+//            } catch let error {
+//                print("add input failure: \(error)")
+//            }
+
+//            interpreter.run(inputs: inputs, options: ioOptions) {
+//                outputs, error in
+//                guard error == nil, let outputs = outputs else {
+//                    print("interpreter error")
+//                    if (error != nil) {
+//                        print(error!)
+//                    }
+//                    return
+//                }
+//
+//                do {
+//                    let result = try outputs.output(index: 0) as! [[NSNumber]]
+//                    let floatArray = result[0].map {
+//                        a in
+//                        a.floatValue
+//                    }
+//                    // print("Model Result :", floatArray)
+//                    self.output = floatArray
+//                } catch {
+//                    //error
+//                }
+//            }
             // ------------- //
             
             let argMaxIndex: Int = argmax(array: output)
@@ -226,6 +293,7 @@ public class DRDistanceEstimator: NSObject {
         
         if (mlpEpochCount == OUTPUT_SAMPLE_EPOCH) {
             mlpEpochCount = 0
+            output = [0, 0]
         }
         
         return finalUnitResult

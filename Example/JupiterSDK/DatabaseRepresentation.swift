@@ -1,5 +1,5 @@
-//import Foundation
-//
-//protocol DatabaseRepresentation {
-//    var representation: [String: Any] { get }
-//}
+import Foundation
+
+protocol DatabaseRepresentation {
+    var representation: [String: Any] { get }
+}

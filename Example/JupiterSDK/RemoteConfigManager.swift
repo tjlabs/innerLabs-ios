@@ -1,5 +1,5 @@
 import UIKit
-import Firebase
+import FirebaseCore
 import FirebaseRemoteConfig
 
 class AppConfig {
@@ -20,8 +20,9 @@ class RemoteConfigManager: NSObject {
         
         remoteConfig.fetch(withExpirationDuration: TimeInterval(10)) { (status, error) -> Void in
             if status == .success {
-                remoteConfig.activateFetched()
-
+//                remoteConfig.
+                remoteConfig.activate()
+                
                 // 데이터 Fetch
                 let appConfig: AppConfig = AppConfig()
                 appConfig.isOn = remoteConfig["splash_message_caps"].boolValue
@@ -57,7 +58,7 @@ class RemoteConfigManager: NSObject {
 
         remoteConfig.fetch(withExpirationDuration: TimeInterval(10)) { (status, error) -> Void in
             if status == .success {
-                remoteConfig.activateFetched()
+                remoteConfig.activate()
 
                 // 데이터 Fetch
                 let appConfig: AppConfig = AppConfig()

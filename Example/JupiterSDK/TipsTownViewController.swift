@@ -9,7 +9,6 @@
 import UIKit
 import JupiterSDK
 import Floaty
-//import FirebaseAuth
 
 class TipsTownViewController: UIViewController {
 
@@ -149,6 +148,6 @@ class TipsTownViewController: UIViewController {
     func goToChatViewController() {
         
         window = UIWindow(frame: UIScreen.main.bounds)
-//        AppController.shared.show(in: window)
+        AppController.shared.show(in: window)
     }
 }

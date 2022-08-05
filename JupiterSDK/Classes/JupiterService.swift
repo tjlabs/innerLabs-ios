@@ -1,7 +1,6 @@
 import Foundation
 import CoreMotion
 import CoreLocation
-import FirebaseMLModelInterpreter
 
 public class JupiterService: NSObject {
     

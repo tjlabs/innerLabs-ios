@@ -8,8 +8,8 @@
 
 import UIKit
 import GoogleMaps
-import Firebase
-//import FirebaseAuth
+import FirebaseCore
+import FirebaseAuth
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -21,15 +21,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Google Maps
         GMSServices.provideAPIKey("AIzaSyAGA86GDZ3me4mkBHHdKcv_KSgGqzXveLU")
         FirebaseApp.configure()
-//        Auth.auth().signInAnonymously()
+        Auth.auth().signInAnonymously()
         
         RemoteConfigManager.sharedManager.launching(completionHandler: { (config) in }, forceUpdate: {
             (forceUpdate) in
             if !forceUpdate {
-                let vc = UIStoryboard.init(name: "Main", bundle: nil).instantiateInitialViewController()
-                
-                self.window?.rootViewController = vc
-                self.window?.makeKeyAndVisible()
+//                let vc = UIStoryboard.init(name: "Main", bundle: nil).instantiateInitialViewController()
+//                self.window?.rootViewController = vc
+//                self.window?.makeKeyAndVisible()
             }
         })
 //        print("Environment :", Environment.apiKey)

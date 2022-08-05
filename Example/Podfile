@@ -8,7 +8,7 @@ target 'JupiterSDK_Example' do
   pod 'JupiterSDK', :path => '../'
   pod 'Alamofire'
   pod 'SwiftCSVExport' , '= 2.6.0'
-  pod 'GoogleMaps', '4.0.0'
+  pod 'GoogleMaps'
   pod 'GooglePlaces', '4.0.0'
   pod 'Charts' 
   pod 'SnapKit'
@@ -16,11 +16,19 @@ target 'JupiterSDK_Example' do
   pod 'Kingfisher'
   pod 'DropDown'
   pod 'Floaty', '~> 4.2.0'
-  pod 'FirebaseMLCommon'
-  pod 'Firebase/MLModelInterpreter', '6.25.0'
-  pod 'TensorFlowLiteSwift'
   pod 'TextFieldEffects'
-  pod 'FirebaseRemoteConfig'
+  
+  ## For Firebase
+  pod 'FirebaseAuth', '9.4.0'
+  pod 'FirebaseFirestore', '9.4.0'
+  pod 'FirebaseStorage', '9.4.0'
+  pod 'FirebaseRemoteConfig', '9.4.0'
+  pod 'FirebaseMLModelDownloader', '9.4.0-beta'
+#  pod 'FirebaseMLCommon'
+#  pod 'Firebase/MLModelInterpreter', '6.25.0'
+  pod 'TensorFlowLiteSwift'
+  
+  
   
   post_install do |installer|
     installer.pods_project.targets.each do |target|

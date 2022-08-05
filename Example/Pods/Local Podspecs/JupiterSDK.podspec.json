@@ -36,11 +36,11 @@
     "Alamofire": [
 
     ],
-    "FirebaseMLCommon": [
-
+    "FirebaseMLModelDownloader": [
+      "9.4.0-beta"
     ],
-    "Firebase/MLModelInterpreter": [
-      "6.25.0"
+    "TensorFlowLiteSwift": [
+
     ]
   },
   "swift_version": "4.0"
