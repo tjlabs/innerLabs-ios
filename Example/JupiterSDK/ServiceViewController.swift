@@ -115,6 +115,7 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
     
     // Switch
     @IBOutlet weak var switchButton: CustomSwitchButton!
+    @IBOutlet weak var switchButtonOffset: NSLayoutConstraint!
     var modeAuto: Bool = false
     
     // View
@@ -137,6 +138,7 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
         switchButton.delegate = self
         let switchColor: (UIColor, UIColor) = (#colorLiteral(red: 0.5291011186, green: 0.7673488115, blue: 1, alpha: 1), #colorLiteral(red: 0.2705247761, green: 0.3820963617, blue: 1, alpha: 1))
         switchButton.onColor = switchColor
+        self.imageLevel.bringSubviewToFront(switchButton)
         
         if (cardData?.sector_id != 0 && cardData?.sector_id != 7) {
             let firstBuilding: String = (cardData?.infoBuilding[0])!
@@ -159,12 +161,7 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
         
         runMode = cardData!.mode
         
-        // Service Manger
-//        serviceManager.startService(id: uuid, sector_id: cardData!.sector_id, service: serviceName, mode: cardData!.mode)
 //        serviceManager.addObserver(self)
-//        startTimer()
-        
-        serviceManager.addObserver(self)
         self.hideKeyboardWhenTappedAround()
     }
     
@@ -730,7 +727,7 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
         return Double(Date().timeIntervalSince1970 * 1000)
     }
     
-    func hideDropDonw(flag: Bool) {
+    func hideDropDown(flag: Bool) {
         if (flag) {
             // Hide
             UIView.animate(withDuration: 0.5, animations: {self.dropView.alpha = 0.0}, completion: { isFinished in if isFinished {
@@ -740,6 +737,8 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
             UIView.animate(withDuration: 0.5, animations: {self.levelCollectionView.alpha = 0.0}, completion: { isFinished in if isFinished {
                 self.levelCollectionView.isHidden = true
             }})
+            
+            switchButtonOffset.constant = -30
         } else {
             // Show
             UIView.animate(withDuration: 0.5, animations: {self.dropView.alpha = 1.0}, completion: { isFinished in if isFinished {
@@ -749,6 +748,8 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
             UIView.animate(withDuration: 0.5, animations: {self.levelCollectionView.alpha = 1.0}, completion: { isFinished in if isFinished {
                 self.levelCollectionView.isHidden = false
             }})
+            
+            switchButtonOffset.constant = 10
         }
     }
     
@@ -932,14 +933,15 @@ extension ServiceViewController: CustomSwitchButtonDelegate {
         self.modeAuto = isOn
         
         if (isOn) {
-            self.hideDropDonw(flag: true)
+            self.hideDropDown(flag: true)
             
             serviceManager = ServiceManager()
             serviceManager.addObserver(self)
             serviceManager.startService(id: uuid, sector_id: cardData!.sector_id, service: serviceName, mode: cardData!.mode)
+            
             self.startTimer()
         } else {
-            self.hideDropDonw(flag: false)
+            self.hideDropDown(flag: false)
             
             serviceManager.removeObserver(self)
             serviceManager.stopService()

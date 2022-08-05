@@ -475,6 +475,7 @@
                                     <constraint firstItem="JBg-cF-UzO" firstAttribute="leading" secondItem="kJ9-Zf-no4" secondAttribute="leading" id="WS0-cU-WMa"/>
                                     <constraint firstItem="5n9-jJ-E1d" firstAttribute="leading" secondItem="7fZ-dU-vCi" secondAttribute="leading" id="aEc-bx-BYP"/>
                                     <constraint firstAttribute="bottom" secondItem="47X-rs-DuW" secondAttribute="bottom" constant="10" id="aah-ub-xpG"/>
+                                    <constraint firstItem="7fZ-dU-vCi" firstAttribute="top" secondItem="5n9-jJ-E1d" secondAttribute="bottom" constant="10" id="bNT-Fq-WQk"/>
                                     <constraint firstAttribute="trailing" secondItem="47X-rs-DuW" secondAttribute="trailing" constant="10" id="cqx-qm-GqN"/>
                                     <constraint firstItem="kDG-1Q-o2X" firstAttribute="leading" secondItem="kJ9-Zf-no4" secondAttribute="leading" id="eHq-FU-E0Z"/>
                                     <constraint firstAttribute="bottom" secondItem="7fZ-dU-vCi" secondAttribute="bottom" constant="10" id="eIt-Ju-9zN"/>
@@ -482,7 +483,6 @@
                                     <constraint firstAttribute="trailing" secondItem="kDG-1Q-o2X" secondAttribute="trailing" id="oSf-9o-0Wu"/>
                                     <constraint firstItem="7fZ-dU-vCi" firstAttribute="top" secondItem="kDG-1Q-o2X" secondAttribute="bottom" constant="10" id="saK-Gb-R3S"/>
                                     <constraint firstAttribute="height" constant="400" id="veB-sz-ODU"/>
-                                    <constraint firstItem="47X-rs-DuW" firstAttribute="top" secondItem="5n9-jJ-E1d" secondAttribute="bottom" constant="10" id="xpX-MP-bcc"/>
                                 </constraints>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="jqI-TW-uug">
@@ -604,6 +604,7 @@
                         <outlet property="scatterChart" destination="kDG-1Q-o2X" id="lKH-lO-6cG"/>
                         <outlet property="sectorNameLabel" destination="Gyz-ns-ttr" id="FRh-YT-E3O"/>
                         <outlet property="switchButton" destination="5n9-jJ-E1d" id="v3q-6I-jTI"/>
+                        <outlet property="switchButtonOffset" destination="bNT-Fq-WQk" id="kpD-8w-h9c"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ZAM-73-uk7" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>

@@ -5,6 +5,8 @@ import FirebaseRemoteConfig
 class AppConfig {
     var latestVersion: String?
     var minVersion: String?
+    var isOn: Bool?
+    var message: String?
 }
 
 class RemoteConfigManager: NSObject {
@@ -12,8 +14,45 @@ class RemoteConfigManager: NSObject {
     static let sharedManager = RemoteConfigManager()
     
     override private init() {}
+    
+    public func isAvailable() {
+        let remoteConfig = RemoteConfig.remoteConfig()
+        
+        remoteConfig.fetch(withExpirationDuration: TimeInterval(10)) { (status, error) -> Void in
+            if status == .success {
+                remoteConfig.activateFetched()
 
-    public func launching(completionHandler: @escaping (_ conf: AppConfig) -> (), forceUpdate:@escaping (_ need: Bool)->()) {
+                // 데이터 Fetch
+                let appConfig: AppConfig = AppConfig()
+                appConfig.isOn = remoteConfig["splash_message_caps"].boolValue
+                appConfig.message = remoteConfig["splash_message"].stringValue
+                
+                if (appConfig.isOn!) {
+                    let alertController = UIAlertController.init(title: "서버 점검", message: appConfig.message, preferredStyle: UIAlertController.Style.alert)
+                    alertController.addAction(UIAlertAction.init(title: "확인", style: UIAlertAction.Style.default, handler: { (action) in
+                        // 앱 종료하기
+                        
+                        UIApplication.shared.perform(#selector(NSXPCConnection.suspend))
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                            exit(0)
+                        }
+                        
+                    }))
+                    var topController = UIApplication.shared.keyWindow?.rootViewController
+                    if topController != nil {
+                        while let presentedViewController = topController?.presentedViewController {
+                            topController = presentedViewController
+                        }
+                    }
+                    topController!.present(alertController, animated: false, completion: {
+
+                    })
+                }
+            }
+        }
+    }
+
+    public func launching(completionHandler: @escaping (_ conf: AppConfig) -> (), forceUpdate: @escaping (_ need: Bool)->()) {
         let remoteConfig = RemoteConfig.remoteConfig()
 
         remoteConfig.fetch(withExpirationDuration: TimeInterval(10)) { (status, error) -> Void in
@@ -22,24 +61,23 @@ class RemoteConfigManager: NSObject {
 
                 // 데이터 Fetch
                 let appConfig: AppConfig = AppConfig()
+                appConfig.isOn = remoteConfig["splash_message_caps"].boolValue
+                appConfig.message = remoteConfig["splash_message"].stringValue
                 appConfig.latestVersion = remoteConfig["latest_version"].stringValue
                 appConfig.minVersion = remoteConfig["min_version"].stringValue
 
                 completionHandler(appConfig)
                 
-                let currentVersion: String = self.currentAppVersion()
-                print("Current App Version : \(currentVersion)")
-                print("App Config (Latest Version) : \(appConfig.latestVersion)")
-                print("App Config (Min Version) : \(appConfig.minVersion)")
-
-                // 강제업데이트
-                let needForcedUpdate:Bool = (self.compareVersion(versionA: currentVersion, versionB: appConfig.minVersion) == ComparisonResult.orderedAscending)
-                forceUpdate(needForcedUpdate)
-                if needForcedUpdate {
-                    let alertController = UIAlertController.init(title: "업데이트", message: "필수 업데이트가 있습니다. 업데이트하시겠습니까?", preferredStyle: UIAlertController.Style.alert)
-                    alertController.addAction(UIAlertAction.init(title: "업데이트", style: UIAlertAction.Style.default, handler: { (action) in
-                        // 앱스토어마켓으로 이동
-                        self.openAppStore()
+                if (appConfig.isOn!) {
+                    let alertController = UIAlertController.init(title: "서버 점검", message: appConfig.message, preferredStyle: UIAlertController.Style.alert)
+                    alertController.addAction(UIAlertAction.init(title: "확인", style: UIAlertAction.Style.default, handler: { (action) in
+                        // 앱 종료하기
+                        
+                        UIApplication.shared.perform(#selector(NSXPCConnection.suspend))
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                            exit(0)
+                        }
+                        
                     }))
                     var topController = UIApplication.shared.keyWindow?.rootViewController
                     if topController != nil {
@@ -50,32 +88,56 @@ class RemoteConfigManager: NSObject {
                     topController!.present(alertController, animated: false, completion: {
 
                     })
-                }
+                } else {
+                    let currentVersion: String = self.currentAppVersion()
+                    print("Current App Version : \(currentVersion)")
+                    print("App Config (Latest Version) : \(appConfig.latestVersion)")
+                    print("App Config (Min Version) : \(appConfig.minVersion)")
 
-                // 선택업데이트
-                let needUpdate:Bool = (self.compareVersion(versionA: currentVersion, versionB: appConfig.minVersion) != ComparisonResult.orderedAscending) && (self.compareVersion(versionA: currentVersion, versionB: appConfig.latestVersion) == ComparisonResult.orderedAscending)
-                if needUpdate {
-                    let alertController = UIAlertController.init(title: "업데이트", message: "최신 업데이트가 있습니다. 업데이트하시겠습니까?", preferredStyle: UIAlertController.Style.alert)
-                    alertController.addAction(UIAlertAction.init(title: "업데이트", style: UIAlertAction.Style.default, handler: { (action) in
-                        // 앱스토어마켓으로 이동
-                        self.openAppStore()
-                    }))
-                    alertController.addAction(UIAlertAction.init(title: "나중에", style: UIAlertAction.Style.default, handler: { (action) in
-                        // 앱으로 진입
-                    }))
-                    var topController = UIApplication.shared.keyWindow?.rootViewController
-                    if topController != nil {
-                        while let presentedViewController = topController?.presentedViewController {
-                            topController = presentedViewController
+                    // 강제업데이트
+                    let needForcedUpdate:Bool = (self.compareVersion(versionA: currentVersion, versionB: appConfig.minVersion) == ComparisonResult.orderedAscending)
+                    forceUpdate(needForcedUpdate)
+                    if needForcedUpdate {
+                        let alertController = UIAlertController.init(title: "업데이트", message: "필수 업데이트가 있습니다. 업데이트하시겠습니까?", preferredStyle: UIAlertController.Style.alert)
+                        alertController.addAction(UIAlertAction.init(title: "업데이트", style: UIAlertAction.Style.default, handler: { (action) in
+                            // 앱스토어마켓으로 이동
+                            self.openAppStore()
+                        }))
+                        var topController = UIApplication.shared.keyWindow?.rootViewController
+                        if topController != nil {
+                            while let presentedViewController = topController?.presentedViewController {
+                                topController = presentedViewController
+                            }
                         }
+                        topController!.present(alertController, animated: false, completion: {
+
+                        })
                     }
-                    topController!.present(alertController, animated: false, completion: {
 
-                    })
-                }
+                    // 선택업데이트
+                    let needUpdate:Bool = (self.compareVersion(versionA: currentVersion, versionB: appConfig.minVersion) != ComparisonResult.orderedAscending) && (self.compareVersion(versionA: currentVersion, versionB: appConfig.latestVersion) == ComparisonResult.orderedAscending)
+                    if needUpdate {
+                        let alertController = UIAlertController.init(title: "업데이트", message: "최신 업데이트가 있습니다. 업데이트하시겠습니까?", preferredStyle: UIAlertController.Style.alert)
+                        alertController.addAction(UIAlertAction.init(title: "업데이트", style: UIAlertAction.Style.default, handler: { (action) in
+                            // 앱스토어마켓으로 이동
+                            self.openAppStore()
+                        }))
+                        alertController.addAction(UIAlertAction.init(title: "나중에", style: UIAlertAction.Style.default, handler: { (action) in
+                            // 앱으로 진입
+                        }))
+                        var topController = UIApplication.shared.keyWindow?.rootViewController
+                        if topController != nil {
+                            while let presentedViewController = topController?.presentedViewController {
+                                topController = presentedViewController
+                            }
+                        }
+                        topController!.present(alertController, animated: false, completion: {
 
+                        })
+                    }
                 }
             }
+        }
     }
 
     private func compareVersion(versionA:String!, versionB:String!) -> ComparisonResult {
@@ -97,11 +159,11 @@ class RemoteConfigManager: NSObject {
         }
         
         var minorSubA = 0
-        if (Array(versionA.split(separator: ".")).count < 2) {
+        if (Array(versionA.split(separator: ".")).count > 2) {
             minorSubA = Int(Array(versionA.split(separator: "."))[2])!
         }
-        
         let minorSubB = Int(Array(versionB.split(separator: "."))[2])!
+        
         if minorSubA > minorSubB {
             return ComparisonResult.orderedDescending
         } else if minorSubB > minorSubA {

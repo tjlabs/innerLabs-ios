@@ -9,20 +9,20 @@
 import UIKit
 import GoogleMaps
 import Firebase
+//import FirebaseAuth
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
     
     var window: UIWindow?
     
-    
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         
         // Google Maps
         GMSServices.provideAPIKey("AIzaSyAGA86GDZ3me4mkBHHdKcv_KSgGqzXveLU")
         FirebaseApp.configure()
+//        Auth.auth().signInAnonymously()
         
-        self.window?.rootViewController = UIStoryboard.init(name: "SplashScreen", bundle: nil).instantiateInitialViewController()
         RemoteConfigManager.sharedManager.launching(completionHandler: { (config) in }, forceUpdate: {
             (forceUpdate) in
             if !forceUpdate {

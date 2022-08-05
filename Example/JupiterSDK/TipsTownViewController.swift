@@ -9,6 +9,7 @@
 import UIKit
 import JupiterSDK
 import Floaty
+//import FirebaseAuth
 
 class TipsTownViewController: UIViewController {
 
@@ -42,6 +43,9 @@ class TipsTownViewController: UIViewController {
     
     // Floating Button
     let floaty = Floaty()
+    
+    // Chat
+    var window: UIWindow?
     
     override func viewWillAppear(_ animated: Bool) {
         
@@ -121,6 +125,7 @@ class TipsTownViewController: UIViewController {
         itemToBottom.titleColor = .black
         itemToBottom.icon = UIImage(named: "chat")
         itemToBottom.handler = { [self] itemToBottom in
+            goToChatViewController()
             floaty.close()
         }
         floaty.addItem(item: itemToBottom)
@@ -139,5 +144,11 @@ class TipsTownViewController: UIViewController {
         }
 
         return result
+    }
+    
+    func goToChatViewController() {
+        
+        window = UIWindow(frame: UIScreen.main.bounds)
+//        AppController.shared.show(in: window)
     }
 }

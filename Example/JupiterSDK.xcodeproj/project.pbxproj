@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 46;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -63,6 +63,25 @@
 		B3BD69B427E9A8AD00A32A7A /* LevelCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3BD69B227E9A8AD00A32A7A /* LevelCollectionViewCell.swift */; };
 		B3BD69B527E9A8AD00A32A7A /* LevelCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B3BD69B327E9A8AD00A32A7A /* LevelCollectionViewCell.xib */; };
 		B3C09C64280E941B00E6F55F /* ShowCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3C09C63280E941B00E6F55F /* ShowCardViewController.swift */; };
+		B3C6F98C289CBDD2003FB402 /* MessageKit in Frameworks */ = {isa = PBXBuildFile; productRef = B3C6F98B289CBDD2003FB402 /* MessageKit */; };
+		B3C6F998289CCEB5003FB402 /* AppController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3C6F997289CCEB5003FB402 /* AppController.swift */; };
+		B3C6F99A289CCEE8003FB402 /* BaseNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3C6F999289CCEE8003FB402 /* BaseNavigationController.swift */; };
+		B3C6F99C289CCEFC003FB402 /* BaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3C6F99B289CCEFC003FB402 /* BaseViewController.swift */; };
+		B3C6F99E289CCF78003FB402 /* NSObjectExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3C6F99D289CCF78003FB402 /* NSObjectExtension.swift */; };
+		B3C6F9A0289CCF92003FB402 /* UIImageExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3C6F99F289CCF92003FB402 /* UIImageExtension.swift */; };
+		B3C6F9A2289CCFA9003FB402 /* FirebaseStorageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3C6F9A1289CCFA9003FB402 /* FirebaseStorageManager.swift */; };
+		B3C6F9A4289CCFDC003FB402 /* Channel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3C6F9A3289CCFDC003FB402 /* Channel.swift */; };
+		B3C6F9A6289CCFEA003FB402 /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3C6F9A5289CCFEA003FB402 /* Message.swift */; };
+		B3C6F9A8289CCFF7003FB402 /* ImageMediaItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3C6F9A7289CCFF7003FB402 /* ImageMediaItem.swift */; };
+		B3C6F9AA289CD002003FB402 /* StreamError.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3C6F9A9289CD002003FB402 /* StreamError.swift */; };
+		B3C6F9AC289CD00E003FB402 /* ChatFirestoreStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3C6F9AB289CD00E003FB402 /* ChatFirestoreStream.swift */; };
+		B3C6F9AE289CD01B003FB402 /* ChannelFireStoreStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3C6F9AD289CD01B003FB402 /* ChannelFireStoreStream.swift */; };
+		B3C6F9B0289CD027003FB402 /* DatabaseRepresentation.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3C6F9AF289CD027003FB402 /* DatabaseRepresentation.swift */; };
+		B3C6F9B2289CD06C003FB402 /* ChannelTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3C6F9B1289CD06C003FB402 /* ChannelTableViewCell.swift */; };
+		B3C6F9B4289CD07D003FB402 /* ChannelVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3C6F9B3289CD07D003FB402 /* ChannelVC.swift */; };
+		B3C6F9B6289CD08E003FB402 /* ChatVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3C6F9B5289CD08E003FB402 /* ChatVC.swift */; };
+		B3C6F9B8289CD09D003FB402 /* Sender.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3C6F9B7289CD09D003FB402 /* Sender.swift */; };
+		B3C6F9BA289CD0BF003FB402 /* UserDefaultManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3C6F9B9289CD0BF003FB402 /* UserDefaultManager.swift */; };
 		B3CC3C07283231E000D50522 /* PrivacyPolicyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3CC3C06283231E000D50522 /* PrivacyPolicyViewController.swift */; };
 		B3D194DC282E2726004E6F9A /* JupiterGuideTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3D194DA282E2726004E6F9A /* JupiterGuideTableViewCell.swift */; };
 		B3D194DD282E2726004E6F9A /* JupiterGuideTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B3D194DB282E2726004E6F9A /* JupiterGuideTableViewCell.xib */; };
@@ -164,6 +183,24 @@
 		B3BD69B227E9A8AD00A32A7A /* LevelCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LevelCollectionViewCell.swift; sourceTree = "<group>"; };
 		B3BD69B327E9A8AD00A32A7A /* LevelCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = LevelCollectionViewCell.xib; sourceTree = "<group>"; };
 		B3C09C63280E941B00E6F55F /* ShowCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowCardViewController.swift; sourceTree = "<group>"; };
+		B3C6F997289CCEB5003FB402 /* AppController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppController.swift; sourceTree = "<group>"; };
+		B3C6F999289CCEE8003FB402 /* BaseNavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseNavigationController.swift; sourceTree = "<group>"; };
+		B3C6F99B289CCEFC003FB402 /* BaseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseViewController.swift; sourceTree = "<group>"; };
+		B3C6F99D289CCF78003FB402 /* NSObjectExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSObjectExtension.swift; sourceTree = "<group>"; };
+		B3C6F99F289CCF92003FB402 /* UIImageExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIImageExtension.swift; sourceTree = "<group>"; };
+		B3C6F9A1289CCFA9003FB402 /* FirebaseStorageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseStorageManager.swift; sourceTree = "<group>"; };
+		B3C6F9A3289CCFDC003FB402 /* Channel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Channel.swift; sourceTree = "<group>"; };
+		B3C6F9A5289CCFEA003FB402 /* Message.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Message.swift; sourceTree = "<group>"; };
+		B3C6F9A7289CCFF7003FB402 /* ImageMediaItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageMediaItem.swift; sourceTree = "<group>"; };
+		B3C6F9A9289CD002003FB402 /* StreamError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamError.swift; sourceTree = "<group>"; };
+		B3C6F9AB289CD00E003FB402 /* ChatFirestoreStream.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatFirestoreStream.swift; sourceTree = "<group>"; };
+		B3C6F9AD289CD01B003FB402 /* ChannelFireStoreStream.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChannelFireStoreStream.swift; sourceTree = "<group>"; };
+		B3C6F9AF289CD027003FB402 /* DatabaseRepresentation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseRepresentation.swift; sourceTree = "<group>"; };
+		B3C6F9B1289CD06C003FB402 /* ChannelTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChannelTableViewCell.swift; sourceTree = "<group>"; };
+		B3C6F9B3289CD07D003FB402 /* ChannelVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChannelVC.swift; sourceTree = "<group>"; };
+		B3C6F9B5289CD08E003FB402 /* ChatVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatVC.swift; sourceTree = "<group>"; };
+		B3C6F9B7289CD09D003FB402 /* Sender.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sender.swift; sourceTree = "<group>"; };
+		B3C6F9B9289CD0BF003FB402 /* UserDefaultManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaultManager.swift; sourceTree = "<group>"; };
 		B3CC3C06283231E000D50522 /* PrivacyPolicyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrivacyPolicyViewController.swift; sourceTree = "<group>"; };
 		B3D194DA282E2726004E6F9A /* JupiterGuideTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JupiterGuideTableViewCell.swift; sourceTree = "<group>"; };
 		B3D194DB282E2726004E6F9A /* JupiterGuideTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = JupiterGuideTableViewCell.xib; sourceTree = "<group>"; };
@@ -198,6 +235,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				9A16870CE33E63FE35238C05 /* Pods_JupiterSDK_Example.framework in Frameworks */,
+				B3C6F98C289CBDD2003FB402 /* MessageKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -247,6 +285,7 @@
 		607FACD21AFB9204008FA782 /* Example for JupiterSDK */ = {
 			isa = PBXGroup;
 			children = (
+				B3C6F996289CCEA5003FB402 /* Chat */,
 				B30EED7F289381F9009A3EDA /* ViewController */,
 				B3D194D9282E270C004E6F9A /* Guide */,
 				B3455280282AACD000F0DD3E /* Output */,
@@ -403,6 +442,8 @@
 				B3BD69A027E9A52500A32A7A /* applyShadow.swift */,
 				B3FD74E8286989A600CD4D74 /* CustomSwitchButton.swift */,
 				B3D488EF289B4D5500A8154C /* UIColorExtension.swift */,
+				B3C6F99D289CCF78003FB402 /* NSObjectExtension.swift */,
+				B3C6F99F289CCF92003FB402 /* UIImageExtension.swift */,
 			);
 			name = Utils;
 			sourceTree = "<group>";
@@ -416,6 +457,29 @@
 				B3BD69B327E9A8AD00A32A7A /* LevelCollectionViewCell.xib */,
 			);
 			name = Sector;
+			sourceTree = "<group>";
+		};
+		B3C6F996289CCEA5003FB402 /* Chat */ = {
+			isa = PBXGroup;
+			children = (
+				B3C6F997289CCEB5003FB402 /* AppController.swift */,
+				B3C6F999289CCEE8003FB402 /* BaseNavigationController.swift */,
+				B3C6F99B289CCEFC003FB402 /* BaseViewController.swift */,
+				B3C6F9A1289CCFA9003FB402 /* FirebaseStorageManager.swift */,
+				B3C6F9A3289CCFDC003FB402 /* Channel.swift */,
+				B3C6F9A5289CCFEA003FB402 /* Message.swift */,
+				B3C6F9A7289CCFF7003FB402 /* ImageMediaItem.swift */,
+				B3C6F9A9289CD002003FB402 /* StreamError.swift */,
+				B3C6F9AB289CD00E003FB402 /* ChatFirestoreStream.swift */,
+				B3C6F9AD289CD01B003FB402 /* ChannelFireStoreStream.swift */,
+				B3C6F9AF289CD027003FB402 /* DatabaseRepresentation.swift */,
+				B3C6F9B1289CD06C003FB402 /* ChannelTableViewCell.swift */,
+				B3C6F9B3289CD07D003FB402 /* ChannelVC.swift */,
+				B3C6F9B5289CD08E003FB402 /* ChatVC.swift */,
+				B3C6F9B7289CD09D003FB402 /* Sender.swift */,
+				B3C6F9B9289CD0BF003FB402 /* UserDefaultManager.swift */,
+			);
+			name = Chat;
 			sourceTree = "<group>";
 		};
 		B3D194D9282E270C004E6F9A /* Guide */ = {
@@ -457,6 +521,9 @@
 			dependencies = (
 			);
 			name = JupiterSDK_Example;
+			packageProductDependencies = (
+				B3C6F98B289CBDD2003FB402 /* MessageKit */,
+			);
 			productName = JupiterSDK;
 			productReference = 607FACD01AFB9204008FA782 /* JupiterSDK_Example.app */;
 			productType = "com.apple.product-type.application";
@@ -513,6 +580,9 @@
 				Base,
 			);
 			mainGroup = 607FACC71AFB9204008FA782;
+			packageReferences = (
+				B3C6F98A289CBDD2003FB402 /* XCRemoteSwiftPackageReference "MessageKit" */,
+			);
 			productRefGroup = 607FACD11AFB9204008FA782 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -696,17 +766,27 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B3C6F9A4289CCFDC003FB402 /* Channel.swift in Sources */,
 				B3D194DF282E2782004E6F9A /* GuideViewController.swift in Sources */,
+				B3C6F99E289CCF78003FB402 /* NSObjectExtension.swift in Sources */,
 				B3B156DE282397AF0058B538 /* ImageOverlay.swift in Sources */,
+				B3C6F9A8289CCFF7003FB402 /* ImageMediaItem.swift in Sources */,
+				B3C6F9B8289CD09D003FB402 /* Sender.swift in Sources */,
 				B3BD69AF27E9A78000A32A7A /* SectorContainerTableViewCell.swift in Sources */,
 				B3BD69A127E9A52500A32A7A /* applyShadow.swift in Sources */,
 				B30EED872893B64C009A3EDA /* CollectViewController.swift in Sources */,
+				B3C6F9A6289CCFEA003FB402 /* Message.swift in Sources */,
+				B3C6F99C289CCEFC003FB402 /* BaseViewController.swift in Sources */,
 				B3AA004B28313CDF007CD284 /* UITextFieldExtension.swift in Sources */,
 				B3F370DA281BA1DD003A427F /* RobotView.swift in Sources */,
+				B3C6F998289CCEB5003FB402 /* AppController.swift in Sources */,
 				B31EC7D92876C03A00799659 /* ServiceViewController.swift in Sources */,
+				B3C6F9A0289CCF92003FB402 /* UIImageExtension.swift in Sources */,
 				B3037A94281C07060058D025 /* OverlayCustomView.swift in Sources */,
 				B3B4F85A28114EEB009F9E6C /* ShowCardCollectionViewCell.swift in Sources */,
+				B3C6F9B2289CD06C003FB402 /* ChannelTableViewCell.swift in Sources */,
 				B3DE146D280E7146006DA43C /* AddCardViewController.swift in Sources */,
+				B3C6F9B0289CD027003FB402 /* DatabaseRepresentation.swift in Sources */,
 				B3455283282AB7B400F0DD3E /* ServiceInfoTableViewCell.swift in Sources */,
 				B3FD74E9286989A600CD4D74 /* CustomSwitchButton.swift in Sources */,
 				B3C09C64280E941B00E6F55F /* ShowCardViewController.swift in Sources */,
@@ -727,17 +807,25 @@
 				B388AC31282BF6A3001C3D71 /* RobotTableViewCell.swift in Sources */,
 				B3D48909289B96F900A8154C /* RemoteConfigManager.swift in Sources */,
 				B3BD69B427E9A8AD00A32A7A /* LevelCollectionViewCell.swift in Sources */,
+				B3C6F9B6289CD08E003FB402 /* ChatVC.swift in Sources */,
 				607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */,
 				B30EED7C28936CB5009A3EDA /* TipsTownViewController.swift in Sources */,
 				B3BD69A627E9A55400A32A7A /* UIViewExtension.swift in Sources */,
 				B3BD699827E9A4A500A32A7A /* ColorPalette.swift in Sources */,
 				B3B7FBF52856DA4000E23EDF /* PopUpViewController.swift in Sources */,
+				B3C6F9AE289CD01B003FB402 /* ChannelFireStoreStream.swift in Sources */,
+				B3C6F9B4289CD07D003FB402 /* ChannelVC.swift in Sources */,
+				B3C6F9A2289CCFA9003FB402 /* FirebaseStorageManager.swift in Sources */,
 				B3BD69A827E9A56B00A32A7A /* UITableViewRegisterable.swift in Sources */,
 				B3E0A4F62887E51700B88E08 /* Environment.swift in Sources */,
+				B3C6F9AA289CD002003FB402 /* StreamError.swift in Sources */,
 				B3B361062829522A00B8E876 /* MapViewController.swift in Sources */,
+				B3C6F9BA289CD0BF003FB402 /* UserDefaultManager.swift in Sources */,
+				B3C6F99A289CCEE8003FB402 /* BaseNavigationController.swift in Sources */,
 				B3B7FBF72856F43200E23EDF /* GalleryViewController.swift in Sources */,
 				B3AA004928313C97007CD284 /* UILabelExtension.swift in Sources */,
 				B3BD699F27E9A51100A32A7A /* UIViewControllerExtension.swift in Sources */,
+				B3C6F9AC289CD00E003FB402 /* ChatFirestoreStream.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -876,7 +964,8 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
-				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
@@ -886,10 +975,13 @@
 			baseConfigurationReference = 6C664AF60D59718EECD6DBBC /* Pods-JupiterSDK_Example.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = G75UAV755N;
 				INFOPLIST_FILE = JupiterSDK/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				MARKETING_VERSION = 1.8.1;
 				MODULE_NAME = ExampleApp;
 				PRODUCT_BUNDLE_IDENTIFIER = com.tjlabscorp.ios.innerLabs;
@@ -904,10 +996,13 @@
 			baseConfigurationReference = 8B538B887A8FED7CB659550A /* Pods-JupiterSDK_Example.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = G75UAV755N;
 				INFOPLIST_FILE = JupiterSDK/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				MARKETING_VERSION = 1.8.1;
 				MODULE_NAME = ExampleApp;
 				PRODUCT_BUNDLE_IDENTIFIER = com.tjlabscorp.ios.innerLabs;
@@ -931,7 +1026,11 @@
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = Tests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
@@ -950,7 +1049,11 @@
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = Tests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
@@ -990,6 +1093,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		B3C6F98A289CBDD2003FB402 /* XCRemoteSwiftPackageReference "MessageKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/MessageKit/MessageKit";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 4.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		B3C6F98B289CBDD2003FB402 /* MessageKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B3C6F98A289CBDD2003FB402 /* XCRemoteSwiftPackageReference "MessageKit" */;
+			productName = MessageKit;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 607FACC81AFB9204008FA782 /* Project object */;
 }
