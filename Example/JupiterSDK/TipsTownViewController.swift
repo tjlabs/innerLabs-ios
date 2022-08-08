@@ -29,10 +29,13 @@ class TipsTownViewController: UIViewController {
     var page: Int = 0
     
     var buildings = [String]()
-    var currentBuilding: String = ""
     var levels = [String: [String]]()
     var levelList = [String]()
-    var currentLevel: String = ""
+    
+    var currentBuilding: String = "Unknown"
+    var currentLevel: String = "Unknown"
+    var pastBuilding: String = "Unknown"
+    var pastLevel: String = "Unknown"
     
     var runMode: String = ""
     var isOpen: Bool = false
@@ -45,6 +48,10 @@ class TipsTownViewController: UIViewController {
     
     // Chat
     var window: UIWindow?
+    
+    // Timer
+    var timer: Timer?
+    var TIMER_INTERVAL: TimeInterval = 2
     
     override func viewWillAppear(_ animated: Bool) {
         
@@ -66,7 +73,7 @@ class TipsTownViewController: UIViewController {
         
         // Service Manger
         serviceManager.startService(id: userId, sector_id: cardData!.sector_id, service: serviceName, mode: cardData!.mode)
-//        serviceManager.startService(id: userId, sector_id: 1, service: serviceName, mode: cardData!.mode)
+        self.startTimer()
         
         // Floating Button
         setFloatingButton()
@@ -77,20 +84,12 @@ class TipsTownViewController: UIViewController {
     
     @IBAction func tapBackButton(_ sender: UIButton) {
         self.delegate?.sendPage(data: page)
+        self.stopTimer()
         self.navigationController?.popViewController(animated: true)
     }
     
     @IBAction func tapAuthButton(_ sender: UIButton) {
-        serviceManager.getResult(completion: { [self] statusCode, returnedString in
-            if (statusCode == 200) {
-                let result = jsonToResult(json: returnedString)
-                
-                if (result.building_name != "") {
-                    self.buildingLabel.text = result.building_name
-                    self.levelLabel.text = result.level_name
-                }
-            }
-        })
+        getResult()
     }
     
     func setCardData(cardData: CardItemData) {
@@ -145,9 +144,64 @@ class TipsTownViewController: UIViewController {
         return result
     }
     
+    func getResult() {
+        serviceManager.getResult(completion: { [self] statusCode, returnedString in
+            if (statusCode == 200) {
+                let result = jsonToResult(json: returnedString)
+                
+                if (result.building_name != "") {
+                    self.pastBuilding = currentBuilding
+                    self.pastLevel = currentLevel
+                    
+                    self.buildingLabel.text = result.building_name
+                    self.levelLabel.text = result.level_name
+                    
+                    self.currentBuilding = result.building_name
+                    self.currentLevel = result.level_name
+                }
+            }
+        })
+    }
+    
     func goToChatViewController() {
-        
         window = UIWindow(frame: UIScreen.main.bounds)
+        
+//        let ratio = UIScreen.main.bounds.height/UIScreen.main.bounds.width
+//        let width = (UIScreen.main.bounds.width/2)
+//        let height = width*ratio
+//
+//        let x = width - 30
+//        let y = height - 60
+//        window = UIWindow(frame: CGRect(x: x, y: y, width: width, height: height))
+        
         AppController.shared.show(in: window)
+    }
+    
+    func startTimer() {
+        if (timer == nil) {
+            timer = Timer.scheduledTimer(timeInterval: TIMER_INTERVAL, target: self, selector: #selector(self.timerUpdate), userInfo: nil, repeats: true)
+        }
+    }
+    
+    @objc func timerUpdate() {
+        getResult()
+        
+        if (self.pastBuilding != self.currentBuilding) {
+            // Building Changed
+            print("(Building) Past : \(self.pastBuilding)  ->  Current : \(self.currentBuilding)")
+            
+            
+            if (self.pastLevel != self.currentLevel) {
+                // Level Changed
+                print("(Level) Past : \(self.pastLevel)  ->  Current : \(self.currentLevel)")
+            }
+        }
+    }
+    
+    func stopTimer() {
+        if (timer != nil) {
+            self.timer?.invalidate()
+            self.timer = nil
+        }
     }
 }

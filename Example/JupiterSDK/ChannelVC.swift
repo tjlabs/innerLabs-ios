@@ -78,8 +78,9 @@ class ChannelVC: BaseViewController {
                   confirmButtonCompletion: {
             do {
                 try Auth.auth().signOut()
-                self.presentingViewController?.dismiss(animated: true)
-//                self.dismiss(animated: true, completion: nil)
+                
+                print("Presenting VC :", self.presentingViewController)
+                print("Parent Presenting VC :", self.parent?.presentingViewController)
             } catch {
                 print("Error signing out: \(error.localizedDescription)")
             }

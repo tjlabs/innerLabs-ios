@@ -82,6 +82,7 @@
 		B3C6F9B8289CD09D003FB402 /* Sender.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3C6F9B7289CD09D003FB402 /* Sender.swift */; };
 		B3C6F9BA289CD0BF003FB402 /* UserDefaultManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3C6F9B9289CD0BF003FB402 /* UserDefaultManager.swift */; };
 		B3C6F9CD289CFD49003FB402 /* MessageKit in Frameworks */ = {isa = PBXBuildFile; productRef = B3C6F9CC289CFD49003FB402 /* MessageKit */; };
+		B3C6F9CF28A0FFE5003FB402 /* RegisterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3C6F9CE28A0FFE5003FB402 /* RegisterViewController.swift */; };
 		B3CC3C07283231E000D50522 /* PrivacyPolicyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3CC3C06283231E000D50522 /* PrivacyPolicyViewController.swift */; };
 		B3D194DC282E2726004E6F9A /* JupiterGuideTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3D194DA282E2726004E6F9A /* JupiterGuideTableViewCell.swift */; };
 		B3D194DD282E2726004E6F9A /* JupiterGuideTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B3D194DB282E2726004E6F9A /* JupiterGuideTableViewCell.xib */; };
@@ -201,6 +202,7 @@
 		B3C6F9B5289CD08E003FB402 /* ChatVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatVC.swift; sourceTree = "<group>"; };
 		B3C6F9B7289CD09D003FB402 /* Sender.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sender.swift; sourceTree = "<group>"; };
 		B3C6F9B9289CD0BF003FB402 /* UserDefaultManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaultManager.swift; sourceTree = "<group>"; };
+		B3C6F9CE28A0FFE5003FB402 /* RegisterViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterViewController.swift; sourceTree = "<group>"; };
 		B3CC3C06283231E000D50522 /* PrivacyPolicyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrivacyPolicyViewController.swift; sourceTree = "<group>"; };
 		B3D194DA282E2726004E6F9A /* JupiterGuideTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JupiterGuideTableViewCell.swift; sourceTree = "<group>"; };
 		B3D194DB282E2726004E6F9A /* JupiterGuideTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = JupiterGuideTableViewCell.xib; sourceTree = "<group>"; };
@@ -381,6 +383,7 @@
 				B31EC7D82876C03A00799659 /* ServiceViewController.swift */,
 				B30EED7B28936CB5009A3EDA /* TipsTownViewController.swift */,
 				B30EED862893B64C009A3EDA /* CollectViewController.swift */,
+				B3C6F9CE28A0FFE5003FB402 /* RegisterViewController.swift */,
 			);
 			name = ViewController;
 			sourceTree = "<group>";
@@ -807,6 +810,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				B3C6F9A4289CCFDC003FB402 /* Channel.swift in Sources */,
+				B3C6F9CF28A0FFE5003FB402 /* RegisterViewController.swift in Sources */,
 				B3D194DF282E2782004E6F9A /* GuideViewController.swift in Sources */,
 				B3C6F99E289CCF78003FB402 /* NSObjectExtension.swift in Sources */,
 				B3B156DE282397AF0058B538 /* ImageOverlay.swift in Sources */,

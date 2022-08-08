@@ -8,6 +8,11 @@ class BaseViewController: UIViewController {
         super.viewDidLoad()
         
         view.backgroundColor = .systemBackground
+
+//        view.layer.cornerRadius = 20
+//        view.layer.shadowOpacity = 0.5
+//        view.layer.shadowOffset = CGSize(width: 5, height: 5)
+//        view.layer.shadowOpacity = 0.5
     }
     
     func showAlert(title: String? = nil,

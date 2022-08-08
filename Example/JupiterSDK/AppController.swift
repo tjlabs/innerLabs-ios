@@ -12,7 +12,6 @@ final class AppController {
     private var rootViewController: UIViewController? {
         didSet {
             window.rootViewController = rootViewController
-//            window.inputViewController = rootViewController
         }
     }
     

@@ -143,10 +143,6 @@ class ChatVC: MessagesViewController {
 }
 
 extension ChatVC: MessagesDataSource {
-//    var currentSender: SenderType {
-//        return Sender(senderId: user.uid, displayName: UserDefaultManager.displayName)
-//    }
-    
     func currentSender() -> SenderType {
         return Sender(senderId: user.uid, displayName: UserDefaultManager.displayName)
     }
