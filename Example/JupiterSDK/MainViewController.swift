@@ -269,7 +269,8 @@ class MainViewController: UIViewController, UITextFieldDelegate {
         loginButton.translatesAutoresizingMaskIntoConstraints = false
         loginButton.widthAnchor.constraint(equalToConstant: 310).isActive = true
         loginButton.heightAnchor.constraint(equalToConstant: 49).isActive = true
-        loginButton.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 40).isActive = true
+        loginButton.centerXAnchor.constraint(equalTo: self.view.centerXAnchor).isActive = true
+        loginButton.centerYAnchor.constraint(equalTo: self.view.centerYAnchor).isActive = true
         loginButton.topAnchor.constraint(equalTo: self.view.topAnchor, constant: 624).isActive = true
         loginButton.addTarget(self, action: #selector(loginTapped), for: .touchUpInside)
         
@@ -282,7 +283,8 @@ class MainViewController: UIViewController, UITextFieldDelegate {
         loginLabel.translatesAutoresizingMaskIntoConstraints = false
         loginLabel.widthAnchor.constraint(equalToConstant: 45).isActive = true
         loginLabel.heightAnchor.constraint(equalToConstant: 19).isActive = true
-        loginLabel.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 173).isActive = true
+        loginLabel.centerXAnchor.constraint(equalTo: self.view.centerXAnchor).isActive = true
+        loginLabel.centerYAnchor.constraint(equalTo: self.view.centerYAnchor).isActive = true
         loginLabel.topAnchor.constraint(equalTo: self.view.topAnchor, constant: 639).isActive = true
         
         registerButton.setTitle("회원가입", for: .normal)
