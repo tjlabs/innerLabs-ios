@@ -19,6 +19,8 @@ class RegisterViewController: UIViewController, UITextFieldDelegate {
     @IBOutlet weak var emailDuplicateCheckButton: UIButton!
     @IBOutlet weak var nicknameDuplicateCheckButton: UIButton!
     @IBOutlet weak var passwordCheckImage: UIImageView!
+    @IBOutlet weak var notMatchedPasswordLabel: UILabel!
+    
     
     // TextField
     @IBOutlet weak var emailTextField: HoshiTextField!
@@ -95,6 +97,11 @@ class RegisterViewController: UIViewController, UITextFieldDelegate {
         passwordTextField.borderActiveColor = BLUE
         passwordCheckTextField.borderActiveColor = BLUE
         nicknameTextField.borderActiveColor = BLUE
+        
+        emailTextField.borderInactiveColor = BLUE
+        passwordTextField.borderInactiveColor = BLUE
+        passwordCheckTextField.borderInactiveColor = BLUE
+        nicknameTextField.borderInactiveColor = BLUE
     }
     
     @IBAction func tapEmailDuplicateCheckButton(_ sender: UIButton) {
@@ -143,21 +150,34 @@ class RegisterViewController: UIViewController, UITextFieldDelegate {
     }
     
     func checkPassword() {
-        if (self.userPassword != "" && self.userPasswordCheck != "") {
+        if (self.userPassword != "" || self.userPasswordCheck != "") {
             if (self.userPassword == self.userPasswordCheck) {
                 passwordCheckImage.image = UIImage(systemName: "chevron.down.circle.fill")
                 passwordCheckImage.tintColor = BLUE
                 
+//                self.passwordTextField.borderActiveColor = BLUE
+//                self.passwordCheckTextField.borderActiveColor = BLUE
+                notMatchedPasswordLabel.isHidden = true
+                
                 isPasswordValid = true
             } else {
                 passwordCheckImage.image = UIImage(systemName: "chevron.down.circle")
-                passwordCheckImage.tintColor = .darkgrey4
+                passwordCheckImage.tintColor = .red1
+                
+//                self.passwordTextField.borderActiveColor = .red1
+//                self.passwordCheckTextField.borderActiveColor = .red1
+//                self.passwordTextField.
+                notMatchedPasswordLabel.isHidden = false
                 
                 isPasswordValid = false
             }
         } else {
             passwordCheckImage.image = UIImage(systemName: "chevron.down.circle")
             passwordCheckImage.tintColor = .darkgrey4
+            
+//            self.passwordTextField.borderActiveColor = .red1
+//            self.passwordCheckTextField.borderActiveColor = .red1
+            notMatchedPasswordLabel.isHidden = true
             
             isPasswordValid = false
         }

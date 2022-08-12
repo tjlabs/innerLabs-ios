@@ -8,7 +8,7 @@ target 'JupiterSDK_Example' do
   pod 'JupiterSDK', :path => '../'
   pod 'Alamofire'
   pod 'SwiftCSVExport' , '= 2.6.0'
-  pod 'GoogleMaps'
+  pod 'GoogleMaps', '4.0.0'
   pod 'GooglePlaces', '4.0.0'
   pod 'Charts' 
   pod 'SnapKit'
@@ -19,15 +19,16 @@ target 'JupiterSDK_Example' do
   pod 'TextFieldEffects'
   
   ## For Firebase
-  pod 'FirebaseAuth', '9.4.0'
-  pod 'FirebaseFirestore', '9.4.0'
-  pod 'FirebaseStorage', '9.4.0'
-  pod 'FirebaseRemoteConfig', '9.4.0'
-  pod 'FirebaseMLModelDownloader', '9.4.0-beta'
-#  pod 'FirebaseMLCommon'
-#  pod 'Firebase/MLModelInterpreter', '6.25.0'
-  pod 'TensorFlowLiteSwift'
-  
+#  pod 'FirebaseAuth', '9.4.0'
+#  pod 'FirebaseFirestore', '9.4.0'
+#  pod 'FirebaseStorage', '9.4.0'
+#  pod 'FirebaseRemoteConfig', '9.4.0'
+#  pod 'FirebaseMLModelDownloader', '9.4.0-beta'
+#  pod 'TensorFlowLiteSwift'
+
+  pod 'FirebaseMLCommon'
+  pod 'Firebase/MLModelInterpreter', '6.25.0'
+  pod 'FirebaseRemoteConfig'
   
   
   post_install do |installer|

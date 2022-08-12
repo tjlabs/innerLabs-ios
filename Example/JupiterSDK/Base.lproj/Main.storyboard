@@ -2034,6 +2034,12 @@
                                     <action selector="tapCancelButton:" destination="HsX-mL-vsM" eventType="touchUpInside" id="8zV-dR-VYT"/>
                                 </connections>
                             </button>
+                            <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="비밀번호가 일치하지 않습니다" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="8Sm-9B-Edq">
+                                <rect key="frame" x="50.000000000000014" y="477" width="175.33333333333337" height="20.333333333333314"/>
+                                <fontDescription key="fontDescription" name="NotoSansKR-Medium" family="Noto Sans KR" pointSize="14"/>
+                                <color key="textColor" name="red1"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="lh9-Dg-Fqm"/>
                         <color key="backgroundColor" systemColor="systemGray6Color"/>
@@ -2041,6 +2047,7 @@
                             <constraint firstItem="lh9-Dg-Fqm" firstAttribute="trailing" secondItem="Vj6-3a-jTz" secondAttribute="trailing" constant="50" id="0Ea-hA-s38"/>
                             <constraint firstItem="80X-Us-BTp" firstAttribute="leading" secondItem="lh9-Dg-Fqm" secondAttribute="leading" constant="50" id="0P5-qf-B0f"/>
                             <constraint firstItem="Vj6-3a-jTz" firstAttribute="top" secondItem="q8S-0t-0Bo" secondAttribute="bottom" constant="25" id="0XU-65-msy"/>
+                            <constraint firstItem="8Sm-9B-Edq" firstAttribute="top" secondItem="hsK-3Z-ncM" secondAttribute="bottom" constant="5" id="2Rj-s6-7mc"/>
                             <constraint firstItem="Eb1-eu-wbo" firstAttribute="centerX" secondItem="lh9-Dg-Fqm" secondAttribute="centerX" id="7DA-qZ-R83"/>
                             <constraint firstItem="80X-Us-BTp" firstAttribute="top" secondItem="J0v-vY-L67" secondAttribute="bottom" constant="20" id="8Qy-C9-jUZ"/>
                             <constraint firstItem="lh9-Dg-Fqm" firstAttribute="bottom" secondItem="94t-km-YLy" secondAttribute="bottom" constant="120" id="8ed-bK-Db6"/>
@@ -2064,6 +2071,7 @@
                             <constraint firstItem="v7w-qP-o5h" firstAttribute="leading" secondItem="lh9-Dg-Fqm" secondAttribute="leading" id="iBj-1f-PgD"/>
                             <constraint firstItem="v7w-qP-o5h" firstAttribute="top" secondItem="lh9-Dg-Fqm" secondAttribute="top" constant="20" id="jI2-Y3-uTG"/>
                             <constraint firstItem="Eb1-eu-wbo" firstAttribute="top" secondItem="94t-km-YLy" secondAttribute="bottom" constant="10" id="njL-Y5-KXe"/>
+                            <constraint firstItem="8Sm-9B-Edq" firstAttribute="leading" secondItem="hsK-3Z-ncM" secondAttribute="leading" id="sP6-5d-AfZ"/>
                             <constraint firstItem="lh9-Dg-Fqm" firstAttribute="trailing" secondItem="lI2-s9-11Z" secondAttribute="trailing" id="uI0-EW-DCb"/>
                             <constraint firstItem="J0v-vY-L67" firstAttribute="leading" secondItem="lh9-Dg-Fqm" secondAttribute="leading" constant="50" id="xI9-kw-MpK"/>
                         </constraints>
@@ -2075,6 +2083,7 @@
                         <outlet property="emailTextField" destination="J0v-vY-L67" id="HeU-zx-Zqy"/>
                         <outlet property="nicknameDuplicateCheckButton" destination="e5K-8v-M3I" id="ic7-3l-Sni"/>
                         <outlet property="nicknameTextField" destination="Vj6-3a-jTz" id="aKS-Cz-rjx"/>
+                        <outlet property="notMatchedPasswordLabel" destination="8Sm-9B-Edq" id="dMG-2o-yvE"/>
                         <outlet property="passwordCheckImage" destination="q8S-0t-0Bo" id="QrJ-Sr-WRP"/>
                         <outlet property="passwordCheckTextField" destination="hsK-3Z-ncM" id="kDR-XS-LRk"/>
                         <outlet property="passwordTextField" destination="80X-Us-BTp" id="vWp-oZ-WGY"/>

@@ -174,7 +174,7 @@ class TipsTownViewController: UIViewController {
 //        let y = height - 60
 //        window = UIWindow(frame: CGRect(x: x, y: y, width: width, height: height))
         
-        AppController.shared.show(in: window)
+//        AppController.shared.show(in: window)
     }
     
     func startTimer() {

@@ -9,7 +9,7 @@
 import UIKit
 import GoogleMaps
 import FirebaseCore
-import FirebaseAuth
+//import FirebaseAuth
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -21,7 +21,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Google Maps
         GMSServices.provideAPIKey("AIzaSyAGA86GDZ3me4mkBHHdKcv_KSgGqzXveLU")
         FirebaseApp.configure()
-        Auth.auth().signInAnonymously()
+//        Auth.auth().signInAnonymously()
         
         RemoteConfigManager.sharedManager.launching(completionHandler: { (config) in }, forceUpdate: {
             (forceUpdate) in
