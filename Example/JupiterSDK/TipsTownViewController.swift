@@ -20,6 +20,9 @@ class TipsTownViewController: UIViewController {
     @IBOutlet weak var buildingLabel: UILabel!
     @IBOutlet weak var levelLabel: UILabel!
     
+    @IBOutlet weak var tipsTownScrollView: UIScrollView!
+    @IBOutlet weak var tipsTownImage: UIImageView!
+    
     var serviceManager = ServiceManager()
     var serviceName = "FLD"
     var userId: String = ""
@@ -77,6 +80,8 @@ class TipsTownViewController: UIViewController {
         
         // Floating Button
         setFloatingButton()
+        
+        configureScrollView()
         
         self.hideKeyboardWhenTappedAround()
     }
@@ -204,4 +209,34 @@ class TipsTownViewController: UIViewController {
             self.timer = nil
         }
     }
+    
+    func configureScrollView() {
+        tipsTownImage.image = UIImage(named: "tipsTown")
+        tipsTownScrollView.delegate = self
+        tipsTownScrollView.zoomScale = 1.0
+        tipsTownScrollView.minimumZoomScale = 1.0
+        tipsTownScrollView.maximumZoomScale = 2.0
+    }
 }
+
+extension TipsTownViewController: UIScrollViewDelegate {
+    func viewForZooming(in scrollView: UIScrollView) -> UIView? {
+         return self.tipsTownImage
+     }
+    
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        if scrollView.zoomScale <= 1.0 {
+            scrollView.zoomScale = 1.0
+            self.tipsTownImage.image = UIImage(named: "tipsTown")
+        }
+            
+        if scrollView.zoomScale >= 2.0 {
+            scrollView.zoomScale = 2.0
+            UIView.animate(withDuration: 0.5, delay: 0.0, options: .curveLinear, animations: {
+                self.tipsTownImage.image = UIImage(named: "L1_1F")
+                scrollView.zoomScale = 1.0
+            })
+        }
+    }
+}
+
