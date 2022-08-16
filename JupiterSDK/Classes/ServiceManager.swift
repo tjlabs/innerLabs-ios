@@ -63,9 +63,9 @@ public class ServiceManager: Observation {
     var roll: Double = 0
     var yaw: Double = 0
     
-    var UV_INPUT_NUM: Int = 5
-    let PDR_INPUT_NUM: Int = 5
-    let DR_INPUT_NUM: Int = 10
+    var UV_INPUT_NUM: Int = 2
+    var VAR_INPUT_NUM: Int = 5
+    var INIT_INPUT_NUM: Int = 2
     // ------------------------ //
     
     
@@ -105,26 +105,28 @@ public class ServiceManager: Observation {
     
     public var displayOutput = ServiceResult()
     // --------------------------------- //
+    
+    
+    // ----------- Kalman Filter ------------ //
+    var timeUpdateFlag: Bool = false
+    var measurementUpdateFlag: Bool = false
 
-//    var timeUpdateFlag: Bool = false
-//    var measurementUpdateFlag: Bool = false
-//
-//    var kalmanP: Double = 1
-//    var kalmanQ: Double = 0.3
-//    var kalmanR: Double = 3
-//    var kalmanK: Double = 1
-//
-//    var updateHeading: Double = 0
-//    var headingKalmanP: Double = 0.5
-//    var headingKalmanQ: Double = 0.5
-//    var headingKalmanR: Double = 1
-//    var headingKalmanK: Double = 1
-//
-//    var timeUpdatePosition = KalmanOutput()
-//    var measurementPosition = KalmanOutput()
-//
-//    var timeUpdateOutput = FineLocationTrackingResult()
-//    var measurementOutput = FineLocationTrackingResult()
+    var kalmanP: Double = 1
+    var kalmanQ: Double = 0.3
+    var kalmanR: Double = 3
+    var kalmanK: Double = 1
+
+    var updateHeading: Double = 0
+    var headingKalmanP: Double = 0.5
+    var headingKalmanQ: Double = 0.5
+    var headingKalmanR: Double = 1
+    var headingKalmanK: Double = 1
+
+    var timeUpdatePosition = KalmanOutput()
+    var measurementPosition = KalmanOutput()
+
+    var timeUpdateOutput = FineLocationTrackingResult()
+    var measurementOutput = FineLocationTrackingResult()
     
     public override init() {
         deviceModel = UIDevice.modelName
@@ -144,10 +146,10 @@ public class ServiceManager: Observation {
             unitDRGenerator.setMode(mode: mode)
             
             if (mode == "pdr") {
-                UV_INPUT_NUM = PDR_INPUT_NUM
+                VAR_INPUT_NUM = 5
                 recentThreshold = 800
             } else if (mode == "dr") {
-                UV_INPUT_NUM = DR_INPUT_NUM
+                VAR_INPUT_NUM = 10
                 recentThreshold = 2000
             }
             
@@ -472,7 +474,7 @@ public class ServiceManager: Observation {
     @objc func userVelocityTimerUpdate() {
         let currentTime = getCurrentTimeInMilliseconds()
         
-        if(floorUpdateRequestFlag) {
+        if (floorUpdateRequestFlag) {
             floorUpdateRequestTimer += UV_INTERVAL
             if (floorUpdateRequestTimer > FLOOR_UPDATE_REQUEST_TIME) {
                 let input = FineLocationTracking(user_id: user_id, mobile_time: currentTime, sector_id: sector_id)
@@ -503,17 +505,18 @@ public class ServiceManager: Observation {
             let diffHeading = unitDRInfo.heading - preUnitHeading
             let curUnitDRLength = unitDRInfo.length
             
+            // Time Update
+            if (timeUpdateFlag) {
+                let tuOutput = timeUpdate(length: curUnitDRLength, diffHeading: diffHeading, mobileTime: currentTime)
+                self.tracking(input: tuOutput)
+            }
+            preUnitHeading = unitDRInfo.heading
+            
+            // Post FLT
             inputUserVelocity.append(data)
             if ((inputUserVelocity.count-1) == UV_INPUT_NUM) {
                 inputUserVelocity.remove(at: 0)
                 NetworkManager.shared.putUserVelocity(url: UV_URL, input: inputUserVelocity)
-                
-                var lengthSum: Double = 0
-                for idx in 0..<inputUserVelocity.count {
-                    lengthSum += inputUserVelocity[idx].length
-                }
-                unitDistane = lengthSum
-                
                 inputUserVelocity = [UserVelocity(user_id: user_id, mobile_time: 0, index: 0, length: 0, heading: 0, looking: true)]
                 
                 floorUpdateRequestFlag = true
@@ -531,16 +534,18 @@ public class ServiceManager: Observation {
                         // Kalman Filter
                         if (result.mobile_time > preOutputMobileTime) {
                             if (result.phase == 4) {
+                                UV_INPUT_NUM = VAR_INPUT_NUM
                                 if (!(result.x == 0 && result.y == 0)) {
                                     // Measurment Update
-                                    if (KalmanFilter.shared.measurementUpdateFlag) {
-                                        let muOutput = KalmanFilter.shared.measurementUpdate(timeUpdatePosition: KalmanFilter.shared.timeUpdatePosition, serverOutput: result)
+                                    if (measurementUpdateFlag) {
+                                        let muOutput = measurementUpdate(timeUpdatePosition: timeUpdatePosition, serverOutput: result)
                                         self.tracking(input: muOutput)
                                     }
-                                    KalmanFilter.shared.timeUpdatePositionInit(serverOutput: result)
+                                    timeUpdatePositionInit(serverOutput: result)
                                 }
                             } else {
-                                KalmanFilter.shared.kalmanInit()
+                                UV_INPUT_NUM = INIT_INPUT_NUM
+                                kalmanInit()
                                 self.tracking(input: result)
                             }
                             preOutputMobileTime = result.mobile_time
@@ -548,13 +553,6 @@ public class ServiceManager: Observation {
                     }
                 })
             }
-            
-            if (KalmanFilter.shared.timeUpdateFlag) {
-                let tuOutput = KalmanFilter.shared.timeUpdate(length: curUnitDRLength, diffHeading: diffHeading, mobileTime: currentTime)
-                self.tracking(input: tuOutput)
-            }
-            
-            preUnitHeading = unitDRInfo.heading
         }
     }
     
@@ -606,80 +604,80 @@ public class ServiceManager: Observation {
     }
     
     // Kalman Filter
-//    func kalmanInit() {
-//        kalmanP = 1
-//        kalmanQ = 0.3
-//        kalmanR = 3
-//        kalmanK = 1
-//
-//        headingKalmanP = 0.5
-//        headingKalmanQ = 0.5
-//        headingKalmanR = 1
-//        headingKalmanK = 1
-//
-//        timeUpdatePosition = KalmanOutput()
-//        measurementPosition = KalmanOutput()
-//
-//        timeUpdateOutput = FineLocationTrackingResult()
-//        measurementOutput = FineLocationTrackingResult()
-//
-//        timeUpdateFlag = false
-//        measurementUpdateFlag = false
-//    }
-//
-//    func timeUpdatePositionInit(serverOutput: FineLocationTrackingResult) {
-//        timeUpdateOutput = serverOutput
-//        if (!measurementUpdateFlag) {
-//            timeUpdatePosition = KalmanOutput(x: Double(timeUpdateOutput.x), y: Double(timeUpdateOutput.y), heading: timeUpdateOutput.absolute_heading)
-//            timeUpdateFlag = true
-//        } else {
-//            timeUpdatePosition = KalmanOutput(x: measurementPosition.x, y: measurementPosition.y, heading: updateHeading)
-//        }
-//    }
-//
-//    func timeUpdate(length: Double, diffHeading: Double, mobileTime: Int) -> FineLocationTrackingResult {
-//        print("Kalman Check (Time Update) Before -> x :\(timeUpdatePosition.x) , y :\(timeUpdatePosition.y) , heading :\(timeUpdatePosition.heading))")
-//
-//        updateHeading = timeUpdatePosition.heading + diffHeading
-//
-//        timeUpdatePosition.x = timeUpdatePosition.x + (length*cos(updateHeading*D2R))
-//        timeUpdatePosition.y = timeUpdatePosition.y + (length*sin(updateHeading*D2R))
-//        timeUpdatePosition.heading = updateHeading
-//
-//        kalmanP += kalmanQ
-//        headingKalmanP += headingKalmanQ
-//
-//        timeUpdateOutput.x = timeUpdatePosition.x
-//        timeUpdateOutput.y = timeUpdatePosition.y
-//        timeUpdateOutput.mobile_time = mobileTime
-//
-//        measurementUpdateFlag = true
-//
-//        print("Kalman Check (Time Update) After -> x :\(timeUpdatePosition.x) , y :\(timeUpdatePosition.y) , heading :\(timeUpdatePosition.heading))")
-//
-//        return timeUpdateOutput
-//    }
-//
-//    func measurementUpdate(timeUpdatePosition: KalmanOutput, serverOutput: FineLocationTrackingResult) -> FineLocationTrackingResult {
-//        print("Kalman Check (Meas Update) Server Output -> \(serverOutput)")
-//        measurementOutput = serverOutput
-//
-//        kalmanK = kalmanP / (kalmanP + kalmanR)
-//        headingKalmanK = headingKalmanP / (headingKalmanP + headingKalmanR)
-//
-//        measurementPosition.x = timeUpdatePosition.x + kalmanK * (Double(serverOutput.x) - timeUpdatePosition.x)
-//        measurementPosition.y = timeUpdatePosition.y + kalmanK * (Double(serverOutput.y) - timeUpdatePosition.y)
-//        updateHeading = timeUpdatePosition.heading + headingKalmanK * (serverOutput.absolute_heading - timeUpdatePosition.heading)
-//
-//        measurementOutput.x = measurementPosition.x
-//        measurementOutput.y = measurementPosition.y
-//        kalmanP -= kalmanK * kalmanP
-//        headingKalmanP -= headingKalmanK * headingKalmanP
-//
-//        print("Kalman Check (Meas Update) Before -> x :\(timeUpdatePosition.x) , y :\(timeUpdatePosition.y) , heading :\(timeUpdatePosition.heading))")
-//        print("Kalman Check (Meas Update) After -> x :\(measurementOutput.x) , y :\(measurementOutput.y) , heading :\(updateHeading))")
-//
-//        return measurementOutput
-//
-//    }
+    func kalmanInit() {
+        kalmanP = 1
+        kalmanQ = 0.3
+        kalmanR = 3
+        kalmanK = 1
+
+        headingKalmanP = 0.5
+        headingKalmanQ = 0.5
+        headingKalmanR = 1
+        headingKalmanK = 1
+
+        timeUpdatePosition = KalmanOutput()
+        measurementPosition = KalmanOutput()
+
+        timeUpdateOutput = FineLocationTrackingResult()
+        measurementOutput = FineLocationTrackingResult()
+
+        timeUpdateFlag = false
+        measurementUpdateFlag = false
+    }
+
+    func timeUpdatePositionInit(serverOutput: FineLocationTrackingResult) {
+        timeUpdateOutput = serverOutput
+        if (!measurementUpdateFlag) {
+            timeUpdatePosition = KalmanOutput(x: Double(timeUpdateOutput.x), y: Double(timeUpdateOutput.y), heading: timeUpdateOutput.absolute_heading)
+            timeUpdateFlag = true
+        } else {
+            timeUpdatePosition = KalmanOutput(x: measurementPosition.x, y: measurementPosition.y, heading: updateHeading)
+        }
+    }
+
+    func timeUpdate(length: Double, diffHeading: Double, mobileTime: Int) -> FineLocationTrackingResult {
+        print("Kalman Check (Time Update) Before -> x :\(timeUpdatePosition.x) , y :\(timeUpdatePosition.y) , heading :\(timeUpdatePosition.heading))")
+
+        updateHeading = timeUpdatePosition.heading + diffHeading
+
+        timeUpdatePosition.x = timeUpdatePosition.x + (length*cos(updateHeading*D2R))
+        timeUpdatePosition.y = timeUpdatePosition.y + (length*sin(updateHeading*D2R))
+        timeUpdatePosition.heading = updateHeading
+
+        kalmanP += kalmanQ
+        headingKalmanP += headingKalmanQ
+
+        timeUpdateOutput.x = timeUpdatePosition.x
+        timeUpdateOutput.y = timeUpdatePosition.y
+        timeUpdateOutput.mobile_time = mobileTime
+
+        measurementUpdateFlag = true
+
+        print("Kalman Check (Time Update) After -> x :\(timeUpdatePosition.x) , y :\(timeUpdatePosition.y) , heading :\(timeUpdatePosition.heading))")
+
+        return timeUpdateOutput
+    }
+
+    func measurementUpdate(timeUpdatePosition: KalmanOutput, serverOutput: FineLocationTrackingResult) -> FineLocationTrackingResult {
+        print("Kalman Check (Meas Update) Server Output -> \(serverOutput)")
+        measurementOutput = serverOutput
+
+        kalmanK = kalmanP / (kalmanP + kalmanR)
+        headingKalmanK = headingKalmanP / (headingKalmanP + headingKalmanR)
+
+        measurementPosition.x = timeUpdatePosition.x + kalmanK * (Double(serverOutput.x) - timeUpdatePosition.x)
+        measurementPosition.y = timeUpdatePosition.y + kalmanK * (Double(serverOutput.y) - timeUpdatePosition.y)
+        updateHeading = timeUpdatePosition.heading + headingKalmanK * (serverOutput.absolute_heading - timeUpdatePosition.heading)
+
+        measurementOutput.x = measurementPosition.x
+        measurementOutput.y = measurementPosition.y
+        kalmanP -= kalmanK * kalmanP
+        headingKalmanP -= headingKalmanK * headingKalmanP
+
+        print("Kalman Check (Meas Update) Before -> x :\(timeUpdatePosition.x) , y :\(timeUpdatePosition.y) , heading :\(timeUpdatePosition.heading))")
+        print("Kalman Check (Meas Update) After -> x :\(measurementOutput.x) , y :\(measurementOutput.y) , heading :\(updateHeading))")
+
+        return measurementOutput
+
+    }
 }
