@@ -35,6 +35,7 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
                     coordToDisplay.level = level
                     coordToDisplay.x = x
                     coordToDisplay.y = y
+                    coordToDisplay.heading = result.absolute_heading
                     
                     updateCoord(data: coordToDisplay, flag: isShowRP)
                 }
@@ -102,6 +103,8 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
     var isShowRP = false
     var countTap: Int = 0
     
+    var headingImage = UIImage(named: "heading")
+    
     // Level Collection View
     @IBOutlet weak var levelCollectionView: UICollectionView!
     
@@ -154,6 +157,8 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
         }
         
         fixChartHeight(flag: isRadioMap)
+        
+        headingImage = headingImage?.resize(newWidth: 20)
     }
     
     override func viewDidLoad() {
@@ -555,7 +560,7 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
         }
     }
     
-    private func drawRP(RP_X: [Double], RP_Y: [Double], XY: [Double], limits: [Double]) {
+    private func drawRP(RP_X: [Double], RP_Y: [Double], XY: [Double], heading: Double, limits: [Double]) {
         let xAxisValue: [Double] = RP_X
         let yAxisValue: [Double] = RP_Y
 
@@ -581,6 +586,19 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
         
         let chartData = ScatterChartData(dataSet: set1)
         chartData.append(set2)
+        
+        // Heading
+        let point = scatterChart.getPosition(entry: ChartDataEntry(x: XY[0], y: XY[1]), axis: .left)
+        let imageView = UIImageView(image: headingImage!)
+        imageView.frame = CGRect(x: point.x - 15, y: point.y - 15, width:30, height: 30)
+        imageView.contentMode = .center
+        imageView.tag = 100
+        if let viewWithTag = scatterChart.viewWithTag(100) {
+            viewWithTag.removeFromSuperview()
+        } else {
+            print("Fail to remove heading")
+        }
+        scatterChart.addSubview(imageView)
         
         let xMin = xAxisValue.min()!
         let xMax = xAxisValue.max()!
@@ -628,7 +646,7 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
         scatterChart.data = chartData
     }
     
-    private func drawUser(XY: [Double], limits: [Double]) {
+    private func drawUser(XY: [Double], heading: Double, limits: [Double]) {
         let values1 = (0..<1).map { (i) -> ChartDataEntry in
             return ChartDataEntry(x: XY[0], y: XY[1])
         }
@@ -643,9 +661,21 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
         let chartData = ScatterChartData(dataSet: set1)
         chartData.setDrawValues(false)
         
+        // Heading
+        let point = scatterChart.getPosition(entry: ChartDataEntry(x: XY[0], y: XY[1]), axis: .left)
+        let imageView = UIImageView(image: headingImage!)
+        imageView.frame = CGRect(x: point.x - 15, y: point.y - 15, width:30, height: 30) //set the frame in center
+        imageView.contentMode = .center
+        imageView.tag = 100
+        if let viewWithTag = scatterChart.viewWithTag(100) {
+            viewWithTag.removeFromSuperview()
+        } else {
+            print("Fail to remove heading")
+        }
+        scatterChart.addSubview(imageView)
+        
         let chartFlag: Bool = false
         scatterChart.isHidden = false
-        
 //        print("\(currentBuilding) \(currentLevel) Limits : \(limits[0]) , \(limits[1]), \(limits[2]), \(limits[3])")
         
         // Configure Chart
@@ -701,6 +731,8 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
         let rp: [[Double]] = RP[key] ?? [[Double]]()
         var limits: [Double] = chartLimits[key] ?? [0, 0, 0, 0]
         
+        let heading: Double = data.heading
+        
         if (flag) {
             if (RP.contains(where: condition)) {
                 if (rp.isEmpty) {
@@ -709,12 +741,12 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
 //                    if (currentLevel == "2F") {
 //                        limits = [-6.0 , 35.0, -7.0, 65.0]
 //                    }
-                    drawRP(RP_X: rp[0], RP_Y: rp[1], XY: XY, limits: limits)
+                    drawRP(RP_X: rp[0], RP_Y: rp[1], XY: XY, heading: heading, limits: limits)
                 }
             }
         } else {
             if (buildings.contains(currentBuilding)) {
-                drawUser(XY: XY, limits: limits)
+                drawUser(XY: XY, heading: heading, limits: limits)
             }
         }
         
@@ -874,7 +906,7 @@ extension ServiceViewController : UICollectionViewDelegate{
             scatterChart.isHidden = true
         } else {
             if (isShowRP) {
-                drawRP(RP_X: rp[0], RP_Y: rp[1], XY: XY, limits: limits)
+                drawRP(RP_X: rp[0], RP_Y: rp[1], XY: XY, heading: 0, limits: limits)
             }
             fetchLevel(building: currentBuilding, level: currentLevel, flag: isShowRP)
         }

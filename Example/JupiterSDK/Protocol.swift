@@ -106,6 +106,7 @@ struct ResultToDisplay {
 struct CoordToDisplay {
     var x: Double = 0
     var y: Double = 0
+    var heading: Double = 0
     var building: String = ""
     var level: String = ""
 }
