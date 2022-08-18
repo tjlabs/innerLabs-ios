@@ -116,15 +116,6 @@ class MainViewController: UIViewController, UITextFieldDelegate {
             "Content-Type" : "application/json"
         ]
         
-        // [http 요청 수행 실시]
-        print("")
-        print("====================================")
-        print("주 소 :: ", url)
-        print("-------------------------------")
-        print("데이터 :: ", input)
-        print("====================================")
-        print("")
-        
         AF.request(
             url, // [주소]
             method: .post, // [전송 타입]
