@@ -1,5 +1,25 @@
 import Foundation
 
+struct UserInfo: Codable {
+    var user_id: String
+    var device_model: String
+    var os_version: Int
+}
+
+struct CardList: Codable {
+    var sectors: [CardInfo]
+}
+
+struct CardInfo: Codable {
+    var sector_id: Int
+    var sector_name: String
+    var description: String
+    var card_color: String
+    var dead_reckoning: String
+    var service_request: String
+    var building_level: [[String]]
+}
+
 public struct Attitude: Equatable {
     public var Roll: Double = 0
     public var Pitch: Double = 0

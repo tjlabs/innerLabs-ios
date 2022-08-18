@@ -1,5 +1,6 @@
 import Foundation
 import CoreMotion
+import Alamofire
 
 public class ServiceManager: Observation {
     
@@ -7,7 +8,14 @@ public class ServiceManager: Observation {
     
     func tracking(input: FineLocationTrackingResult) {
         for observer in observers {
-            observer.update(result: input)
+            var result = input
+            
+            // Map Matching
+            let xy = correct(building: result.building_name, level: result.level_name, x: result.x, y: result.y)
+            result.x = xy[0]
+            result.y = xy[1]
+            
+            observer.update(result: result)
         }
     }
     
@@ -22,6 +30,7 @@ public class ServiceManager: Observation {
     var os: String = ""
     var osVersion: Int = 0
     
+    var Road = [String: [[Double]]]()
     // ----- Sensor & BLE ----- //
     var sensorData = SensorData()
     public var collectData = CollectData()
@@ -83,6 +92,7 @@ public class ServiceManager: Observation {
     // ------------------ //
     
     // ----- Network ----- //
+    let USER_URL = "https://where-run-user-skrgq3jc5a-du.a.run.app/user"
     var inputReceivedForce: [ReceivedForce] = [ReceivedForce(user_id: "", mobile_time: 0, ble: [:], pressure: 0)]
     var inputUserVelocity: [UserVelocity] = [UserVelocity(user_id: "", mobile_time: 0, index: 0, length: 0, heading: 0, looking: true)]
     // ------------------- //
@@ -195,6 +205,92 @@ public class ServiceManager: Observation {
         self.RF_INTERVAL = interval
         
         self.initService()
+        
+        let userInfo = UserInfo(user_id: self.user_id, device_model: deviceModel, os_version: osVersion)
+        postUser(url: USER_URL, input: userInfo, completion: { [self] statusCode, returnedString in
+            if (statusCode == 200) {
+                let list = jsonToCardList(json: returnedString)
+                let myCard = list.sectors
+                
+                for card in 0..<myCard.count {
+                    let cardInfo: CardInfo = myCard[card]
+                    let id: Int = cardInfo.sector_id
+                    let buildings_n_levels: [[String]] = cardInfo.building_level
+                        
+                    var infoBuilding = [String]()
+                    var infoLevel = [String:[String]]()
+                    for building in 0..<buildings_n_levels.count {
+                        let buildingName: String = buildings_n_levels[building][0]
+                        let levelName: String = buildings_n_levels[building][1]
+                            
+                        // Building
+                        if !(infoBuilding.contains(buildingName)) {
+                            infoBuilding.append(buildingName)
+                        }
+                            
+                        // Level
+                        if let value = infoLevel[buildingName] {
+                            var levels:[String] = value
+                            levels.append(levelName)
+                            infoLevel[buildingName] = levels
+                        } else {
+                            let levels:[String] = [levelName]
+                            infoLevel[buildingName] = levels
+                        }
+                    }
+                    
+                    if (id == self.sector_id) {
+                        let buildings_n_levels: [[String]] = cardInfo.building_level
+                            
+                        var infoBuilding = [String]()
+                        var infoLevel = [String:[String]]()
+                        for building in 0..<buildings_n_levels.count {
+                            let buildingName: String = buildings_n_levels[building][0]
+                            let levelName: String = buildings_n_levels[building][1]
+                                
+                            // Building
+                            if !(infoBuilding.contains(buildingName)) {
+                                infoBuilding.append(buildingName)
+                            }
+                                
+                            // Level
+                            if let value = infoLevel[buildingName] {
+                                var levels:[String] = value
+                                levels.append(levelName)
+                                infoLevel[buildingName] = levels
+                            } else {
+                                let levels:[String] = [levelName]
+                                infoLevel[buildingName] = levels
+                            }
+                        }
+                        
+                        // Key-Value Saved
+                        for i in 0..<infoBuilding.count {
+                            let buildingName = infoBuilding[i]
+                            let levelList = infoLevel[buildingName]
+                            for j in 0..<levelList!.count {
+                                let levelName = levelList![j]
+                                let key: String = "\(buildingName)_\(levelName)"
+                                
+                                let url = "https://storage.googleapis.com/jupiter_image/rp/ios/\(self.sector_id)/\(key).csv"
+                                AF.request(url).response { response in
+                                    var statusCode = 404
+                                    if let code = response.response?.statusCode {
+                                        statusCode = code
+                                    }
+
+                                    if (statusCode == 200) {
+                                        if let data = response.data, let utf8Text = String(data: data, encoding: .utf8) {
+                                            self.Road[key] = self.parseRoad(data: utf8Text)
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        })
     }
     
     public func stopService() {
@@ -526,7 +622,7 @@ public class ServiceManager: Observation {
                 NetworkManager.shared.postFLT(url: FLT_URL, input: input, completion: { [self] statusCode, returnedString in
                     if (statusCode == 200) {
                         let result = jsonToResult(json: returnedString)
-
+                        
                         displayOutput.level = result.level_name
                         displayOutput.scc = result.scc
                         displayOutput.phase = String(result.phase)
@@ -597,9 +693,100 @@ public class ServiceManager: Observation {
         let jsonString = json
 
         if let data = jsonString.data(using: .utf8), let decoded = try? decoder.decode(FineLocationTrackingResult.self, from: data) {
+            
             return decoded
         }
 
+        return result
+    }
+    
+    private func parseRoad(data: String) -> [[Double]] {
+        var road = [[Double]]()
+        
+        var roadX = [Double]()
+        var roadY = [Double]()
+        
+        let roadString = data.components(separatedBy: .newlines)
+        for i in 0..<roadString.count {
+            if (roadString[i] != "") {
+                let lineData = roadString[i].components(separatedBy: ",")
+                
+                roadX.append(Double(lineData[0])!)
+                roadY.append(Double(lineData[1])!)
+            }
+        }
+        
+        road = [roadX, roadY]
+        
+        return road
+    }
+    
+    private func correct(building: String, level: String, x: Double, y: Double) -> [Double] {
+        var xy: [Double] = [x, y]
+        let key: String = "\(building)_\(level)"
+        
+        let mainRoad: [[Double]] = Road[key]!
+        var diffXY = [Double]()
+        if (!mainRoad.isEmpty) {
+            let roadX = mainRoad[0]
+            let roadY = mainRoad[1]
+            
+            for i in 0..<roadX.count {
+                diffXY.append(sqrt(pow(roadX[i] - x, 2) + pow(roadY[i] - y, 2)))
+            }
+            let minIdx = diffXY.firstIndex(of: diffXY.min()!)!
+            
+            xy = [roadX[minIdx], roadY[minIdx]]
+            
+            print("\(key) Map Matching Success !!")
+        }
+        
+        return xy
+    }
+    
+    func postUser(url: String, input: UserInfo, completion: @escaping (Int, String) -> Void) {
+        // [http 요청 헤더 지정]
+        let header : HTTPHeaders = [
+            "Content-Type" : "application/json"
+        ]
+        
+        AF.request(
+            url, // [주소]
+            method: .post, // [전송 타입]
+            parameters: input, // [전송 데이터]
+            encoder: JSONParameterEncoder.default,
+            headers: header // [헤더 지정]
+        )
+        .validate(statusCode: 200..<300)
+        .responseData { [self] response in
+            switch response.result {
+            case .success(let res):
+                do {
+                    let returnedString = String(decoding: response.data!, as: UTF8.self)
+                    completion(200, returnedString)
+                }
+                catch (let err){
+                    completion(500, "Fail")
+                }
+                break
+            case .failure(let err):
+                completion(500, "Fail")
+                break
+            }
+        }
+    }
+    
+    func jsonToCardList(json: String) -> CardList {
+        let result = CardList(sectors: [])
+        let decoder = JSONDecoder()
+        
+        let jsonString = json
+        
+        if let data = jsonString.data(using: .utf8), let decoded = try? decoder.decode(CardList.self, from: data) {
+            
+            return decoded
+        }
+        
         return result
     }
     

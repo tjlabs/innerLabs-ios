@@ -79,6 +79,8 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
     var page: Int = 0
     
     var RP = [String: [[Double]]]()
+//    var Road = [String: [[Double]]]()
+    var Road = [[Double]]()
     var chartLimits = [String: [Double]]()
     
     var XY: [Double] = [0, 0]
@@ -163,10 +165,8 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         runMode = cardData!.mode
         
-//        serviceManager.addObserver(self)
         self.hideKeyboardWhenTappedAround()
     }
     
@@ -576,20 +576,20 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
         set1.drawValuesEnabled = false
         set1.setScatterShape(.square)
         set1.setColor(UIColor.yellow)
-        set1.scatterShapeSize = 8
+        set1.scatterShapeSize = 10
         
         let set2 = ScatterChartDataSet(entries: values2, label: "User")
         set2.drawValuesEnabled = false
         set2.setScatterShape(.circle)
         set2.setColor(UIColor.systemRed)
-        set2.scatterShapeSize = 12
+        set2.scatterShapeSize = 14
         
         let chartData = ScatterChartData(dataSet: set1)
         chartData.append(set2)
         
         // Heading
         let point = scatterChart.getPosition(entry: ChartDataEntry(x: XY[0], y: XY[1]), axis: .left)
-        let imageView = UIImageView(image: headingImage!)
+        let imageView = UIImageView(image: headingImage!.rotate(degrees: heading+90))
         imageView.frame = CGRect(x: point.x - 15, y: point.y - 15, width:30, height: 30)
         imageView.contentMode = .center
         imageView.tag = 100
@@ -610,9 +610,9 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
         
         // Configure Chart
         if (currentLevel == "7F") {
-            scatterChart.xAxis.axisMinimum = xMin-2
-            scatterChart.xAxis.axisMaximum = xMax+2
-            scatterChart.leftAxis.axisMinimum = yMin-6
+            scatterChart.xAxis.axisMinimum = xMin-1
+            scatterChart.xAxis.axisMaximum = xMax+1
+            scatterChart.leftAxis.axisMinimum = yMin-5
             scatterChart.leftAxis.axisMaximum = yMax+6
         } else {
             scatterChart.xAxis.axisMinimum = limits[0]
