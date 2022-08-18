@@ -737,8 +737,6 @@ public class ServiceManager: Observation {
             let minIdx = diffXY.firstIndex(of: diffXY.min()!)!
             
             xy = [roadX[minIdx], roadY[minIdx]]
-            
-            print("\(key) Map Matching Success !!")
         }
         
         return xy
