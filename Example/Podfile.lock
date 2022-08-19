@@ -89,7 +89,7 @@ PODS:
   - GoogleUtilities/UserDefaults (6.7.2):
     - GoogleUtilities/Logger
   - GTMSessionFetcher/Core (1.7.2)
-  - JupiterSDK (1.6.2):
+  - JupiterSDK (1.6.3):
     - Alamofire
     - Firebase/MLModelInterpreter (= 6.25.0)
     - FirebaseMLCommon
@@ -188,7 +188,7 @@ SPEC CHECKSUMS:
   GoogleToolboxForMac: 8bef7c7c5cf7291c687cf5354f39f9db6399ad34
   GoogleUtilities: 7f2f5a07f888cdb145101d6042bc4422f57e70b3
   GTMSessionFetcher: 5595ec75acf5be50814f81e9189490412bad82ba
-  JupiterSDK: 69be3a10ee889c008ba63767d28b808ccd511b2a
+  JupiterSDK: d2a42c14e2b40477aa149cd9446d63cc82b7a150
   Kingfisher: 184d4d1a8c36666e663caf8e08abe87898595c53
   nanopb: 59317e09cf1f1a0af72f12af412d54edf52603fc
   PromisesObjC: 3113f7f76903778cf4a0586bd1ab89329a0b7b97
@@ -200,6 +200,6 @@ SPEC CHECKSUMS:
   TensorFlowLiteObjC: ece71b1e78f3df5952996c1606934b1d5538c875
   TextFieldEffects: 529b8aff706fb40f82c41c780c0777941a893796
 
-PODFILE CHECKSUM: 31a37871349f595cf86544787a9741eb7d73f727
+PODFILE CHECKSUM: 62ad19f857c6f65c87d0dcab9905c825941d754c
 
 COCOAPODS: 1.11.3

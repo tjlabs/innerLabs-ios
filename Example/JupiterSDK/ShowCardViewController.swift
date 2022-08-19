@@ -76,6 +76,7 @@ class ShowCardViewController: UIViewController, AddCardDelegate {
             cardShowImages.append(cardImage)
             
             let id = data[i].sector_id
+//            var sectorImage = UIImage(named: "tjlabsShow")!
             var sectorImage = UIImage(named: "tjlabsShow")!
             
             switch(id) {
