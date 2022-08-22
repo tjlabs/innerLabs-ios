@@ -1,6 +1,7 @@
 use_frameworks!
 
 platform :ios, '13.0'
+source 'https://cdn.cocoapods.org/'
 # source 'https://github.com/tjlabs/jupiter-sdk-ios.git'
 
 target 'JupiterSDK_Example' do
