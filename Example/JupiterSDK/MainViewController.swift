@@ -289,6 +289,7 @@ class MainViewController: UIViewController, UITextFieldDelegate {
         registerButton.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 284).isActive = true
         registerButton.topAnchor.constraint(equalTo: self.view.topAnchor, constant: 695).isActive = true
         registerButton.addTarget(self, action: #selector(registerTapped), for: .touchUpInside)
+        registerButton.isHidden = true
 
     }
     
