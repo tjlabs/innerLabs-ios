@@ -88,7 +88,7 @@ public class FineLocationTrackingService: NSObject {
     var receivedForceArray: [ReceivedForce] = [ReceivedForce(user_id: "", mobile_time: 0, ble: [:], pressure: 0)]
     var userVelocityArray: [UserVelocity] = [UserVelocity(user_id: "", mobile_time: 0, index: 0, length: 0, heading: 0, looking: true)]
     
-    var fineLocationTracking = FineLocationTrackingResult(mobile_time: 0, building_name: "", level_name: "", scc: 0, scr: 0, x: 0, y: 0, absolute_heading: 0, phase: 0, calculated_time: 0)
+    var fineLocationTracking = FineLocationTrackingResult(mobile_time: 0, building_name: "", level_name: "", scc: 0, scr: 0, x: 0, y: 0, absolute_heading: 0, phase: 0, calculated_time: 0, index: 0)
     // ------------------- //
     
     public func startService(id: String, sector_id: Int, mode: String) {
@@ -309,7 +309,7 @@ public class FineLocationTrackingService: NSObject {
     
     internal func getFineLocation() {
         let currentTime: Int = getCurrentTimeInMilliseconds()
-        let input = FineLocationTracking(user_id: uuid, mobile_time: currentTime, sector_id: sector_id)
+        let input = FineLocationTracking(user_id: uuid, mobile_time: currentTime, sector_id: sector_id, phase: 0)
         NetworkManager.shared.postFLT(url: FLT_URL, input: input, completion: { [self] statusCode, returnedString in
             let result = jsonToResult(json: returnedString)
             
@@ -331,7 +331,7 @@ public class FineLocationTrackingService: NSObject {
     }
     
     func jsonToResult(json: String) -> FineLocationTrackingResult {
-        let result = FineLocationTrackingResult(mobile_time: 0, building_name: "", level_name: "", scc: 0, scr: 0, x: 0, y: 0, absolute_heading: 0, phase: 0, calculated_time: 0)
+        let result = FineLocationTrackingResult(mobile_time: 0, building_name: "", level_name: "", scc: 0, scr: 0, x: 0, y: 0, absolute_heading: 0, phase: 0, calculated_time: 0, index: 0)
         let decoder = JSONDecoder()
 
         let jsonString = json

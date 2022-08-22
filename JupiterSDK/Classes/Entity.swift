@@ -265,6 +265,7 @@ struct FineLocationTracking: Codable {
     var user_id: String
     var mobile_time: Int
     var sector_id: Int
+    var phase: Int
 }
 
 public struct FineLocationTrackingResult: Codable {
@@ -278,4 +279,5 @@ public struct FineLocationTrackingResult: Codable {
     public var absolute_heading: Double = 0
     public var phase: Int = 0
     public var calculated_time: Double = 0
+    public var index: Int = 0
 }

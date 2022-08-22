@@ -11,9 +11,28 @@ public class ServiceManager: Observation {
             var result = input
             
             // Map Matching
-            let xy = correct(building: result.building_name, level: result.level_name, x: result.x, y: result.y)
+            let xy = correct(building: result.building_name, level: result.level_name, x: result.x, y: result.y, heading: result.absolute_heading)
             result.x = xy[0]
             result.y = xy[1]
+            result.absolute_heading = -(input.absolute_heading - 90)
+            
+            // Averaging
+            if (!pastResult.isEmpty) {
+                result.x = (result.x + pastResult[0])/2
+                result.y = (result.y + pastResult[1])/2
+                result.absolute_heading = (result.absolute_heading + pastResult[2])/2
+            }
+            
+            // Past Result Update
+            if (pastResult.isEmpty) {
+                pastResult.append(result.x)
+                pastResult.append(result.y)
+                pastResult.append(result.absolute_heading)
+            } else {
+                pastResult[0] = result.x
+                pastResult[1] = result.y
+                pastResult[2] = result.absolute_heading
+            }
             
             observer.update(result: result)
         }
@@ -31,6 +50,7 @@ public class ServiceManager: Observation {
     var osVersion: Int = 0
     
     var Road = [String: [[Double]]]()
+    var RoadHeading = [String: [String]]()
     // ----- Sensor & BLE ----- //
     var sensorData = SensorData()
     public var collectData = CollectData()
@@ -118,6 +138,8 @@ public class ServiceManager: Observation {
     
     
     // ----------- Kalman Filter ------------ //
+    var phase: Int = 0
+    
     var timeUpdateFlag: Bool = false
     var measurementUpdateFlag: Bool = false
 
@@ -138,6 +160,7 @@ public class ServiceManager: Observation {
     var timeUpdateOutput = FineLocationTrackingResult()
     var measurementOutput = FineLocationTrackingResult()
     
+    var pastResult = [Double]()
     public override init() {
         deviceModel = UIDevice.modelName
         os = UIDevice.current.systemVersion
@@ -281,7 +304,7 @@ public class ServiceManager: Observation {
 
                                     if (statusCode == 200) {
                                         if let data = response.data, let utf8Text = String(data: data, encoding: .utf8) {
-                                            self.Road[key] = self.parseRoad(data: utf8Text)
+                                            ( self.Road[key], self.RoadHeading[key] ) = self.parseRoad(data: utf8Text)
                                         }
                                     }
                                 }
@@ -573,7 +596,7 @@ public class ServiceManager: Observation {
         if (floorUpdateRequestFlag) {
             floorUpdateRequestTimer += UV_INTERVAL
             if (floorUpdateRequestTimer > FLOOR_UPDATE_REQUEST_TIME) {
-                let input = FineLocationTracking(user_id: user_id, mobile_time: currentTime, sector_id: sector_id)
+                let input = FineLocationTracking(user_id: user_id, mobile_time: currentTime, sector_id: sector_id, phase: self.phase)
                 
                 NetworkManager.shared.postFLT(url: FLT_URL, input: input, completion: { [self] statusCode, returnedString in
                     if (statusCode == 200) {
@@ -618,10 +641,11 @@ public class ServiceManager: Observation {
                 floorUpdateRequestFlag = true
                 floorUpdateRequestTimer = 0
                 
-                let input = FineLocationTracking(user_id: user_id, mobile_time: currentTime, sector_id: sector_id)
+                let input = FineLocationTracking(user_id: user_id, mobile_time: currentTime, sector_id: sector_id, phase: self.phase)
                 NetworkManager.shared.postFLT(url: FLT_URL, input: input, completion: { [self] statusCode, returnedString in
                     if (statusCode == 200) {
                         let result = jsonToResult(json: returnedString)
+                        self.phase = result.phase
                         
                         displayOutput.level = result.level_name
                         displayOutput.scc = result.scc
@@ -687,7 +711,7 @@ public class ServiceManager: Observation {
     }
     
     func jsonToResult(json: String) -> FineLocationTrackingResult {
-        let result = FineLocationTrackingResult(mobile_time: 0, building_name: "", level_name: "", scc: 0, scr: 0, x: 0, y: 0, absolute_heading: 0, phase: 0, calculated_time: 0)
+        let result = FineLocationTrackingResult(mobile_time: 0, building_name: "", level_name: "", scc: 0, scr: 0, x: 0, y: 0, absolute_heading: 0, phase: 0, calculated_time: 0, index: 0)
         let decoder = JSONDecoder()
 
         let jsonString = json
@@ -700,8 +724,9 @@ public class ServiceManager: Observation {
         return result
     }
     
-    private func parseRoad(data: String) -> [[Double]] {
+    private func parseRoad(data: String) -> ( [[Double]], [String] ) {
         var road = [[Double]]()
+        var roadHeading = [String]()
         
         var roadX = [Double]()
         var roadY = [Double]()
@@ -713,19 +738,33 @@ public class ServiceManager: Observation {
                 
                 roadX.append(Double(lineData[0])!)
                 roadY.append(Double(lineData[1])!)
+                
+                var headingArray: String = ""
+                if (lineData.count > 2) {
+                    for j in 2..<lineData.count {
+                        headingArray.append(lineData[j])
+                        if (lineData[j] != "") {
+                            headingArray.append(",")
+                        }
+                    }
+                }
+                roadHeading.append(headingArray)
             }
         }
         
         road = [roadX, roadY]
         
-        return road
+        return (road, roadHeading)
     }
     
-    private func correct(building: String, level: String, x: Double, y: Double) -> [Double] {
-        var xy: [Double] = [x, y]
+    private func correct(building: String, level: String, x: Double, y: Double, heading: Double) -> [Double] {
+        var xyh: [Double] = [x, y, heading]
+        
         let key: String = "\(building)_\(level)"
         
         let mainRoad: [[Double]] = Road[key]!
+        let mainHeading: [String] = RoadHeading[key]!
+
         var diffXY = [Double]()
         if (!mainRoad.isEmpty) {
             let roadX = mainRoad[0]
@@ -735,11 +774,22 @@ public class ServiceManager: Observation {
                 diffXY.append(sqrt(pow(roadX[i] - x, 2) + pow(roadY[i] - y, 2)))
             }
             let minIdx = diffXY.firstIndex(of: diffXY.min()!)!
+            var headingArray = mainHeading[minIdx]
+            let headingData = headingArray.components(separatedBy: ",")
             
-            xy = [roadX[minIdx], roadY[minIdx]]
+            var diffHeading = [Double]()
+            for i in 0..<headingData.count {
+                if (headingData[i] != "") {
+                    let mapHeading = Double(headingData[i])!
+                    diffHeading.append(abs(heading - mapHeading))
+                }
+            }
+            let minHeadingIdx = diffHeading.firstIndex(of: diffHeading.min()!)!
+            
+            xyh = [roadX[minIdx], roadY[minIdx], Double(headingData[minHeadingIdx])!]
         }
         
-        return xy
+        return xyh
     }
     
     func postUser(url: String, input: UserInfo, completion: @escaping (Int, String) -> Void) {
@@ -821,7 +871,6 @@ public class ServiceManager: Observation {
     }
 
     func timeUpdate(length: Double, diffHeading: Double, mobileTime: Int) -> FineLocationTrackingResult {
-        print("Kalman Check (Time Update) Before -> x :\(timeUpdatePosition.x) , y :\(timeUpdatePosition.y) , heading :\(timeUpdatePosition.heading))")
 
         updateHeading = timeUpdatePosition.heading + diffHeading
 
@@ -838,13 +887,10 @@ public class ServiceManager: Observation {
 
         measurementUpdateFlag = true
 
-        print("Kalman Check (Time Update) After -> x :\(timeUpdatePosition.x) , y :\(timeUpdatePosition.y) , heading :\(timeUpdatePosition.heading))")
-
         return timeUpdateOutput
     }
 
     func measurementUpdate(timeUpdatePosition: KalmanOutput, serverOutput: FineLocationTrackingResult) -> FineLocationTrackingResult {
-        print("Kalman Check (Meas Update) Server Output -> \(serverOutput)")
         measurementOutput = serverOutput
 
         kalmanK = kalmanP / (kalmanP + kalmanR)
@@ -858,9 +904,6 @@ public class ServiceManager: Observation {
         measurementOutput.y = measurementPosition.y
         kalmanP -= kalmanK * kalmanP
         headingKalmanP -= headingKalmanK * headingKalmanP
-
-        print("Kalman Check (Meas Update) Before -> x :\(timeUpdatePosition.x) , y :\(timeUpdatePosition.y) , heading :\(timeUpdatePosition.heading))")
-        print("Kalman Check (Meas Update) After -> x :\(measurementOutput.x) , y :\(measurementOutput.y) , heading :\(updateHeading))")
 
         return measurementOutput
 
