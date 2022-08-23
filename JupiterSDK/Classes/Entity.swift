@@ -86,7 +86,8 @@ public struct UnitDRInfo {
 public struct ServiceResult {
     public var isIndexChanged: Bool = false
     
-    public var index: Int = 0
+    public var indexTx: Int = 0
+    public var indexRx: Int = 0
     public var length: Double = 0
     public var scc: Double = 0
     public var phase: String = ""
@@ -269,15 +270,29 @@ struct FineLocationTracking: Codable {
 }
 
 public struct FineLocationTrackingResult: Codable {
-    public var mobile_time: Int = 0
-    public var building_name: String = ""
-    public var level_name: String = ""
-    public var scc: Double = 0
-    public var scr: Double = 0
-    public var x: Double = 0
-    public var y: Double = 0
-    public var absolute_heading: Double = 0
-    public var phase: Int = 0
-    public var calculated_time: Double = 0
-    public var index: Int = 0
+    public var mobile_time: Int
+    public var building_name: String
+    public var level_name: String
+    public var scc: Double
+    public var scr: Double
+    public var x: Double
+    public var y: Double
+    public var absolute_heading: Double
+    public var phase: Int
+    public var calculated_time: Double
+    public var index: Int
+    
+    public init() {
+        self.mobile_time = 0
+        self.building_name = ""
+        self.level_name = ""
+        self.scc = 0
+        self.scr = 0
+        self.x = 0
+        self.y = 0
+        self.absolute_heading = 0
+        self.phase = 0
+        self.calculated_time = 0
+        self.index = 0
+    }
 }

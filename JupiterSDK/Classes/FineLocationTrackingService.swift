@@ -88,7 +88,7 @@ public class FineLocationTrackingService: NSObject {
     var receivedForceArray: [ReceivedForce] = [ReceivedForce(user_id: "", mobile_time: 0, ble: [:], pressure: 0)]
     var userVelocityArray: [UserVelocity] = [UserVelocity(user_id: "", mobile_time: 0, index: 0, length: 0, heading: 0, looking: true)]
     
-    var fineLocationTracking = FineLocationTrackingResult(mobile_time: 0, building_name: "", level_name: "", scc: 0, scr: 0, x: 0, y: 0, absolute_heading: 0, phase: 0, calculated_time: 0, index: 0)
+    var fineLocationTracking = FineLocationTrackingResult()
     // ------------------- //
     
     public func startService(id: String, sector_id: Int, mode: String) {
@@ -267,7 +267,7 @@ public class FineLocationTrackingService: NSObject {
         receivedForceArray.append(data)
         if ((receivedForceArray.count-1) == SPATIAL_INPUT_NUM) {
             receivedForceArray.remove(at: 0)
-            NetworkManager.shared.putReceivedForce(url: RF_URL, input: receivedForceArray)
+//            NetworkManager.shared.putReceivedForce(url: RF_URL, input: receivedForceArray)
 
             receivedForceArray = [ReceivedForce(user_id: uuid, mobile_time: 0, ble: [:], pressure: 0)]
         }
@@ -287,7 +287,7 @@ public class FineLocationTrackingService: NSObject {
             userVelocityArray.append(data)
             if ((userVelocityArray.count-1) == unitModeInput) {
                 userVelocityArray.remove(at: 0)
-                NetworkManager.shared.putUserVelocity(url: UV_URL, input: userVelocityArray)
+//                NetworkManager.shared.putUserVelocity(url: UV_URL, input: userVelocityArray)
                 
                 var lengthSum: Double = 0
                 for idx in 0..<userVelocityArray.count {
@@ -331,7 +331,7 @@ public class FineLocationTrackingService: NSObject {
     }
     
     func jsonToResult(json: String) -> FineLocationTrackingResult {
-        let result = FineLocationTrackingResult(mobile_time: 0, building_name: "", level_name: "", scc: 0, scr: 0, x: 0, y: 0, absolute_heading: 0, phase: 0, calculated_time: 0, index: 0)
+        let result = FineLocationTrackingResult()
         let decoder = JSONDecoder()
 
         let jsonString = json

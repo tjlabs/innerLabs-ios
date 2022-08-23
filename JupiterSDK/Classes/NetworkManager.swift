@@ -222,7 +222,7 @@ public class NetworkManager {
         }
     }
     
-    func putUserVelocity(url: String, input: [UserVelocity]){
+    func putUserVelocity(url: String, input: [UserVelocity], completion: @escaping (Int, String) -> Void) {
         // [http 요청 헤더 지정]
         let header : HTTPHeaders = [
             "Content-Type" : "application/json"
@@ -258,26 +258,15 @@ public class NetworkManager {
 //                    print("")
                     
                     // [비동기 작업 수행]
-                    DispatchQueue.main.async {
-                        
-                    }
+                    let returnedString = String(data: res, encoding: .utf8) ?? "Fail"
+                    completion(200, returnedString)
                 }
                 catch (let err){
-                    print("")
-                    print("====================================")
-                    print("catch :: ", err.localizedDescription)
-                    print("====================================")
-                    print("")
+                    completion(500, "Fail")
                 }
                 break
             case .failure(let err):
-                print("")
-                print("====================================")
-                print("응답 코드 :: ", response.response?.statusCode ?? 0)
-                print("-------------------------------")
-                print("에 러 :: ", err.localizedDescription)
-                print("====================================")
-                print("")
+                completion(500, "Fail")
                 break
             }
         }

@@ -139,6 +139,8 @@ public class ServiceManager: Observation {
     
     // ----------- Kalman Filter ------------ //
     var phase: Int = 0
+    var indexCurrent: Int = 0
+    var indexPast: Int = 0
     
     var timeUpdateFlag: Bool = false
     var measurementUpdateFlag: Bool = false
@@ -615,7 +617,7 @@ public class ServiceManager: Observation {
         
         if (unitDRInfo.isIndexChanged) {
             displayOutput.isIndexChanged = unitDRInfo.isIndexChanged
-            displayOutput.index = unitDRInfo.index
+            displayOutput.indexTx = unitDRInfo.index
             displayOutput.length = unitDRInfo.length
             
             let data = UserVelocity(user_id: user_id, mobile_time: currentTime, index: unitDRInfo.index, length: unitDRInfo.length, heading: unitDRInfo.heading, looking: unitDRInfo.lookingFlag)
@@ -635,41 +637,49 @@ public class ServiceManager: Observation {
             inputUserVelocity.append(data)
             if ((inputUserVelocity.count-1) == UV_INPUT_NUM) {
                 inputUserVelocity.remove(at: 0)
-                NetworkManager.shared.putUserVelocity(url: UV_URL, input: inputUserVelocity)
-                inputUserVelocity = [UserVelocity(user_id: user_id, mobile_time: 0, index: 0, length: 0, heading: 0, looking: true)]
-                
-                floorUpdateRequestFlag = true
-                floorUpdateRequestTimer = 0
-                
-                let input = FineLocationTracking(user_id: user_id, mobile_time: currentTime, sector_id: sector_id, phase: self.phase)
-                NetworkManager.shared.postFLT(url: FLT_URL, input: input, completion: { [self] statusCode, returnedString in
+                NetworkManager.shared.putUserVelocity(url: UV_URL, input: inputUserVelocity, completion: { [self] statusCode, returnedString in
                     if (statusCode == 200) {
-                        let result = jsonToResult(json: returnedString)
-                        self.phase = result.phase
+                        inputUserVelocity = [UserVelocity(user_id: user_id, mobile_time: 0, index: 0, length: 0, heading: 0, looking: true)]
                         
-                        displayOutput.level = result.level_name
-                        displayOutput.scc = result.scc
-                        displayOutput.phase = String(result.phase)
+                        floorUpdateRequestFlag = true
+                        floorUpdateRequestTimer = 0
                         
-                        // Kalman Filter
-                        if (result.mobile_time > preOutputMobileTime) {
-                            if (result.phase == 4) {
-                                UV_INPUT_NUM = VAR_INPUT_NUM
-                                if (!(result.x == 0 && result.y == 0)) {
-                                    // Measurment Update
-                                    if (measurementUpdateFlag) {
-                                        let muOutput = measurementUpdate(timeUpdatePosition: timeUpdatePosition, serverOutput: result)
-                                        self.tracking(input: muOutput)
+                        let input = FineLocationTracking(user_id: user_id, mobile_time: currentTime, sector_id: sector_id, phase: self.phase)
+                        NetworkManager.shared.postFLT(url: FLT_URL, input: input, completion: { [self] statusCode, returnedString in
+                            if (statusCode == 200) {
+                                let result = jsonToResult(json: returnedString)
+                                self.phase = result.phase
+                                self.indexCurrent = result.index
+                                
+                                displayOutput.level = result.level_name
+                                displayOutput.scc = result.scc
+                                displayOutput.phase = String(result.phase)
+                                displayOutput.indexRx = result.index
+                                
+                                // Kalman Filter
+                                if (result.mobile_time > preOutputMobileTime) {
+                                    if (result.phase == 4) {
+                                        UV_INPUT_NUM = VAR_INPUT_NUM
+                                        if (!(result.x == 0 && result.y == 0)) {
+                                            // Measurment Update
+                                            if (indexCurrent > indexPast) {
+                                                if (measurementUpdateFlag) {
+                                                    let muOutput = measurementUpdate(timeUpdatePosition: timeUpdatePosition, serverOutput: result)
+                                                    self.tracking(input: muOutput)
+                                                }
+                                                timeUpdatePositionInit(serverOutput: result)
+                                            }
+                                        }
+                                    } else {
+                                        UV_INPUT_NUM = INIT_INPUT_NUM
+                                        kalmanInit()
+                                        self.tracking(input: result)
                                     }
-                                    timeUpdatePositionInit(serverOutput: result)
+                                    preOutputMobileTime = result.mobile_time
                                 }
-                            } else {
-                                UV_INPUT_NUM = INIT_INPUT_NUM
-                                kalmanInit()
-                                self.tracking(input: result)
+                                self.indexPast = self.indexCurrent
                             }
-                            preOutputMobileTime = result.mobile_time
-                        }
+                        })
                     }
                 })
             }
@@ -711,7 +721,7 @@ public class ServiceManager: Observation {
     }
     
     func jsonToResult(json: String) -> FineLocationTrackingResult {
-        let result = FineLocationTrackingResult(mobile_time: 0, building_name: "", level_name: "", scc: 0, scr: 0, x: 0, y: 0, absolute_heading: 0, phase: 0, calculated_time: 0, index: 0)
+        let result = FineLocationTrackingResult()
         let decoder = JSONDecoder()
 
         let jsonString = json
@@ -762,33 +772,39 @@ public class ServiceManager: Observation {
         
         let key: String = "\(building)_\(level)"
         
-        let mainRoad: [[Double]] = Road[key]!
-        let mainHeading: [String] = RoadHeading[key]!
+        if (!(building.isEmpty) && !(level.isEmpty)) {
+            let mainRoad: [[Double]] = Road[key]!
+            let mainHeading: [String] = RoadHeading[key]!
 
-        var diffXY = [Double]()
-        if (!mainRoad.isEmpty) {
-            let roadX = mainRoad[0]
-            let roadY = mainRoad[1]
-            
-            for i in 0..<roadX.count {
-                diffXY.append(sqrt(pow(roadX[i] - x, 2) + pow(roadY[i] - y, 2)))
-            }
-            let minIdx = diffXY.firstIndex(of: diffXY.min()!)!
-            var headingArray = mainHeading[minIdx]
-            let headingData = headingArray.components(separatedBy: ",")
-            
-            var diffHeading = [Double]()
-            for i in 0..<headingData.count {
-                if (headingData[i] != "") {
-                    let mapHeading = Double(headingData[i])!
-                    diffHeading.append(abs(heading - mapHeading))
+            var diffXY = [Double]()
+            if (!mainRoad.isEmpty) {
+                let roadX = mainRoad[0]
+                let roadY = mainRoad[1]
+                
+                for i in 0..<roadX.count {
+                    diffXY.append(sqrt(pow(roadX[i] - x, 2) + pow(roadY[i] - y, 2)))
+                }
+                let minIdx = diffXY.firstIndex(of: diffXY.min()!)!
+                let headingArray = mainHeading[minIdx]
+                
+                if (headingArray.isEmpty) {
+                    xyh = [roadX[minIdx], roadY[minIdx], heading]
+                } else {
+                    let headingData = headingArray.components(separatedBy: ",")
+                    
+                    var diffHeading = [Double]()
+                    for i in 0..<headingData.count {
+                        if (headingData[i] != "") {
+                            let mapHeading = Double(headingData[i])!
+                            diffHeading.append(abs(heading - mapHeading))
+                        }
+                    }
+                    let minHeadingIdx = diffHeading.firstIndex(of: diffHeading.min()!)!
+                    
+                    xyh = [roadX[minIdx], roadY[minIdx], Double(headingData[minHeadingIdx])!]
                 }
             }
-            let minHeadingIdx = diffHeading.firstIndex(of: diffHeading.min()!)!
-            
-            xyh = [roadX[minIdx], roadY[minIdx], Double(headingData[minHeadingIdx])!]
         }
-        
         return xyh
     }
     
