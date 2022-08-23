@@ -3,7 +3,7 @@ import Kingfisher
 import JupiterSDK
 
 
-class CardViewController: UIViewController, MapViewPageDelegate, ServiceViewPageDelegate, GalleryViewPageDelegate, AddCardDelegate, ShowCardDelegate {
+class CardViewController: UIViewController, ServiceViewPageDelegate, GalleryViewPageDelegate, AddCardDelegate, ShowCardDelegate {
     
     func sendCardItemData(data: [CardItemData]) {
         cardItemData = data

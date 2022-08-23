@@ -42,7 +42,6 @@
 		B3AA004B28313CDF007CD284 /* UITextFieldExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3AA004A28313CDF007CD284 /* UITextFieldExtension.swift */; };
 		B3AA004D28313CEA007CD284 /* UITextViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3AA004C28313CEA007CD284 /* UITextViewExtension.swift */; };
 		B3B156DE282397AF0058B538 /* ImageOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3B156DD282397AF0058B538 /* ImageOverlay.swift */; };
-		B3B361062829522A00B8E876 /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3B361052829522A00B8E876 /* MapViewController.swift */; };
 		B3B3610928295E1400B8E876 /* Autoway_RP_B3.csv in Resources */ = {isa = PBXBuildFile; fileRef = B3B3610828295E1400B8E876 /* Autoway_RP_B3.csv */; };
 		B3B3610B28295E1D00B8E876 /* Autoway_RP_B4.csv in Resources */ = {isa = PBXBuildFile; fileRef = B3B3610A28295E1D00B8E876 /* Autoway_RP_B4.csv */; };
 		B3B4F85A28114EEB009F9E6C /* ShowCardCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3B4F85828114EEB009F9E6C /* ShowCardCollectionViewCell.swift */; };
@@ -164,7 +163,6 @@
 		B3AA004A28313CDF007CD284 /* UITextFieldExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITextFieldExtension.swift; sourceTree = "<group>"; };
 		B3AA004C28313CEA007CD284 /* UITextViewExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITextViewExtension.swift; sourceTree = "<group>"; };
 		B3B156DD282397AF0058B538 /* ImageOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageOverlay.swift; sourceTree = "<group>"; };
-		B3B361052829522A00B8E876 /* MapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
 		B3B3610828295E1400B8E876 /* Autoway_RP_B3.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Autoway_RP_B3.csv; sourceTree = "<group>"; };
 		B3B3610A28295E1D00B8E876 /* Autoway_RP_B4.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Autoway_RP_B4.csv; sourceTree = "<group>"; };
 		B3B4F85828114EEB009F9E6C /* ShowCardCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowCardCollectionViewCell.swift; sourceTree = "<group>"; };
@@ -375,7 +373,6 @@
 			isa = PBXGroup;
 			children = (
 				607FACD71AFB9204008FA782 /* MainViewController.swift */,
-				B3B361052829522A00B8E876 /* MapViewController.swift */,
 				B340EE3228093FB20096E404 /* CardViewController.swift */,
 				B3C09C63280E941B00E6F55F /* ShowCardViewController.swift */,
 				B3DE146C280E7146006DA43C /* AddCardViewController.swift */,
@@ -827,7 +824,6 @@
 				B3BD69A827E9A56B00A32A7A /* UITableViewRegisterable.swift in Sources */,
 				B3E0A4F62887E51700B88E08 /* Environment.swift in Sources */,
 				B3C6F9AA289CD002003FB402 /* StreamError.swift in Sources */,
-				B3B361062829522A00B8E876 /* MapViewController.swift in Sources */,
 				B3C6F9BA289CD0BF003FB402 /* UserDefaultManager.swift in Sources */,
 				B3C6F99A289CCEE8003FB402 /* BaseNavigationController.swift in Sources */,
 				B3B7FBF72856F43200E23EDF /* GalleryViewController.swift in Sources */,
@@ -991,7 +987,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.8.1;
+				MARKETING_VERSION = 1.8.2;
 				MODULE_NAME = ExampleApp;
 				PRODUCT_BUNDLE_IDENTIFIER = com.tjlabscorp.ios.innerLabs;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1013,7 +1009,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.8.1;
+				MARKETING_VERSION = 1.8.2;
 				MODULE_NAME = ExampleApp;
 				PRODUCT_BUNDLE_IDENTIFIER = com.tjlabscorp.ios.innerLabs;
 				PRODUCT_NAME = "$(TARGET_NAME)";

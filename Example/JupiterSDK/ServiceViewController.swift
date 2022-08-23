@@ -15,6 +15,10 @@ import Charts
 import DropDown
 import SwiftUI
 
+enum TableList{
+    case sector
+}
+
 protocol ServiceViewPageDelegate {
     func sendPage(data: Int)
 }
@@ -488,8 +492,8 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
             resultToDisplay.numLevels = self.numLevels
             resultToDisplay.infoLevels = self.infoOfLevels
             
-            resultToDisplay.unitIndexTx = serviceManager.displayOutput.index
-            resultToDisplay.unitIndexRx = serviceManager.displayOutput.index
+            resultToDisplay.unitIndexTx = serviceManager.displayOutput.indexTx
+            resultToDisplay.unitIndexRx = serviceManager.displayOutput.indexRx
             resultToDisplay.unitLength = serviceManager.displayOutput.length
             resultToDisplay.scc = serviceManager.displayOutput.scc
             resultToDisplay.phase = serviceManager.displayOutput.phase
@@ -620,7 +624,7 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
             scatterChart.leftAxis.axisMaximum = limits[3]
         }
         
-        print("\(currentBuilding) \(currentLevel) Limits : \(limits[0]) , \(limits[1]), \(limits[2]), \(limits[3])")
+//        print("\(currentBuilding) \(currentLevel) Limits : \(limits[0]) , \(limits[1]), \(limits[2]), \(limits[3])")
         
         scatterChart.xAxis.drawGridLinesEnabled = chartFlag
         scatterChart.leftAxis.drawGridLinesEnabled = chartFlag

@@ -58,7 +58,7 @@ class GalleryViewController: UIViewController, WKNavigationDelegate, UIScrollVie
     var pastTime: Double = 0
     var timer : Timer?
     let TIMER_INTERVAL: TimeInterval = 1/40 // second
-    let jupiterService = JupiterService()
+//    let jupiterService = JupiterService()
     var levelBuffer = [String]()
     var isChanged: Bool = false
     
@@ -131,9 +131,9 @@ class GalleryViewController: UIViewController, WKNavigationDelegate, UIScrollVie
         
         loadWebView(currentLevel: self.currentLevel)
         
-        jupiterService.uuid = uuid
-        jupiterService.mode = runMode
-        jupiterService.startService(parent: self)
+//        jupiterService.uuid = uuid
+//        jupiterService.mode = runMode
+//        jupiterService.startService(parent: self)
         
         // Floating Button
         setFloatingButton()
@@ -678,88 +678,88 @@ class GalleryViewController: UIViewController, WKNavigationDelegate, UIScrollVie
     }
     
     @objc func timerUpdate() {
-        let timeStamp = getCurrentTimeInMilliseconds()
-        let dt = timeStamp - pastTime
-        pastTime = timeStamp
-        
-        // length, scc, status, mode, idx Tx, idx Rx, level
-        let isStepDetected = jupiterService.unitDRInfo.isIndexChanged
-        
-        let unitIdxTx = Int(jupiterService.unitDRInfo.index)
-        let unitLength = jupiterService.unitDistane
-        let status = jupiterService.unitDRInfo.lookingFlag
-        let unitHeading = jupiterService.unitDRInfo.heading-90
-        
-        if (isStepDetected) {
-            countStop = 0
-            
-            posX = posX + unitLength*cos(unitHeading*(Double.pi/180))
-            posY = posY + unitLength*sin(unitHeading*(Double.pi/180))
-            
-//            posX = (posX + pastX)/2
-//            posY = (posY + pastY)/2
-            
-            pastX = posX
-            pastY = posY
-            
-            let levelName: String = "4F"
-            let rp: [[Double]] = RP[levelName] ?? [[Double]]()
-            
-            scatterChart.isHidden = false
-//            drawRP(RP_X: rp[0], RP_Y: rp[1], XY: [posX, posY])
-            drawUser(RP_X: rp[0], RP_Y: rp[1], XY: [posX, posY])
-//            drawContents(RP_X: rp[0], RP_Y: rp[1], no1: Number1, no2: Number2, no3: Number3, no4: Number4, no5: Number5, no6: Number6, no7: Number7, no8: Number8, XY: [posX, posY])
-            
-//            let buildingName: String = jupiterService.jupiterOutput.building
-//            let buildingLevels: [String] = cardData!.infoLevel[buildingName] ?? []
-//            if (!buildingLevels.isEmpty) {
-//                let levelName: String = jupiterService.jupiterOutput.level
+//        let timeStamp = getCurrentTimeInMilliseconds()
+//        let dt = timeStamp - pastTime
+//        pastTime = timeStamp
 //
-//                levelBuffer.append(levelName)
-//                if (levelBuffer.count > 5) {
-//                    levelBuffer.removeFirst()
+//        // length, scc, status, mode, idx Tx, idx Rx, level
+//        let isStepDetected = jupiterService.unitDRInfo.isIndexChanged
 //
-//                    isChanged = detectFloorChange(buffer: levelBuffer, level: currentLevel)
+//        let unitIdxTx = Int(jupiterService.unitDRInfo.index)
+//        let unitLength = jupiterService.unitDistane
+//        let status = jupiterService.unitDRInfo.lookingFlag
+//        let unitHeading = jupiterService.unitDRInfo.heading-90
 //
-//                    if (isChanged) {
-//                        self.currentLevel = levelName
-//                        changeFloorMap(level: currentLevel)
-//                        loadWebView(currentLevel: currentLevel)
+//        if (isStepDetected) {
+//            countStop = 0
 //
-//                        isChanged = false
-//                    }
+//            posX = posX + unitLength*cos(unitHeading*(Double.pi/180))
+//            posY = posY + unitLength*sin(unitHeading*(Double.pi/180))
 //
-//                    let rp: [[Double]] = RP[levelName] ?? [[Double]]()
-//                    print("Jupiter Output :", jupiterService.jupiterOutput)
-//                    let x = jupiterService.jupiterOutput.x
-//                    let y = jupiterService.jupiterOutput.y
+////            posX = (posX + pastX)/2
+////            posY = (posY + pastY)/2
 //
-//                    let unitIdxRx = jupiterService.jupiterOutput.index
-//                    let scc = jupiterService.jupiterOutput.scc
+//            pastX = posX
+//            pastY = posY
 //
-////                    drawRP(RP_X: rp[0], RP_Y: rp[1], XY: [x, y])
-////                    drawUser(RP_X: rp[0], RP_Y: rp[1], XY: [x, y])
+//            let levelName: String = "4F"
+//            let rp: [[Double]] = RP[levelName] ?? [[Double]]()
 //
-//                    if (levelName == "4F") {
-//                        let idx = getNearestRoad(x: x, y: y, road: Road)
-//                        if (idx != -1) {
-//                            let percentage: Double = Double(idx)/Double(roadLength)
-//                            print("Percentage :", percentage)
-//                        }
-//                    }
+//            scatterChart.isHidden = false
+////            drawRP(RP_X: rp[0], RP_Y: rp[1], XY: [posX, posY])
+//            drawUser(RP_X: rp[0], RP_Y: rp[1], XY: [posX, posY])
+////            drawContents(RP_X: rp[0], RP_Y: rp[1], no1: Number1, no2: Number2, no3: Number3, no4: Number4, no5: Number5, no6: Number6, no7: Number7, no8: Number8, XY: [posX, posY])
+//
+////            let buildingName: String = jupiterService.jupiterOutput.building
+////            let buildingLevels: [String] = cardData!.infoLevel[buildingName] ?? []
+////            if (!buildingLevels.isEmpty) {
+////                let levelName: String = jupiterService.jupiterOutput.level
+////
+////                levelBuffer.append(levelName)
+////                if (levelBuffer.count > 5) {
+////                    levelBuffer.removeFirst()
+////
+////                    isChanged = detectFloorChange(buffer: levelBuffer, level: currentLevel)
+////
+////                    if (isChanged) {
+////                        self.currentLevel = levelName
+////                        changeFloorMap(level: currentLevel)
+////                        loadWebView(currentLevel: currentLevel)
+////
+////                        isChanged = false
+////                    }
+////
+////                    let rp: [[Double]] = RP[levelName] ?? [[Double]]()
+////                    print("Jupiter Output :", jupiterService.jupiterOutput)
+////                    let x = jupiterService.jupiterOutput.x
+////                    let y = jupiterService.jupiterOutput.y
+////
+////                    let unitIdxRx = jupiterService.jupiterOutput.index
+////                    let scc = jupiterService.jupiterOutput.scc
+////
+//////                    drawRP(RP_X: rp[0], RP_Y: rp[1], XY: [x, y])
+//////                    drawUser(RP_X: rp[0], RP_Y: rp[1], XY: [x, y])
+////
+////                    if (levelName == "4F") {
+////                        let idx = getNearestRoad(x: x, y: y, road: Road)
+////                        if (idx != -1) {
+////                            let percentage: Double = Double(idx)/Double(roadLength)
+////                            print("Percentage :", percentage)
+////                        }
+////                    }
+////                }
+////            }
+//        } else {
+//            countStop = countStop + 1
+//
+//            if (countStop > 39) {
+//                let index = findNearestContents(X: posX, Y: posY, contents: contentsMinMax)
+//                if (index != -1) {
+//                    scrollToContents(index: index)
 //                }
+//                countStop = 0
 //            }
-        } else {
-            countStop = countStop + 1
-            
-            if (countStop > 39) {
-                let index = findNearestContents(X: posX, Y: posY, contents: contentsMinMax)
-                if (index != -1) {
-                    scrollToContents(index: index)
-                }
-                countStop = 0
-            }
-        }
+//        }
     }
     
     func detectFloorChange(buffer: [String], level: String) -> Bool {
