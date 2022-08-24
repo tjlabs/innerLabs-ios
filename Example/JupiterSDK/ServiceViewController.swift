@@ -593,7 +593,6 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
         
         // Heading
         let point = scatterChart.getPosition(entry: ChartDataEntry(x: XY[0], y: XY[1]), axis: .left)
-        // 우회전~
         let imageView = UIImageView(image: headingImage!.rotate(degrees: heading))
         imageView.frame = CGRect(x: point.x - 15, y: point.y - 15, width: 30, height: 30)
         imageView.contentMode = .center
@@ -666,14 +665,12 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
         
         // Heading
         let point = scatterChart.getPosition(entry: ChartDataEntry(x: XY[0], y: XY[1]), axis: .left)
-        let imageView = UIImageView(image: headingImage!)
-        imageView.frame = CGRect(x: point.x - 15, y: point.y - 15, width: 30, height: 30) //set the frame in center
+        let imageView = UIImageView(image: headingImage!.rotate(degrees: heading))
+        imageView.frame = CGRect(x: point.x - 15, y: point.y - 15, width: 30, height: 30)
         imageView.contentMode = .center
         imageView.tag = 100
         if let viewWithTag = scatterChart.viewWithTag(100) {
             viewWithTag.removeFromSuperview()
-        } else {
-            print("Fail to remove heading")
         }
         scatterChart.addSubview(imageView)
         
@@ -754,7 +751,6 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
         }
         
         dropText.text = currentBuilding
-//        levelCollectionView.reloadData()
     }
     
     func getCurrentTimeInMilliseconds() -> Double

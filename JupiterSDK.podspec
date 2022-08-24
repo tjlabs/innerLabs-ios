@@ -46,7 +46,7 @@ Pod::Spec.new do |s|
 #  s.dependency 'FirebaseMLModelDownloader', '9.4.0-beta'
 #  s.dependency 'TensorFlowLiteSwift'
 
-  s.dependency 'FirebaseMLCommon'
+#  s.dependency 'FirebaseMLCommon'
   s.dependency 'Firebase/MLModelInterpreter', '6.25.0'
   
 end

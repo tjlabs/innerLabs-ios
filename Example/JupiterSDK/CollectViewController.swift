@@ -78,15 +78,19 @@ class CollectViewController: UIViewController {
     var xAxisValue = [Double]()
     var yAxisValue = [Double]()
     
+    var headingImage = UIImage(named: "heading")
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(false)
         
         let width = collectView.frame.size.width
         let height = collectView.frame.size.height
         
-        wardView1.isHidden = true
-        wardView2.isHidden = true
-        wardView3.isHidden = true
+        headingImage = headingImage?.resize(newWidth: 40)
+        
+        wardView1.alpha = 0.0
+        wardView2.alpha = 0.0
+        wardView3.alpha = 0.0
     }
 
     override func viewDidLoad() {
@@ -273,9 +277,9 @@ class CollectViewController: UIViewController {
         }
         
         if (bleAvg.count > 2) {
-            wardView1.isHidden = false
-            wardView2.isHidden = false
-            wardView3.isHidden = false
+            wardView1.alpha = 1.0
+            wardView2.alpha = 1.0
+            wardView3.alpha = 1.0
             
             bleName1.text = top3ID[0]
             bleRssi1.text = String(format: "%.1f", top3AvgRssi[0])
@@ -286,9 +290,9 @@ class CollectViewController: UIViewController {
             bleName3.text = top3ID[2]
             bleRssi3.text = String(format: "%.1f", top3AvgRssi[2])
         } else if (bleAvg.count == 2) {
-            wardView1.isHidden = false
-            wardView2.isHidden = false
-            wardView3.isHidden = true
+            wardView1.alpha = 1.0
+            wardView2.alpha = 1.0
+            wardView3.alpha = 0.0
             
             bleName1.text = top3ID[0]
             bleRssi1.text = String(format: "%.1f", top3AvgRssi[0])
@@ -296,16 +300,16 @@ class CollectViewController: UIViewController {
             bleName2.text = top3ID[1]
             bleRssi2.text = String(format: "%.1f", top3AvgRssi[1])
         } else if (bleAvg.count == 1) {
-            wardView1.isHidden = false
-            wardView2.isHidden = true
-            wardView3.isHidden = true
+            wardView1.alpha = 1.0
+            wardView2.alpha = 0.0
+            wardView3.alpha = 0.0
             
             bleName1.text = top3ID[0]
             bleRssi1.text = String(format: "%.1f", top3AvgRssi[0])
         } else {
-            wardView1.isHidden = true
-            wardView2.isHidden = true
-            wardView3.isHidden = true
+            wardView1.alpha = 0.0
+            wardView2.alpha = 0.0
+            wardView3.alpha = 0.0
         }
         
         if (saveFlag) {
@@ -317,7 +321,6 @@ class CollectViewController: UIViewController {
                 indexLabel.text = String(index)
                 lengthLabel.text = String(format: "%.4f", length)
                 let currentHeading: Double = serviceManager.collectData.heading + 90
-//                print("Heading :", currentHeading)
                 
                 x = x + (length * cos(currentHeading*D2R))
                 y = y + (length * sin(currentHeading*D2R))
@@ -325,7 +328,7 @@ class CollectViewController: UIViewController {
                 xAxisValue.append(x)
                 yAxisValue.append(y)
                 
-                if (xAxisValue.count > 12) {
+                if (xAxisValue.count > 20) {
                     xAxisValue.removeFirst()
                     yAxisValue.removeFirst()
                 }
@@ -335,19 +338,30 @@ class CollectViewController: UIViewController {
                     return ChartDataEntry(x: xAxisValue[i], y: yAxisValue[i])
                 }
                 
+                // Heading
+                let point = scatterChart.getPosition(entry: ChartDataEntry(x: xAxisValue[xAxisValue.count-1], y: yAxisValue[yAxisValue.count-1]), axis: .left)
+                let imageView = UIImageView(image: headingImage!.rotate(degrees: -currentHeading + 90))
+                imageView.frame = CGRect(x: point.x - 15, y: point.y - 15, width: 30, height: 30)
+                imageView.contentMode = .center
+                imageView.tag = 100
+                if let viewWithTag = scatterChart.viewWithTag(100) {
+                    viewWithTag.removeFromSuperview()
+                }
+                scatterChart.addSubview(imageView)
+                
                 let set1 = ScatterChartDataSet(entries: values1, label: "Trajectory")
                 set1.drawValuesEnabled = false
                 set1.setScatterShape(.circle)
-                set1.setColor(UIColor.systemRed)
-                set1.scatterShapeSize = 15
+                set1.setColor(.blue1)
+                set1.scatterShapeSize = 12
                 
                 let chartData = ScatterChartData(dataSet: set1)
                 setChartFlag(chartFlag: true)
                 
-                let xMin = x - 12
-                let xMax = x + 12
-                let yMin = y - 12
-                let yMax = y + 12
+                let xMin = x - 15
+                let xMax = x + 15
+                let yMin = y - 15
+                let yMax = y + 15
                 
                 scatterChart.xAxis.axisMinimum = xMin
                 scatterChart.xAxis.axisMaximum = xMax
