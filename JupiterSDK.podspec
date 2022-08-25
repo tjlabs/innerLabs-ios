@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'JupiterSDK'
-  s.version          = '1.6.8'
+  s.version          = '1.6.9'
   s.summary          = 'JupiterSDK for iOS'
   s.swift_version    = '4.0'
   
@@ -45,7 +45,6 @@ Pod::Spec.new do |s|
   s.dependency 'Alamofire'
 #  s.dependency 'FirebaseMLModelDownloader', '9.4.0-beta'
 #  s.dependency 'TensorFlowLiteSwift'
-
 #  s.dependency 'FirebaseMLCommon'
   s.dependency 'Firebase/MLModelInterpreter', '6.25.0'
   
