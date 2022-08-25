@@ -37,6 +37,7 @@ public struct StepResult: Equatable {
 public struct UnitDistance: Equatable {
     public var index: Int = 0
     public var length: Double = 0
+    public var velocity: Double = 0
     public var isIndexChanged: Bool = false
 }
 
@@ -75,11 +76,12 @@ public struct UnitDRInfo {
     public var index: Int = 0
     public var length: Double = 0
     public var heading: Double = 0
+    public var velocity: Double = 0
     public var lookingFlag: Bool = false
     public var isIndexChanged: Bool = false
     
     public func toString() -> String {
-        return "{index : \(index), length : \(length), heading : \(heading), lookingFlag : \(lookingFlag), isStepDetected : \(isIndexChanged)}"
+        return "{index : \(index), length : \(length), heading : \(heading), velocity : \(velocity), lookingFlag : \(lookingFlag), isStepDetected : \(isIndexChanged)}"
     }
 }
 
@@ -89,6 +91,7 @@ public struct ServiceResult {
     public var indexTx: Int = 0
     public var indexRx: Int = 0
     public var length: Double = 0
+    public var velocity: Double = 0
     public var scc: Double = 0
     public var phase: String = ""
     
@@ -269,7 +272,7 @@ struct FineLocationTracking: Codable {
     var phase: Int
 }
 
-public struct FineLocationTrackingResult: Codable {
+public struct FineLocationTrackingFromServer: Codable {
     public var mobile_time: Int
     public var building_name: String
     public var level_name: String
@@ -294,5 +297,35 @@ public struct FineLocationTrackingResult: Codable {
         self.phase = 0
         self.calculated_time = 0
         self.index = 0
+    }
+}
+
+public struct FineLocationTrackingResult: Codable {
+    public var mobile_time: Int
+    public var building_name: String
+    public var level_name: String
+    public var scc: Double
+    public var scr: Double
+    public var x: Double
+    public var y: Double
+    public var absolute_heading: Double
+    public var phase: Int
+    public var calculated_time: Double
+    public var index: Int
+    public var velocity: Double
+    
+    public init() {
+        self.mobile_time = 0
+        self.building_name = ""
+        self.level_name = ""
+        self.scc = 0
+        self.scr = 0
+        self.x = 0
+        self.y = 0
+        self.absolute_heading = 0
+        self.phase = 0
+        self.calculated_time = 0
+        self.index = 0
+        self.velocity = 0
     }
 }

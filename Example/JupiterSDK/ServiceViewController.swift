@@ -491,6 +491,7 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
             displayLevelInfo(infoLevel: levels[currentBuilding] ?? [])
             resultToDisplay.numLevels = self.numLevels
             resultToDisplay.infoLevels = self.infoOfLevels
+            resultToDisplay.velocity = serviceManager.displayOutput.velocity
             
             resultToDisplay.unitIndexTx = serviceManager.displayOutput.indexTx
             resultToDisplay.unitIndexRx = serviceManager.displayOutput.indexRx
@@ -870,7 +871,7 @@ extension ServiceViewController: UITableViewDataSource {
                 
                 serviceInfoTVC.backgroundColor = .systemGray6
                 serviceInfoTVC.infoOfLevelsLabel.text = infoOfLevels
-                serviceInfoTVC.numberOfLevelsLabel.text = String(numLevels)
+                serviceInfoTVC.velocityLabel.text = "0"
                 serviceInfoTVC.modeLabel.text = runMode
                 
                 serviceInfoTVC.updateResult(data: resultToDisplay)

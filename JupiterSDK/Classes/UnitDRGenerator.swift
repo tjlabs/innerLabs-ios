@@ -54,7 +54,7 @@ public class UnitDRGenerator: NSObject {
             unitDistance.length = 0.7
         }
         
-        return UnitDRInfo(index: unitDistance.index, length: unitDistance.length, heading: HF.radian2degree(radian: curAttitude.Yaw), lookingFlag: unitStatus, isIndexChanged: unitDistance.isIndexChanged)
+        return UnitDRInfo(index: unitDistance.index, length: unitDistance.length, heading: HF.radian2degree(radian: curAttitude.Yaw), velocity: unitDistance.velocity, lookingFlag: unitStatus, isIndexChanged: unitDistance.isIndexChanged)
     }
     
     func getCurrentTimeInMilliseconds() -> Double

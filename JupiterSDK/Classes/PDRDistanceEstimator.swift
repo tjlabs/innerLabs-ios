@@ -53,7 +53,6 @@ public class PDRDistanceEstimator: NSObject {
                 finalUnitResult.index += 1
                 finalUnitResult.isIndexChanged = true
                 
-//                finalUnitResult.length = 0.65
                 finalUnitResult.length = stepLengthEstimator.estStepLength(accPeakQueue: accPeakQueue, accValleyQueue: accValleyQueue)
                 if (finalUnitResult.length > 0.7) {
                     finalUnitResult.length = 0.7
@@ -66,11 +65,9 @@ public class PDRDistanceEstimator: NSObject {
                 if (isLossStep && finalUnitResult.index > 3) {
                     finalUnitResult.length = 1.8
                 }
-//                if (PDF.isPacing(queue: stepLengthQueue)) {
-//                    finalUnitResult.length = 0.01
-//                }
             }
         }
+        finalUnitResult.velocity = 0
         
         return finalUnitResult
     }

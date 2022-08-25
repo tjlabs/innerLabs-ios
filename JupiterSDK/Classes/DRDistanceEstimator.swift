@@ -252,7 +252,8 @@ public class DRDistanceEstimator: NSObject {
                 outputSum += mlpOutputQueue[i]
             }
             
-            var velocity: Double = Double(outputSum) * VELOCITY_SETTING * exp(-navGyroZSmoothing/1.5)
+            let velocity: Double = Double(outputSum) * VELOCITY_SETTING * exp(-navGyroZSmoothing/1.5)
+            finalUnitResult.velocity = velocity
             distance += (velocity * OUTPUT_SAMPLE_TIME)
             
             if (distance > Double(OUTPUT_DISTANCE_SETTING)) {

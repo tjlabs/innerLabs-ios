@@ -38,14 +38,14 @@
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="KNw-8h-wS9">
                                         <rect key="frame" x="0.0" y="0.0" width="170" height="80"/>
                                         <subviews>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Number of Levels" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gQd-jG-Qlk">
-                                                <rect key="frame" x="10" y="10" width="103" height="17.5"/>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Detected Level" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gQd-jG-Qlk">
+                                                <rect key="frame" x="10" y="10" width="87" height="17.5"/>
                                                 <fontDescription key="fontDescription" name="NotoSansKR-Bold" family="Noto Sans KR" pointSize="12"/>
                                                 <nil key="textColor"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Numbers" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="cBR-N1-ENg">
-                                                <rect key="frame" x="74" y="38.5" width="81" height="26.5"/>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Level" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="cBR-N1-ENg">
+                                                <rect key="frame" x="108" y="38.5" width="47" height="26.5"/>
                                                 <fontDescription key="fontDescription" name="NotoSansKR-Bold" family="Noto Sans KR" pointSize="18"/>
                                                 <nil key="textColor"/>
                                                 <nil key="highlightedColor"/>
@@ -75,14 +75,14 @@
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="SKa-xg-edV">
                                         <rect key="frame" x="180" y="0.0" width="170" height="80"/>
                                         <subviews>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Detected Level" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Tkh-zd-GSU">
-                                                <rect key="frame" x="10" y="10" width="87" height="17.5"/>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Velocity (km/h)" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Tkh-zd-GSU">
+                                                <rect key="frame" x="10" y="10" width="90.5" height="17.5"/>
                                                 <fontDescription key="fontDescription" name="NotoSansKR-Bold" family="Noto Sans KR" pointSize="12"/>
                                                 <nil key="textColor"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Level" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="w1r-1t-KSx">
-                                                <rect key="frame" x="108" y="38.5" width="47" height="26.5"/>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="0" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="w1r-1t-KSx">
+                                                <rect key="frame" x="144" y="38.5" width="11" height="26.5"/>
                                                 <fontDescription key="fontDescription" name="NotoSansKR-Bold" family="Noto Sans KR" pointSize="18"/>
                                                 <nil key="textColor"/>
                                                 <nil key="highlightedColor"/>
@@ -244,13 +244,13 @@
             <connections>
                 <outlet property="IndexRxLabel" destination="irq-Zl-1te" id="JkM-TX-IgE"/>
                 <outlet property="IndexTxLabel" destination="8Bu-sM-h9X" id="HtR-dc-csl"/>
-                <outlet property="detectedLevelLabel" destination="w1r-1t-KSx" id="f1t-KP-sJ3"/>
+                <outlet property="detectedLevelLabel" destination="cBR-N1-ENg" id="7Fd-AO-3Kz"/>
                 <outlet property="infoOfLevelsLabel" destination="0Yq-Ah-fex" id="S8c-kR-OPY"/>
                 <outlet property="lengthLabel" destination="16X-Is-xDc" id="3Cy-Iv-4Jj"/>
                 <outlet property="modeLabel" destination="7vu-W1-fKQ" id="FZh-rE-lwT"/>
-                <outlet property="numberOfLevelsLabel" destination="cBR-N1-ENg" id="Gc6-tZ-miv"/>
                 <outlet property="phaseLabel" destination="dXb-og-9Fo" id="1wi-Z3-0DR"/>
                 <outlet property="sccLabel" destination="5lP-mv-shI" id="CfH-5E-Tgn"/>
+                <outlet property="velocityLabel" destination="w1r-1t-KSx" id="nv2-RG-R8h"/>
             </connections>
             <point key="canvasLocation" x="131.8840579710145" y="116.51785714285714"/>
         </tableViewCell>

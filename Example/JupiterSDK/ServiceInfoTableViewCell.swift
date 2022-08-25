@@ -14,8 +14,8 @@ class ServiceInfoTableViewCell: UITableViewCell {
     static let identifier = "ServiceInfoTableViewCell"
     
     @IBOutlet weak var infoOfLevelsLabel: UILabel!
-    @IBOutlet weak var numberOfLevelsLabel: UILabel!
     @IBOutlet weak var detectedLevelLabel: UILabel!
+    @IBOutlet weak var velocityLabel: UILabel!
     @IBOutlet weak var IndexTxLabel: UILabel!
     @IBOutlet weak var IndexRxLabel: UILabel!
     @IBOutlet weak var modeLabel: UILabel!
@@ -36,8 +36,8 @@ class ServiceInfoTableViewCell: UITableViewCell {
     
     func updateResult(data: ResultToDisplay) {
         self.infoOfLevelsLabel.text = data.infoLevels
-        self.numberOfLevelsLabel.text = String(data.numLevels)
         self.detectedLevelLabel.text = data.level
+        self.velocityLabel.text = String(format: "%.2f", data.velocity)
         self.IndexRxLabel.text = String(data.unitIndexRx)
         self.IndexTxLabel.text = String(data.unitIndexTx)
         self.lengthLabel.text = String(format: "%.4f", data.unitLength)
