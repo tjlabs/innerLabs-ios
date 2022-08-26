@@ -37,7 +37,11 @@ class ServiceInfoTableViewCell: UITableViewCell {
     func updateResult(data: ResultToDisplay) {
         self.infoOfLevelsLabel.text = data.infoLevels
         self.detectedLevelLabel.text = data.level
-        self.velocityLabel.text = String(format: "%.2f", data.velocity)
+        if (self.modeLabel.text == "pdr") {
+            self.velocityLabel.text = "Unavailable"
+        } else {
+            self.velocityLabel.text = String(format: "%.2f", data.velocity)
+        }
         self.IndexRxLabel.text = String(data.unitIndexRx)
         self.IndexTxLabel.text = String(data.unitIndexTx)
         self.lengthLabel.text = String(format: "%.4f", data.unitLength)
