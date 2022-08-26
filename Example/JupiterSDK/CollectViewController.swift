@@ -124,14 +124,17 @@ class CollectViewController: UIViewController {
             sender.backgroundColor = .systemGray4
             isWriting = false
             
-            saveData()
-            serviceManager.stopCollect()
-            
             goToBack()
         }
     }
     
     func goToBack() {
+        self.saveData()
+        
+        serviceManager.stopCollect()
+        self.saveFlag = false
+        self.stopTimer()
+        
         self.delegate?.sendPage(data: page)
         self.navigationController?.popViewController(animated: true)
     }
@@ -314,7 +317,7 @@ class CollectViewController: UIViewController {
         
         if (saveFlag) {
             writeData(collectData: serviceManager.collectData)
-            
+            print("Writing : \(serviceManager.collectData)")
             if (serviceManager.collectData.isIndexChanged) {
                 let index = serviceManager.collectData.index
                 let length = serviceManager.collectData.length

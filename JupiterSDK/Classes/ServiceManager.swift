@@ -288,6 +288,8 @@ public class ServiceManager: Observation {
                                     if (statusCode == 200) {
                                         if let data = response.data, let utf8Text = String(data: data, encoding: .utf8) {
                                             ( self.Road[key], self.RoadHeading[key] ) = self.parseRoad(data: utf8Text)
+                                            print("Key : \(key)")
+                                            print("Road : \(self.Road[key])")
                                         }
                                     }
                                 }
@@ -492,6 +494,11 @@ public class ServiceManager: Observation {
                 collectData.rotationMatrix[2][0] = m.attitude.rotationMatrix.m31
                 collectData.rotationMatrix[2][1] = m.attitude.rotationMatrix.m32
                 collectData.rotationMatrix[2][2] = m.attitude.rotationMatrix.m33
+                
+                collectData.quaternion[0] = m.attitude.quaternion.x
+                collectData.quaternion[1] = m.attitude.quaternion.y
+                collectData.quaternion[2] = m.attitude.quaternion.z
+                collectData.quaternion[3] = m.attitude.quaternion.w
             }
         
             if let e = error {

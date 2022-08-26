@@ -1,7 +1,4 @@
 import Foundation
-//import FirebaseCore
-//import FirebaseMLModelDownloader
-//import TensorFlowLite
 import FirebaseMLModelInterpreter
 
 public class DRDistanceEstimator: NSObject {
