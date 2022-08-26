@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'JupiterSDK'
-  s.version          = '1.6.9'
+  s.version          = '1.7.0'
   s.summary          = 'JupiterSDK for iOS'
   s.swift_version    = '4.0'
   
@@ -40,12 +40,8 @@ Pod::Spec.new do |s|
   }
   s.user_target_xcconfig = { 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'arm64' }
 
-  # s.public_header_files = 'Pod/Classes/**/*.h'
   s.static_framework = true
   s.dependency 'Alamofire'
-#  s.dependency 'FirebaseMLModelDownloader', '9.4.0-beta'
-#  s.dependency 'TensorFlowLiteSwift'
-#  s.dependency 'FirebaseMLCommon'
   s.dependency 'Firebase/MLModelInterpreter', '6.25.0'
   
 end

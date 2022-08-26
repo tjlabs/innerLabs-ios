@@ -7,15 +7,16 @@ public class ServiceManager: Observation {
     func tracking(input: FineLocationTrackingResult) {
         for observer in observers {
             var result = input
-            
+            if (result.absolute_heading < 0) {
+                result.absolute_heading = result.absolute_heading + 360
+            }
             // Map Matching
             if (self.isMapMatching) {
                 let xyh = correct(building: result.building_name, level: result.level_name, x: result.x, y: result.y, heading: result.absolute_heading)
                 result.x = xyh[0]
                 result.y = xyh[1]
-//                result.absolute_heading = -(xyh[2] - 90)
+                result.absolute_heading = xyh[2]
             }
-            result.absolute_heading = -(input.absolute_heading - 90)
             
             // Averaging
             if (!pastResult.isEmpty) {
@@ -233,7 +234,7 @@ public class ServiceManager: Observation {
         
         self.initService()
         
-        let userInfo = UserInfo(user_id: self.user_id, device_model: deviceModel, os_version: osVersion)
+        let userInfo = UserInfo(user_id: "tjlabsAdmin", device_model: deviceModel, os_version: osVersion)
         postUser(url: USER_URL, input: userInfo, completion: { [self] statusCode, returnedString in
             if (statusCode == 200) {
                 let list = jsonToCardList(json: returnedString)
@@ -242,29 +243,6 @@ public class ServiceManager: Observation {
                 for card in 0..<myCard.count {
                     let cardInfo: CardInfo = myCard[card]
                     let id: Int = cardInfo.sector_id
-                    let buildings_n_levels: [[String]] = cardInfo.building_level
-                        
-                    var infoBuilding = [String]()
-                    var infoLevel = [String:[String]]()
-                    for building in 0..<buildings_n_levels.count {
-                        let buildingName: String = buildings_n_levels[building][0]
-                        let levelName: String = buildings_n_levels[building][1]
-                            
-                        // Building
-                        if !(infoBuilding.contains(buildingName)) {
-                            infoBuilding.append(buildingName)
-                        }
-                            
-                        // Level
-                        if let value = infoLevel[buildingName] {
-                            var levels:[String] = value
-                            levels.append(levelName)
-                            infoLevel[buildingName] = levels
-                        } else {
-                            let levels:[String] = [levelName]
-                            infoLevel[buildingName] = levels
-                        }
-                    }
                     
                     if (id == self.sector_id) {
                         self.isMapMatching = true
@@ -820,7 +798,6 @@ public class ServiceManager: Observation {
                     xyh = [roadX[minIdx], roadY[minIdx], heading]
                 } else {
                     let headingData = headingArray.components(separatedBy: ",")
-                    
                     var diffHeading = [Double]()
                     for i in 0..<headingData.count {
                         if (headingData[i] != "") {
@@ -828,9 +805,15 @@ public class ServiceManager: Observation {
                             diffHeading.append(abs(heading - mapHeading))
                         }
                     }
-                    let minHeadingIdx = diffHeading.firstIndex(of: diffHeading.min()!)!
-                    
-                    xyh = [roadX[minIdx], roadY[minIdx], Double(headingData[minHeadingIdx])!]
+                    if (!diffHeading.isEmpty) {
+                        let minHeadingIdx = diffHeading.firstIndex(of: diffHeading.min()!)
+                        let correctedHeading = Double(headingData[minHeadingIdx!])!
+                        if (abs(correctedHeading - heading) > 45) {
+                            xyh = [roadX[minIdx], roadY[minIdx], heading]
+                        } else {
+                            xyh = [roadX[minIdx], roadY[minIdx], correctedHeading]
+                        }
+                    }
                 }
             }
         }

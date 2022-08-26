@@ -31,12 +31,7 @@ public class UnitDRGenerator: NSObject {
         let currentTime = getCurrentTimeInMilliseconds()
         
         let sensorAtt = sensorData.att
-//        let curAttitudeCalculated = unitAttitudeEstimator.estimateAtt(time: currentTime, gyro: sensorData.gyro, rotMatrix: sensorData.rotationMatrix)
         let curAttitude = Attitude(Roll: sensorAtt[0], Pitch: sensorAtt[1], Yaw: sensorAtt[2])
-        
-//        print("Attitude :", curAttitudeCalculated.Yaw * (180/Double.pi))
-//        print("Attitude :", curAttitude.Yaw * (180/Double.pi))
-//        print("----------------------------")
         
         var unitDistance = UnitDistance()
         
