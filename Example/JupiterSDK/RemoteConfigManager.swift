@@ -20,8 +20,7 @@ class RemoteConfigManager: NSObject {
         
         remoteConfig.fetch(withExpirationDuration: TimeInterval(10)) { (status, error) -> Void in
             if status == .success {
-                remoteConfig.activateFetched()
-//                remoteConfig.activate()
+                remoteConfig.activate()
                 
                 // 데이터 Fetch
                 let appConfig: AppConfig = AppConfig()
@@ -58,7 +57,7 @@ class RemoteConfigManager: NSObject {
 
         remoteConfig.fetch(withExpirationDuration: TimeInterval(10)) { (status, error) -> Void in
             if status == .success {
-                remoteConfig.activateFetched()
+                remoteConfig.activate()
 
                 // 데이터 Fetch
                 let appConfig: AppConfig = AppConfig()
