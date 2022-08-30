@@ -82,14 +82,7 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
     }
     
     var isBluetoothPermissionGranted: Bool {
-        if #available(iOS 13.1, *) {
-            return CBCentralManager.authorization == .allowedAlways
-        }
-        else if #available(iOS 13.0, *) {
-            return CBCentralManager().authorization == .allowedAlways
-        } else {
-            return true
-        }
+        return true
     }
     
     // MARK: - Notification
