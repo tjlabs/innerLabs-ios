@@ -10,9 +10,10 @@ public class ServiceManager: Observation {
             if (result.absolute_heading < 0) {
                 result.absolute_heading = result.absolute_heading + 360
             }
+            
             // Map Matching
             if (self.isMapMatching) {
-                let xyh = correct(building: result.building_name, level: result.level_name, x: result.x, y: result.y, heading: result.absolute_heading)
+                let xyh = correct(building: result.building_name, level: result.level_name, x: result.x, y: result.y, heading: result.absolute_heading, mode: self.mode)
                 result.x = xyh[0]
                 result.y = xyh[1]
                 result.absolute_heading = xyh[2]
@@ -20,11 +21,11 @@ public class ServiceManager: Observation {
             
             // Averaging
             if (!pastResult.isEmpty) {
-                result.x = (result.x + pastResult[0])/2
-                result.y = (result.y + pastResult[1])/2
+//                result.x = (result.x + pastResult[0])/2
+//                result.y = (result.y + pastResult[1])/2
                 result.absolute_heading = (result.absolute_heading + pastResult[2])/2
             }
-            
+
             // Past Result Update
             if (pastResult.isEmpty) {
                 pastResult.append(result.x)
@@ -165,6 +166,8 @@ public class ServiceManager: Observation {
     var measurementOutput = FineLocationTrackingFromServer()
     
     var pastResult = [Double]()
+    var pastBuildingLevel = ["", ""]
+    
     var isMapMatching: Bool = false
     public override init() {
         deviceModel = UIDevice.modelName
@@ -288,8 +291,6 @@ public class ServiceManager: Observation {
                                     if (statusCode == 200) {
                                         if let data = response.data, let utf8Text = String(data: data, encoding: .utf8) {
                                             ( self.Road[key], self.RoadHeading[key] ) = self.parseRoad(data: utf8Text)
-                                            print("Key : \(key)")
-                                            print("Road : \(self.Road[key])")
                                         }
                                     }
                                 }
@@ -360,7 +361,7 @@ public class ServiceManager: Observation {
                 completion(statusCode, returnedString)
             })
         default:
-            completion(500, "(Error) Fail to get result")
+            completion(500, "Unvalid Service Name")
         }
     }
     
@@ -641,33 +642,38 @@ public class ServiceManager: Observation {
                                 self.phase = result.phase
                                 self.indexCurrent = result.index
                                 
-                                displayOutput.level = result.level_name
-                                displayOutput.scc = result.scc
-                                displayOutput.phase = String(result.phase)
-                                displayOutput.indexRx = result.index
-                                
-                                // Kalman Filter
-                                if (result.mobile_time > preOutputMobileTime) {
-                                    if (result.phase == 4) {
-                                        UV_INPUT_NUM = VAR_INPUT_NUM
-                                        if (!(result.x == 0 && result.y == 0)) {
-                                            // Measurment Update
-                                            if (indexCurrent > indexPast) {
-                                                if (measurementUpdateFlag) {
-                                                    let muOutput = measurementUpdate(timeUpdatePosition: timeUpdatePosition, serverOutput: result)
-                                                    let muResult = fromServerToResult(fromServer: muOutput, velocity: displayOutput.velocity)
-                                                    self.tracking(input: muResult)
+                                if (self.indexCurrent > self.indexPast) {
+                                    displayOutput.building = result.building_name
+                                    displayOutput.level = result.level_name
+                                    displayOutput.scc = result.scc
+                                    displayOutput.phase = String(result.phase)
+                                    displayOutput.indexRx = result.index
+                                    
+                                    // Kalman Filter
+                                    if (result.mobile_time > preOutputMobileTime) {
+                                        
+                                        if (displayOutput.building == pastBuildingLevel[0] && displayOutput.level == pastBuildingLevel[1]) {
+                                            if (result.phase == 4) {
+                                                UV_INPUT_NUM = VAR_INPUT_NUM
+                                                if (!(result.x == 0 && result.y == 0)) {
+                                                    // Measurment Update
+                                                    if (measurementUpdateFlag) {
+                                                        let muOutput = measurementUpdate(timeUpdatePosition: timeUpdatePosition, serverOutput: result)
+                                                        let muResult = fromServerToResult(fromServer: muOutput, velocity: displayOutput.velocity)
+                                                        self.tracking(input: muResult)
+                                                    }
+                                                    timeUpdatePositionInit(serverOutput: result)
                                                 }
-                                                timeUpdatePositionInit(serverOutput: result)
+                                            } else {
+                                                UV_INPUT_NUM = INIT_INPUT_NUM
+                                                kalmanInit()
+                                                let finalResult = fromServerToResult(fromServer: result, velocity: displayOutput.velocity)
+                                                self.tracking(input: finalResult)
                                             }
                                         }
-                                    } else {
-                                        UV_INPUT_NUM = INIT_INPUT_NUM
-                                        kalmanInit()
-                                        let finalResult = fromServerToResult(fromServer: result, velocity: displayOutput.velocity)
-                                        self.tracking(input: finalResult)
+                                        preOutputMobileTime = result.mobile_time
                                     }
-                                    preOutputMobileTime = result.mobile_time
+                                    pastBuildingLevel = [displayOutput.building, displayOutput.level]
                                 }
                                 self.indexPast = self.indexCurrent
                             }
@@ -778,7 +784,7 @@ public class ServiceManager: Observation {
         return (road, roadHeading)
     }
     
-    private func correct(building: String, level: String, x: Double, y: Double, heading: Double) -> [Double] {
+    private func correct(building: String, level: String, x: Double, y: Double, heading: Double, mode: String) -> [Double] {
         var xyh: [Double] = [x, y, heading]
         let key: String = "\(building)_\(level)"
         

@@ -96,6 +96,7 @@ public struct ServiceResult {
     public var phase: String = ""
     
     public var level: String = ""
+    public var building: String = ""
 }
 
 // ------------------------------------------------- //

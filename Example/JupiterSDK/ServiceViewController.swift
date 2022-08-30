@@ -311,7 +311,7 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
             if ( cardData?.sector_id == 1 || cardData?.sector_id == 2 ) {
                 displayViewHeight.constant = 480
                 containerViewHeight.constant = 150
-            } else if ( cardData?.sector_id == 3 || cardData?.sector_id == 4 || cardData?.sector_id == 5 || cardData?.sector_id == 6 ) {
+            } else {
                 let ratio: Double = 114900 / 68700
                 displayViewHeight.constant = displayView.bounds.width * ratio
                 
@@ -612,16 +612,20 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
         scatterChart.isHidden = false
         
         // Configure Chart
-        if (currentLevel == "7F") {
+        if (self.sectorID == 9 && currentLevel == "7F") {
             scatterChart.xAxis.axisMinimum = xMin-1
             scatterChart.xAxis.axisMaximum = xMax+1
             scatterChart.leftAxis.axisMinimum = yMin-5
             scatterChart.leftAxis.axisMaximum = yMax+6
         } else if ( limits[0] == 0 && limits[1] == 0 && limits[2] == 0 && limits[3] == 0 ) {
-            scatterChart.xAxis.axisMinimum = xMin - 5
-            scatterChart.xAxis.axisMaximum = xMax + 5
-            scatterChart.leftAxis.axisMinimum = yMin - 5
-            scatterChart.leftAxis.axisMaximum = yMax + 5
+//            scatterChart.xAxis.axisMinimum = xMin - 2
+//            scatterChart.xAxis.axisMaximum = xMax + 13
+//            scatterChart.leftAxis.axisMinimum = yMin - 7
+//            scatterChart.leftAxis.axisMaximum = yMax + 17.2
+            scatterChart.xAxis.axisMinimum = -4
+            scatterChart.xAxis.axisMaximum = 24
+            scatterChart.leftAxis.axisMinimum = 0.6
+            scatterChart.leftAxis.axisMaximum = 36.2
         } else {
             scatterChart.xAxis.axisMinimum = limits[0]
             scatterChart.xAxis.axisMaximum = limits[1]
@@ -744,9 +748,6 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
                 if (rp.isEmpty) {
                     scatterChart.isHidden = true
                 } else {
-//                    if (currentLevel == "2F") {
-//                        limits = [-6.0 , 35.0, -7.0, 65.0]
-//                    }
                     drawRP(RP_X: rp[0], RP_Y: rp[1], XY: XY, heading: heading, limits: limits)
                 }
             }

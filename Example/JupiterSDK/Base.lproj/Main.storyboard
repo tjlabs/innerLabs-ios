@@ -461,7 +461,7 @@
                                 <rect key="frame" x="0.0" y="0.0" width="390" height="100"/>
                                 <subviews>
                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="grayCardTop" translatesAutoresizingMaskIntoConstraints="NO" id="dMH-0F-2Pr">
-                                        <rect key="frame" x="-2" y="0.0" width="394" height="100"/>
+                                        <rect key="frame" x="-2" y="-2" width="394" height="102"/>
                                     </imageView>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="WrS-xQ-mlg">
                                         <rect key="frame" x="20" y="60" width="50" height="25"/>
@@ -503,7 +503,7 @@
                                     <constraint firstAttribute="bottom" secondItem="WrS-xQ-mlg" secondAttribute="bottom" constant="15" id="BGB-QZ-zKn"/>
                                     <constraint firstItem="1ZL-rE-6mK" firstAttribute="centerY" secondItem="Gyz-ns-ttr" secondAttribute="centerY" id="HQ2-iJ-l4s"/>
                                     <constraint firstItem="dMH-0F-2Pr" firstAttribute="leading" secondItem="jqI-TW-uug" secondAttribute="leading" constant="-2" id="Q58-AA-lAA"/>
-                                    <constraint firstItem="dMH-0F-2Pr" firstAttribute="top" secondItem="jqI-TW-uug" secondAttribute="top" id="Xx0-sZ-HQt"/>
+                                    <constraint firstItem="dMH-0F-2Pr" firstAttribute="top" secondItem="jqI-TW-uug" secondAttribute="top" constant="-2" id="Xx0-sZ-HQt"/>
                                     <constraint firstAttribute="height" constant="100" id="Y17-h7-ku3"/>
                                     <constraint firstAttribute="trailing" secondItem="dMH-0F-2Pr" secondAttribute="trailing" constant="-2" id="YU6-ni-Alf"/>
                                     <constraint firstItem="WrS-xQ-mlg" firstAttribute="leading" secondItem="jqI-TW-uug" secondAttribute="leading" constant="20" id="dCk-C2-Set"/>
