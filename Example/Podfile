@@ -1,6 +1,6 @@
 use_frameworks!
 
-platform :ios, '13.0'
+platform :ios, '12.0'
 # source 'https://github.com/tjlabs/jupiter-sdk-ios.git'
 
 target 'JupiterSDK_Example' do
@@ -25,9 +25,6 @@ target 'JupiterSDK_Example' do
 #  pod 'FirebaseRemoteConfig', '9.4.0'
 #  pod 'FirebaseMLModelDownloader', '9.4.0-beta'
 #  pod 'TensorFlowLiteSwift'
-
-  pod 'FirebaseMLCommon'
-  pod 'Firebase/MLModelInterpreter', '6.25.0'
   pod 'FirebaseRemoteConfig'
   
   

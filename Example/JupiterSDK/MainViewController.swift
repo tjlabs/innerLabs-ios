@@ -39,7 +39,6 @@ class MainViewController: UIViewController, UITextFieldDelegate {
     // UI
     let loginButton: UIButton = UIButton(frame: CGRect(x: 0, y: 0, width: 310, height: 49))
     let loginLabel: UILabel = UILabel(frame: CGRect(x: 0, y: 0, width: 45, height: 19))
-    let registerButton: UIButton = UIButton(frame: CGRect(x: 0, y: 0, width: 52, height: 17))
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -277,20 +276,6 @@ class MainViewController: UIViewController, UITextFieldDelegate {
         loginLabel.centerXAnchor.constraint(equalTo: self.view.centerXAnchor).isActive = true
         loginLabel.centerYAnchor.constraint(equalTo: self.view.centerYAnchor).isActive = true
         loginLabel.topAnchor.constraint(equalTo: self.view.topAnchor, constant: 639).isActive = true
-        
-        registerButton.setTitle("회원가입", for: .normal)
-        registerButton.titleLabel?.font = UIFont(name: "NotoSansKR-Light", size: 14)
-        registerButton.setTitleColor(UIColor(red: 0, green: 0, blue: 0, alpha: 0.89), for: .normal)
-        
-        self.view.addSubview(registerButton)
-        registerButton.translatesAutoresizingMaskIntoConstraints = false
-        registerButton.widthAnchor.constraint(equalToConstant: 52).isActive = true
-        registerButton.heightAnchor.constraint(equalToConstant: 17).isActive = true
-        registerButton.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 284).isActive = true
-        registerButton.topAnchor.constraint(equalTo: self.view.topAnchor, constant: 695).isActive = true
-        registerButton.addTarget(self, action: #selector(registerTapped), for: .touchUpInside)
-        registerButton.isHidden = true
-
     }
     
     @objc func loginTapped() {
@@ -315,21 +300,5 @@ class MainViewController: UIViewController, UITextFieldDelegate {
             let login = Login(user_id: uuid, device_model: deviceModel, os_version: osVersion)
             postLogin(url: USER_URL, input: login)
         }
-    }
-    
-    @objc func registerTapped() {
-        goToRegisterVC()
-        
-        UIView.animate(withDuration: 0.2, animations: {
-            self.registerButton.alpha = 0.8
-        }, completion: { (complete) in
-            self.registerButton.alpha = 1.0
-        })
-    }
-    
-    func goToRegisterVC() {
-        guard let registerVC = self.storyboard?.instantiateViewController(withIdentifier: "RegisterViewController") as? RegisterViewController else { return }
-        
-        self.navigationController?.pushViewController(registerVC, animated: true)
     }
 }
