@@ -21,8 +21,6 @@ public class ServiceManager: Observation {
             
             // Averaging
             if (!pastResult.isEmpty) {
-//                result.x = (result.x + pastResult[0])/2
-//                result.y = (result.y + pastResult[1])/2
                 result.absolute_heading = (result.absolute_heading + pastResult[2])/2
             }
 
@@ -38,6 +36,7 @@ public class ServiceManager: Observation {
             }
             
             observer.update(result: result)
+            pastFLTResult = result
         }
     }
     
@@ -169,6 +168,14 @@ public class ServiceManager: Observation {
     var pastBuildingLevel = ["", ""]
     
     var isMapMatching: Bool = false
+    
+    var isActiveService: Bool = true
+    var timeActiveRF: Double = 0
+    var timeActiveUV: Double = 0
+    var timeUpdateInSleep: Double = 0
+    let SLEEP_THRESHOLD: Double = 120
+    var pastFLTResult = FineLocationTrackingResult()
+    
     public override init() {
         deviceModel = UIDevice.modelName
         os = UIDevice.current.systemVersion
@@ -187,10 +194,12 @@ public class ServiceManager: Observation {
             unitDRGenerator.setMode(mode: mode)
             
             if (mode == "pdr") {
+                INIT_INPUT_NUM = 2
                 VAR_INPUT_NUM = 5
                 recentThreshold = 800
             } else if (mode == "dr") {
-                VAR_INPUT_NUM = 10
+                INIT_INPUT_NUM = 5
+                VAR_INPUT_NUM = 5
                 recentThreshold = 2000
             }
             
@@ -237,8 +246,11 @@ public class ServiceManager: Observation {
         
         self.initService()
         
-        let userInfo = UserInfo(user_id: "tjlabsAdmin", device_model: deviceModel, os_version: osVersion)
-        postUser(url: USER_URL, input: userInfo, completion: { [self] statusCode, returnedString in
+        let userInfo = UserInfo(user_id: id, device_model: deviceModel, os_version: osVersion)
+        postUser(url: USER_URL, input: userInfo, completion: { statusCode, returnedString in })
+        
+        let adminInfo = UserInfo(user_id: "tjlabsAdmin", device_model: deviceModel, os_version: osVersion)
+        postUser(url: USER_URL, input: adminInfo, completion: { [self] statusCode, returnedString in
             if (statusCode == 200) {
                 let list = jsonToCardList(json: returnedString)
                 let myCard = list.sectors
@@ -570,21 +582,34 @@ public class ServiceManager: Observation {
             bleDictionary.keys.forEach { bleDictionary[$0] = bleDictionary[$0]! + 7 }
         }
         
-        let data = ReceivedForce(user_id: self.user_id, mobile_time: currentTime, ble: bleDictionary, pressure: self.pressure)
-        
-        inputReceivedForce.append(data)
-        if ((inputReceivedForce.count-1) == SPATIAL_INPUT_NUM) {
-            inputReceivedForce.remove(at: 0)
-            NetworkManager.shared.putReceivedForce(url: RF_URL, input: inputReceivedForce)
+        if (!bleDictionary.isEmpty) {
+            timeActiveRF = 0
+            isActiveService = true
+            
+            if (isActiveService) {
+                let data = ReceivedForce(user_id: self.user_id, mobile_time: currentTime, ble: bleDictionary, pressure: self.pressure)
+                
+                inputReceivedForce.append(data)
+                if ((inputReceivedForce.count-1) == SPATIAL_INPUT_NUM) {
+                    inputReceivedForce.remove(at: 0)
+                    NetworkManager.shared.putReceivedForce(url: RF_URL, input: inputReceivedForce)
 
-            inputReceivedForce = [ReceivedForce(user_id: "", mobile_time: 0, ble: [:], pressure: 0)]
+                    inputReceivedForce = [ReceivedForce(user_id: "", mobile_time: 0, ble: [:], pressure: 0)]
+                }
+            }
+        } else {
+            timeActiveRF += RF_INTERVAL
+            if (timeActiveRF >= SLEEP_THRESHOLD) {
+                isActiveService = false
+                timeActiveRF = 0
+            }
         }
     }
     
     @objc func userVelocityTimerUpdate() {
         let currentTime = getCurrentTimeInMilliseconds()
         
-        if (floorUpdateRequestFlag) {
+        if (floorUpdateRequestFlag && isActiveService) {
             floorUpdateRequestTimer += UV_INTERVAL
             if (floorUpdateRequestTimer > FLOOR_UPDATE_REQUEST_TIME) {
                 let input = FineLocationTracking(user_id: user_id, mobile_time: currentTime, sector_id: sector_id, phase: self.phase)
@@ -605,6 +630,9 @@ public class ServiceManager: Observation {
         }
         
         if (unitDRInfo.isIndexChanged) {
+            timeActiveUV = 0
+            isActiveService = true
+            
             displayOutput.isIndexChanged = unitDRInfo.isIndexChanged
             displayOutput.indexTx = unitDRInfo.index
             displayOutput.length = unitDRInfo.length
@@ -616,70 +644,85 @@ public class ServiceManager: Observation {
             let diffHeading = unitDRInfo.heading - preUnitHeading
             let curUnitDRLength = unitDRInfo.length
             
-            // Time Update
-            if (timeUpdateFlag) {
-                let tuOutput = timeUpdate(length: curUnitDRLength, diffHeading: diffHeading, mobileTime: currentTime)
-                let tuResult = fromServerToResult(fromServer: tuOutput, velocity: displayOutput.velocity)
-                self.tracking(input: tuResult)
-            }
-            preUnitHeading = unitDRInfo.heading
-            
-            // Post FLT
-            inputUserVelocity.append(data)
-            if ((inputUserVelocity.count-1) == UV_INPUT_NUM) {
-                inputUserVelocity.remove(at: 0)
-                NetworkManager.shared.putUserVelocity(url: UV_URL, input: inputUserVelocity, completion: { [self] statusCode, returnedString in
-                    if (statusCode == 200) {
-                        inputUserVelocity = [UserVelocity(user_id: user_id, mobile_time: 0, index: 0, length: 0, heading: 0, looking: true)]
-                        
-                        floorUpdateRequestFlag = true
-                        floorUpdateRequestTimer = 0
-                        
-                        let input = FineLocationTracking(user_id: user_id, mobile_time: currentTime, sector_id: sector_id, phase: self.phase)
-                        NetworkManager.shared.postFLT(url: FLT_URL, input: input, completion: { [self] statusCode, returnedString in
-                            if (statusCode == 200) {
-                                let result = jsonToResult(json: returnedString)
-                                self.phase = result.phase
-                                self.indexCurrent = result.index
-                                
-                                if (self.indexCurrent > self.indexPast) {
-                                    displayOutput.building = result.building_name
-                                    displayOutput.level = result.level_name
-                                    displayOutput.scc = result.scc
-                                    displayOutput.phase = String(result.phase)
-                                    displayOutput.indexRx = result.index
+            if (isActiveService) {
+                // Time Update
+                if (timeUpdateFlag) {
+                    let tuOutput = timeUpdate(length: curUnitDRLength, diffHeading: diffHeading, mobileTime: currentTime)
+                    let tuResult = fromServerToResult(fromServer: tuOutput, velocity: displayOutput.velocity)
+                    self.tracking(input: tuResult)
+                }
+                preUnitHeading = unitDRInfo.heading
+                
+                // Post FLT
+                inputUserVelocity.append(data)
+                if ((inputUserVelocity.count-1) == UV_INPUT_NUM) {
+                    inputUserVelocity.remove(at: 0)
+                    NetworkManager.shared.putUserVelocity(url: UV_URL, input: inputUserVelocity, completion: { [self] statusCode, returnedString in
+                        if (statusCode == 200) {
+                            inputUserVelocity = [UserVelocity(user_id: user_id, mobile_time: 0, index: 0, length: 0, heading: 0, looking: true)]
+                            
+                            floorUpdateRequestFlag = true
+                            floorUpdateRequestTimer = 0
+                            
+                            let input = FineLocationTracking(user_id: user_id, mobile_time: currentTime, sector_id: sector_id, phase: self.phase)
+                            NetworkManager.shared.postFLT(url: FLT_URL, input: input, completion: { [self] statusCode, returnedString in
+                                if (statusCode == 200) {
+                                    let result = jsonToResult(json: returnedString)
+                                    self.phase = result.phase
+                                    self.indexCurrent = result.index
                                     
-                                    // Kalman Filter
-                                    if (result.mobile_time > preOutputMobileTime) {
+                                    if (self.indexCurrent > self.indexPast) {
+                                        displayOutput.building = result.building_name
+                                        displayOutput.level = result.level_name
+                                        displayOutput.scc = result.scc
+                                        displayOutput.phase = String(result.phase)
+                                        displayOutput.indexRx = result.index
                                         
-                                        if (displayOutput.building == pastBuildingLevel[0] && displayOutput.level == pastBuildingLevel[1]) {
-                                            if (result.phase == 4) {
-                                                UV_INPUT_NUM = VAR_INPUT_NUM
-                                                if (!(result.x == 0 && result.y == 0)) {
-                                                    // Measurment Update
-                                                    if (measurementUpdateFlag) {
-                                                        let muOutput = measurementUpdate(timeUpdatePosition: timeUpdatePosition, serverOutput: result)
-                                                        let muResult = fromServerToResult(fromServer: muOutput, velocity: displayOutput.velocity)
-                                                        self.tracking(input: muResult)
+                                        // Kalman Filter
+                                        if (result.mobile_time > preOutputMobileTime) {
+                                            
+                                            if (displayOutput.building == pastBuildingLevel[0] && displayOutput.level == pastBuildingLevel[1]) {
+                                                if (result.phase == 4) {
+                                                    UV_INPUT_NUM = VAR_INPUT_NUM
+                                                    if (!(result.x == 0 && result.y == 0)) {
+                                                        // Measurment Update
+                                                        if (measurementUpdateFlag) {
+                                                            let muOutput = measurementUpdate(timeUpdatePosition: timeUpdatePosition, serverOutput: result)
+                                                            let muResult = fromServerToResult(fromServer: muOutput, velocity: displayOutput.velocity)
+                                                            self.tracking(input: muResult)
+                                                        }
+                                                        timeUpdatePositionInit(serverOutput: result)
                                                     }
-                                                    timeUpdatePositionInit(serverOutput: result)
+                                                } else {
+                                                    UV_INPUT_NUM = INIT_INPUT_NUM
+                                                    kalmanInit()
+                                                    let finalResult = fromServerToResult(fromServer: result, velocity: displayOutput.velocity)
+                                                    self.tracking(input: finalResult)
                                                 }
-                                            } else {
-                                                UV_INPUT_NUM = INIT_INPUT_NUM
-                                                kalmanInit()
-                                                let finalResult = fromServerToResult(fromServer: result, velocity: displayOutput.velocity)
-                                                self.tracking(input: finalResult)
                                             }
+                                            preOutputMobileTime = result.mobile_time
                                         }
-                                        preOutputMobileTime = result.mobile_time
+                                        pastBuildingLevel = [displayOutput.building, displayOutput.level]
                                     }
-                                    pastBuildingLevel = [displayOutput.building, displayOutput.level]
+                                    self.indexPast = self.indexCurrent
                                 }
-                                self.indexPast = self.indexCurrent
-                            }
-                        })
-                    }
-                })
+                            })
+                        }
+                    })
+                }
+            }
+        } else {
+            timeActiveUV += UV_INTERVAL
+            if (timeActiveUV >= SLEEP_THRESHOLD) {
+                isActiveService = false
+                timeActiveUV = 0
+            }
+            
+            timeUpdateInSleep += UV_INTERVAL
+            if (timeUpdateInSleep >= 1) {
+                let sleepResult = pastFLTResult
+                self.tracking(input: sleepResult)
+                timeUpdateInSleep = 0
             }
         }
     }
