@@ -83,7 +83,6 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
     var page: Int = 0
     
     var RP = [String: [[Double]]]()
-//    var Road = [String: [[Double]]]()
     var Road = [[Double]]()
     var chartLimits = [String: [Double]]()
     
