@@ -1,6 +1,6 @@
 {
   "name": "JupiterSDK",
-  "version": "1.7.2",
+  "version": "1.7.6",
   "summary": "JupiterSDK for iOS",
   "swift_versions": "4.0",
   "description": "TODO: Add long description of the pod here.",
@@ -17,7 +17,7 @@
   },
   "source": {
     "git": "https://github.com/tjlabs/jupiter-ios.git",
-    "tag": "1.7.2"
+    "tag": "1.7.6"
   },
   "source_files": "JupiterSDK/Classes/**/*",
   "resource_bundles": {
@@ -36,8 +36,8 @@
     "Alamofire": [
 
     ],
-    "Firebase/MLModelInterpreter": [
-      "6.25.0"
+    "TensorFlowLiteSwift": [
+
     ]
   },
   "swift_version": "4.0"

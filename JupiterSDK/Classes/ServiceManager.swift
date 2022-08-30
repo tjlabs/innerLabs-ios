@@ -254,26 +254,26 @@ public class ServiceManager: Observation {
             if (statusCode == 200) {
                 let list = jsonToCardList(json: returnedString)
                 let myCard = list.sectors
-                
+
                 for card in 0..<myCard.count {
                     let cardInfo: CardInfo = myCard[card]
                     let id: Int = cardInfo.sector_id
-                    
+
                     if (id == self.sector_id) {
                         self.isMapMatching = true
                         let buildings_n_levels: [[String]] = cardInfo.building_level
-                            
+
                         var infoBuilding = [String]()
                         var infoLevel = [String:[String]]()
                         for building in 0..<buildings_n_levels.count {
                             let buildingName: String = buildings_n_levels[building][0]
                             let levelName: String = buildings_n_levels[building][1]
-                                
+
                             // Building
                             if !(infoBuilding.contains(buildingName)) {
                                 infoBuilding.append(buildingName)
                             }
-                                
+
                             // Level
                             if let value = infoLevel[buildingName] {
                                 var levels:[String] = value
@@ -284,7 +284,7 @@ public class ServiceManager: Observation {
                                 infoLevel[buildingName] = levels
                             }
                         }
-                        
+
                         // Key-Value Saved
                         for i in 0..<infoBuilding.count {
                             let buildingName = infoBuilding[i]
@@ -292,7 +292,7 @@ public class ServiceManager: Observation {
                             for j in 0..<levelList!.count {
                                 let levelName = levelList![j]
                                 let key: String = "\(buildingName)_\(levelName)"
-                                
+
                                 let url = "https://storage.googleapis.com/jupiter_image/rp/ios/\(self.sector_id)/\(key).csv"
                                 AF.request(url).response { response in
                                     var statusCode = 404
@@ -537,7 +537,7 @@ public class ServiceManager: Observation {
             floorUpdateRequestFlag = true
             userVelocityTimer = Timer.scheduledTimer(timeInterval: UV_INTERVAL, target: self, selector: #selector(self.userVelocityTimerUpdate), userInfo: nil, repeats: true)
         }
-        
+
         if (interruptTimer == nil && self.service == "FLT") {
             interruptTimer = Timer.scheduledTimer(timeInterval: 5, target: self, selector: #selector(self.runInterrupt), userInfo: nil, repeats: true)
         }

@@ -6,11 +6,6 @@ PODS:
     - SwiftAlgorithms (~> 1.0)
   - DropDown (2.3.13)
   - ExpyTableView (1.2.1)
-  - Firebase/CoreOnly (6.25.0):
-    - FirebaseCore (= 6.7.1)
-  - Firebase/MLModelInterpreter (6.25.0):
-    - Firebase/CoreOnly
-    - FirebaseMLModelInterpreter (~> 0.19.0)
   - FirebaseABTesting (3.2.0):
     - FirebaseAnalyticsInterop (~> 1.3)
     - FirebaseCore (~> 6.1)
@@ -32,26 +27,6 @@ PODS:
     - GoogleUtilities/Environment (~> 6.6)
     - GoogleUtilities/UserDefaults (~> 6.6)
     - PromisesObjC (~> 1.2)
-  - FirebaseInstanceID (4.3.4):
-    - FirebaseCore (~> 6.6)
-    - FirebaseInstallations (~> 1.0)
-    - GoogleUtilities/Environment (~> 6.5)
-    - GoogleUtilities/UserDefaults (~> 6.5)
-  - FirebaseMLCommon (0.20.1):
-    - FirebaseCore (~> 6.7)
-    - FirebaseInstanceID (~> 4.3)
-    - GoogleToolboxForMac/Logger (~> 2.1)
-    - "GoogleToolboxForMac/NSData+zlib (~> 2.1)"
-    - "GoogleToolboxForMac/NSDictionary+URLArguments (~> 2.1)"
-    - GoogleUtilities/UserDefaults (~> 6.0)
-    - GTMSessionFetcher/Core (~> 1.1)
-    - Protobuf (~> 3.12)
-  - FirebaseMLModelInterpreter (0.19.0):
-    - FirebaseCore (~> 6.3)
-    - FirebaseMLCommon (~> 0.19)
-    - GoogleUtilities/UserDefaults (~> 6.0)
-    - GTMSessionFetcher/Core (~> 1.1)
-    - TensorFlowLiteObjC (~> 1.14.0)
   - FirebaseRemoteConfig (4.5.0):
     - FirebaseABTesting (~> 3.1)
     - FirebaseAnalyticsInterop (~> 1.4)
@@ -69,18 +44,6 @@ PODS:
     - GoogleMaps/Base
   - GooglePlaces (4.0.0):
     - GoogleMaps/Base (= 4.0.0)
-  - GoogleToolboxForMac/DebugUtils (2.3.2):
-    - GoogleToolboxForMac/Defines (= 2.3.2)
-  - GoogleToolboxForMac/Defines (2.3.2)
-  - GoogleToolboxForMac/Logger (2.3.2):
-    - GoogleToolboxForMac/Defines (= 2.3.2)
-  - "GoogleToolboxForMac/NSData+zlib (2.3.2)":
-    - GoogleToolboxForMac/Defines (= 2.3.2)
-  - "GoogleToolboxForMac/NSDictionary+URLArguments (2.3.2)":
-    - GoogleToolboxForMac/DebugUtils (= 2.3.2)
-    - GoogleToolboxForMac/Defines (= 2.3.2)
-    - "GoogleToolboxForMac/NSString+URLArguments (= 2.3.2)"
-  - "GoogleToolboxForMac/NSString+URLArguments (2.3.2)"
   - GoogleUtilities/Environment (6.7.2):
     - PromisesObjC (~> 1.2)
   - GoogleUtilities/Logger (6.7.2):
@@ -88,10 +51,9 @@ PODS:
   - "GoogleUtilities/NSData+zlib (6.7.2)"
   - GoogleUtilities/UserDefaults (6.7.2):
     - GoogleUtilities/Logger
-  - GTMSessionFetcher/Core (1.7.2)
-  - JupiterSDK (1.7.2):
+  - JupiterSDK (1.7.6):
     - Alamofire
-    - Firebase/MLModelInterpreter (= 6.25.0)
+    - TensorFlowLiteSwift
   - Kingfisher (7.2.2)
   - nanopb (1.30906.0):
     - nanopb/decode (= 1.30906.0)
@@ -104,7 +66,7 @@ PODS:
   - SwiftAlgorithms (1.0.0)
   - SwiftCSVExport (2.6.0)
   - TensorFlowLiteC (1.14.0)
-  - TensorFlowLiteObjC (1.14.0):
+  - TensorFlowLiteSwift (1.14.0):
     - TensorFlowLiteC (= 1.14.0)
   - TextFieldEffects (1.6.0)
 
@@ -129,24 +91,18 @@ SPEC REPOS:
     - Charts
     - DropDown
     - ExpyTableView
-    - Firebase
     - FirebaseABTesting
     - FirebaseAnalyticsInterop
     - FirebaseCore
     - FirebaseCoreDiagnostics
     - FirebaseCoreDiagnosticsInterop
     - FirebaseInstallations
-    - FirebaseInstanceID
-    - FirebaseMLCommon
-    - FirebaseMLModelInterpreter
     - FirebaseRemoteConfig
     - Floaty
     - GoogleDataTransport
     - GoogleMaps
     - GooglePlaces
-    - GoogleToolboxForMac
     - GoogleUtilities
-    - GTMSessionFetcher
     - Kingfisher
     - nanopb
     - PromisesObjC
@@ -155,7 +111,7 @@ SPEC REPOS:
     - SwiftAlgorithms
     - SwiftCSVExport
     - TensorFlowLiteC
-    - TensorFlowLiteObjC
+    - TensorFlowLiteSwift
     - TextFieldEffects
 
 EXTERNAL SOURCES:
@@ -167,25 +123,19 @@ SPEC CHECKSUMS:
   Charts: d959d6723c8eedfdd0735dfc28cb0a71762ac4d9
   DropDown: 8a2116376c1981888557f72ec2ffc9a5e0e456ec
   ExpyTableView: 19cf224c2ff04b1ec215ec52bc4ba6f81fa809ed
-  Firebase: 5719b4f965f76643241a1bb8244483ff6117db39
   FirebaseABTesting: 821a3a3e4a145987e80fee3657c4de1cb9adf693
   FirebaseAnalyticsInterop: 3f86269c38ae41f47afeb43ebf32a001f58fcdae
   FirebaseCore: 6023faeada5afa95a349fccafb40900e32e9ac42
   FirebaseCoreDiagnostics: 770ac5958e1372ce67959ae4b4f31d8e127c3ac1
   FirebaseCoreDiagnosticsInterop: 296e2c5f5314500a850ad0b83e9e7c10b011a850
   FirebaseInstallations: 6f5f680e65dc374397a483c32d1799ba822a395b
-  FirebaseInstanceID: cef67c4967c7cecb56ea65d8acbb4834825c587b
-  FirebaseMLCommon: 850f595135e066b989f90323c970499a4d8afbf9
-  FirebaseMLModelInterpreter: 00dc6b246167a350a91be2d2667736d290700366
   FirebaseRemoteConfig: 1725314c4b89d8853c876099ded037f11bee26db
   Floaty: e2bd5a0f6f7f70899e26ff2da31081c8bee8d1b0
   GoogleDataTransport: f56af7caa4ed338dc8e138a5d7c5973e66440833
   GoogleMaps: b7f7fc569a9b354a3af0d9729dbec40957b7d41e
   GooglePlaces: ca8d4aba09ba79e0a829cf1dca03a41de6a09016
-  GoogleToolboxForMac: 8bef7c7c5cf7291c687cf5354f39f9db6399ad34
   GoogleUtilities: 7f2f5a07f888cdb145101d6042bc4422f57e70b3
-  GTMSessionFetcher: 5595ec75acf5be50814f81e9189490412bad82ba
-  JupiterSDK: f8989eccd0e8f2c8d52223b770ea6a3f3a3cea10
+  JupiterSDK: fa5e2068d9ce40b0abe562362d789d2660360166
   Kingfisher: 184d4d1a8c36666e663caf8e08abe87898595c53
   nanopb: 59317e09cf1f1a0af72f12af412d54edf52603fc
   PromisesObjC: 3113f7f76903778cf4a0586bd1ab89329a0b7b97
@@ -194,9 +144,9 @@ SPEC CHECKSUMS:
   SwiftAlgorithms: 38dda4731d19027fdeee1125f973111bf3386b53
   SwiftCSVExport: d9db3fb80484115028792f8d539445e3fb2c0ecb
   TensorFlowLiteC: a6702011fb661928634e59565b5fe262f69692d0
-  TensorFlowLiteObjC: ece71b1e78f3df5952996c1606934b1d5538c875
+  TensorFlowLiteSwift: ac8c816ae2d65f631a96151e7991c46412aec7eb
   TextFieldEffects: 529b8aff706fb40f82c41c780c0777941a893796
 
-PODFILE CHECKSUM: 1994fe4f4342cf6f3f6cb20c17fa3f1a8843ee9a
+PODFILE CHECKSUM: 9f72c436bd5445dcedc5626414ef214aec4863f5
 
 COCOAPODS: 1.11.3

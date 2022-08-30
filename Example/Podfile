@@ -18,15 +18,7 @@ target 'JupiterSDK_Example' do
   pod 'Floaty', '~> 4.2.0'
   pod 'TextFieldEffects'
   
-  ## For Firebase
-#  pod 'FirebaseAuth', '9.4.0'
-#  pod 'FirebaseFirestore', '9.4.0'
-#  pod 'FirebaseStorage', '9.4.0'
-#  pod 'FirebaseRemoteConfig', '9.4.0'
-#  pod 'FirebaseMLModelDownloader', '9.4.0-beta'
-#  pod 'TensorFlowLiteSwift'
   pod 'FirebaseRemoteConfig'
-  
   
   post_install do |installer|
     installer.pods_project.targets.each do |target|
