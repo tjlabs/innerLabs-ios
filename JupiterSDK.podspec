@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'JupiterSDK'
-  s.version          = '1.7.1'
+  s.version          = '1.7.2'
   s.summary          = 'JupiterSDK for iOS'
   s.swift_version    = '4.0'
   
@@ -22,7 +22,7 @@ Pod::Spec.new do |s|
   TODO: Add long description of the pod here.
   DESC
   
-  s.ios.deployment_target = '13.0'
+  s.ios.deployment_target = '12.0'
   
   s.homepage         = 'https://www.tjlabscorp.com'
   s.license          = { :type => 'TJLABS Corp', :file => 'LICENSE' }

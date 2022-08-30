@@ -85,8 +85,10 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
         if #available(iOS 13.1, *) {
             return CBCentralManager.authorization == .allowedAlways
         }
-        else {
+        else if #available(iOS 13.0, *) {
             return CBCentralManager().authorization == .allowedAlways
+        } else {
+            return true
         }
     }
     
