@@ -223,7 +223,6 @@ public class DRDistanceEstimator: NSObject {
                 for i in 0..<outputData.count {
                     output[i] = outputData[i]
                 }
-                print("Model Output :",output)
             } catch {
                 print("Output Error")
             }

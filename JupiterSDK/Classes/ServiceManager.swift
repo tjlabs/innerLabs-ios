@@ -173,7 +173,7 @@ public class ServiceManager: Observation {
     var timeActiveRF: Double = 0
     var timeActiveUV: Double = 0
     var timeUpdateInSleep: Double = 0
-    let SLEEP_THRESHOLD: Double = 120
+    let SLEEP_THRESHOLD: Double = 600 // 10분
     var pastFLTResult = FineLocationTrackingResult()
     
     public override init() {
@@ -246,63 +246,67 @@ public class ServiceManager: Observation {
         
         self.initService()
         
-        let userInfo = UserInfo(user_id: id, device_model: deviceModel, os_version: osVersion)
-        postUser(url: USER_URL, input: userInfo, completion: { statusCode, returnedString in })
-        
-        let adminInfo = UserInfo(user_id: "tjlabsAdmin", device_model: deviceModel, os_version: osVersion)
-        postUser(url: USER_URL, input: adminInfo, completion: { [self] statusCode, returnedString in
-            if (statusCode == 200) {
-                let list = jsonToCardList(json: returnedString)
-                let myCard = list.sectors
+        if (self.user_id.isEmpty || self.user_id.contains(" ")) {
+            print("(Jupiter) User ID cannot be empty or contain space")
+        } else {
+            let userInfo = UserInfo(user_id: self.user_id, device_model: deviceModel, os_version: osVersion)
+            postUser(url: USER_URL, input: userInfo, completion: { statusCode, returnedString in })
+            
+            let adminInfo = UserInfo(user_id: "tjlabsAdmin", device_model: deviceModel, os_version: osVersion)
+            postUser(url: USER_URL, input: adminInfo, completion: { [self] statusCode, returnedString in
+                if (statusCode == 200) {
+                    let list = jsonToCardList(json: returnedString)
+                    let myCard = list.sectors
 
-                for card in 0..<myCard.count {
-                    let cardInfo: CardInfo = myCard[card]
-                    let id: Int = cardInfo.sector_id
+                    for card in 0..<myCard.count {
+                        let cardInfo: CardInfo = myCard[card]
+                        let id: Int = cardInfo.sector_id
 
-                    if (id == self.sector_id) {
-                        self.isMapMatching = true
-                        let buildings_n_levels: [[String]] = cardInfo.building_level
+                        if (id == self.sector_id) {
+                            self.isMapMatching = true
+                            let buildings_n_levels: [[String]] = cardInfo.building_level
 
-                        var infoBuilding = [String]()
-                        var infoLevel = [String:[String]]()
-                        for building in 0..<buildings_n_levels.count {
-                            let buildingName: String = buildings_n_levels[building][0]
-                            let levelName: String = buildings_n_levels[building][1]
+                            var infoBuilding = [String]()
+                            var infoLevel = [String:[String]]()
+                            for building in 0..<buildings_n_levels.count {
+                                let buildingName: String = buildings_n_levels[building][0]
+                                let levelName: String = buildings_n_levels[building][1]
 
-                            // Building
-                            if !(infoBuilding.contains(buildingName)) {
-                                infoBuilding.append(buildingName)
+                                // Building
+                                if !(infoBuilding.contains(buildingName)) {
+                                    infoBuilding.append(buildingName)
+                                }
+
+                                // Level
+                                if let value = infoLevel[buildingName] {
+                                    var levels:[String] = value
+                                    levels.append(levelName)
+                                    infoLevel[buildingName] = levels
+                                } else {
+                                    let levels:[String] = [levelName]
+                                    infoLevel[buildingName] = levels
+                                }
                             }
 
-                            // Level
-                            if let value = infoLevel[buildingName] {
-                                var levels:[String] = value
-                                levels.append(levelName)
-                                infoLevel[buildingName] = levels
-                            } else {
-                                let levels:[String] = [levelName]
-                                infoLevel[buildingName] = levels
-                            }
-                        }
+                            // Key-Value Saved
+                            for i in 0..<infoBuilding.count {
+                                let buildingName = infoBuilding[i]
+                                let levelList = infoLevel[buildingName]
+                                for j in 0..<levelList!.count {
+                                    let levelName = levelList![j]
+                                    let key: String = "\(buildingName)_\(levelName)"
 
-                        // Key-Value Saved
-                        for i in 0..<infoBuilding.count {
-                            let buildingName = infoBuilding[i]
-                            let levelList = infoLevel[buildingName]
-                            for j in 0..<levelList!.count {
-                                let levelName = levelList![j]
-                                let key: String = "\(buildingName)_\(levelName)"
+                                    let url = "https://storage.googleapis.com/jupiter_image/rp/ios/\(self.sector_id)/\(key).csv"
+                                    AF.request(url).response { response in
+                                        var statusCode = 404
+                                        if let code = response.response?.statusCode {
+                                            statusCode = code
+                                        }
 
-                                let url = "https://storage.googleapis.com/jupiter_image/rp/ios/\(self.sector_id)/\(key).csv"
-                                AF.request(url).response { response in
-                                    var statusCode = 404
-                                    if let code = response.response?.statusCode {
-                                        statusCode = code
-                                    }
-
-                                    if (statusCode == 200) {
-                                        if let data = response.data, let utf8Text = String(data: data, encoding: .utf8) {
-                                            ( self.Road[key], self.RoadHeading[key] ) = self.parseRoad(data: utf8Text)
+                                        if (statusCode == 200) {
+                                            if let data = response.data, let utf8Text = String(data: data, encoding: .utf8) {
+                                                ( self.Road[key], self.RoadHeading[key] ) = self.parseRoad(data: utf8Text)
+                                            }
                                         }
                                     }
                                 }
@@ -310,8 +314,9 @@ public class ServiceManager: Observation {
                         }
                     }
                 }
-            }
-        })
+            })
+            print("(Jupiter) Start Service")
+        }
     }
     
     public func stopService() {
@@ -680,26 +685,50 @@ public class ServiceManager: Observation {
                                         
                                         // Kalman Filter
                                         if (result.mobile_time > preOutputMobileTime) {
-                                            
-                                            if (displayOutput.building == pastBuildingLevel[0] && displayOutput.level == pastBuildingLevel[1]) {
-                                                if (result.phase == 4) {
-                                                    UV_INPUT_NUM = VAR_INPUT_NUM
-                                                    if (!(result.x == 0 && result.y == 0)) {
-                                                        // Measurment Update
-                                                        if (measurementUpdateFlag) {
-                                                            let muOutput = measurementUpdate(timeUpdatePosition: timeUpdatePosition, serverOutput: result)
-                                                            let muResult = fromServerToResult(fromServer: muOutput, velocity: displayOutput.velocity)
-                                                            self.tracking(input: muResult)
-                                                        }
-                                                        timeUpdatePositionInit(serverOutput: result)
+                                            if (result.phase == 4) {
+                                                UV_INPUT_NUM = VAR_INPUT_NUM
+                                                if (!(result.x == 0 && result.y == 0)) {
+                                                    // Measurment Update
+                                                    if (measurementUpdateFlag) {
+                                                        let muOutput = measurementUpdate(timeUpdatePosition: timeUpdatePosition, serverOutput: result)
+                                                        let muResult = fromServerToResult(fromServer: muOutput, velocity: displayOutput.velocity)
+                                                        self.tracking(input: muResult)
                                                     }
-                                                } else {
-                                                    UV_INPUT_NUM = INIT_INPUT_NUM
-                                                    kalmanInit()
-                                                    let finalResult = fromServerToResult(fromServer: result, velocity: displayOutput.velocity)
-                                                    self.tracking(input: finalResult)
+                                                    timeUpdatePositionInit(serverOutput: result)
                                                 }
+                                            } else {
+                                                UV_INPUT_NUM = INIT_INPUT_NUM
+                                                inputUserVelocity = [UserVelocity(user_id: user_id, mobile_time: 0, index: 0, length: 0, heading: 0, looking: true)]
+                                                kalmanInit()
+                                                let finalResult = fromServerToResult(fromServer: result, velocity: displayOutput.velocity)
+                                                self.tracking(input: finalResult)
                                             }
+//                                            if (result.building_name == pastBuildingLevel[0] && result.level_name == pastBuildingLevel[1]) {
+//                                                if (result.phase == 4) {
+//                                                    UV_INPUT_NUM = VAR_INPUT_NUM
+//                                                    if (!(result.x == 0 && result.y == 0)) {
+//                                                        // Measurment Update
+//                                                        if (measurementUpdateFlag) {
+//                                                            let muOutput = measurementUpdate(timeUpdatePosition: timeUpdatePosition, serverOutput: result)
+//                                                            let muResult = fromServerToResult(fromServer: muOutput, velocity: displayOutput.velocity)
+//                                                            self.tracking(input: muResult)
+//                                                        }
+//                                                        timeUpdatePositionInit(serverOutput: result)
+//                                                    }
+//                                                } else {
+//                                                    UV_INPUT_NUM = INIT_INPUT_NUM
+//                                                    inputUserVelocity = [UserVelocity(user_id: user_id, mobile_time: 0, index: 0, length: 0, heading: 0, looking: true)]
+//                                                    kalmanInit()
+//                                                    let finalResult = fromServerToResult(fromServer: result, velocity: displayOutput.velocity)
+//                                                    self.tracking(input: finalResult)
+//                                                }
+//                                            } else {
+//                                                UV_INPUT_NUM = INIT_INPUT_NUM
+//                                                inputUserVelocity = [UserVelocity(user_id: user_id, mobile_time: 0, index: 0, length: 0, heading: 0, looking: true)]
+//                                                kalmanInit()
+//                                                let finalResult = fromServerToResult(fromServer: result, velocity: displayOutput.velocity)
+//                                                self.tracking(input: finalResult)
+//                                            }
                                             preOutputMobileTime = result.mobile_time
                                         }
                                         pastBuildingLevel = [displayOutput.building, displayOutput.level]
