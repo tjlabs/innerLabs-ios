@@ -110,6 +110,8 @@ public class ServiceManager: Observation {
     let SENSOR_INTERVAL: TimeInterval = 1/200
     
     var collectTimer: Timer?
+    
+    let CLC_INTERVAL: TimeInterval = 2
     var interruptTimer: Timer?
     // ------------------ //
     
@@ -544,7 +546,7 @@ public class ServiceManager: Observation {
         }
 
         if (interruptTimer == nil && self.service == "FLT") {
-            interruptTimer = Timer.scheduledTimer(timeInterval: 5, target: self, selector: #selector(self.runInterrupt), userInfo: nil, repeats: true)
+            interruptTimer = Timer.scheduledTimer(timeInterval: CLC_INTERVAL, target: self, selector: #selector(self.runInterrupt), userInfo: nil, repeats: true)
         }
     }
     
@@ -760,7 +762,6 @@ public class ServiceManager: Observation {
         let currentTime = getCurrentTimeInMilliseconds()
         
         collectData.time = currentTime
-        
         collectData.bleRaw = bleManager.bleRaw
         collectData.bleAvg = bleManager.bleAvg
         
@@ -793,11 +794,9 @@ public class ServiceManager: Observation {
     func jsonToResult(json: String) -> FineLocationTrackingFromServer {
         let result = FineLocationTrackingFromServer()
         let decoder = JSONDecoder()
-
         let jsonString = json
 
         if let data = jsonString.data(using: .utf8), let decoded = try? decoder.decode(FineLocationTrackingFromServer.self, from: data) {
-            
             return decoded
         }
 

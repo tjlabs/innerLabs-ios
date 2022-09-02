@@ -10,17 +10,17 @@ let RSSI_BIAS: Double        = 0
 let TJLABS_UUID: String          = "0000FEAA-0000-1000-8000-00805f9b34fb";
 
 extension Notification.Name {
-    static let bluetoothReady      = Notification.Name("bluetoothReady")
-    static let startScan           = Notification.Name("startScan")
-    static let stopScan            = Notification.Name("stopScan")
-    static let foundDevice         = Notification.Name("foundDevice")
-    static let deviceConnected     = Notification.Name("deviceConnected")
-    static let deviceReady         = Notification.Name("deviceReady")
-    static let didReceiveData      = Notification.Name("didReceiveData")
-    static let scanInfo            = Notification.Name("scanInfo")
-    static let notificationEnabled = Notification.Name("notificationEnabled")
-    static let didEnterBackground  = Notification.Name("didEnterBackground")
-    static let didBecomeActive     = Notification.Name("didBecomeActive")
+    public static let bluetoothReady      = Notification.Name("bluetoothReady")
+    public static let startScan           = Notification.Name("startScan")
+    public static let stopScan            = Notification.Name("stopScan")
+    public static let foundDevice         = Notification.Name("foundDevice")
+    public static let deviceConnected     = Notification.Name("deviceConnected")
+    public static let deviceReady         = Notification.Name("deviceReady")
+    public static let didReceiveData      = Notification.Name("didReceiveData")
+    public static let scanInfo            = Notification.Name("scanInfo")
+    public static let notificationEnabled = Notification.Name("notificationEnabled")
+    public static let didEnterBackground  = Notification.Name("didEnterBackground")
+    public static let didBecomeActive     = Notification.Name("didBecomeActive")
 }
 
 enum BLEScanOption: Int {

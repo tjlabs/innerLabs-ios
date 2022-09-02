@@ -136,8 +136,6 @@ class CardViewController: UIViewController, ServiceViewPageDelegate, GalleryView
         } else {
             moveToIndexCard(index: currentPage)
         }
-        
-//        print("CardViewController : Index /", currentIndex)
     }
     
     func checkImageSize(cards: Array<UIImage>, sectors: Array<UIImage>) -> (sizeCard: Array<Double>, sizeSector: Array<Double>) {
@@ -333,8 +331,6 @@ extension CardViewController: UICollectionViewDataSource, UICollectionViewDelega
         
         let mod = indexPath.item%cardCount
         
-        cell.backgroundColor = .clear
-        
         // Sector Name & Description
         let sectorID: Int = cardItemData[mod].sector_id
         cell.sectorName.text = cardItemData[mod].sector_name
@@ -361,13 +357,6 @@ extension CardViewController: UICollectionViewDataSource, UICollectionViewDelega
             cell.sectorImageView.image = nil
         }
         else {
-//            if (sectorID == 7) {
-//                cell.sectorImageView.image = UIImage(named: "sectorGallery")
-//            } else {
-//                let urlSector = URL(string: "https://storage.googleapis.com/jupiter_image/card/\(sectorID)/main_image.png")
-//                let resourceSector = ImageResource(downloadURL: urlSector!, cacheKey: "\(sectorID)Main")
-//                cell.sectorImageView.kf.setImage(with: resourceSector, placeholder: nil, options: [.transition(.fade(1.2))], completionHandler: nil)
-//            }
             let urlSector = URL(string: "https://storage.googleapis.com/jupiter_image/card/\(sectorID)/main_image.png")
             let resourceSector = ImageResource(downloadURL: urlSector!, cacheKey: "\(sectorID)Main")
             cell.sectorImageView.kf.setImage(with: resourceSector, placeholder: nil, options: [.transition(.fade(1.2))], completionHandler: nil)
@@ -377,7 +366,6 @@ extension CardViewController: UICollectionViewDataSource, UICollectionViewDelega
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        // to JupiterViewController
         let cardCount = cardItemData.count
         let mod = indexPath.item%cardCount
         
