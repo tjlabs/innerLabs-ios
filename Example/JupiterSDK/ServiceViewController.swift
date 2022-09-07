@@ -420,8 +420,6 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
     }
     
     private func parseRP(url:URL) -> [[Double]] {
-        print("Parsing :", url)
-        
         var rpXY = [[Double]]()
         
         var rpX = [Double]()
@@ -450,9 +448,7 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
             let xMax = rpXY[0].max()!
             let yMin = rpXY[1].min()!
             let yMax = rpXY[1].max()!
-            
-            print("Parsing Complete")
-            print("Min Max : \(xMin), \(xMax), \(yMin), \(yMax)")
+//            print("Min Max : \(xMin), \(xMax), \(yMin), \(yMax)")
             
         } catch {
             print("Error reading .csv file")
@@ -580,7 +576,7 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
         set1.drawValuesEnabled = false
         set1.setScatterShape(.square)
         set1.setColor(UIColor.yellow)
-        set1.scatterShapeSize = 10
+        set1.scatterShapeSize = 4
         
         let set2 = ScatterChartDataSet(entries: values2, label: "User")
         set2.drawValuesEnabled = false
@@ -592,15 +588,17 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
         chartData.append(set2)
         
         // Heading
-        let point = scatterChart.getPosition(entry: ChartDataEntry(x: XY[0], y: XY[1]), axis: .left)
-        let imageView = UIImageView(image: headingImage!.rotate(degrees: -heading+90))
-        imageView.frame = CGRect(x: point.x - 15, y: point.y - 15, width: 30, height: 30)
-        imageView.contentMode = .center
-        imageView.tag = 100
-        if let viewWithTag = scatterChart.viewWithTag(100) {
-            viewWithTag.removeFromSuperview()
+        if (XY[0] != 0 && XY[1] != 0) {
+            let point = scatterChart.getPosition(entry: ChartDataEntry(x: XY[0], y: XY[1]), axis: .left)
+            let imageView = UIImageView(image: headingImage!.rotate(degrees: -heading+90))
+            imageView.frame = CGRect(x: point.x - 15, y: point.y - 15, width: 30, height: 30)
+            imageView.contentMode = .center
+            imageView.tag = 100
+            if let viewWithTag = scatterChart.viewWithTag(100) {
+                viewWithTag.removeFromSuperview()
+            }
+            scatterChart.addSubview(imageView)
         }
-        scatterChart.addSubview(imageView)
         
         let xMin = xAxisValue.min()!
         let xMax = xAxisValue.max()!
@@ -617,14 +615,10 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
             scatterChart.leftAxis.axisMinimum = yMin-7.5
             scatterChart.leftAxis.axisMaximum = yMax+7.5
         } else if ( limits[0] == 0 && limits[1] == 0 && limits[2] == 0 && limits[3] == 0 ) {
-//            scatterChart.xAxis.axisMinimum = xMin - 2
-//            scatterChart.xAxis.axisMaximum = xMax + 13
-//            scatterChart.leftAxis.axisMinimum = yMin - 7
-//            scatterChart.leftAxis.axisMaximum = yMax + 17.2
-            scatterChart.xAxis.axisMinimum = -4
-            scatterChart.xAxis.axisMaximum = 24
-            scatterChart.leftAxis.axisMinimum = 0.6
-            scatterChart.leftAxis.axisMaximum = 36.2
+            scatterChart.xAxis.axisMinimum = xMin
+            scatterChart.xAxis.axisMaximum = xMax
+            scatterChart.leftAxis.axisMinimum = yMin
+            scatterChart.leftAxis.axisMaximum = yMax
         } else {
             scatterChart.xAxis.axisMinimum = limits[0]
             scatterChart.xAxis.axisMaximum = limits[1]
@@ -752,7 +746,9 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
             }
         } else {
             if (buildings.contains(currentBuilding)) {
-                drawUser(XY: XY, heading: heading, limits: limits)
+                if (XY[0] != 0 && XY[1] != 0) {
+                    drawUser(XY: XY, heading: heading, limits: limits)
+                }
             }
         }
         

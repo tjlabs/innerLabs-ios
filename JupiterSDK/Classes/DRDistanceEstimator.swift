@@ -33,6 +33,7 @@ public class DRDistanceEstimator: NSObject {
     public var preNavGyroZSmoothing: Double = 0
     
     public var distance: Double = 0
+    var preInputMag: [Float32] = [0, 0, 0]
     
     public func loadModel() {
         let customBundle = Bundle(for: DRDistanceEstimator.self)
@@ -136,6 +137,10 @@ public class DRDistanceEstimator: NSObject {
                                 Float(magVar.z/magNormalizeConstant)]
         
         var inputData = Data()
+        // Mag
+        let inputMag: [Float32] = [Float(0.1*(magVar.x/magNormalizeConstant)) + 0.9*preInputMag[0],
+                                   Float(0.1*(magVar.y/magNormalizeConstant)) + 0.9*preInputMag[1],
+                                   Float(0.1*(magVar.z/magNormalizeConstant)) + 0.9*preInputMag[2]]
         
         for i in 0..<input.count {
             var value = input[i]
@@ -148,38 +153,51 @@ public class DRDistanceEstimator: NSObject {
         finalUnitResult.isIndexChanged = false
         
         if (mlpEpochCount == 0) {
-            do {
-                try interpreter.allocateTensors()
-            } catch {
-                print("Allocate Error")
-            }
-
-            do {
-                try interpreter.copy(inputData, toInputAt: 0)
-            } catch {
-                print("Copy Error")
-            }
-
-            do {
-                try interpreter.invoke()
-            } catch {
-                print("Invoke Error")
-            }
+//            do {
+//                try interpreter.allocateTensors()
+//            } catch {
+//                print("Allocate Error")
+//            }
+//
+//            do {
+//                try interpreter.copy(inputData, toInputAt: 0)
+//            } catch {
+//                print("Copy Error")
+//            }
+//
+//            do {
+//                try interpreter.invoke()
+//            } catch {
+//                print("Invoke Error")
+//            }
+//
+//            do {
+//                let outputTensor = try interpreter.output(at: 0)
+//                let outputSize = outputTensor.shape.dimensions.reduce(1, {x, y in x*y})
+//                let outputData = UnsafeMutableBufferPointer<Float32>.allocate(capacity: outputSize)
+//                outputTensor.data.copyBytes(to: outputData)
+//
+//                for i in 0..<outputData.count {
+//                    output[i] = outputData[i]
+//                }
+//            } catch {
+//                print("Output Error")
+//            }
             
-            do {
-                let outputTensor = try interpreter.output(at: 0)
-                let outputSize = outputTensor.shape.dimensions.reduce(1, {x, y in x*y})
-                let outputData = UnsafeMutableBufferPointer<Float32>.allocate(capacity: outputSize)
-                outputTensor.data.copyBytes(to: outputData)
-
-                for i in 0..<outputData.count {
-                    output[i] = outputData[i]
+            // Mag
+            var count = 0
+            var output = 0
+            for i in 0..<inputMag.count {
+                if (inputMag[i] > 0.001) {
+                    count += 1
                 }
-            } catch {
-                print("Output Error")
             }
+            if (count >= 2) {
+                output = 1
+            }
+            let argMaxIndex: Int = output
             
-            let argMaxIndex: Int = argmax(array: output)
+//            let argMaxIndex: Int = argmax(array: output)
             updateOutputQueue(data: argMaxIndex)
             
             var outputSum: Int = 0
@@ -203,6 +221,8 @@ public class DRDistanceEstimator: NSObject {
         
         mlpEpochCount += 1
         featureExtractionCount += 1
+        // Mag
+        preInputMag = inputMag
         
         if (mlpEpochCount == OUTPUT_SAMPLE_EPOCH) {
             mlpEpochCount = 0

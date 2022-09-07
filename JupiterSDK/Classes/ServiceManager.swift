@@ -6,37 +6,39 @@ public class ServiceManager: Observation {
     
     func tracking(input: FineLocationTrackingResult) {
         for observer in observers {
-            var result = input
-            if (result.absolute_heading < 0) {
-                result.absolute_heading = result.absolute_heading + 360
-            }
-            
-            // Map Matching
-            if (self.isMapMatching) {
-                let xyh = correct(building: result.building_name, level: result.level_name, x: result.x, y: result.y, heading: result.absolute_heading, mode: self.mode)
-                result.x = xyh[0]
-                result.y = xyh[1]
-                result.absolute_heading = xyh[2]
-            }
-            
-            // Averaging
-            if (!pastResult.isEmpty) {
-                result.absolute_heading = (result.absolute_heading + pastResult[2])/2
-            }
+            if (input.x != 0 && input.y != 0) {
+                var result = input
+                if (result.absolute_heading < 0) {
+                    result.absolute_heading = result.absolute_heading + 360
+                }
+                
+                // Map Matching
+                if (self.isMapMatching) {
+                    let xyh = correct(building: result.building_name, level: result.level_name, x: result.x, y: result.y, heading: result.absolute_heading, mode: self.mode)
+                    result.x = xyh[0]
+                    result.y = xyh[1]
+                    result.absolute_heading = xyh[2]
+                }
+                
+                // Averaging
+                if (!pastResult.isEmpty) {
+                    result.absolute_heading = (result.absolute_heading + pastResult[2])/2
+                }
 
-            // Past Result Update
-            if (pastResult.isEmpty) {
-                pastResult.append(result.x)
-                pastResult.append(result.y)
-                pastResult.append(result.absolute_heading)
-            } else {
-                pastResult[0] = result.x
-                pastResult[1] = result.y
-                pastResult[2] = result.absolute_heading
+                // Past Result Update
+                if (pastResult.isEmpty) {
+                    pastResult.append(result.x)
+                    pastResult.append(result.y)
+                    pastResult.append(result.absolute_heading)
+                } else {
+                    pastResult[0] = result.x
+                    pastResult[1] = result.y
+                    pastResult[2] = result.absolute_heading
+                }
+                
+                observer.update(result: result)
+                pastFLTResult = result
             }
-            
-            observer.update(result: result)
-            pastFLTResult = result
         }
     }
     
@@ -128,8 +130,6 @@ public class ServiceManager: Observation {
     var unitDistane: Double = 0
     var onStartFlag: Bool = false
     
-    var recentThreshold: Double = 800 // ms
-    
     var preOutputMobileTime: Int = 0
     var preUnitHeading: Double = 0
     
@@ -198,12 +198,11 @@ public class ServiceManager: Observation {
             if (mode == "pdr") {
                 INIT_INPUT_NUM = 2
                 VAR_INPUT_NUM = 5
-                recentThreshold = 800
             } else if (mode == "dr") {
                 INIT_INPUT_NUM = 5
                 VAR_INPUT_NUM = 5
-                recentThreshold = 2000
             }
+            UV_INPUT_NUM = INIT_INPUT_NUM
             
             unitDRGenerator.setDRModel()
             
@@ -298,7 +297,7 @@ public class ServiceManager: Observation {
                                     let levelName = levelList![j]
                                     let key: String = "\(buildingName)_\(levelName)"
 
-                                    let url = "https://storage.googleapis.com/jupiter_image/rp/ios/\(self.sector_id)/\(key).csv"
+                                    let url = "https://storage.googleapis.com/jupiter_image/pp/\(self.sector_id)/\(key).csv"
                                     AF.request(url).response { response in
                                         var statusCode = 404
                                         if let code = response.response?.statusCode {
@@ -646,12 +645,14 @@ public class ServiceManager: Observation {
             displayOutput.velocity = unitDRInfo.velocity * 3.6
             
             let data = UserVelocity(user_id: user_id, mobile_time: currentTime, index: unitDRInfo.index, length: unitDRInfo.length, heading: unitDRInfo.heading, looking: unitDRInfo.lookingFlag)
-            
+            print(data)
             // Kalman Filter
             let diffHeading = unitDRInfo.heading - preUnitHeading
             let curUnitDRLength = unitDRInfo.length
             
             if (isActiveService) {
+                inputUserVelocity.append(data)
+//                print("Append : ", inputUserVelocity)
                 // Time Update
                 if (timeUpdateFlag) {
                     let tuOutput = timeUpdate(length: curUnitDRLength, diffHeading: diffHeading, mobileTime: currentTime)
@@ -661,13 +662,10 @@ public class ServiceManager: Observation {
                 preUnitHeading = unitDRInfo.heading
                 
                 // Post FLT
-                inputUserVelocity.append(data)
                 if ((inputUserVelocity.count-1) == UV_INPUT_NUM) {
                     inputUserVelocity.remove(at: 0)
                     NetworkManager.shared.putUserVelocity(url: UV_URL, input: inputUserVelocity, completion: { [self] statusCode, returnedString in
                         if (statusCode == 200) {
-                            inputUserVelocity = [UserVelocity(user_id: user_id, mobile_time: 0, index: 0, length: 0, heading: 0, looking: true)]
-                            
                             floorUpdateRequestFlag = true
                             floorUpdateRequestTimer = 0
                             
@@ -677,14 +675,14 @@ public class ServiceManager: Observation {
                                     let result = jsonToResult(json: returnedString)
                                     self.phase = result.phase
                                     self.indexCurrent = result.index
-                                    
+
                                     if (self.indexCurrent > self.indexPast) {
                                         displayOutput.building = result.building_name
                                         displayOutput.level = result.level_name
                                         displayOutput.scc = result.scc
                                         displayOutput.phase = String(result.phase)
                                         displayOutput.indexRx = result.index
-                                        
+
                                         // Kalman Filter
                                         if (result.mobile_time > preOutputMobileTime) {
                                             if (result.phase == 4) {
@@ -700,37 +698,10 @@ public class ServiceManager: Observation {
                                                 }
                                             } else {
                                                 UV_INPUT_NUM = INIT_INPUT_NUM
-                                                inputUserVelocity = [UserVelocity(user_id: user_id, mobile_time: 0, index: 0, length: 0, heading: 0, looking: true)]
                                                 kalmanInit()
                                                 let finalResult = fromServerToResult(fromServer: result, velocity: displayOutput.velocity)
                                                 self.tracking(input: finalResult)
                                             }
-//                                            if (result.building_name == pastBuildingLevel[0] && result.level_name == pastBuildingLevel[1]) {
-//                                                if (result.phase == 4) {
-//                                                    UV_INPUT_NUM = VAR_INPUT_NUM
-//                                                    if (!(result.x == 0 && result.y == 0)) {
-//                                                        // Measurment Update
-//                                                        if (measurementUpdateFlag) {
-//                                                            let muOutput = measurementUpdate(timeUpdatePosition: timeUpdatePosition, serverOutput: result)
-//                                                            let muResult = fromServerToResult(fromServer: muOutput, velocity: displayOutput.velocity)
-//                                                            self.tracking(input: muResult)
-//                                                        }
-//                                                        timeUpdatePositionInit(serverOutput: result)
-//                                                    }
-//                                                } else {
-//                                                    UV_INPUT_NUM = INIT_INPUT_NUM
-//                                                    inputUserVelocity = [UserVelocity(user_id: user_id, mobile_time: 0, index: 0, length: 0, heading: 0, looking: true)]
-//                                                    kalmanInit()
-//                                                    let finalResult = fromServerToResult(fromServer: result, velocity: displayOutput.velocity)
-//                                                    self.tracking(input: finalResult)
-//                                                }
-//                                            } else {
-//                                                UV_INPUT_NUM = INIT_INPUT_NUM
-//                                                inputUserVelocity = [UserVelocity(user_id: user_id, mobile_time: 0, index: 0, length: 0, heading: 0, looking: true)]
-//                                                kalmanInit()
-//                                                let finalResult = fromServerToResult(fromServer: result, velocity: displayOutput.velocity)
-//                                                self.tracking(input: finalResult)
-//                                            }
                                             preOutputMobileTime = result.mobile_time
                                         }
                                         pastBuildingLevel = [displayOutput.building, displayOutput.level]
@@ -740,6 +711,7 @@ public class ServiceManager: Observation {
                             })
                         }
                     })
+                    inputUserVelocity = [UserVelocity(user_id: user_id, mobile_time: 0, index: 0, length: 0, heading: 0, looking: true)]
                 }
             }
         } else {
