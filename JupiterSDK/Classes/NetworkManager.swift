@@ -149,7 +149,7 @@ public class NetworkManager {
         // [http 요청 수행 실시]
 //        print("")
 //        print("====================================")
-//        print("데이터 :: ", input)
+//        print("UV 데이터 :: ", input)
 //        print("====================================")
 //        print("")
         
@@ -171,10 +171,24 @@ public class NetworkManager {
                     completion(200, returnedString)
                 }
                 catch (let err){
+                    print("")
+                    print("====================================")
+                    print("응답 코드 :: ", response.response?.statusCode ?? 0)
+                    print("-------------------------------")
+                    print("에 러 :: ", err.localizedDescription)
+                    print("====================================")
+                    print("")
                     completion(500, "Fail")
                 }
                 break
             case .failure(let err):
+                print("")
+                print("====================================")
+                print("응답 코드 :: ", response.response?.statusCode ?? 0)
+                print("-------------------------------")
+                print("에 러 :: ", err.localizedDescription)
+                print("====================================")
+                print("")
                 completion(500, "Fail")
                 break
             }

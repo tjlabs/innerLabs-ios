@@ -92,6 +92,7 @@ public struct ServiceResult {
     public var indexRx: Int = 0
     public var length: Double = 0
     public var velocity: Double = 0
+    public var heading: Double = 0
     public var scc: Double = 0
     public var phase: String = ""
     

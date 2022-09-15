@@ -11,6 +11,7 @@ public class ServiceManager: Observation {
                 if (result.absolute_heading < 0) {
                     result.absolute_heading = result.absolute_heading + 360
                 }
+                result.absolute_heading = result.absolute_heading - floor(result.absolute_heading/360)*360
                 
                 // Map Matching
                 if (self.isMapMatching) {
@@ -18,7 +19,10 @@ public class ServiceManager: Observation {
                     result.x = xyh[0]
                     result.y = xyh[1]
                     result.absolute_heading = xyh[2]
+                    
+                    self.pastFLTResult = result
                 }
+                displayOutput.heading = result.absolute_heading
                 
                 // Averaging
                 if (!pastResult.isEmpty) {
@@ -37,7 +41,6 @@ public class ServiceManager: Observation {
                 }
                 
                 observer.update(result: result)
-                pastFLTResult = result
             }
         }
     }
@@ -138,6 +141,9 @@ public class ServiceManager: Observation {
     let FLOOR_UPDATE_REQUEST_TIME: Double = 15
     
     public var displayOutput = ServiceResult()
+    
+    var nowTime: Int = 0
+    let RECENT_THRESHOLD: Int = 2200
     // --------------------------------- //
     
     
@@ -176,6 +182,8 @@ public class ServiceManager: Observation {
     var timeActiveUV: Double = 0
     var timeUpdateInSleep: Double = 0
     let SLEEP_THRESHOLD: Double = 600 // 10분
+    
+    let SQUARE_RANGE: Double = 10
     var pastFLTResult = FineLocationTrackingResult()
     
     public override init() {
@@ -204,7 +212,7 @@ public class ServiceManager: Observation {
             }
             UV_INPUT_NUM = INIT_INPUT_NUM
             
-            unitDRGenerator.setDRModel()
+//            unitDRGenerator.setDRModel()
             
             onStartFlag = true
         }
@@ -614,6 +622,7 @@ public class ServiceManager: Observation {
     
     @objc func userVelocityTimerUpdate() {
         let currentTime = getCurrentTimeInMilliseconds()
+        self.nowTime = currentTime
         
         if (floorUpdateRequestFlag && isActiveService) {
             floorUpdateRequestTimer += UV_INTERVAL
@@ -624,6 +633,7 @@ public class ServiceManager: Observation {
                     if (statusCode == 200) {
                         let result = jsonToResult(json: returnedString)
                         let finalResult = fromServerToResult(fromServer: result, velocity: displayOutput.velocity)
+                        print("(Tracking) Floor Changed")
                         self.tracking(input: finalResult)
                     }
                 })
@@ -645,24 +655,25 @@ public class ServiceManager: Observation {
             displayOutput.velocity = unitDRInfo.velocity * 3.6
             
             let data = UserVelocity(user_id: user_id, mobile_time: currentTime, index: unitDRInfo.index, length: unitDRInfo.length, heading: unitDRInfo.heading, looking: unitDRInfo.lookingFlag)
-            print(data)
+            
             // Kalman Filter
             let diffHeading = unitDRInfo.heading - preUnitHeading
             let curUnitDRLength = unitDRInfo.length
             
             if (isActiveService) {
                 inputUserVelocity.append(data)
-//                print("Append : ", inputUserVelocity)
+                
                 // Time Update
                 if (timeUpdateFlag) {
                     let tuOutput = timeUpdate(length: curUnitDRLength, diffHeading: diffHeading, mobileTime: currentTime)
                     let tuResult = fromServerToResult(fromServer: tuOutput, velocity: displayOutput.velocity)
                     self.tracking(input: tuResult)
                 }
+                
                 preUnitHeading = unitDRInfo.heading
                 
                 // Post FLT
-                if ((inputUserVelocity.count-1) == UV_INPUT_NUM) {
+                if ((inputUserVelocity.count-1) >= UV_INPUT_NUM) {
                     inputUserVelocity.remove(at: 0)
                     NetworkManager.shared.putUserVelocity(url: UV_URL, input: inputUserVelocity, completion: { [self] statusCode, returnedString in
                         if (statusCode == 200) {
@@ -673,40 +684,47 @@ public class ServiceManager: Observation {
                             NetworkManager.shared.postFLT(url: FLT_URL, input: input, completion: { [self] statusCode, returnedString in
                                 if (statusCode == 200) {
                                     let result = jsonToResult(json: returnedString)
-                                    self.phase = result.phase
-                                    self.indexCurrent = result.index
-
-                                    if (self.indexCurrent > self.indexPast) {
+                                    
+//                                    print("Time (Now) : \(self.nowTime)")
+//                                    print("Time (Result Mobile) : \(result.mobile_time)")
+//                                    print("Time (Diff) : \(self.nowTime - result.mobile_time)")
+                                    if ((self.nowTime - result.mobile_time) <= RECENT_THRESHOLD) {
+                                        self.phase = result.phase
+                                        self.indexCurrent = result.index
+                                        
                                         displayOutput.building = result.building_name
                                         displayOutput.level = result.level_name
-                                        displayOutput.scc = result.scc
-                                        displayOutput.phase = String(result.phase)
-                                        displayOutput.indexRx = result.index
+                                        if (self.indexCurrent > self.indexPast) {
+                                            displayOutput.scc = result.scc
+                                            displayOutput.phase = String(result.phase)
+                                            displayOutput.indexRx = result.index
 
-                                        // Kalman Filter
-                                        if (result.mobile_time > preOutputMobileTime) {
-                                            if (result.phase == 4) {
-                                                UV_INPUT_NUM = VAR_INPUT_NUM
-                                                if (!(result.x == 0 && result.y == 0)) {
-                                                    // Measurment Update
-                                                    if (measurementUpdateFlag) {
-                                                        let muOutput = measurementUpdate(timeUpdatePosition: timeUpdatePosition, serverOutput: result)
-                                                        let muResult = fromServerToResult(fromServer: muOutput, velocity: displayOutput.velocity)
-                                                        self.tracking(input: muResult)
+                                            // Kalman Filter
+                                            if (result.mobile_time > preOutputMobileTime) {
+                                                if (result.phase == 4) {
+                                                    UV_INPUT_NUM = VAR_INPUT_NUM
+                                                    if (!(result.x == 0 && result.y == 0)) {
+                                                        // Measurment Update
+                                                        if (measurementUpdateFlag) {
+                                                            let muOutput = measurementUpdate(timeUpdatePosition: timeUpdatePosition, serverOutput: result)
+                                                            let muResult = fromServerToResult(fromServer: muOutput, velocity: displayOutput.velocity)
+    //                                                        print("(Tracking) Meas Update")
+                                                            self.tracking(input: muResult)
+                                                        }
+                                                        timeUpdatePositionInit(serverOutput: result)
                                                     }
-                                                    timeUpdatePositionInit(serverOutput: result)
+                                                } else {
+                                                    UV_INPUT_NUM = INIT_INPUT_NUM
+                                                    kalmanInit()
+                                                    let finalResult = fromServerToResult(fromServer: result, velocity: displayOutput.velocity)
+                                                    self.tracking(input: finalResult)
                                                 }
-                                            } else {
-                                                UV_INPUT_NUM = INIT_INPUT_NUM
-                                                kalmanInit()
-                                                let finalResult = fromServerToResult(fromServer: result, velocity: displayOutput.velocity)
-                                                self.tracking(input: finalResult)
+                                                preOutputMobileTime = result.mobile_time
                                             }
-                                            preOutputMobileTime = result.mobile_time
+                                            pastBuildingLevel = [displayOutput.building, displayOutput.level]
                                         }
-                                        pastBuildingLevel = [displayOutput.building, displayOutput.level]
+                                        self.indexPast = self.indexCurrent
                                     }
-                                    self.indexPast = self.indexCurrent
                                 }
                             })
                         }
@@ -717,15 +735,9 @@ public class ServiceManager: Observation {
         } else {
             timeActiveUV += UV_INTERVAL
             if (timeActiveUV >= SLEEP_THRESHOLD) {
+                print("Enter Sleep Mode")
                 isActiveService = false
                 timeActiveUV = 0
-            }
-            
-            timeUpdateInSleep += UV_INTERVAL
-            if (timeUpdateInSleep >= 1) {
-                let sleepResult = pastFLTResult
-                self.tracking(input: sleepResult)
-                timeUpdateInSleep = 0
             }
         }
     }
@@ -838,38 +850,79 @@ public class ServiceManager: Observation {
             guard let mainHeading: [String] = RoadHeading[key] else {
                 return xyh
             }
-
-            var diffXY = [Double]()
+            
+            // Heading 사용
+            var idhArray = [[Double]]()
+            var pathArray = [[Double]]()
             if (!mainRoad.isEmpty) {
                 let roadX = mainRoad[0]
                 let roadY = mainRoad[1]
                 
+                let xMin = x - SQUARE_RANGE
+                let xMax = x + SQUARE_RANGE
+                let yMin = y - SQUARE_RANGE
+                let yMax = y + SQUARE_RANGE
+
                 for i in 0..<roadX.count {
-                    diffXY.append(sqrt(pow(roadX[i] - x, 2) + pow(roadY[i] - y, 2)))
+                    let xPath = roadX[i]
+                    let yPath = roadY[i]
+
+                    // XY 범위 안에 있는 값 중에 검사
+                    if (xPath >= xMin && xPath <= xMax) {
+                        if (yPath >= yMin && yPath <= yMax) {
+                            let index = Double(i)
+                            let distance = sqrt(pow(x-xPath, 2) + pow(y-yPath, 2))
+                            var idh: [Double] = [index, distance, heading]
+                            var path: [Double] = [xPath, yPath, 0, 0]
+                            
+                            let headingArray = mainHeading[i]
+                            if (!headingArray.isEmpty) {
+                                let headingData = headingArray.components(separatedBy: ",")
+                                var diffHeading = [Double]()
+                                for j in 0..<headingData.count {
+                                    if(!headingData[j].isEmpty) {
+                                        let mapHeading = Double(headingData[j])!
+                                        if (heading > 315 && mapHeading == 0) {
+                                            diffHeading.append(abs(heading - 360))
+                                        } else {
+                                            diffHeading.append(abs(heading - mapHeading))
+                                        }
+                                    }
+                                }
+                                
+                                if (!diffHeading.isEmpty) {
+                                    let idxHeading = diffHeading.firstIndex(of: diffHeading.min()!)
+                                    let minHeading = Double(headingData[idxHeading!])!
+                                    idh[2] = minHeading
+                                    
+                                    path[2] = minHeading
+                                    path[3] = 1
+                                }
+                            }
+                            idhArray.append(idh)
+                            pathArray.append(path)
+                        }
+                    }
                 }
-                let minIdx = diffXY.firstIndex(of: diffXY.min()!)!
-                let headingArray = mainHeading[minIdx]
                 
-                if (headingArray.isEmpty) {
-                    xyh = [roadX[minIdx], roadY[minIdx], heading]
-                } else {
-                    let headingData = headingArray.components(separatedBy: ",")
-                    var diffHeading = [Double]()
-                    for i in 0..<headingData.count {
-                        if (headingData[i] != "") {
-                            let mapHeading = Double(headingData[i])!
-                            diffHeading.append(abs(heading - mapHeading))
-                        }
-                    }
-                    if (!diffHeading.isEmpty) {
-                        let minHeadingIdx = diffHeading.firstIndex(of: diffHeading.min()!)
-                        let correctedHeading = Double(headingData[minHeadingIdx!])!
-                        if (abs(correctedHeading - heading) > 45) {
-                            xyh = [roadX[minIdx], roadY[minIdx], heading]
+
+                if (!idhArray.isEmpty) {
+                    let sortedIdh = idhArray.sorted(by: {$0[1] < $1[1] })
+                    var index: Int = 0
+                    var correctedHeading: Double = heading
+                    
+                    if (!sortedIdh.isEmpty) {
+                        let minData: [Double] = sortedIdh[0]
+                        index = Int(minData[0])
+                        if (mode == "dr") {
+                            correctedHeading = minData[2]
                         } else {
-                            xyh = [roadX[minIdx], roadY[minIdx], correctedHeading]
+                            correctedHeading = heading
                         }
                     }
+//                    print("Heading (IDH Array) : \(sortedIdh)")
+//                    print("Heading (Input, Correct) : \(heading) , \(correctedHeading)")
+                    xyh = [roadX[index], roadY[index], correctedHeading]
                 }
             }
         }

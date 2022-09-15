@@ -19,9 +19,9 @@ public class UnitDRGenerator: NSObject {
         unitMode = mode
     }
     
-    public func setDRModel() {
-        drDistanceEstimator.loadModel()
-    }
+//    public func setDRModel() {
+//        drDistanceEstimator.loadModel()
+//    }
     
     public func generateDRInfo(sensorData: SensorData) -> UnitDRInfo {
         if (unitMode != MODE_PDR && unitMode != MODE_DR) {
@@ -49,7 +49,9 @@ public class UnitDRGenerator: NSObject {
             unitDistance.length = 0.7
         }
         
-        return UnitDRInfo(index: unitDistance.index, length: unitDistance.length, heading: HF.radian2degree(radian: curAttitude.Yaw), velocity: unitDistance.velocity, lookingFlag: unitStatus, isIndexChanged: unitDistance.isIndexChanged)
+        let heading = HF.radian2degree(radian: curAttitude.Yaw)
+        
+        return UnitDRInfo(index: unitDistance.index, length: unitDistance.length, heading: heading, velocity: unitDistance.velocity, lookingFlag: unitStatus, isIndexChanged: unitDistance.isIndexChanged)
     }
     
     func getCurrentTimeInMilliseconds() -> Double

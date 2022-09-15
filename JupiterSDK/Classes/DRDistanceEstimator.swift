@@ -1,5 +1,4 @@
 import Foundation
-import TensorFlowLite
 
 public class DRDistanceEstimator: NSObject {
     
@@ -10,8 +9,8 @@ public class DRDistanceEstimator: NSObject {
     public let CF = CalculateFunctions()
     public let PDF = PacingDetectFunctions()
     
-    public var interpreter: Interpreter!
-    public var ioOptions = InterpreterOptions()
+//    public var interpreter: Interpreter!
+//    public var ioOptions = InterpreterOptions()
     
     public var epoch = 0
     public var index = 0
@@ -35,21 +34,21 @@ public class DRDistanceEstimator: NSObject {
     public var distance: Double = 0
     var preInputMag: [Float32] = [0, 0, 0]
     
-    public func loadModel() {
-        let customBundle = Bundle(for: DRDistanceEstimator.self)
-        guard let resourceBundleURL = customBundle.url(forResource: "JupiterSDK", withExtension: "bundle") else { fatalError("JupiterSDK.bundle not found!") }
-        guard let resourceBundle = Bundle(url: resourceBundleURL) else { return }
-        
-        guard let modelPath = resourceBundle.path(forResource: "dr_model", ofType: "tflite") else { fatalError("Load Model Error") }
-        ioOptions.threadCount = 1
-        
-        do {
-            try interpreter = Interpreter(modelPath: modelPath, options: ioOptions)
-        } catch let error as NSError {
-            print("Failed to initialize interpreter")
-        }
-        
-    }
+//    public func loadModel() {
+//        let customBundle = Bundle(for: DRDistanceEstimator.self)
+//        guard let resourceBundleURL = customBundle.url(forResource: "JupiterSDK", withExtension: "bundle") else { fatalError("JupiterSDK.bundle not found!") }
+//        guard let resourceBundle = Bundle(url: resourceBundleURL) else { return }
+//
+//        guard let modelPath = resourceBundle.path(forResource: "dr_model", ofType: "tflite") else { fatalError("Load Model Error") }
+//        ioOptions.threadCount = 1
+//
+//        do {
+//            try interpreter = Interpreter(modelPath: modelPath, options: ioOptions)
+//        } catch let error as NSError {
+//            print("Failed to initialize interpreter")
+//        }
+//
+//    }
     
     public func argmax(array: [Float]) -> Int {
         let output1 = array[0]
@@ -137,10 +136,11 @@ public class DRDistanceEstimator: NSObject {
                                 Float(magVar.z/magNormalizeConstant)]
         
         var inputData = Data()
-        // Mag
+        // Mag //
         let inputMag: [Float32] = [Float(0.1*(magVar.x/magNormalizeConstant)) + 0.9*preInputMag[0],
                                    Float(0.1*(magVar.y/magNormalizeConstant)) + 0.9*preInputMag[1],
                                    Float(0.1*(magVar.z/magNormalizeConstant)) + 0.9*preInputMag[2]]
+        // ------ //
         
         for i in 0..<input.count {
             var value = input[i]
@@ -176,7 +176,6 @@ public class DRDistanceEstimator: NSObject {
 //                let outputSize = outputTensor.shape.dimensions.reduce(1, {x, y in x*y})
 //                let outputData = UnsafeMutableBufferPointer<Float32>.allocate(capacity: outputSize)
 //                outputTensor.data.copyBytes(to: outputData)
-//
 //                for i in 0..<outputData.count {
 //                    output[i] = outputData[i]
 //                }
@@ -184,7 +183,7 @@ public class DRDistanceEstimator: NSObject {
 //                print("Output Error")
 //            }
             
-            // Mag
+            // Mag //
             var count = 0
             var output = 0
             for i in 0..<inputMag.count {
@@ -196,6 +195,7 @@ public class DRDistanceEstimator: NSObject {
                 output = 1
             }
             let argMaxIndex: Int = output
+            // ---------- //
             
 //            let argMaxIndex: Int = argmax(array: output)
             updateOutputQueue(data: argMaxIndex)
@@ -221,6 +221,7 @@ public class DRDistanceEstimator: NSObject {
         
         mlpEpochCount += 1
         featureExtractionCount += 1
+        
         // Mag
         preInputMag = inputMag
         
