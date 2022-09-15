@@ -41,6 +41,7 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
                     coordToDisplay.y = y
                     coordToDisplay.heading = result.absolute_heading
                     
+//                    print("Before Update Coord")
                     updateCoord(data: coordToDisplay, flag: isShowRP)
                 }
             }
@@ -487,6 +488,7 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
             resultToDisplay.numLevels = self.numLevels
             resultToDisplay.infoLevels = self.infoOfLevels
             resultToDisplay.velocity = serviceManager.displayOutput.velocity
+            resultToDisplay.heading = serviceManager.displayOutput.heading
             
             resultToDisplay.unitIndexTx = serviceManager.displayOutput.indexTx
             resultToDisplay.unitIndexRx = serviceManager.displayOutput.indexRx
@@ -605,6 +607,8 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
         let yMin = yAxisValue.min()!
         let yMax = yAxisValue.max()!
         
+//        print("\(currentBuilding) \(currentLevel) MinMax : \(xMin) , \(xMax), \(yMin), \(yMax)")
+        
         let chartFlag: Bool = false
         scatterChart.isHidden = false
         
@@ -620,6 +624,11 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
             scatterChart.leftAxis.axisMinimum = yMin
             scatterChart.leftAxis.axisMaximum = yMax
         } else {
+//            scatterChart.xAxis.axisMinimum = xMin - 43
+//            scatterChart.xAxis.axisMaximum = xMax + 53.2
+//            scatterChart.leftAxis.axisMinimum = yMin - 217
+//            scatterChart.leftAxis.axisMaximum = yMax + 40
+            
             scatterChart.xAxis.axisMinimum = limits[0]
             scatterChart.xAxis.axisMaximum = limits[1]
             scatterChart.leftAxis.axisMinimum = limits[2]
@@ -725,6 +734,7 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
             }
         }
         
+//        print("Before Fetch Level : \(currentBuilding) , \(currentLevel)")
         fetchLevel(building: currentBuilding, level: currentLevel, flag: flag)
         
         let key = "\(currentBuilding)_\(currentLevel)"
@@ -873,7 +883,6 @@ extension ServiceViewController: UITableViewDataSource {
                 serviceInfoTVC.backgroundColor = .systemGray6
                 serviceInfoTVC.infoOfLevelsLabel.text = infoOfLevels
                 serviceInfoTVC.velocityLabel.text = "0"
-                serviceInfoTVC.modeLabel.text = runMode
                 
                 serviceInfoTVC.updateResult(data: resultToDisplay)
                 

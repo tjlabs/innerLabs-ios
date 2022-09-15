@@ -127,7 +127,7 @@
                                                         <nil key="textColor"/>
                                                         <nil key="highlightedColor"/>
                                                     </label>
-                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Mode" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gfA-gI-Dxl">
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Heading" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gfA-gI-Dxl">
                                                         <rect key="frame" x="0.0" y="70.5" width="57" height="19.5"/>
                                                         <fontDescription key="fontDescription" name="NotoSansKR-Medium" family="Noto Sans KR" pointSize="12"/>
                                                         <nil key="textColor"/>
@@ -245,9 +245,9 @@
                 <outlet property="IndexRxLabel" destination="irq-Zl-1te" id="JkM-TX-IgE"/>
                 <outlet property="IndexTxLabel" destination="8Bu-sM-h9X" id="HtR-dc-csl"/>
                 <outlet property="detectedLevelLabel" destination="cBR-N1-ENg" id="7Fd-AO-3Kz"/>
+                <outlet property="headingLabel" destination="7vu-W1-fKQ" id="L1t-pK-hmy"/>
                 <outlet property="infoOfLevelsLabel" destination="0Yq-Ah-fex" id="S8c-kR-OPY"/>
                 <outlet property="lengthLabel" destination="16X-Is-xDc" id="3Cy-Iv-4Jj"/>
-                <outlet property="modeLabel" destination="7vu-W1-fKQ" id="FZh-rE-lwT"/>
                 <outlet property="phaseLabel" destination="dXb-og-9Fo" id="1wi-Z3-0DR"/>
                 <outlet property="sccLabel" destination="5lP-mv-shI" id="CfH-5E-Tgn"/>
                 <outlet property="velocityLabel" destination="w1r-1t-KSx" id="nv2-RG-R8h"/>

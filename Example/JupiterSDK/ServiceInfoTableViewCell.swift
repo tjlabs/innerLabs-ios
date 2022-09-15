@@ -18,7 +18,7 @@ class ServiceInfoTableViewCell: UITableViewCell {
     @IBOutlet weak var velocityLabel: UILabel!
     @IBOutlet weak var IndexTxLabel: UILabel!
     @IBOutlet weak var IndexRxLabel: UILabel!
-    @IBOutlet weak var modeLabel: UILabel!
+    @IBOutlet weak var headingLabel: UILabel!
     @IBOutlet weak var lengthLabel: UILabel!
     @IBOutlet weak var sccLabel: UILabel!
     @IBOutlet weak var phaseLabel: UILabel!
@@ -37,14 +37,11 @@ class ServiceInfoTableViewCell: UITableViewCell {
     func updateResult(data: ResultToDisplay) {
         self.infoOfLevelsLabel.text = data.infoLevels
         self.detectedLevelLabel.text = data.level
-        if (self.modeLabel.text == "pdr") {
-            self.velocityLabel.text = "Unavailable"
-        } else {
-            self.velocityLabel.text = String(format: "%.2f", data.velocity)
-        }
+        self.velocityLabel.text = String(format: "%.2f", data.velocity)
         self.IndexRxLabel.text = String(data.unitIndexRx)
         self.IndexTxLabel.text = String(data.unitIndexTx)
         self.lengthLabel.text = String(format: "%.4f", data.unitLength)
+        self.headingLabel.text = String(format: "%.2f", data.heading)
         if ( abs(data.scc) < 100 ) {
             self.sccLabel.text = String(format: "%.4f", data.scc)
         } else {

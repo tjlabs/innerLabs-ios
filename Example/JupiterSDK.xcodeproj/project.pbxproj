@@ -66,6 +66,7 @@
 		B3BD69B027E9A78000A32A7A /* SectorContainerTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B3BD69AE27E9A78000A32A7A /* SectorContainerTableViewCell.xib */; };
 		B3BD69B427E9A8AD00A32A7A /* LevelCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3BD69B227E9A8AD00A32A7A /* LevelCollectionViewCell.swift */; };
 		B3BD69B527E9A8AD00A32A7A /* LevelCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B3BD69B327E9A8AD00A32A7A /* LevelCollectionViewCell.xib */; };
+		B3BF6A6328D1B2120097D9C6 /* COEX_B2.csv in Resources */ = {isa = PBXBuildFile; fileRef = B3BF6A6228D1B2120097D9C6 /* COEX_B2.csv */; };
 		B3C09C64280E941B00E6F55F /* ShowCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3C09C63280E941B00E6F55F /* ShowCardViewController.swift */; };
 		B3C6F99E289CCF78003FB402 /* NSObjectExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3C6F99D289CCF78003FB402 /* NSObjectExtension.swift */; };
 		B3C6F9A0289CCF92003FB402 /* UIImageExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3C6F99F289CCF92003FB402 /* UIImageExtension.swift */; };
@@ -78,7 +79,6 @@
 		B3D488F0289B4D5500A8154C /* UIColorExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3D488EF289B4D5500A8154C /* UIColorExtension.swift */; };
 		B3D488F6289B8B4900A8154C /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = B3D488F5289B8B4900A8154C /* GoogleService-Info.plist */; };
 		B3D48909289B96F900A8154C /* RemoteConfigManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3D48908289B96F900A8154C /* RemoteConfigManager.swift */; };
-		B3DD33D4285F08AE00866506 /* COEX_B2.csv in Resources */ = {isa = PBXBuildFile; fileRef = B3DD33D3285F08AE00866506 /* COEX_B2.csv */; };
 		B3DE146D280E7146006DA43C /* AddCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3DE146C280E7146006DA43C /* AddCardViewController.swift */; };
 		B3DE146F280E7556006DA43C /* UIApplicationExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3DE146E280E7556006DA43C /* UIApplicationExtension.swift */; };
 		B3E094EC28ADCD3100D3BC59 /* S3_7F_Road.csv in Resources */ = {isa = PBXBuildFile; fileRef = B3E094EB28ADCD3100D3BC59 /* S3_7F_Road.csv */; };
@@ -174,6 +174,7 @@
 		B3BD69AE27E9A78000A32A7A /* SectorContainerTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SectorContainerTableViewCell.xib; sourceTree = "<group>"; };
 		B3BD69B227E9A8AD00A32A7A /* LevelCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LevelCollectionViewCell.swift; sourceTree = "<group>"; };
 		B3BD69B327E9A8AD00A32A7A /* LevelCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = LevelCollectionViewCell.xib; sourceTree = "<group>"; };
+		B3BF6A6228D1B2120097D9C6 /* COEX_B2.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = COEX_B2.csv; sourceTree = "<group>"; };
 		B3C09C63280E941B00E6F55F /* ShowCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowCardViewController.swift; sourceTree = "<group>"; };
 		B3C6F99D289CCF78003FB402 /* NSObjectExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSObjectExtension.swift; sourceTree = "<group>"; };
 		B3C6F99F289CCF92003FB402 /* UIImageExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIImageExtension.swift; sourceTree = "<group>"; };
@@ -186,7 +187,6 @@
 		B3D488EF289B4D5500A8154C /* UIColorExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIColorExtension.swift; sourceTree = "<group>"; };
 		B3D488F5289B8B4900A8154C /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		B3D48908289B96F900A8154C /* RemoteConfigManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteConfigManager.swift; sourceTree = "<group>"; };
-		B3DD33D3285F08AE00866506 /* COEX_B2.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = COEX_B2.csv; sourceTree = "<group>"; };
 		B3DE146C280E7146006DA43C /* AddCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddCardViewController.swift; sourceTree = "<group>"; };
 		B3DE146E280E7556006DA43C /* UIApplicationExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIApplicationExtension.swift; sourceTree = "<group>"; };
 		B3E094EB28ADCD3100D3BC59 /* S3_7F_Road.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = S3_7F_Road.csv; sourceTree = "<group>"; };
@@ -292,6 +292,7 @@
 				B3E094EB28ADCD3100D3BC59 /* S3_7F_Road.csv */,
 				B369287F28C5BCB5005FD4A9 /* Museum_1F.csv */,
 				B3B9F4E4286C2EA300FEE914 /* Gallery_4F_Road.csv */,
+				B3BF6A6228D1B2120097D9C6 /* COEX_B2.csv */,
 				B3FD74EA2869A38800CD4D74 /* Gallery_4F.csv */,
 				B364B35428BCD8C5001A8950 /* LUPIUM_3F.csv */,
 				B364B35228BCD8C5001A8950 /* LUPIUM_5F.csv */,
@@ -299,11 +300,10 @@
 				B36928AD28C5D290005FD4A9 /* L8_B1.csv */,
 				B38807EF283390280029B174 /* L1_1F.csv */,
 				B36B964D289A024900951457 /* L1_2F.csv */,
-				B38807F0283390280029B174 /* L1_3F.csv */,
-				B3DD33D3285F08AE00866506 /* COEX_B2.csv */,
 				B3B3610828295E1400B8E876 /* Autoway_B3.csv */,
 				B3B3610A28295E1D00B8E876 /* Autoway_B4.csv */,
 				B3D488F5289B8B4900A8154C /* GoogleService-Info.plist */,
+				B38807F0283390280029B174 /* L1_3F.csv */,
 				607FACDC1AFB9204008FA782 /* Images.xcassets */,
 				607FACD31AFB9204008FA782 /* Supporting Files */,
 			);
@@ -587,8 +587,8 @@
 				B3E094EC28ADCD3100D3BC59 /* S3_7F_Road.csv in Resources */,
 				B36B964E289A024900951457 /* L1_2F.csv in Resources */,
 				B3844E8F28099EE3007A5215 /* CardCollectionViewCell.xib in Resources */,
-				B3DD33D4285F08AE00866506 /* COEX_B2.csv in Resources */,
 				B3037A92281C06D50058D025 /* OverlayCustomView.xib in Resources */,
+				B3BF6A6328D1B2120097D9C6 /* COEX_B2.csv in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -711,13 +711,11 @@
 				"${PODS_ROOT}/Target Support Files/Pods-JupiterSDK_Example/Pods-JupiterSDK_Example-resources.sh",
 				"${PODS_ROOT}/GoogleMaps/Maps/Frameworks/GoogleMaps.framework/Resources/GoogleMaps.bundle",
 				"${PODS_ROOT}/GooglePlaces/Frameworks/GooglePlaces.framework/Resources/GooglePlaces.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/JupiterSDK/JupiterSDK.bundle",
 			);
 			name = "[CP] Copy Pods Resources";
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/GoogleMaps.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/GooglePlaces.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/JupiterSDK.bundle",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -922,7 +920,7 @@
 			baseConfigurationReference = 6C664AF60D59718EECD6DBBC /* Pods-JupiterSDK_Example.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 5;
 				DEVELOPMENT_TEAM = G75UAV755N;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				INFOPLIST_FILE = JupiterSDK/Info.plist;
@@ -942,7 +940,7 @@
 			baseConfigurationReference = 8B538B887A8FED7CB659550A /* Pods-JupiterSDK_Example.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 5;
 				DEVELOPMENT_TEAM = G75UAV755N;
 				EXCLUDED_ARCHS = "";
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;

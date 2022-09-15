@@ -96,6 +96,7 @@ struct ResultToDisplay {
     var infoLevels: String = ""
     var numLevels: Int = 0
     var velocity: Double = 0
+    var heading: Double = 0
     var unitIndexTx: Int = 0
     var unitIndexRx: Int = 0
     var unitLength: Double = 0
