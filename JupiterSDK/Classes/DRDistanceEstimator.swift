@@ -9,9 +9,6 @@ public class DRDistanceEstimator: NSObject {
     public let CF = CalculateFunctions()
     public let PDF = PacingDetectFunctions()
     
-//    public var interpreter: Interpreter!
-//    public var ioOptions = InterpreterOptions()
-    
     public var epoch = 0
     public var index = 0
     public var finalUnitResult = UnitDistance()
@@ -33,22 +30,6 @@ public class DRDistanceEstimator: NSObject {
     
     public var distance: Double = 0
     var preInputMag: [Float32] = [0, 0, 0]
-    
-//    public func loadModel() {
-//        let customBundle = Bundle(for: DRDistanceEstimator.self)
-//        guard let resourceBundleURL = customBundle.url(forResource: "JupiterSDK", withExtension: "bundle") else { fatalError("JupiterSDK.bundle not found!") }
-//        guard let resourceBundle = Bundle(url: resourceBundleURL) else { return }
-//
-//        guard let modelPath = resourceBundle.path(forResource: "dr_model", ofType: "tflite") else { fatalError("Load Model Error") }
-//        ioOptions.threadCount = 1
-//
-//        do {
-//            try interpreter = Interpreter(modelPath: modelPath, options: ioOptions)
-//        } catch let error as NSError {
-//            print("Failed to initialize interpreter")
-//        }
-//
-//    }
     
     public func argmax(array: [Float]) -> Int {
         let output1 = array[0]
@@ -153,36 +134,6 @@ public class DRDistanceEstimator: NSObject {
         finalUnitResult.isIndexChanged = false
         
         if (mlpEpochCount == 0) {
-//            do {
-//                try interpreter.allocateTensors()
-//            } catch {
-//                print("Allocate Error")
-//            }
-//
-//            do {
-//                try interpreter.copy(inputData, toInputAt: 0)
-//            } catch {
-//                print("Copy Error")
-//            }
-//
-//            do {
-//                try interpreter.invoke()
-//            } catch {
-//                print("Invoke Error")
-//            }
-//
-//            do {
-//                let outputTensor = try interpreter.output(at: 0)
-//                let outputSize = outputTensor.shape.dimensions.reduce(1, {x, y in x*y})
-//                let outputData = UnsafeMutableBufferPointer<Float32>.allocate(capacity: outputSize)
-//                outputTensor.data.copyBytes(to: outputData)
-//                for i in 0..<outputData.count {
-//                    output[i] = outputData[i]
-//                }
-//            } catch {
-//                print("Output Error")
-//            }
-            
             // Mag //
             var count = 0
             var output = 0
@@ -197,7 +148,6 @@ public class DRDistanceEstimator: NSObject {
             let argMaxIndex: Int = output
             // ---------- //
             
-//            let argMaxIndex: Int = argmax(array: output)
             updateOutputQueue(data: argMaxIndex)
             
             var outputSum: Int = 0

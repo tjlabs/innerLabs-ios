@@ -41,7 +41,6 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
                     coordToDisplay.y = y
                     coordToDisplay.heading = result.absolute_heading
                     
-//                    print("Before Update Coord")
                     updateCoord(data: coordToDisplay, flag: isShowRP)
                 }
             }

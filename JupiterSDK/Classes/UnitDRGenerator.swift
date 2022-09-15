@@ -19,10 +19,6 @@ public class UnitDRGenerator: NSObject {
         unitMode = mode
     }
     
-//    public func setDRModel() {
-//        drDistanceEstimator.loadModel()
-//    }
-    
     public func generateDRInfo(sensorData: SensorData) -> UnitDRInfo {
         if (unitMode != MODE_PDR && unitMode != MODE_DR) {
             fatalError("Please check unitMode .. (pdr or dr)")
