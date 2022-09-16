@@ -155,7 +155,7 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
             displayLevelInfo(infoLevel: firstBuildingLevels)
             
             levelList = firstBuildingLevels
-            
+
             isRadioMap = true
         } else {
             isRadioMap = false

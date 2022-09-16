@@ -6,8 +6,9 @@ public class ServiceManager: Observation {
     
     func tracking(input: FineLocationTrackingResult) {
         for observer in observers {
-            if (input.x != 0 && input.y != 0) {
-                var result = input
+            var result = input
+            
+            if (result.x != 0 && result.y != 0) {
                 if (result.absolute_heading < 0) {
                     result.absolute_heading = result.absolute_heading + 360
                 }
@@ -39,9 +40,8 @@ public class ServiceManager: Observation {
                     pastResult[1] = result.y
                     pastResult[2] = result.absolute_heading
                 }
-                
-                observer.update(result: result)
             }
+            observer.update(result: result)
         }
     }
     
@@ -58,6 +58,7 @@ public class ServiceManager: Observation {
     
     var Road = [String: [[Double]]]()
     var RoadHeading = [String: [String]]()
+    
     // ----- Sensor & BLE ----- //
     var sensorData = SensorData()
     public var collectData = CollectData()
@@ -120,11 +121,13 @@ public class ServiceManager: Observation {
     var interruptTimer: Timer?
     // ------------------ //
     
+    
     // ----- Network ----- //
     let USER_URL = "https://where-run-user-skrgq3jc5a-du.a.run.app/user"
     var inputReceivedForce: [ReceivedForce] = [ReceivedForce(user_id: "", mobile_time: 0, ble: [:], pressure: 0)]
     var inputUserVelocity: [UserVelocity] = [UserVelocity(user_id: "", mobile_time: 0, index: 0, length: 0, heading: 0, looking: true)]
     // ------------------- //
+    
     
     // ----- Fine Location Tracking ----- //
     var unitDRInfo = UnitDRInfo()
@@ -137,7 +140,7 @@ public class ServiceManager: Observation {
     var preUnitHeading: Double = 0
     
     var floorUpdateRequestTimer: Double = 0
-    var floorUpdateRequestFlag: Bool = false
+    var floorUpdateRequestFlag: Bool = true
     let FLOOR_UPDATE_REQUEST_TIME: Double = 15
     
     public var displayOutput = ServiceResult()
@@ -211,8 +214,6 @@ public class ServiceManager: Observation {
                 VAR_INPUT_NUM = 5
             }
             UV_INPUT_NUM = INIT_INPUT_NUM
-            
-//            unitDRGenerator.setDRModel()
             
             onStartFlag = true
         }
@@ -669,7 +670,6 @@ public class ServiceManager: Observation {
                     let tuResult = fromServerToResult(fromServer: tuOutput, velocity: displayOutput.velocity)
                     self.tracking(input: tuResult)
                 }
-                
                 preUnitHeading = unitDRInfo.heading
                 
                 // Post FLT
@@ -684,7 +684,6 @@ public class ServiceManager: Observation {
                             NetworkManager.shared.postFLT(url: FLT_URL, input: input, completion: { [self] statusCode, returnedString in
                                 if (statusCode == 200) {
                                     let result = jsonToResult(json: returnedString)
-                                    
 //                                    print("Time (Now) : \(self.nowTime)")
 //                                    print("Time (Result Mobile) : \(result.mobile_time)")
 //                                    print("Time (Diff) : \(self.nowTime - result.mobile_time)")
@@ -694,7 +693,9 @@ public class ServiceManager: Observation {
                                         
                                         displayOutput.building = result.building_name
                                         displayOutput.level = result.level_name
-                                        if (self.indexCurrent > self.indexPast) {
+//                                        print("Index Current : \(self.indexCurrent)")
+//                                        print("Index Past : \(self.indexPast)")
+                                        if ((self.indexCurrent - self.indexPast) < 10) {
                                             displayOutput.scc = result.scc
                                             displayOutput.phase = String(result.phase)
                                             displayOutput.indexRx = result.index
@@ -708,7 +709,6 @@ public class ServiceManager: Observation {
                                                         if (measurementUpdateFlag) {
                                                             let muOutput = measurementUpdate(timeUpdatePosition: timeUpdatePosition, serverOutput: result)
                                                             let muResult = fromServerToResult(fromServer: muOutput, velocity: displayOutput.velocity)
-    //                                                        print("(Tracking) Meas Update")
                                                             self.tracking(input: muResult)
                                                         }
                                                         timeUpdatePositionInit(serverOutput: result)
@@ -833,7 +833,6 @@ public class ServiceManager: Observation {
                 roadHeading.append(headingArray)
             }
         }
-        
         road = [roadX, roadY]
         
         return (road, roadHeading)
@@ -920,8 +919,6 @@ public class ServiceManager: Observation {
                             correctedHeading = heading
                         }
                     }
-//                    print("Heading (IDH Array) : \(sortedIdh)")
-//                    print("Heading (Input, Correct) : \(heading) , \(correctedHeading)")
                     xyh = [roadX[index], roadY[index], correctedHeading]
                 }
             }
@@ -1008,7 +1005,6 @@ public class ServiceManager: Observation {
     }
 
     func timeUpdate(length: Double, diffHeading: Double, mobileTime: Int) -> FineLocationTrackingFromServer {
-
         updateHeading = timeUpdatePosition.heading + diffHeading
 
         timeUpdatePosition.x = timeUpdatePosition.x + (length*cos(updateHeading*D2R))
