@@ -168,7 +168,7 @@ public class NetworkManager {
                     
                     // [비동기 작업 수행]
                     let returnedString = String(data: res, encoding: .utf8) ?? "Fail"
-                    completion(200, returnedString)
+                    completion(200, String(input[input.count-1].index))
                 }
                 catch (let err){
                     print("")

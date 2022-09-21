@@ -210,7 +210,7 @@ class CollectViewController: UIViewController {
 
         meas.pressure = pressure
         
-        let bleData = collectData.bleAvg
+        let bleData = collectData.bleRaw
         let bleString = (bleData.flatMap({ (key, value) -> String in
             let str = String(format: "%.2f", value)
             return "\(key),\(str)"
@@ -317,7 +317,7 @@ class CollectViewController: UIViewController {
         
         if (saveFlag) {
             writeData(collectData: serviceManager.collectData)
-            print("Writing : \(serviceManager.collectData)")
+//            print("Writing : \(serviceManager.collectData)")
             if (serviceManager.collectData.isIndexChanged) {
                 let index = serviceManager.collectData.index
                 let length = serviceManager.collectData.length

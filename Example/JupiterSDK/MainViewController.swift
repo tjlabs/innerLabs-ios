@@ -236,9 +236,9 @@ class MainViewController: UIViewController, UITextFieldDelegate {
         self.navigationController?.pushViewController(cardVC, animated: true)
         guideLabel.isHidden = true
     }
-    
     func jsonToCardList(json: String) -> CardList {
         let result = CardList(sectors: [])
+
         let decoder = JSONDecoder()
         
         let jsonString = json

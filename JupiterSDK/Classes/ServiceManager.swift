@@ -113,6 +113,9 @@ public class ServiceManager: Observation {
     var userVelocityTimer: Timer?
     var UV_INTERVAL: TimeInterval = 1/40 // second
     
+    var requestTimer: Timer?
+    var RQ_INTERVAL: TimeInterval = 1/40 // second
+    
     let SENSOR_INTERVAL: TimeInterval = 1/200
     
     var collectTimer: Timer?
@@ -155,6 +158,9 @@ public class ServiceManager: Observation {
     var indexCurrent: Int = 0
     var indexPast: Int = 0
     
+    var indexSend: Int = 0
+    var indexReceived: Int = 0
+    
     var timeUpdateFlag: Bool = false
     var measurementUpdateFlag: Bool = false
 
@@ -181,6 +187,8 @@ public class ServiceManager: Observation {
     var isMapMatching: Bool = false
     
     var isActiveService: Bool = true
+    var isAnswered: Bool = false
+    
     var timeActiveRF: Double = 0
     var timeActiveUV: Double = 0
     var timeUpdateInSleep: Double = 0
@@ -188,6 +196,7 @@ public class ServiceManager: Observation {
     
     let SQUARE_RANGE: Double = 10
     var pastFLTResult = FineLocationTrackingResult()
+    
     
     public override init() {
         deviceModel = UIDevice.modelName
@@ -552,10 +561,14 @@ public class ServiceManager: Observation {
             floorUpdateRequestFlag = true
             userVelocityTimer = Timer.scheduledTimer(timeInterval: UV_INTERVAL, target: self, selector: #selector(self.userVelocityTimerUpdate), userInfo: nil, repeats: true)
         }
-
-        if (interruptTimer == nil && self.service == "FLT") {
-            interruptTimer = Timer.scheduledTimer(timeInterval: CLC_INTERVAL, target: self, selector: #selector(self.runInterrupt), userInfo: nil, repeats: true)
+        
+        if (requestTimer == nil && self.service == "FLT") {
+            requestTimer = Timer.scheduledTimer(timeInterval: RQ_INTERVAL, target: self, selector: #selector(self.requestTimerUpdate), userInfo: nil, repeats: true)
         }
+
+//        if (interruptTimer == nil && self.service == "FLT") {
+//            interruptTimer = Timer.scheduledTimer(timeInterval: CLC_INTERVAL, target: self, selector: #selector(self.runInterrupt), userInfo: nil, repeats: true)
+//        }
     }
     
     func stopTimer() {
@@ -573,6 +586,11 @@ public class ServiceManager: Observation {
         if (interruptTimer != nil) {
             interruptTimer!.invalidate()
             interruptTimer = nil
+        }
+        
+        if (requestTimer != nil) {
+            requestTimer!.invalidate()
+            requestTimer = nil
         }
     }
     
@@ -623,7 +641,6 @@ public class ServiceManager: Observation {
     
     @objc func userVelocityTimerUpdate() {
         let currentTime = getCurrentTimeInMilliseconds()
-        self.nowTime = currentTime
         
         if (floorUpdateRequestFlag && isActiveService) {
             floorUpdateRequestTimer += UV_INTERVAL
@@ -672,7 +689,7 @@ public class ServiceManager: Observation {
                 }
                 preUnitHeading = unitDRInfo.heading
                 
-                // Post FLT
+                // Put UV
                 if ((inputUserVelocity.count-1) >= UV_INPUT_NUM) {
                     inputUserVelocity.remove(at: 0)
                     NetworkManager.shared.putUserVelocity(url: UV_URL, input: inputUserVelocity, completion: { [self] statusCode, returnedString in
@@ -680,65 +697,76 @@ public class ServiceManager: Observation {
                             floorUpdateRequestFlag = true
                             floorUpdateRequestTimer = 0
                             
-                            let input = FineLocationTracking(user_id: user_id, mobile_time: currentTime, sector_id: sector_id, phase: self.phase)
-                            NetworkManager.shared.postFLT(url: FLT_URL, input: input, completion: { [self] statusCode, returnedString in
-                                if (statusCode == 200) {
-                                    let result = jsonToResult(json: returnedString)
-//                                    print("Time (Now) : \(self.nowTime)")
-//                                    print("Time (Result Mobile) : \(result.mobile_time)")
-//                                    print("Time (Diff) : \(self.nowTime - result.mobile_time)")
-                                    if ((self.nowTime - result.mobile_time) <= RECENT_THRESHOLD) {
-                                        self.phase = result.phase
-                                        self.indexCurrent = result.index
-                                        
-                                        displayOutput.building = result.building_name
-                                        displayOutput.level = result.level_name
-//                                        print("Index Current : \(self.indexCurrent)")
-//                                        print("Index Past : \(self.indexPast)")
-                                        if ((self.indexCurrent - self.indexPast) < 10) {
-                                            displayOutput.scc = result.scc
-                                            displayOutput.phase = String(result.phase)
-                                            displayOutput.indexRx = result.index
-
-                                            // Kalman Filter
-                                            if (result.mobile_time > preOutputMobileTime) {
-                                                if (result.phase == 4) {
-                                                    UV_INPUT_NUM = VAR_INPUT_NUM
-                                                    if (!(result.x == 0 && result.y == 0)) {
-                                                        // Measurment Update
-                                                        if (measurementUpdateFlag) {
-                                                            let muOutput = measurementUpdate(timeUpdatePosition: timeUpdatePosition, serverOutput: result)
-                                                            let muResult = fromServerToResult(fromServer: muOutput, velocity: displayOutput.velocity)
-                                                            self.tracking(input: muResult)
-                                                        }
-                                                        timeUpdatePositionInit(serverOutput: result)
-                                                    }
-                                                } else {
-                                                    UV_INPUT_NUM = INIT_INPUT_NUM
-                                                    kalmanInit()
-                                                    let finalResult = fromServerToResult(fromServer: result, velocity: displayOutput.velocity)
-                                                    self.tracking(input: finalResult)
-                                                }
-                                                preOutputMobileTime = result.mobile_time
-                                            }
-                                            pastBuildingLevel = [displayOutput.building, displayOutput.level]
-                                        }
-                                        self.indexPast = self.indexCurrent
-                                    }
-                                }
-                            })
+                            indexSend = Int(returnedString) ?? 0
+                            isAnswered = true
                         }
                     })
                     inputUserVelocity = [UserVelocity(user_id: user_id, mobile_time: 0, index: 0, length: 0, heading: 0, looking: true)]
                 }
             }
         } else {
+            // UV가 발생하지 않음
             timeActiveUV += UV_INTERVAL
             if (timeActiveUV >= SLEEP_THRESHOLD) {
                 print("Enter Sleep Mode")
                 isActiveService = false
                 timeActiveUV = 0
             }
+        }
+    }
+    
+    @objc func requestTimerUpdate() {
+        if (self.isAnswered) {
+            self.isAnswered = false
+            
+            // Request FLT
+            let currentTime = getCurrentTimeInMilliseconds()
+            nowTime = currentTime
+
+            let input = FineLocationTracking(user_id: user_id, mobile_time: currentTime, sector_id: sector_id, phase: self.phase)
+            NetworkManager.shared.postFLT(url: FLT_URL, input: input, completion: { [self] statusCode, returnedString in
+                if (statusCode == 200) {
+                    let result = jsonToResult(json: returnedString)
+                    
+                    if ((self.nowTime - result.mobile_time) <= RECENT_THRESHOLD) {
+                        self.phase = result.phase
+
+                        displayOutput.building = result.building_name
+                        displayOutput.level = result.level_name
+                        
+                        if ((result.index - indexPast) < 10) {
+                            displayOutput.scc = result.scc
+                            displayOutput.phase = String(result.phase)
+                            displayOutput.indexRx = result.index
+
+                            // Kalman Filter
+                            if (result.mobile_time > preOutputMobileTime) {
+                                if (result.phase == 4) {
+                                    UV_INPUT_NUM = VAR_INPUT_NUM
+                                    if (!(result.x == 0 && result.y == 0)) {
+                                        // Measurment Update
+                                        let diffIndex = abs(indexSend - result.index)
+                                        if (measurementUpdateFlag && (diffIndex<2)) {
+                                            let muOutput = measurementUpdate(timeUpdatePosition: timeUpdatePosition, serverOutput: result)
+                                            let muResult = fromServerToResult(fromServer: muOutput, velocity: displayOutput.velocity)
+                                            self.tracking(input: muResult)
+                                        }
+                                        timeUpdatePositionInit(serverOutput: result)
+                                    }
+                                } else {
+                                    UV_INPUT_NUM = INIT_INPUT_NUM
+                                    kalmanInit()
+                                    let finalResult = fromServerToResult(fromServer: result, velocity: displayOutput.velocity)
+                                    self.tracking(input: finalResult)
+                                }
+                                preOutputMobileTime = result.mobile_time
+                            }
+                            pastBuildingLevel = [displayOutput.building, displayOutput.level]
+                        }
+                        indexPast = result.index
+                    }
+                }
+            })
         }
     }
     
@@ -1039,6 +1067,5 @@ public class ServiceManager: Observation {
         headingKalmanP -= headingKalmanK * headingKalmanP
 
         return measurementOutput
-
     }
 }

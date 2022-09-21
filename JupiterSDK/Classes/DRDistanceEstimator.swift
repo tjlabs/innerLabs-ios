@@ -56,6 +56,7 @@ public class DRDistanceEstimator: NSObject {
         let gyroNavZ = abs(CF.transBody2Nav(att: att, data: gyro)[2])
         
         let accNorm = CF.l2Normalize(originalVector: sensorData.acc)
+        let magNorm = CF.l2Normalize(originalVector: sensorData.mag)
         
         updateAccQueue(data: SensorAxisValue(x: acc[0], y: acc[1], z: acc[2], norm: accNorm))
         updateGyroQueue(data: SensorAxisValue(x: gyro[0], y: gyro[1], z: gyro[2], norm: 0))
@@ -93,43 +94,28 @@ public class DRDistanceEstimator: NSObject {
         preMagSmoothing = magSmoothing
         preNavGyroZSmoothing = navGyroZSmoothing
         
-        let accVar = CF.calSensorAxisVariance(curArray: accQueue, bufferMean: accSmoothing)
-        let gyroVar = CF.calSensorAxisVariance(curArray: gyroQueue, bufferMean: gyroSmoothing)
+//        let accVar = CF.calSensorAxisVariance(curArray: accQueue, bufferMean: accSmoothing)
+//        let gyroVar = CF.calSensorAxisVariance(curArray: gyroQueue, bufferMean: gyroSmoothing)
         var magVar = CF.calSensorAxisVariance(curArray: magQueue, bufferMean: magSmoothing)
         
         if (featureExtractionCount == 0) {
             magVar = lastMagQueue
         }
 
-        let accNormalizeConstant: Double = 7
-        let gyroNormalizeConstant: Double = 5
-        let magNormalizeConstant: Double = 500
+//        let accNormalizeConstant: Double = 7
+//        let gyroNormalizeConstant: Double = 5
+//        let magNormalizeConstant: Double = 500
         
-        let input: [Float32] = [Float(accVar.x/accNormalizeConstant),
-                                Float(accVar.y/accNormalizeConstant),
-                                Float(accVar.z/accNormalizeConstant),
-                                Float(accVar.norm/accNormalizeConstant),
-                                Float(gyroVar.x/gyroNormalizeConstant),
-                                Float(gyroVar.y/gyroNormalizeConstant),
-                                Float(gyroVar.z/gyroNormalizeConstant),
-                                Float(magVar.x/magNormalizeConstant),
-                                Float(magVar.y/magNormalizeConstant),
-                                Float(magVar.z/magNormalizeConstant)]
-        
-        var inputData = Data()
         // Mag //
-        let inputMag: [Float32] = [Float(0.1*(magVar.x/magNormalizeConstant)) + 0.9*preInputMag[0],
-                                   Float(0.1*(magVar.y/magNormalizeConstant)) + 0.9*preInputMag[1],
-                                   Float(0.1*(magVar.z/magNormalizeConstant)) + 0.9*preInputMag[2]]
-        // ------ //
+//        let inputMag: [Float32] = [Float(0.1*(magVar.x/magNormalizeConstant)) + 0.9*preInputMag[0],
+//                                   Float(0.1*(magVar.y/magNormalizeConstant)) + 0.9*preInputMag[1],
+//                                   Float(0.1*(magVar.z/magNormalizeConstant)) + 0.9*preInputMag[2]]
         
-        for i in 0..<input.count {
-            var value = input[i]
-            let elementSize = MemoryLayout.size(ofValue: value)
-            var bytes = [UInt8](repeating: 0, count: elementSize)
-            memcpy(&bytes, &value, elementSize)
-            inputData.append(&bytes, count: elementSize)
-        }
+        let inputMag: [Float32] = [Float(0.1*(magVar.x)) + 0.9*preInputMag[0],
+                                   Float(0.1*(magVar.y)) + 0.9*preInputMag[1],
+                                   Float(0.1*(magVar.z)) + 0.9*preInputMag[2],
+                                   Float(magNorm)]
+        // ------ //
         
         finalUnitResult.isIndexChanged = false
         
@@ -138,7 +124,11 @@ public class DRDistanceEstimator: NSObject {
             var count = 0
             var output = 0
             for i in 0..<inputMag.count {
-                if (inputMag[i] > 0.001) {
+//                if (inputMag[i] > 0.001) {
+//                    count += 1
+//                }
+                
+                if (inputMag[i] > 0.7) {
                     count += 1
                 }
             }
