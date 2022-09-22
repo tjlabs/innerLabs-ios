@@ -16,12 +16,17 @@ public class ServiceManager: Observation {
                 
                 // Map Matching
                 if (self.isMapMatching) {
-                    let xyh = correct(building: result.building_name, level: result.level_name, x: result.x, y: result.y, heading: result.absolute_heading, mode: self.mode)
-                    result.x = xyh[0]
-                    result.y = xyh[1]
-                    result.absolute_heading = xyh[2]
+                    let correctResult = correct(building: result.building_name, level: result.level_name, x: result.x, y: result.y, heading: result.absolute_heading, mode: self.mode)
                     
-                    self.pastFLTResult = result
+                    if (correctResult.isSuccess) {
+                        result.x = correctResult.xyh[0]
+                        result.y = correctResult.xyh[1]
+                        result.absolute_heading = correctResult.xyh[2]
+                        
+                        self.pastMatchingResult = result
+                    } else {
+                        result = pastMatchingResult
+                    }
                 }
                 displayOutput.heading = result.absolute_heading
                 
@@ -195,7 +200,7 @@ public class ServiceManager: Observation {
     let SLEEP_THRESHOLD: Double = 600 // 10분
     
     let SQUARE_RANGE: Double = 10
-    var pastFLTResult = FineLocationTrackingResult()
+    var pastMatchingResult = FineLocationTrackingResult()
     
     
     public override init() {
@@ -566,9 +571,9 @@ public class ServiceManager: Observation {
             requestTimer = Timer.scheduledTimer(timeInterval: RQ_INTERVAL, target: self, selector: #selector(self.requestTimerUpdate), userInfo: nil, repeats: true)
         }
 
-//        if (interruptTimer == nil && self.service == "FLT") {
-//            interruptTimer = Timer.scheduledTimer(timeInterval: CLC_INTERVAL, target: self, selector: #selector(self.runInterrupt), userInfo: nil, repeats: true)
-//        }
+        if (interruptTimer == nil && self.service == "FLT") {
+            interruptTimer = Timer.scheduledTimer(timeInterval: CLC_INTERVAL, target: self, selector: #selector(self.runInterrupt), userInfo: nil, repeats: true)
+        }
     }
     
     func stopTimer() {
@@ -866,16 +871,17 @@ public class ServiceManager: Observation {
         return (road, roadHeading)
     }
     
-    private func correct(building: String, level: String, x: Double, y: Double, heading: Double, mode: String) -> [Double] {
+    private func correct(building: String, level: String, x: Double, y: Double, heading: Double, mode: String) -> (isSuccess: Bool, xyh: [Double]) {
+        var isSuccess: Bool = false
         var xyh: [Double] = [x, y, heading]
         let key: String = "\(building)_\(level)"
         
         if (!(building.isEmpty) && !(level.isEmpty)) {
             guard let mainRoad: [[Double]] = Road[key] else {
-                return xyh
+                return (isSuccess, xyh)
             }
             guard let mainHeading: [String] = RoadHeading[key] else {
-                return xyh
+                return (isSuccess, xyh)
             }
             
             // Heading 사용
@@ -947,11 +953,12 @@ public class ServiceManager: Observation {
                             correctedHeading = heading
                         }
                     }
+                    isSuccess = true
                     xyh = [roadX[index], roadY[index], correctedHeading]
                 }
             }
         }
-        return xyh
+        return (isSuccess, xyh)
     }
     
     func postUser(url: String, input: UserInfo, completion: @escaping (Int, String) -> Void) {
