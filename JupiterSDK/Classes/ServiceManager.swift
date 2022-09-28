@@ -134,6 +134,9 @@ public class ServiceManager: Observation {
     let USER_URL = "https://where-run-user-skrgq3jc5a-du.a.run.app/user"
     var inputReceivedForce: [ReceivedForce] = [ReceivedForce(user_id: "", mobile_time: 0, ble: [:], pressure: 0)]
     var inputUserVelocity: [UserVelocity] = [UserVelocity(user_id: "", mobile_time: 0, index: 0, length: 0, heading: 0, looking: true)]
+    
+    var inputForOSA: [ReceivedForce] = [ReceivedForce(user_id: "", mobile_time: 0, ble: [:], pressure: 0)]
+    var isStartOSA: Bool = false
     // ------------------- //
     
     
@@ -259,6 +262,9 @@ public class ServiceManager: Observation {
             numInput = 7
             interval = 1/2
         case "FLT":
+            numInput = 6
+            interval = 1/5
+        case "OSA":
             numInput = 6
             interval = 1/5
         default:
@@ -412,12 +418,12 @@ public class ServiceManager: Observation {
             motionManager.startAccelerometerUpdates(to: .main) { [self] (data, error) in
                 if let accX = data?.acceleration.x {
                     self.accX = accX
-                    sensorData.acc[0] = accX*G
+                    sensorData.acc[0] = -accX*G
                     collectData.acc[0] = accX*G
                 }
                 if let accY = data?.acceleration.y {
                     self.accY = accY
-                    sensorData.acc[1] = accY*G
+                    sensorData.acc[1] = -accY*G
                     collectData.acc[1] = accY*G
                 }
                 if let accZ = data?.acceleration.z {
@@ -559,7 +565,11 @@ public class ServiceManager: Observation {
     
     func startTimer() {
         if (receivedForceTimer == nil) {
-            receivedForceTimer = Timer.scheduledTimer(timeInterval: RF_INTERVAL, target: self, selector: #selector(self.receivedForceTimerUpdate), userInfo: nil, repeats: true)
+            if (self.service == "OSA") {
+                receivedForceTimer = Timer.scheduledTimer(timeInterval: RF_INTERVAL, target: self, selector: #selector(self.osaTimerUpdate), userInfo: nil, repeats: true)
+            } else {
+                receivedForceTimer = Timer.scheduledTimer(timeInterval: RF_INTERVAL, target: self, selector: #selector(self.receivedForceTimerUpdate), userInfo: nil, repeats: true)
+            }
         }
         
         if (userVelocityTimer == nil && self.service == "FLT") {
@@ -616,7 +626,7 @@ public class ServiceManager: Observation {
         let currentTime = getCurrentTimeInMilliseconds()
         
         var bleDictionary = bleManager.bleAvg
-        if (deviceModel == "iPhone 13 Mini" || deviceModel == "iPhone 12 mini") {
+        if (deviceModel == "iPhone 13 Mini" || deviceModel == "iPhone 12 Mini") {
             bleDictionary.keys.forEach { bleDictionary[$0] = bleDictionary[$0]! + 7 }
         }
         
@@ -772,6 +782,28 @@ public class ServiceManager: Observation {
                     }
                 }
             })
+        }
+    }
+    
+    @objc func osaTimerUpdate() {
+        let currentTime = getCurrentTimeInMilliseconds()
+        
+        var bleDictionary = bleManager.bleAvg
+        if (deviceModel == "iPhone 13 Mini" || deviceModel == "iPhone 12 Mini") {
+            bleDictionary.keys.forEach { bleDictionary[$0] = bleDictionary[$0]! + 7 }
+        }
+        
+        if (!bleDictionary.isEmpty) {
+            let data = ReceivedForce(user_id: self.user_id, mobile_time: currentTime, ble: bleDictionary, pressure: self.pressure)
+            
+            inputForOSA.append(data)
+            if (inputForOSA[0].user_id == "") {
+                inputForOSA.remove(at: 0)
+            }
+        }
+        
+        if (inputForOSA.count == 3) {
+            inputForOSA.remove(at: 0)
         }
     }
     

@@ -24,7 +24,7 @@ class TipsTownViewController: UIViewController {
     @IBOutlet weak var tipsTownImage: UIImageView!
     
     var serviceManager = ServiceManager()
-    var serviceName = "FLD"
+    var serviceName = "OSA"
     var userId: String = ""
     
     var delegate : ServiceViewPageDelegate?

@@ -17,5 +17,17 @@ public class HeadingFunctions: NSObject {
     public func radian2degree(radian: Double) -> Double {
         return radian * 180 / Double.pi
     }
+    
+    public func callRollUsingAcc(acc: [Double]) -> Double {
+        let result: Double = atan( acc[0] / sqrt(acc[1]*acc[1] + acc[2]*acc[2]) )
+
+        return result
+    }
+    
+    public func callPitchUsingAcc(acc: [Double]) -> Double {
+        let result: Double = atan( acc[1] / sqrt(acc[0]*acc[0] + acc[2]*acc[2]) )
+        
+        return result
+    }
 
 }

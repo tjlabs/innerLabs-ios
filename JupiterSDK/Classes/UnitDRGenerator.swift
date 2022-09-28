@@ -25,19 +25,26 @@ public class UnitDRGenerator: NSObject {
         }
         
         let currentTime = getCurrentTimeInMilliseconds()
-        
-        let sensorAtt = sensorData.att
-        let curAttitude = Attitude(Roll: sensorAtt[0], Pitch: sensorAtt[1], Yaw: sensorAtt[2])
+        var curAttitude = Attitude(Roll: 0, Pitch: 0, Yaw: 0)
         
         var unitDistance = UnitDistance()
         
         switch (unitMode) {
         case MODE_PDR:
             unitDistance = pdrDistanceEstimator.estimateDistanceInfo(time: currentTime, sensorData: sensorData)
+            
+            let sensorAtt = sensorData.att
+            curAttitude = Attitude(Roll: sensorAtt[0], Pitch: sensorAtt[1], Yaw: sensorAtt[2])
+//            curAttitude = unitAttitudeEstimator.estimateAtt(time: currentTime, acc: sensorData.acc, gyro: sensorData.gyro, rotMatrix: sensorData.rotationMatrix)
         case MODE_DR:
             unitDistance = drDistanceEstimator.estimateDistanceInfo(time: currentTime, sensorData: sensorData)
+            
+            curAttitude = unitAttitudeEstimator.estimateAtt(time: currentTime, acc: sensorData.acc, gyro: sensorData.gyro, rotMatrix: sensorData.rotationMatrix)
         default:
             unitDistance = pdrDistanceEstimator.estimateDistanceInfo(time: currentTime, sensorData: sensorData)
+            
+            let sensorAtt = sensorData.att
+            curAttitude = Attitude(Roll: sensorAtt[0], Pitch: sensorAtt[1], Yaw: sensorAtt[2])
         }
         
         let unitStatus = unitStatusEstimator.estimateStatus(Attitude: curAttitude, isIndexChanged: unitDistance.isIndexChanged, unitMode: unitMode)

@@ -243,6 +243,8 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
                         
                         if (scaleString.isEmpty) {
                             chartLimits[key] = [0, 0, 0, 0]
+                        } else if (scaleString == "None") {
+                            chartLimits[key] = [0, 0, 0, 0]
                         } else {
                             let os = scaleString.components(separatedBy: "/")
                             let iosScale = os[1].components(separatedBy: " ")
