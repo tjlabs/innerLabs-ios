@@ -388,7 +388,7 @@ public class ServiceManager: Observation {
                 completion(statusCode, returnedString)
             })
         case "BD":
-            let input = BuildingDetection(user_id: self.user_id, mobile_time: currentTime, sector_id: self.sector_id)
+            let input = BuildingDetection(user_id: self.user_id, mobile_time: currentTime)
             NetworkManager.shared.postBD(url: BD_URL, input: input, completion: { statusCode, returnedString in
                 completion(statusCode, returnedString)
             })
@@ -407,6 +407,8 @@ public class ServiceManager: Observation {
             NetworkManager.shared.postCLE(url: CLE_URL, input: input, completion: { statusCode, returnedString in
                 completion(statusCode, returnedString)
             })
+        case "OSA":
+            print("OSA Result")
         default:
             completion(500, "Unvalid Service Name")
         }
@@ -417,17 +419,17 @@ public class ServiceManager: Observation {
             motionManager.accelerometerUpdateInterval = SENSOR_INTERVAL
             motionManager.startAccelerometerUpdates(to: .main) { [self] (data, error) in
                 if let accX = data?.acceleration.x {
-                    self.accX = accX
+                    self.accX = -accX
                     sensorData.acc[0] = -accX*G
-                    collectData.acc[0] = accX*G
+                    collectData.acc[0] = -accX*G
                 }
                 if let accY = data?.acceleration.y {
-                    self.accY = accY
+                    self.accY = -accY
                     sensorData.acc[1] = -accY*G
-                    collectData.acc[1] = accY*G
+                    collectData.acc[1] = -accY*G
                 }
                 if let accZ = data?.acceleration.z {
-                    self.accZ = accZ
+                    self.accZ = -accZ
                     sensorData.acc[2] = -accZ*G
                     collectData.acc[2] = -accZ*G
                 }
@@ -805,6 +807,7 @@ public class ServiceManager: Observation {
         if (inputForOSA.count == 3) {
             inputForOSA.remove(at: 0)
         }
+//        print(inputForOSA)
     }
     
     @objc func collectTimerUpdate() {

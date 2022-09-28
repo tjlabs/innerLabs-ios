@@ -32,6 +32,7 @@ let UUIDService = CBUUID(string: NRF_UUID_SERVICE)
 let UUIDRead    = CBUUID(string: NRF_UUID_CHAR_READ)
 let UUIDWrite   = CBUUID(string: NRF_UUID_CHAR_WRITE)
 let NIService   = CBUUID(string: NI_UUID_SERVICE)
+let digit: Double = pow(10, 2)
 
 class BLECentralManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate {
     var centralManager: CBCentralManager!
@@ -303,7 +304,7 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
                 let rssi = bleData[i][0]
                 rssiSum += rssi
             }
-            let rssiFinal: Double = (rssiSum/Double(bleData.count)) + RSSI_BIAS
+            let rssiFinal: Double = floor(((rssiSum/Double(bleData.count)) + RSSI_BIAS) * digit) / digit
             
             if ( rssiSum == 0 ) {
                 ble.removeValue(forKey: bleID)

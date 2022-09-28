@@ -175,7 +175,6 @@ public struct SectorDetectionResult: Codable {
 struct BuildingDetection: Codable {
     var user_id: String
     var mobile_time: Int
-    var sector_id: Int
 }
 
 public struct BuildingDetectionResult: Codable {
