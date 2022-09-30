@@ -32,7 +32,9 @@ public class ServiceManager: Observation {
                 
                 // Averaging
                 if (!pastResult.isEmpty) {
-                    result.absolute_heading = (result.absolute_heading + pastResult[2])/2
+                    if abs(pastResult[2] - result.absolute_heading) < 270 {
+                        result.absolute_heading = (result.absolute_heading + pastResult[2])/2
+                    }
                 }
 
                 // Past Result Update
@@ -46,6 +48,15 @@ public class ServiceManager: Observation {
                     pastResult[2] = result.absolute_heading
                 }
             }
+            
+            
+            if (result.building_name == "COEX" && result.level_name == "B1") {
+                
+                result.x = 200
+                result.y = 207
+                result.absolute_heading = 0
+            }
+            
             observer.update(result: result)
         }
     }
