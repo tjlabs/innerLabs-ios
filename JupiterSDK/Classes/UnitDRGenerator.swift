@@ -35,7 +35,6 @@ public class UnitDRGenerator: NSObject {
             
             let sensorAtt = sensorData.att
             curAttitude = Attitude(Roll: sensorAtt[0], Pitch: sensorAtt[1], Yaw: sensorAtt[2])
-//            curAttitude = unitAttitudeEstimator.estimateAtt(time: currentTime, acc: sensorData.acc, gyro: sensorData.gyro, rotMatrix: sensorData.rotationMatrix)
         case MODE_DR:
             unitDistance = drDistanceEstimator.estimateDistanceInfo(time: currentTime, sensorData: sensorData)
             

@@ -351,6 +351,14 @@ public class NetworkManager {
             switch response.result {
             case .success(let res):
                 do {
+//                    print("")
+//                    print("====================================")
+//                    print("응답 코드 :: ", response.response?.statusCode ?? 0)
+//                    print("-------------------------------")
+//                    print("응답 데이터 :: ", String(data: res, encoding: .utf8) ?? "")
+//                    print("====================================")
+//                    print("")
+                    
                     let returnedString = String(data: res, encoding: .utf8) ?? "Fail"
                     completion(200, returnedString)
                     
@@ -425,7 +433,7 @@ public class NetworkManager {
                     print("catch :: ", err.localizedDescription)
                     print("====================================")
                     print("")
-                    completion(999, "Fail")
+                    completion(500, "Fail")
                 }
                 break
             case .failure(let err):
@@ -436,7 +444,7 @@ public class NetworkManager {
                 print("에 러 :: ", err.localizedDescription)
                 print("====================================")
                 print("")
-                completion(999, "Fail")
+                completion(500, "Fail")
                 
                 break
             }

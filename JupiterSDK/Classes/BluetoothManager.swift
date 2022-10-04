@@ -184,8 +184,8 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
                     
                     trimBleData()
                     
-                    bleRaw = latestBleData(bleDictionary: bleDictionary)
-                    bleAvg = avgBleData(bleDictionary: bleDictionary)
+//                    bleRaw = latestBleData(bleDictionary: bleDictionary)
+//                    bleAvg = avgBleData(bleDictionary: bleDictionary)
                     
                     NotificationCenter.default.post(name: .scanInfo, object: nil, userInfo: userInfo)
                 }
@@ -286,6 +286,9 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
                 bleDictionary.updateValue(newValue, forKey: bleID)
             }
         }
+        
+        bleRaw = latestBleData(bleDictionary: bleDictionary)
+        bleAvg = avgBleData(bleDictionary: bleDictionary)
     }
     
     func avgBleData(bleDictionary: Dictionary<String, [[Double]]>) -> Dictionary<String, Double> {
@@ -314,6 +317,7 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
         }
         return ble
     }
+    
     
     func latestBleData(bleDictionary: Dictionary<String, [[Double]]>) -> Dictionary<String, Double> {
         var ble = [String: Double]()

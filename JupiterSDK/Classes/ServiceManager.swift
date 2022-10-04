@@ -49,7 +49,7 @@ public class ServiceManager: Observation {
                 }
             }
             
-            
+            // For COEX B1
             if (result.building_name == "COEX" && result.level_name == "B1") {
                 
                 result.x = 200
@@ -637,6 +637,8 @@ public class ServiceManager: Observation {
     
     @objc func receivedForceTimerUpdate() {
         let currentTime = getCurrentTimeInMilliseconds()
+        
+        bleManager.trimBleData()
         
         var bleDictionary = bleManager.bleAvg
         if (deviceModel == "iPhone 13 Mini" || deviceModel == "iPhone 12 Mini") {
