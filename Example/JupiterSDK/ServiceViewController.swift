@@ -608,7 +608,7 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
         let yMin = yAxisValue.min()!
         let yMax = yAxisValue.max()!
         
-//        print("\(currentBuilding) \(currentLevel) MinMax : \(xMin) , \(xMax), \(yMin), \(yMax)")
+        print("\(currentBuilding) \(currentLevel) MinMax : \(xMin) , \(xMax), \(yMin), \(yMax)")
         
         let chartFlag: Bool = false
         scatterChart.isHidden = false
@@ -625,10 +625,10 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
             scatterChart.leftAxis.axisMinimum = yMin
             scatterChart.leftAxis.axisMaximum = yMax
         } else {
-//            scatterChart.xAxis.axisMinimum = xMin - 43
-//            scatterChart.xAxis.axisMaximum = xMax + 53.2
-//            scatterChart.leftAxis.axisMinimum = yMin - 217
-//            scatterChart.leftAxis.axisMaximum = yMax + 40
+//            scatterChart.xAxis.axisMinimum = xMin - 17.6
+//            scatterChart.xAxis.axisMaximum = xMax + 3.6
+//            scatterChart.leftAxis.axisMinimum = yMin - 38
+//            scatterChart.leftAxis.axisMaximum = yMax + 35.2
             
             scatterChart.xAxis.axisMinimum = limits[0]
             scatterChart.xAxis.axisMaximum = limits[1]

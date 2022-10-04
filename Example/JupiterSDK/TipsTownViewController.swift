@@ -1,11 +1,3 @@
-//
-//  TipsTownViewController.swift
-//  JupiterSDK_Example
-//
-//  Created by 신동현 on 2022/07/29.
-//  Copyright © 2022 CocoaPods. All rights reserved.
-//
-
 import UIKit
 import JupiterSDK
 import Floaty
@@ -24,7 +16,7 @@ class TipsTownViewController: UIViewController {
     @IBOutlet weak var tipsTownImage: UIImageView!
     
     var serviceManager = ServiceManager()
-    var serviceName = "OSA"
+    var serviceName = "CLD"
     var userId: String = ""
     
     var delegate : ServiceViewPageDelegate?
@@ -76,7 +68,7 @@ class TipsTownViewController: UIViewController {
         
         // Service Manger
         serviceManager.startService(id: userId, sector_id: cardData!.sector_id, service: serviceName, mode: cardData!.mode)
-        self.startTimer()
+//        self.startTimer()
         
         // Floating Button
         setFloatingButton()
@@ -136,13 +128,26 @@ class TipsTownViewController: UIViewController {
         self.view.addSubview(floaty)
     }
     
-    func jsonToResult(json: String) -> FineLevelDetectionResult {
-        let result = FineLevelDetectionResult.init()
+//    func jsonToResult(json: String) -> FineLevelDetectionResult {
+//        let result = FineLevelDetectionResult.init()
+//        let decoder = JSONDecoder()
+//
+//        let jsonString = json
+//
+//        if let data = jsonString.data(using: .utf8), let decoded = try? decoder.decode(FineLevelDetectionResult.self, from: data) {
+//            return decoded
+//        }
+//
+//        return result
+//    }
+    
+    func jsonToResult(json: String) -> CoarseLevelDetectionResult {
+        let result = CoarseLevelDetectionResult.init()
         let decoder = JSONDecoder()
 
         let jsonString = json
 
-        if let data = jsonString.data(using: .utf8), let decoded = try? decoder.decode(FineLevelDetectionResult.self, from: data) {
+        if let data = jsonString.data(using: .utf8), let decoded = try? decoder.decode(CoarseLevelDetectionResult.self, from: data) {
             return decoded
         }
 
@@ -152,6 +157,7 @@ class TipsTownViewController: UIViewController {
     func getResult() {
         serviceManager.getResult(completion: { [self] statusCode, returnedString in
             if (statusCode == 200) {
+                print(returnedString)
                 let result = jsonToResult(json: returnedString)
                 
                 if (result.building_name != "") {
@@ -163,6 +169,9 @@ class TipsTownViewController: UIViewController {
                     
                     self.currentBuilding = result.building_name
                     self.currentLevel = result.level_name
+                } else {
+                    self.buildingLabel.text = "Empty"
+                    self.levelLabel.text = "Empty"
                 }
             }
         })
