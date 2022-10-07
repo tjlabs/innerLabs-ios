@@ -71,7 +71,7 @@ class TipsTownViewController: UIViewController {
 //        self.startTimer()
         
         // Floating Button
-        setFloatingButton()
+//        setFloatingButton()
         
         configureScrollView()
         
