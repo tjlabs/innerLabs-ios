@@ -20,14 +20,15 @@ public class UnitDRGenerator: NSObject {
     }
     
     public func generateDRInfo(sensorData: SensorData) -> UnitDRInfo {
-        if (unitMode != MODE_PDR && unitMode != MODE_DR) {
-            fatalError("Please check unitMode .. (pdr or dr)")
+        if (unitMode != MODE_PDR && unitMode != MODE_DR && unitMode != MODE_AUTO) {
+            fatalError("Please check unitMode .. (pdr, dr, auto)")
         }
         
         let currentTime = getCurrentTimeInMilliseconds()
         var curAttitude = Attitude(Roll: 0, Pitch: 0, Yaw: 0)
         
         var unitDistance = UnitDistance()
+        var unitDistanceAuto = UnitDistance()
         
         switch (unitMode) {
         case MODE_PDR:
@@ -37,6 +38,11 @@ public class UnitDRGenerator: NSObject {
             curAttitude = Attitude(Roll: sensorAtt[0], Pitch: sensorAtt[1], Yaw: sensorAtt[2])
         case MODE_DR:
             unitDistance = drDistanceEstimator.estimateDistanceInfo(time: currentTime, sensorData: sensorData)
+            
+            curAttitude = unitAttitudeEstimator.estimateAtt(time: currentTime, acc: sensorData.acc, gyro: sensorData.gyro, rotMatrix: sensorData.rotationMatrix)
+        case MODE_AUTO:
+            unitDistance = drDistanceEstimator.estimateDistanceInfo(time: currentTime, sensorData: sensorData)
+            unitDistanceAuto = pdrDistanceEstimator.estimateDistanceInfo(time: currentTime, sensorData: sensorData)
             
             curAttitude = unitAttitudeEstimator.estimateAtt(time: currentTime, acc: sensorData.acc, gyro: sensorData.gyro, rotMatrix: sensorData.rotationMatrix)
         default:

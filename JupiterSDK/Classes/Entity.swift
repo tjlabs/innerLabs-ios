@@ -131,12 +131,6 @@ public struct Output: Codable {
     public var calculated_time: Double = 0
 }
 
-public struct InitUser: Codable {
-    var user_id: String
-    var device_model: String
-    var os_version: Int
-}
-
 struct ReceivedForce: Codable {
     var user_id: String
     var mobile_time: Int
@@ -153,42 +147,6 @@ struct UserVelocity: Codable {
     var looking: Bool
 }
 
-// Sector Detection
-struct SectorDetection: Codable {
-    var user_id: String
-    var mobile_time: Int
-}
-
-public struct SectorDetectionResult: Codable {
-    public var mobile_time: Int
-    public var sector_name: String
-    public var calculated_time: Double
-    
-    public init() {
-        self.mobile_time = 0
-        self.sector_name = ""
-        self.calculated_time = 0
-    }
-}
-
-// Building Detection
-struct BuildingDetection: Codable {
-    var user_id: String
-    var mobile_time: Int
-}
-
-public struct BuildingDetectionResult: Codable {
-    public var mobile_time: Int
-    public var building_name: String
-    public var calculated_time: Double
-    
-    public init() {
-        self.mobile_time = 0
-        self.building_name = ""
-        self.calculated_time = 0
-    }
-}
-
 // Coarse Level Detection
 struct CoarseLevelDetection: Codable {
     var user_id: String
@@ -197,43 +155,20 @@ struct CoarseLevelDetection: Codable {
 
 public struct CoarseLevelDetectionResult: Codable {
     public var mobile_time: Int
+    public var sector_name: String
     public var building_name: String
     public var level_name: String
     public var calculated_time: Double
     
     public init() {
         self.mobile_time = 0
+        self.sector_name = ""
         self.building_name = ""
         self.level_name = ""
         self.calculated_time = 0
     }
 }
 
-
-// Fine Level Detection
-struct FineLevelDetection: Codable {
-    var user_id: String
-    var mobile_time: Int
-    var sector_id: Int
-}
-
-public struct FineLevelDetectionResult: Codable {
-    public var mobile_time: Int = 0
-    public var building_name: String = ""
-    public var level_name: String = ""
-    public var scc: Double = 0
-    public var scr: Double = 0
-    public var calculated_time: Double = 0
-    
-    public init() {
-        self.mobile_time = 0
-        self.building_name = ""
-        self.level_name = ""
-        self.scc = 0
-        self.scr = 0
-        self.calculated_time = 0
-    }
-}
 
 // Coarse Location Estimation
 struct CoarseLocationEstimation: Codable {
@@ -328,5 +263,38 @@ public struct FineLocationTrackingResult: Codable {
         self.calculated_time = 0
         self.index = 0
         self.velocity = 0
+    }
+}
+
+// On Spot Authorizationds
+struct OnSpotAuthorization: Codable {
+    var user_id: String
+    var mobile_time: Int
+}
+
+
+public struct OnSpotAuthorizationResult: Codable {
+    public var spots: [Spots]
+    
+    public init() {
+        self.spots = []
+    }
+}
+
+public struct Spots: Codable {
+    public var mobile_time: Int
+    public var spot_id: Int
+    public var spot_number: Int
+    public var spot_name: String
+    public var ccs: Double
+    public var possibility: Double
+    
+    public init() {
+        self.mobile_time = 0
+        self.spot_id = 0
+        self.spot_number = 0
+        self.spot_name = ""
+        self.ccs = 0
+        self.possibility = 0
     }
 }

@@ -16,7 +16,7 @@ class TipsTownViewController: UIViewController {
     @IBOutlet weak var tipsTownImage: UIImageView!
     
     var serviceManager = ServiceManager()
-    var serviceName = "CLD"
+    var serviceName = "OSA"
     var userId: String = ""
     
     var delegate : ServiceViewPageDelegate?
@@ -128,51 +128,60 @@ class TipsTownViewController: UIViewController {
         self.view.addSubview(floaty)
     }
     
-//    func jsonToResult(json: String) -> FineLevelDetectionResult {
-//        let result = FineLevelDetectionResult.init()
+    
+//    func jsonToResult(json: String) -> CoarseLevelDetectionResult {
+//        let result = CoarseLevelDetectionResult.init()
 //        let decoder = JSONDecoder()
 //
 //        let jsonString = json
 //
-//        if let data = jsonString.data(using: .utf8), let decoded = try? decoder.decode(FineLevelDetectionResult.self, from: data) {
+//        if let data = jsonString.data(using: .utf8), let decoded = try? decoder.decode(CoarseLevelDetectionResult.self, from: data) {
 //            return decoded
 //        }
 //
 //        return result
 //    }
     
-    func jsonToResult(json: String) -> CoarseLevelDetectionResult {
-        let result = CoarseLevelDetectionResult.init()
+    func jsonToResult(json: String) -> OnSpotAuthorizationResult {
+        let result = OnSpotAuthorizationResult.init()
         let decoder = JSONDecoder()
 
         let jsonString = json
 
-        if let data = jsonString.data(using: .utf8), let decoded = try? decoder.decode(CoarseLevelDetectionResult.self, from: data) {
+        if let data = jsonString.data(using: .utf8), let decoded = try? decoder.decode(OnSpotAuthorizationResult.self, from: data) {
             return decoded
         }
 
         return result
     }
     
+//    func decodeSpot(data: OnSpotAuthorizationResult) -> Void {
+//        if let data = j
+//    }
+    
     func getResult() {
         serviceManager.getResult(completion: { [self] statusCode, returnedString in
             if (statusCode == 200) {
-                print(returnedString)
+                print("VC : ", returnedString)
                 let result = jsonToResult(json: returnedString)
+                print(result)
                 
-                if (result.building_name != "") {
-                    self.pastBuilding = currentBuilding
-                    self.pastLevel = currentLevel
-                    
-                    self.buildingLabel.text = result.building_name
-                    self.levelLabel.text = result.level_name
-                    
-                    self.currentBuilding = result.building_name
-                    self.currentLevel = result.level_name
-                } else {
-                    self.buildingLabel.text = "Empty"
-                    self.levelLabel.text = "Empty"
-                }
+//                if (result.building_name != "") {
+//                    self.pastBuilding = currentBuilding
+//                    self.pastLevel = currentLevel
+//
+//                    self.buildingLabel.text = result.building_name
+//                    self.levelLabel.text = result.level_name
+//
+//                    self.currentBuilding = result.building_name
+//                    self.currentLevel = result.level_name
+//                } else {
+//
+//                    DispatchQueue.main.async {
+//                        self.buildingLabel.text = "Empty"
+//                        self.levelLabel.text = "Empty"
+//                    }
+//                }
             }
         })
     }

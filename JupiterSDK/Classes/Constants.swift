@@ -38,3 +38,4 @@ let LOOKING_FLAG_STEP_CHECK_SIZE: Int = 3
 
 let MODE_PDR = "pdr"
 let MODE_DR = "dr"
+let MODE_AUTO = "auto"

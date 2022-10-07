@@ -1,6 +1,5 @@
 import Foundation
 import CoreMotion
-import Alamofire
 
 public class ServiceManager: Observation {
     
@@ -17,12 +16,12 @@ public class ServiceManager: Observation {
                 // Map Matching
                 if (self.isMapMatching) {
                     let correctResult = correct(building: result.building_name, level: result.level_name, x: result.x, y: result.y, heading: result.absolute_heading, mode: self.mode)
-                    
+
                     if (correctResult.isSuccess) {
                         result.x = correctResult.xyh[0]
                         result.y = correctResult.xyh[1]
                         result.absolute_heading = correctResult.xyh[2]
-                        
+
                         self.pastMatchingResult = result
                     } else {
                         result = pastMatchingResult
@@ -145,8 +144,6 @@ public class ServiceManager: Observation {
     let USER_URL = "https://where-run-user-skrgq3jc5a-du.a.run.app/user"
     var inputReceivedForce: [ReceivedForce] = [ReceivedForce(user_id: "", mobile_time: 0, ble: [:], pressure: 0)]
     var inputUserVelocity: [UserVelocity] = [UserVelocity(user_id: "", mobile_time: 0, index: 0, length: 0, heading: 0, looking: true)]
-    
-    var inputForOSA: [ReceivedForce] = [ReceivedForce(user_id: "", mobile_time: 0, ble: [:], pressure: 0)]
     var isStartOSA: Bool = false
     // ------------------- //
     
@@ -257,16 +254,7 @@ public class ServiceManager: Observation {
         var numInput = 7
         
         switch(service) {
-        case "SD":
-            numInput = 7
-            interval = 1/2
-        case "BD":
-            numInput = 7
-            interval = 1/2
         case "CLD":
-            numInput = 7
-            interval = 1/2
-        case "FLD":
             numInput = 7
             interval = 1/2
         case "CLE":
@@ -338,18 +326,21 @@ public class ServiceManager: Observation {
                                     let key: String = "\(buildingName)_\(levelName)"
 
                                     let url = "https://storage.googleapis.com/jupiter_image/pp/\(self.sector_id)/\(key).csv"
-                                    AF.request(url).response { response in
-                                        var statusCode = 404
-                                        if let code = response.response?.statusCode {
-                                            statusCode = code
-                                        }
+                                    // [http 비동기 방식을 사용해서 http 요청 수행 실시]
+                                    let urlComponents = URLComponents(string: url)
+                                    var requestURL = URLRequest(url: (urlComponents?.url)!)
+                                    let dataTask = URLSession.shared.dataTask(with: requestURL, completionHandler: { (data, response, error) in
+                                        let statusCode = (response as? HTTPURLResponse)?.statusCode ?? 500
 
                                         if (statusCode == 200) {
-                                            if let data = response.data, let utf8Text = String(data: data, encoding: .utf8) {
-                                                ( self.Road[key], self.RoadHeading[key] ) = self.parseRoad(data: utf8Text)
+                                            if let responseData = data {
+                                                if let utf8Text = String(data: responseData, encoding: .utf8) {
+                                                    ( self.Road[key], self.RoadHeading[key] ) = self.parseRoad(data: utf8Text)
+                                                }
                                             }
                                         }
-                                    }
+                                    })
+                                    dataTask.resume()
                                 }
                             }
                         }
@@ -393,24 +384,9 @@ public class ServiceManager: Observation {
         let currentTime: Int = getCurrentTimeInMilliseconds()
         
         switch(self.service) {
-        case "SD":
-            let input = SectorDetection(user_id: self.user_id, mobile_time: currentTime)
-            NetworkManager.shared.postSD(url: SD_URL, input: input, completion: { statusCode, returnedString in
-                completion(statusCode, returnedString)
-            })
-        case "BD":
-            let input = BuildingDetection(user_id: self.user_id, mobile_time: currentTime)
-            NetworkManager.shared.postBD(url: BD_URL, input: input, completion: { statusCode, returnedString in
-                completion(statusCode, returnedString)
-            })
         case "CLD":
             let input = CoarseLevelDetection(user_id: self.user_id, mobile_time: currentTime)
             NetworkManager.shared.postCLD(url: CLD_URL, input: input, completion: { statusCode, returnedString in
-                completion(statusCode, returnedString)
-            })
-        case "FLD":
-            let input = FineLevelDetection(user_id: self.user_id, mobile_time: currentTime, sector_id: self.sector_id)
-            NetworkManager.shared.postFLD(url: FLD_URL, input: input, completion: { statusCode, returnedString in
                 completion(statusCode, returnedString)
             })
         case "CLE":
@@ -420,6 +396,10 @@ public class ServiceManager: Observation {
             })
         case "OSA":
             print("OSA Result")
+            let input = OnSpotAuthorization(user_id: self.user_id, mobile_time: currentTime)
+            NetworkManager.shared.postOSA(url: CLE_URL, input: input, completion: { statusCode, returnedString in
+                completion(statusCode, returnedString)
+            })
         default:
             completion(500, "Unvalid Service Name")
         }
@@ -578,11 +558,7 @@ public class ServiceManager: Observation {
     
     func startTimer() {
         if (receivedForceTimer == nil) {
-            if (self.service == "OSA") {
-                receivedForceTimer = Timer.scheduledTimer(timeInterval: RF_INTERVAL, target: self, selector: #selector(self.osaTimerUpdate), userInfo: nil, repeats: true)
-            } else {
-                receivedForceTimer = Timer.scheduledTimer(timeInterval: RF_INTERVAL, target: self, selector: #selector(self.receivedForceTimerUpdate), userInfo: nil, repeats: true)
-            }
+            receivedForceTimer = Timer.scheduledTimer(timeInterval: RF_INTERVAL, target: self, selector: #selector(self.receivedForceTimerUpdate), userInfo: nil, repeats: true)
         }
         
         if (userVelocityTimer == nil && self.service == "FLT") {
@@ -779,6 +755,7 @@ public class ServiceManager: Observation {
                                         if (measurementUpdateFlag && (diffIndex<2)) {
                                             let muOutput = measurementUpdate(timeUpdatePosition: timeUpdatePosition, serverOutput: result)
                                             let muResult = fromServerToResult(fromServer: muOutput, velocity: displayOutput.velocity)
+                                            print("Measurement Update")
                                             self.tracking(input: muResult)
                                         }
                                         timeUpdatePositionInit(serverOutput: result)
@@ -798,29 +775,6 @@ public class ServiceManager: Observation {
                 }
             })
         }
-    }
-    
-    @objc func osaTimerUpdate() {
-        let currentTime = getCurrentTimeInMilliseconds()
-        
-        var bleDictionary = bleManager.bleAvg
-        if (deviceModel == "iPhone 13 Mini" || deviceModel == "iPhone 12 Mini") {
-            bleDictionary.keys.forEach { bleDictionary[$0] = bleDictionary[$0]! + 7 }
-        }
-        
-        if (!bleDictionary.isEmpty) {
-            let data = ReceivedForce(user_id: self.user_id, mobile_time: currentTime, ble: bleDictionary, pressure: self.pressure)
-            
-            inputForOSA.append(data)
-            if (inputForOSA[0].user_id == "") {
-                inputForOSA.remove(at: 0)
-            }
-        }
-        
-        if (inputForOSA.count == 3) {
-            inputForOSA.remove(at: 0)
-        }
-//        print(inputForOSA)
     }
     
     @objc func collectTimerUpdate() {
@@ -1010,35 +964,47 @@ public class ServiceManager: Observation {
     }
     
     func postUser(url: String, input: UserInfo, completion: @escaping (Int, String) -> Void) {
-        // [http 요청 헤더 지정]
-        let header : HTTPHeaders = [
-            "Content-Type" : "application/json"
-        ]
+        // [http 비동기 방식을 사용해서 http 요청 수행 실시]
+        let urlComponents = URLComponents(string: url)
+        var requestURL = URLRequest(url: (urlComponents?.url)!)
         
-        AF.request(
-            url, // [주소]
-            method: .post, // [전송 타입]
-            parameters: input, // [전송 데이터]
-            encoder: JSONParameterEncoder.default,
-            headers: header // [헤더 지정]
-        )
-        .validate(statusCode: 200..<300)
-        .responseData { [self] response in
-            switch response.result {
-            case .success(let res):
-                do {
-                    let returnedString = String(decoding: response.data!, as: UTF8.self)
-                    completion(200, returnedString)
-                }
-                catch (let err){
-                    completion(500, "Fail")
-                }
-                break
-            case .failure(let err):
-                completion(500, "Fail")
-                break
+        requestURL.httpMethod = "POST"
+        let encodingData = JSONConverter.encodeJson(param: input)
+        requestURL.httpBody = encodingData
+        requestURL.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        requestURL.setValue("\(encodingData)", forHTTPHeaderField: "Content-Length")
+        
+        let dataTask = URLSession.shared.dataTask(with: requestURL, completionHandler: { (data, response, error) in
+            
+            // [error가 존재하면 종료]
+            guard error == nil else {
+                // [콜백 반환]
+                completion(500, error?.localizedDescription ?? "Fail")
+                return
             }
-        }
+            
+            // [status 코드 체크 실시]
+            let successsRange = 200..<300
+            guard let statusCode = (response as? HTTPURLResponse)?.statusCode, successsRange.contains(statusCode)
+            else {
+                // [콜백 반환]
+                completion(500, (response as? HTTPURLResponse)?.description ?? "Fail")
+                return
+            }
+            
+            // [response 데이터 획득]
+            let resultCode = (response as? HTTPURLResponse)?.statusCode ?? 500 // [상태 코드]
+            let resultLen = data! // [데이터 길이]
+            let resultData = String(data: resultLen, encoding: .utf8) ?? "" // [데이터 확인]
+            
+            // [콜백 반환]
+            DispatchQueue.main.async {
+                completion(resultCode, resultData)
+            }
+        })
+        
+        // [network 통신 실행]
+        dataTask.resume()
     }
     
     func jsonToCardList(json: String) -> CardList {

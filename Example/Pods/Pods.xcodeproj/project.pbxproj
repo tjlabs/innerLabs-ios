@@ -558,6 +558,7 @@
 		B373B6DE977C39AC68DC4898FA9A1579 /* YokoTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6922FF24F19102082A3B8B390BB69553 /* YokoTextField.swift */; };
 		B3A3E9519EB5DAD3E4350DFB8DB96AFC /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 856A937A33137AE59C951503C0C99B10 /* Foundation.framework */; };
 		B3B40468A58640ACD5FCDFD2678F02C5 /* FIRAnalyticsInterop.h in Headers */ = {isa = PBXBuildFile; fileRef = 1C391EA19114A764ADB08DFB17301BFF /* FIRAnalyticsInterop.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		B3C404D528ED688C00FDDDD8 /* JSONConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3C404D428ED688C00FDDDD8 /* JSONConverter.swift */; };
 		B3D857479A200A59048F1719CFFD1F3A /* FIRInstallationsStoredAuthToken.h in Headers */ = {isa = PBXBuildFile; fileRef = EE40F17E2289A3C4D73FD96288A46123 /* FIRInstallationsStoredAuthToken.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		B4015BE1313094DACA3DBB86191C5030 /* CombinedHighlighter.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD147C27BC44979449AA7E377D7983E7 /* CombinedHighlighter.swift */; };
 		B43017FEC99D227D4CDD81DD2C27D9D9 /* ConstraintMakerPrioritizable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CDCFBC71B6848BDCD4765BDD5558A41 /* ConstraintMakerPrioritizable.swift */; };
@@ -1720,6 +1721,7 @@
 		B3657359568EF72B6ADE5427635835B6 /* UnitStatusEstimator.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = UnitStatusEstimator.swift; path = JupiterSDK/Classes/UnitStatusEstimator.swift; sourceTree = "<group>"; };
 		B396F569A8C3FA0395013D45DE0CE1EE /* GULNSData+zlib.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "GULNSData+zlib.m"; path = "GoogleUtilities/NSData+zlib/GULNSData+zlib.m"; sourceTree = "<group>"; };
 		B3B92D7FFE877E5BCD5D999FDC947197 /* ImageDownloaderDelegate.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ImageDownloaderDelegate.swift; path = Sources/Networking/ImageDownloaderDelegate.swift; sourceTree = "<group>"; };
+		B3C404D428ED688C00FDDDD8 /* JSONConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = JSONConverter.swift; path = JupiterSDK/Classes/JSONConverter.swift; sourceTree = "<group>"; };
 		B41F54D797A8EB7DFC7F856928DABA66 /* ChartHighlighter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ChartHighlighter.swift; path = Source/Charts/Highlight/ChartHighlighter.swift; sourceTree = "<group>"; };
 		B43874C6CBB50E7134FBEC24BABFE14F /* GoogleUtilities */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = GoogleUtilities; path = GoogleUtilities.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B46AE25FCE5BBDF7340267270D7FA2CC /* UIButton+Kingfisher.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "UIButton+Kingfisher.swift"; path = "Sources/Extensions/UIButton+Kingfisher.swift"; sourceTree = "<group>"; };
@@ -3112,6 +3114,7 @@
 				A6773F4A37601E8F25DDF997B6950EB8 /* UnitAttitudeEstimator.swift */,
 				1D21EB07FB69A59C118C53C99CD6039F /* UnitDRGenerator.swift */,
 				B3657359568EF72B6ADE5427635835B6 /* UnitStatusEstimator.swift */,
+				B3C404D428ED688C00FDDDD8 /* JSONConverter.swift */,
 				D1D9856478627C7E7AF4242C09BD3AD5 /* Pod */,
 				5C150949615EE41FE029C059C4FB46C3 /* Support Files */,
 			);
@@ -5254,6 +5257,7 @@
 				A3731DE5C47C689EFE85B79C55C4F8CD /* DRDistanceEstimator.swift in Sources */,
 				B1CB78A64C6F03E380C0543852590AA7 /* Entity.swift in Sources */,
 				97A6816054162D7771B4CCF25DB40D92 /* HeadingFunctions.swift in Sources */,
+				B3C404D528ED688C00FDDDD8 /* JSONConverter.swift in Sources */,
 				A43AE630004632EFDB97A7888CBF08E5 /* JupiterSDK-dummy.m in Sources */,
 				DD601C3796C774ECD62D3DB5A4659A49 /* LinkedList.swift in Sources */,
 				476F118617349859B7034E70451A666D /* NetworkManager.swift in Sources */,
