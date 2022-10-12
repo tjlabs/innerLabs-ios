@@ -94,29 +94,17 @@ public class DRDistanceEstimator: NSObject {
         preMagSmoothing = magSmoothing
         preNavGyroZSmoothing = navGyroZSmoothing
         
-//        let accVar = CF.calSensorAxisVariance(curArray: accQueue, bufferMean: accSmoothing)
-//        let gyroVar = CF.calSensorAxisVariance(curArray: gyroQueue, bufferMean: gyroSmoothing)
         var magVar = CF.calSensorAxisVariance(curArray: magQueue, bufferMean: magSmoothing)
         
         if (featureExtractionCount == 0) {
             magVar = lastMagQueue
         }
-
-//        let accNormalizeConstant: Double = 7
-//        let gyroNormalizeConstant: Double = 5
-//        let magNormalizeConstant: Double = 500
-        
-        // Mag //
-//        let inputMag: [Float32] = [Float(0.1*(magVar.x/magNormalizeConstant)) + 0.9*preInputMag[0],
-//                                   Float(0.1*(magVar.y/magNormalizeConstant)) + 0.9*preInputMag[1],
-//                                   Float(0.1*(magVar.z/magNormalizeConstant)) + 0.9*preInputMag[2]]
         
         let inputMag: [Float32] = [Float(0.1*(magVar.x)) + 0.9*preInputMag[0],
                                    Float(0.1*(magVar.y)) + 0.9*preInputMag[1],
                                    Float(0.1*(magVar.z)) + 0.9*preInputMag[2],
                                    Float(magNorm)]
         // ------ //
-        
         finalUnitResult.isIndexChanged = false
         
         if (mlpEpochCount == 0) {
@@ -124,9 +112,6 @@ public class DRDistanceEstimator: NSObject {
             var count = 0
             var output = 0
             for i in 0..<inputMag.count {
-//                if (inputMag[i] > 0.001) {
-//                    count += 1
-//                }
                 
                 if (inputMag[i] > 0.7) {
                     count += 1

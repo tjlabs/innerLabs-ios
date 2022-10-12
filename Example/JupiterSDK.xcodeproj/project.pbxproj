@@ -76,6 +76,7 @@
 		B3D194DF282E2782004E6F9A /* GuideViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3D194DE282E2782004E6F9A /* GuideViewController.swift */; };
 		B3D194E2282E2B2B004E6F9A /* LocationTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3D194E0282E2B2B004E6F9A /* LocationTableViewCell.swift */; };
 		B3D194E3282E2B2B004E6F9A /* LocationTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B3D194E1282E2B2B004E6F9A /* LocationTableViewCell.xib */; };
+		B3D397A728F5A64700B5DBED /* SpotViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3D397A628F5A64700B5DBED /* SpotViewController.swift */; };
 		B3D488F0289B4D5500A8154C /* UIColorExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3D488EF289B4D5500A8154C /* UIColorExtension.swift */; };
 		B3D488F6289B8B4900A8154C /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = B3D488F5289B8B4900A8154C /* GoogleService-Info.plist */; };
 		B3D48909289B96F900A8154C /* RemoteConfigManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3D48908289B96F900A8154C /* RemoteConfigManager.swift */; };
@@ -185,6 +186,7 @@
 		B3D194DE282E2782004E6F9A /* GuideViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GuideViewController.swift; sourceTree = "<group>"; };
 		B3D194E0282E2B2B004E6F9A /* LocationTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationTableViewCell.swift; sourceTree = "<group>"; };
 		B3D194E1282E2B2B004E6F9A /* LocationTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = LocationTableViewCell.xib; sourceTree = "<group>"; };
+		B3D397A628F5A64700B5DBED /* SpotViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotViewController.swift; sourceTree = "<group>"; };
 		B3D488EF289B4D5500A8154C /* UIColorExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIColorExtension.swift; sourceTree = "<group>"; };
 		B3D488F5289B8B4900A8154C /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		B3D48908289B96F900A8154C /* RemoteConfigManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteConfigManager.swift; sourceTree = "<group>"; };
@@ -364,6 +366,7 @@
 				B31EC7D82876C03A00799659 /* ServiceViewController.swift */,
 				B30EED7B28936CB5009A3EDA /* TipsTownViewController.swift */,
 				B30EED862893B64C009A3EDA /* CollectViewController.swift */,
+				B3D397A628F5A64700B5DBED /* SpotViewController.swift */,
 			);
 			name = ViewController;
 			sourceTree = "<group>";
@@ -733,6 +736,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B3D397A728F5A64700B5DBED /* SpotViewController.swift in Sources */,
 				B3D194DF282E2782004E6F9A /* GuideViewController.swift in Sources */,
 				B3C6F99E289CCF78003FB402 /* NSObjectExtension.swift in Sources */,
 				B3B156DE282397AF0058B538 /* ImageOverlay.swift in Sources */,

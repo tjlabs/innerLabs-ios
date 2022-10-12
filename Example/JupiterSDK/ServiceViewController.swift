@@ -45,6 +45,9 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
                 }
             }
         }
+        
+//        print("(Update) Interval : \(result.mobile_time - observerTime)")
+        observerTime = result.mobile_time
     }
     
     @IBOutlet var ServiceView: UIView!
@@ -109,6 +112,7 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
     var countTap: Int = 0
     
     var headingImage = UIImage(named: "heading")
+    var observerTime = 0
     
     // Level Collection View
     @IBOutlet weak var levelCollectionView: UICollectionView!

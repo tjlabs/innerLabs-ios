@@ -16,7 +16,7 @@ public class ServiceManager: Observation {
                 // Map Matching
                 if (self.isMapMatching) {
                     let correctResult = correct(building: result.building_name, level: result.level_name, x: result.x, y: result.y, heading: result.absolute_heading, mode: self.mode)
-
+                    
                     if (correctResult.isSuccess) {
                         result.x = correctResult.xyh[0]
                         result.y = correctResult.xyh[1]
@@ -28,6 +28,7 @@ public class ServiceManager: Observation {
                     }
                 }
                 displayOutput.heading = result.absolute_heading
+//                print("(Heading) Output : \(result.absolute_heading)")
                 
                 // Averaging
                 if (!pastResult.isEmpty) {
@@ -46,17 +47,33 @@ public class ServiceManager: Observation {
                     pastResult[1] = result.y
                     pastResult[2] = result.absolute_heading
                 }
-            }
-            
-            // For COEX B1
-            if (result.building_name == "COEX" && result.level_name == "B1") {
                 
-                result.x = 200
-                result.y = 207
-                result.absolute_heading = 0
+                var updatedResult = FineLocationTrackingResult()
+                updatedResult.mobile_time = getCurrentTimeInMilliseconds()
+                updatedResult.building_name = result.building_name
+                updatedResult.level_name = result.level_name
+                updatedResult.scc = result.scc
+                updatedResult.scr = result.scr
+                updatedResult.x = result.x
+                updatedResult.y = result.y
+                updatedResult.absolute_heading = result.absolute_heading
+                updatedResult.phase = result.phase
+                updatedResult.calculated_time = result.calculated_time
+                updatedResult.index = result.index
+                updatedResult.velocity = result.velocity
+                
+                self.lastTrackingTime = updatedResult.mobile_time
+                self.lastResult = updatedResult
+                
+                observer.update(result: updatedResult)
             }
-            
-            observer.update(result: result)
+            // For COEX B1
+//            if (result.building_name == "COEX" && result.level_name == "B1") {
+//
+//                result.x = 200
+//                result.y = 207
+//                result.absolute_heading = 0
+//            }
         }
     }
     
@@ -208,11 +225,13 @@ public class ServiceManager: Observation {
     var timeActiveRF: Double = 0
     var timeActiveUV: Double = 0
     var timeUpdateInSleep: Double = 0
+    let STOP_THRESHOLD: Double = 0.5 // 0.5 sec
     let SLEEP_THRESHOLD: Double = 600 // 10분
     
+    var lastTrackingTime: Int = 0
+    var lastResult = FineLocationTrackingResult()
     let SQUARE_RANGE: Double = 10
     var pastMatchingResult = FineLocationTrackingResult()
-    
     
     public override init() {
         deviceModel = UIDevice.modelName
@@ -255,7 +274,7 @@ public class ServiceManager: Observation {
         
         switch(service) {
         case "CLD":
-            numInput = 7
+            numInput = 3
             interval = 1/2
         case "CLE":
             numInput = 7
@@ -264,7 +283,7 @@ public class ServiceManager: Observation {
             numInput = 6
             interval = 1/5
         case "OSA":
-            numInput = 6
+            numInput = 3
             interval = 1/5
         default:
             print("(Error) Fail to initialize the service")
@@ -395,9 +414,8 @@ public class ServiceManager: Observation {
                 completion(statusCode, returnedString)
             })
         case "OSA":
-            print("OSA Result")
             let input = OnSpotAuthorization(user_id: self.user_id, mobile_time: currentTime)
-            NetworkManager.shared.postOSA(url: CLE_URL, input: input, completion: { statusCode, returnedString in
+            NetworkManager.shared.postOSA(url: OSA_URL, input: input, completion: { statusCode, returnedString in
                 completion(statusCode, returnedString)
             })
         default:
@@ -713,8 +731,12 @@ public class ServiceManager: Observation {
         } else {
             // UV가 발생하지 않음
             timeActiveUV += UV_INTERVAL
+            if (timeActiveUV >= STOP_THRESHOLD) {
+                displayOutput.velocity = 0
+            }
+            
             if (timeActiveUV >= SLEEP_THRESHOLD) {
-                print("Enter Sleep Mode")
+                print("(Jupiter) Enter Sleep Mode")
                 isActiveService = false
                 timeActiveUV = 0
             }
@@ -722,11 +744,12 @@ public class ServiceManager: Observation {
     }
     
     @objc func requestTimerUpdate() {
+        let currentTime = getCurrentTimeInMilliseconds()
+        
         if (self.isAnswered) {
             self.isAnswered = false
             
             // Request FLT
-            let currentTime = getCurrentTimeInMilliseconds()
             nowTime = currentTime
 
             let input = FineLocationTracking(user_id: user_id, mobile_time: currentTime, sector_id: sector_id, phase: self.phase)
@@ -740,7 +763,7 @@ public class ServiceManager: Observation {
                         displayOutput.building = result.building_name
                         displayOutput.level = result.level_name
                         
-                        if ((result.index - indexPast) < 10) {
+                        if ((result.index - indexPast) < 6) {
                             displayOutput.scc = result.scc
                             displayOutput.phase = String(result.phase)
                             displayOutput.indexRx = result.index
@@ -752,10 +775,10 @@ public class ServiceManager: Observation {
                                     if (!(result.x == 0 && result.y == 0)) {
                                         // Measurment Update
                                         let diffIndex = abs(indexSend - result.index)
-                                        if (measurementUpdateFlag && (diffIndex<2)) {
+                                        if (measurementUpdateFlag && (diffIndex<1)) {
                                             let muOutput = measurementUpdate(timeUpdatePosition: timeUpdatePosition, serverOutput: result)
                                             let muResult = fromServerToResult(fromServer: muOutput, velocity: displayOutput.velocity)
-                                            print("Measurement Update")
+                                            
                                             self.tracking(input: muResult)
                                         }
                                         timeUpdatePositionInit(serverOutput: result)
@@ -774,6 +797,13 @@ public class ServiceManager: Observation {
                     }
                 }
             })
+        } else {
+            let diffUpdatedTime: Int = currentTime - self.lastTrackingTime
+            if (diffUpdatedTime > 950 && self.lastTrackingTime != 0) {
+//                print("(Update) Diff : \(diffUpdatedTime)")
+                
+                self.tracking(input: self.lastResult)
+            }
         }
     }
     
@@ -924,14 +954,17 @@ public class ServiceManager: Observation {
                                         }
                                     }
                                 }
-                                
+                    
                                 if (!diffHeading.isEmpty) {
                                     let idxHeading = diffHeading.firstIndex(of: diffHeading.min()!)
                                     let minHeading = Double(headingData[idxHeading!])!
                                     idh[2] = minHeading
-                                    
+                                    if (abs(heading-minHeading) > 60) {
+                                        idh[1] = idh[1] + 8
+                                    }
                                     path[2] = minHeading
                                     path[3] = 1
+                                    
                                 }
                             }
                             idhArray.append(idh)
@@ -950,6 +983,7 @@ public class ServiceManager: Observation {
                         let minData: [Double] = sortedIdh[0]
                         index = Int(minData[0])
                         if (mode == "dr") {
+//                            print("\(sortedIdh)")
                             correctedHeading = minData[2]
                         } else {
                             correctedHeading = heading
@@ -1068,6 +1102,7 @@ public class ServiceManager: Observation {
         timeUpdateOutput.mobile_time = mobileTime
 
         measurementUpdateFlag = true
+//        print("(Heading) TU : \(timeUpdatePosition.heading)")
 
         return timeUpdateOutput
     }
@@ -1086,6 +1121,7 @@ public class ServiceManager: Observation {
         measurementOutput.y = measurementPosition.y
         kalmanP -= kalmanK * kalmanP
         headingKalmanP -= headingKalmanK * headingKalmanP
+//        print("(Heading) MU : \(timeUpdatePosition.heading) , \(measurementOutput.absolute_heading), \(timeUpdatePosition.heading - measurementOutput.absolute_heading)")
 
         return measurementOutput
     }

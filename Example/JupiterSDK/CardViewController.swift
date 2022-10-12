@@ -45,6 +45,8 @@ class CardViewController: UIViewController, ServiceViewPageDelegate, GalleryView
     var isOneStepPaging = true
     var isCardSmall = true
     
+    var serviceManager = ServiceManager()
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(false)
         initCardVC()
@@ -52,6 +54,8 @@ class CardViewController: UIViewController, ServiceViewPageDelegate, GalleryView
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        serviceManager.startService(id: self.uuid, sector_id: 0, service: "CLD", mode: "pdr")
         
         blackView.backgroundColor = UIColor.black
         blackView.alpha = 0
@@ -370,6 +374,7 @@ extension CardViewController: UICollectionViewDataSource, UICollectionViewDelega
         let mod = indexPath.item%cardCount
         
         let sector_id = cardItemData[mod].sector_id
+        serviceManager.stopService()
         
         if (sector_id == 0) {
             guard let guideVC = self.storyboard?.instantiateViewController(withIdentifier: "GuideViewController") as? GuideViewController else { return }
@@ -389,11 +394,15 @@ extension CardViewController: UICollectionViewDataSource, UICollectionViewDelega
             galleryVC.page = currentPage
             self.navigationController?.pushViewController(galleryVC, animated: true)
         } else if (sector_id == 8) {
-            guard let tipstownVC = self.storyboard?.instantiateViewController(withIdentifier: "TipsTownViewController") as? TipsTownViewController else { return }
-            tipstownVC.cardData = cardItemData[mod]
-            tipstownVC.userId = uuid
-            tipstownVC.page = currentPage
-            self.navigationController?.pushViewController(tipstownVC, animated: true)
+//            guard let tipstownVC = self.storyboard?.instantiateViewController(withIdentifier: "TipsTownViewController") as? TipsTownViewController else { return }
+//            tipstownVC.cardData = cardItemData[mod]
+//            tipstownVC.userId = uuid
+//            tipstownVC.page = currentPage
+            guard let spotVC = self.storyboard?.instantiateViewController(withIdentifier: "SpotViewController") as? SpotViewController else { return }
+            spotVC.cardData = cardItemData[mod]
+            spotVC.userId = uuid
+            spotVC.page = currentPage
+            self.navigationController?.pushViewController(spotVC, animated: true)
         } else {
             guard let serviceVC = self.storyboard?.instantiateViewController(withIdentifier: "ServiceViewController") as? ServiceViewController else { return }
             serviceVC.cardData = cardItemData[mod]

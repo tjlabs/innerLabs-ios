@@ -162,9 +162,9 @@ class TipsTownViewController: UIViewController {
     func getResult() {
         serviceManager.getResult(completion: { [self] statusCode, returnedString in
             if (statusCode == 200) {
-                print("VC : ", returnedString)
-                let result = jsonToResult(json: returnedString)
+                let result = decodeOSA(json: returnedString)
                 print(result)
+//                print(result.count)
                 
 //                if (result.building_name != "") {
 //                    self.pastBuilding = currentBuilding

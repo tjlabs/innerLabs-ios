@@ -41,6 +41,7 @@ public class NetworkManager {
             let resultData = String(data: resultLen, encoding: .utf8) ?? "" // [데이터 확인]
 //            print("")
 //            print("====================================")
+//            print(input)
 //            print("http 통신 성공]")
 //            print("-------------------------------")
 //            print("주 소 :: ", requestURL)
@@ -232,7 +233,9 @@ public class NetworkManager {
             // [error가 존재하면 종료]
             guard error == nil else {
                 // [콜백 반환]
-                completion(500, error?.localizedDescription ?? "Fail")
+                DispatchQueue.main.async {
+                    completion(500, error?.localizedDescription ?? "Fail")
+                }
                 return
             }
             
@@ -241,14 +244,18 @@ public class NetworkManager {
             guard let statusCode = (response as? HTTPURLResponse)?.statusCode, successsRange.contains(statusCode)
             else {
                 // [콜백 반환]
-                completion(500, (response as? HTTPURLResponse)?.description ?? "Fail")
+                DispatchQueue.main.async {
+                    completion(500, (response as? HTTPURLResponse)?.description ?? "Fail")
+                }
                 return
             }
             
             // [response 데이터 획득]
             let resultCode = (response as? HTTPURLResponse)?.statusCode ?? 500 // [상태 코드]
             guard let resultLen = data else {
-                completion(500, (response as? HTTPURLResponse)?.description ?? "Fail")
+                DispatchQueue.main.async {
+                    completion(500, (response as? HTTPURLResponse)?.description ?? "Fail")
+                }
                 return
             }
             let resultData = String(data: resultLen, encoding: .utf8) ?? "" // [데이터 확인]

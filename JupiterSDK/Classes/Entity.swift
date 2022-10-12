@@ -283,18 +283,42 @@ public struct OnSpotAuthorizationResult: Codable {
 
 public struct Spots: Codable {
     public var mobile_time: Int
+    public var sector_name: String
+    public var building_name: String
+    public var level_name: String
     public var spot_id: Int
     public var spot_number: Int
     public var spot_name: String
+    public var structure_feature_id: Int
+    public var spot_x: Int
+    public var spot_y: Int
     public var ccs: Double
-    public var possibility: Double
     
     public init() {
         self.mobile_time = 0
+        self.sector_name = ""
+        self.building_name = ""
+        self.level_name = ""
         self.spot_id = 0
         self.spot_number = 0
         self.spot_name = ""
+        self.structure_feature_id = 0
+        self.spot_x = 0
+        self.spot_y = 0
         self.ccs = 0
-        self.possibility = 0
     }
+}
+
+public func decodeOSA(json: String) -> OnSpotAuthorizationResult {
+    let result = OnSpotAuthorizationResult.init()
+    let decoder = JSONDecoder()
+
+    let jsonString = json
+
+    if let data = jsonString.data(using: .utf8), let decoded = try? decoder.decode(OnSpotAuthorizationResult.self, from: data) {
+
+        return decoded
+    }
+
+    return result
 }
