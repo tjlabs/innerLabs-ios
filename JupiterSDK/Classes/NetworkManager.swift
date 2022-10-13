@@ -28,7 +28,10 @@ public class NetworkManager {
         
         let dataTask = URLSession.shared.dataTask(with: requestURL, completionHandler: { (data, response, error) in
             // [error가 존재하면 종료]
-            guard error == nil else { return }
+            guard error == nil else {
+                print("(Jupiter) Error : Fail to send BLE to Jupiter")
+                return
+            }
             
             // [status 코드 체크 실시]
             let successsRange = 200..<300

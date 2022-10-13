@@ -24,7 +24,12 @@ public class ServiceManager: Observation {
 
                         self.pastMatchingResult = result
                     } else {
+                        self.matchingFailCount += 1
                         result = pastMatchingResult
+                    }
+                    
+                    if (self.matchingFailCount > MATCHING_FAIL_THRESHOLD) {
+                        self.phase = 3
                     }
                 }
                 displayOutput.heading = result.absolute_heading
@@ -232,6 +237,12 @@ public class ServiceManager: Observation {
     var lastResult = FineLocationTrackingResult()
     let SQUARE_RANGE: Double = 10
     var pastMatchingResult = FineLocationTrackingResult()
+    var matchingFailCount: Int = 0
+    let MATCHING_FAIL_THRESHOLD: Int = 5
+    
+    var pastServerCoord: [Double] = [0, 0]
+    var isPastServerResult: Bool = false
+    let COORD_THRESHOLD: Double = 10
     
     public override init() {
         deviceModel = UIDevice.modelName
@@ -755,7 +766,7 @@ public class ServiceManager: Observation {
             let input = FineLocationTracking(user_id: user_id, mobile_time: currentTime, sector_id: sector_id, phase: self.phase)
             NetworkManager.shared.postFLT(url: FLT_URL, input: input, completion: { [self] statusCode, returnedString in
                 if (statusCode == 200) {
-                    let result = jsonToResult(json: returnedString)
+                    var result = jsonToResult(json: returnedString)
                     
                     if ((self.nowTime - result.mobile_time) <= RECENT_THRESHOLD) {
                         self.phase = result.phase
@@ -770,6 +781,16 @@ public class ServiceManager: Observation {
 
                             // Kalman Filter
                             if (result.mobile_time > preOutputMobileTime) {
+                                // Check Coord
+                                if (isPastServerResult) {
+                                    let diffX = pastServerCoord[0] - result.x
+                                    let diffY = pastServerCoord[1] - result.y
+                                    let diffNorm = sqrt(diffX*diffX + diffY*diffY)
+                                    if (diffNorm > COORD_THRESHOLD) {
+                                        self.phase = 3
+                                        result.phase = 3
+                                    }
+                                }
                                 if (result.phase == 4) {
                                     UV_INPUT_NUM = VAR_INPUT_NUM
                                     if (!(result.x == 0 && result.y == 0)) {
@@ -790,6 +811,9 @@ public class ServiceManager: Observation {
                                     self.tracking(input: finalResult)
                                 }
                                 preOutputMobileTime = result.mobile_time
+                                pastServerCoord[0] = result.x
+                                pastServerCoord[1] = result.y
+                                isPastServerResult = true
                             }
                             pastBuildingLevel = [displayOutput.building, displayOutput.level]
                         }
@@ -941,6 +965,7 @@ public class ServiceManager: Observation {
                             var path: [Double] = [xPath, yPath, 0, 0]
                             
                             let headingArray = mainHeading[i]
+                            var isValidIdh: Bool = true
                             if (!headingArray.isEmpty) {
                                 let headingData = headingArray.components(separatedBy: ",")
                                 var diffHeading = [Double]()
@@ -954,21 +979,23 @@ public class ServiceManager: Observation {
                                         }
                                     }
                                 }
-                    
+                                
                                 if (!diffHeading.isEmpty) {
                                     let idxHeading = diffHeading.firstIndex(of: diffHeading.min()!)
                                     let minHeading = Double(headingData[idxHeading!])!
                                     idh[2] = minHeading
                                     if (abs(heading-minHeading) > 60) {
-                                        idh[1] = idh[1] + 8
+                                        isValidIdh = false
                                     }
                                     path[2] = minHeading
                                     path[3] = 1
                                     
                                 }
                             }
-                            idhArray.append(idh)
-                            pathArray.append(path)
+                            if (isValidIdh) {
+                                idhArray.append(idh)
+                                pathArray.append(path)
+                            }
                         }
                     }
                 }
@@ -983,7 +1010,6 @@ public class ServiceManager: Observation {
                         let minData: [Double] = sortedIdh[0]
                         index = Int(minData[0])
                         if (mode == "dr") {
-//                            print("\(sortedIdh)")
                             correctedHeading = minData[2]
                         } else {
                             correctedHeading = heading
