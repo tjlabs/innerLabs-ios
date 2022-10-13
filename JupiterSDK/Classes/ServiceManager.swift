@@ -33,7 +33,6 @@ public class ServiceManager: Observation {
                     }
                 }
                 displayOutput.heading = result.absolute_heading
-//                print("(Heading) Output : \(result.absolute_heading)")
                 
                 // Averaging
                 if (!pastResult.isEmpty) {
