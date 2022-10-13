@@ -3,7 +3,7 @@ import CoreMotion
 
 public class ServiceManager: Observation {
     
-    func tracking(input: FineLocationTrackingResult) {
+    func tracking(input: FineLocationTrackingResult, isPast: Bool) {
         for observer in observers {
             var result = input
             
@@ -15,7 +15,7 @@ public class ServiceManager: Observation {
                 
                 // Map Matching
                 if (self.isMapMatching) {
-                    let correctResult = correct(building: result.building_name, level: result.level_name, x: result.x, y: result.y, heading: result.absolute_heading, mode: self.mode)
+                    let correctResult = correct(building: result.building_name, level: result.level_name, x: result.x, y: result.y, heading: result.absolute_heading, mode: self.mode, isPast: isPast)
                     
                     if (correctResult.isSuccess) {
                         result.x = correctResult.xyh[0]
@@ -23,12 +23,14 @@ public class ServiceManager: Observation {
                         result.absolute_heading = correctResult.xyh[2]
 
                         self.pastMatchingResult = result
+                        self.matchingFailCount = 0
                     } else {
                         self.matchingFailCount += 1
                         result = pastMatchingResult
                     }
                     
                     if (self.matchingFailCount > MATCHING_FAIL_THRESHOLD) {
+//                        print("(Error) Map Matching Fail A Lot")
                         self.phase = 3
                     }
                 }
@@ -241,7 +243,7 @@ public class ServiceManager: Observation {
     
     var pastServerCoord: [Double] = [0, 0]
     var isPastServerResult: Bool = false
-    let COORD_THRESHOLD: Double = 10
+    let COORD_THRESHOLD: Double = 20
     
     public override init() {
         deviceModel = UIDevice.modelName
@@ -686,7 +688,7 @@ public class ServiceManager: Observation {
                         let result = jsonToResult(json: returnedString)
                         let finalResult = fromServerToResult(fromServer: result, velocity: displayOutput.velocity)
                         print("(Tracking) Floor Changed")
-                        self.tracking(input: finalResult)
+                        self.tracking(input: finalResult, isPast: false)
                     }
                 })
                 floorUpdateRequestTimer = 0
@@ -719,7 +721,7 @@ public class ServiceManager: Observation {
                 if (timeUpdateFlag) {
                     let tuOutput = timeUpdate(length: curUnitDRLength, diffHeading: diffHeading, mobileTime: currentTime)
                     let tuResult = fromServerToResult(fromServer: tuOutput, velocity: displayOutput.velocity)
-                    self.tracking(input: tuResult)
+                    self.tracking(input: tuResult, isPast: false)
                 }
                 preUnitHeading = unitDRInfo.heading
                 
@@ -786,6 +788,7 @@ public class ServiceManager: Observation {
                                     let diffY = pastServerCoord[1] - result.y
                                     let diffNorm = sqrt(diffX*diffX + diffY*diffY)
                                     if (diffNorm > COORD_THRESHOLD) {
+//                                        print("(Error) Huge Coord diff")
                                         self.phase = 3
                                         result.phase = 3
                                     }
@@ -799,7 +802,7 @@ public class ServiceManager: Observation {
                                             let muOutput = measurementUpdate(timeUpdatePosition: timeUpdatePosition, serverOutput: result)
                                             let muResult = fromServerToResult(fromServer: muOutput, velocity: displayOutput.velocity)
                                             
-                                            self.tracking(input: muResult)
+                                            self.tracking(input: muResult, isPast: false)
                                         }
                                         timeUpdatePositionInit(serverOutput: result)
                                     }
@@ -807,7 +810,7 @@ public class ServiceManager: Observation {
                                     UV_INPUT_NUM = INIT_INPUT_NUM
                                     kalmanInit()
                                     let finalResult = fromServerToResult(fromServer: result, velocity: displayOutput.velocity)
-                                    self.tracking(input: finalResult)
+                                    self.tracking(input: finalResult, isPast: false)
                                 }
                                 preOutputMobileTime = result.mobile_time
                                 pastServerCoord[0] = result.x
@@ -823,9 +826,8 @@ public class ServiceManager: Observation {
         } else {
             let diffUpdatedTime: Int = currentTime - self.lastTrackingTime
             if (diffUpdatedTime > 950 && self.lastTrackingTime != 0) {
-//                print("(Update) Diff : \(diffUpdatedTime)")
-                
-                self.tracking(input: self.lastResult)
+//                print("(Update) result for guarantee 1Hz")
+                self.tracking(input: self.lastResult, isPast: true)
             }
         }
     }
@@ -926,10 +928,15 @@ public class ServiceManager: Observation {
         return (road, roadHeading)
     }
     
-    private func correct(building: String, level: String, x: Double, y: Double, heading: Double, mode: String) -> (isSuccess: Bool, xyh: [Double]) {
+    private func correct(building: String, level: String, x: Double, y: Double, heading: Double, mode: String, isPast :Bool) -> (isSuccess: Bool, xyh: [Double]) {
         var isSuccess: Bool = false
         var xyh: [Double] = [x, y, heading]
         let key: String = "\(building)_\(level)"
+        
+        if (isPast) {
+            isSuccess = true
+            return (isSuccess, xyh)
+        }
         
         if (!(building.isEmpty) && !(level.isEmpty)) {
             guard let mainRoad: [[Double]] = Road[key] else {
@@ -1127,7 +1134,6 @@ public class ServiceManager: Observation {
         timeUpdateOutput.mobile_time = mobileTime
 
         measurementUpdateFlag = true
-//        print("(Heading) TU : \(timeUpdatePosition.heading)")
 
         return timeUpdateOutput
     }

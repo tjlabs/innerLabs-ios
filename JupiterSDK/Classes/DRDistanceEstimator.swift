@@ -30,6 +30,7 @@ public class DRDistanceEstimator: NSObject {
     
     public var distance: Double = 0
     var preInputMag: [Float32] = [0, 0, 0]
+    var preMagNorm: Double = 0
     
     public func argmax(array: [Float]) -> Int {
         let output1 = array[0]
@@ -103,7 +104,7 @@ public class DRDistanceEstimator: NSObject {
         let inputMag: [Float32] = [Float(0.1*(magVar.x)) + 0.9*preInputMag[0],
                                    Float(0.1*(magVar.y)) + 0.9*preInputMag[1],
                                    Float(0.1*(magVar.z)) + 0.9*preInputMag[2],
-                                   Float(magNorm)]
+                                   Float(0.1*magNorm + 0.9*preMagNorm)]
         // ------ //
         finalUnitResult.isIndexChanged = false
         
@@ -149,6 +150,7 @@ public class DRDistanceEstimator: NSObject {
         
         // Mag
         preInputMag = inputMag
+        preMagNorm = magNorm
         
         if (mlpEpochCount == OUTPUT_SAMPLE_EPOCH) {
             mlpEpochCount = 0

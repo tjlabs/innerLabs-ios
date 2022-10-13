@@ -151,8 +151,8 @@ class MainViewController: UIViewController, UITextFieldDelegate {
                         
                         print("Sector List :", myCard)
                         
-                        KingfisherManager.shared.cache.clearMemoryCache()
-                        KingfisherManager.shared.cache.clearDiskCache { print("Clear Cache Done !") }
+//                        KingfisherManager.shared.cache.clearMemoryCache()
+//                        KingfisherManager.shared.cache.clearDiskCache { print("Clear Cache Done !") }
                         
                         reorderedCard = myCard
                         
