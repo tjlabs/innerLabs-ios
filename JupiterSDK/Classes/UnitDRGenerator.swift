@@ -32,6 +32,9 @@ public class UnitDRGenerator: NSObject {
         var unitDistanceDr = UnitDistance()
         var unitDistancePdr = UnitDistance()
         
+        var unitDistanceDrPast = UnitDistance()
+        var unitDistancePdrPast = UnitDistance()
+        
         switch (unitMode) {
         case MODE_PDR:
             unitDistancePdr = pdrDistanceEstimator.estimateDistanceInfo(time: currentTime, sensorData: sensorData)
@@ -70,20 +73,7 @@ public class UnitDRGenerator: NSObject {
             
             return UnitDRInfo(index: unitDistanceDr.index, length: unitDistanceDr.length, heading: heading, velocity: unitDistanceDr.velocity, lookingFlag: unitStatusDr, isIndexChanged: unitDistanceDr.isIndexChanged)
         default:
-//            unitDistancePdr = pdrDistanceEstimator.estimateDistanceInfo(time: currentTime, sensorData: sensorData)
-//
-//            let sensorAtt = sensorData.att
-//            curAttitudePdr = Attitude(Roll: sensorAtt[0], Pitch: sensorAtt[1], Yaw: sensorAtt[2])
-//
-//            let unitStatus = unitStatusEstimator.estimateStatus(Attitude: curAttitudePdr, isIndexChanged: unitDistancePdr.isIndexChanged, unitMode: unitMode)
-//            if (!unitStatus && unitMode == MODE_PDR) {
-//                unitDistancePdr.length = 0.7
-//            }
-//
-//            let heading = HF.radian2degree(radian: curAttitudePdr.Yaw)
-//
-//            return UnitDRInfo(index: unitDistancePdr.index, length: unitDistancePdr.length, heading: heading, velocity: unitDistancePdr.velocity, lookingFlag: unitStatus, isIndexChanged: unitDistancePdr.isIndexChanged)
-            
+            // (Default : DR Mode)
             unitDistanceDr = drDistanceEstimator.estimateDistanceInfo(time: currentTime, sensorData: sensorData)
             curAttitudeDr = unitAttitudeEstimator.estimateAtt(time: currentTime, acc: sensorData.acc, gyro: sensorData.gyro, rotMatrix: sensorData.rotationMatrix)
             

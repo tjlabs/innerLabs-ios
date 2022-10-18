@@ -48,7 +48,6 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
             }
         }
         
-//        print("(Update) Interval : \(result.mobile_time - observerTime)")
         observerTime = result.mobile_time
     }
     

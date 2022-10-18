@@ -71,6 +71,23 @@ public class ServiceManager: Observation {
                 self.lastResult = updatedResult
                 
                 observer.update(result: updatedResult)
+            } else {
+                var updatedResult = FineLocationTrackingResult()
+                updatedResult.mobile_time = getCurrentTimeInMilliseconds()
+                updatedResult.building_name = result.building_name
+                updatedResult.level_name = result.level_name
+                updatedResult.scc = result.scc
+                updatedResult.scr = result.scr
+                updatedResult.x = result.x
+                updatedResult.y = result.y
+                updatedResult.absolute_heading = result.absolute_heading
+                updatedResult.phase = result.phase
+                updatedResult.calculated_time = result.calculated_time
+                updatedResult.index = result.index
+                updatedResult.velocity = result.velocity
+
+                self.lastTrackingTime = updatedResult.mobile_time
+                self.lastResult = updatedResult
             }
             // For COEX B1
 //            if (result.building_name == "COEX" && result.level_name == "B1") {
@@ -226,6 +243,7 @@ public class ServiceManager: Observation {
     
     var isActiveService: Bool = true
     var isAnswered: Bool = false
+    var isFirstStart: Bool = true
     
     var timeActiveRF: Double = 0
     var timeActiveUV: Double = 0
@@ -261,6 +279,7 @@ public class ServiceManager: Observation {
         startTimer()
         startBLE()
         
+        isFirstStart = true
         onStartFlag = false
         if (self.service == "FLT") {
             unitDRInfo = UnitDRInfo()
@@ -747,7 +766,6 @@ public class ServiceManager: Observation {
                 }
             }
         } else {
-            
             if (floorUpdateRequestFlag && isActiveService) {
                 floorUpdateRequestTimeStack += UV_INTERVAL
                 if (floorUpdateRequestTimeStack > FLOOR_UPDATE_REQUEST_TIME) {
@@ -757,7 +775,7 @@ public class ServiceManager: Observation {
                         if (statusCode == 200) {
                             let result = jsonToResult(json: returnedString)
                             let finalResult = fromServerToResult(fromServer: result, velocity: displayOutput.velocity)
-                            print("(Tracking) Floor Changed")
+                            print("(Jupiter) Floor Changed")
                             self.tracking(input: finalResult, isPast: false)
                         }
                     })
@@ -847,8 +865,26 @@ public class ServiceManager: Observation {
             })
         } else {
             let diffUpdatedTime: Int = currentTime - self.lastTrackingTime
-            if (diffUpdatedTime > 950 && self.lastTrackingTime != 0) {
-                self.tracking(input: self.lastResult, isPast: true)
+            if (diffUpdatedTime > 950) {
+                if (self.lastTrackingTime != 0) {
+//                    print("(Jupiter) Past Result")
+                    print(self.lastResult)
+                    self.tracking(input: self.lastResult, isPast: true)
+                } else {
+                    if (isFirstStart) {
+                        let input = RecentResult(user_id: user_id, mobile_time: currentTime)
+                        NetworkManager.shared.postRecent(url: RECENT_URL, input: input, completion: { [self] statusCode, returnedString in
+                            if (statusCode == 200) {
+//                                print("(Jupiter) Last Known Result")
+                                let result = jsonToResult(json: returnedString)
+                                let finalResult = fromServerToResult(fromServer: result, velocity: displayOutput.velocity)
+                                print(finalResult)
+                                self.tracking(input: finalResult, isPast: true)
+                            }
+                        })
+                        isFirstStart = false
+                    }
+                }
             }
         }
     }

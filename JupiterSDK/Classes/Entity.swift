@@ -309,6 +309,12 @@ public struct Spots: Codable {
     }
 }
 
+// Recent
+struct RecentResult: Codable {
+    var user_id: String
+    var mobile_time: Int
+}
+
 public func decodeOSA(json: String) -> OnSpotAuthorizationResult {
     let result = OnSpotAuthorizationResult.init()
     let decoder = JSONDecoder()
