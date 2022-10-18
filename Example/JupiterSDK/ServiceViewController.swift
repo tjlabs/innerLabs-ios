@@ -281,7 +281,6 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
             self.numLevels = 0
         } else {
             let firstLevel: String = infoLevel[0]
-            
             if (numLevels == 1) {
                 infoOfLevels = "( " + firstLevel + " )"
             } else {
