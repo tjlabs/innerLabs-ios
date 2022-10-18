@@ -272,17 +272,17 @@ class SpotViewController: UIViewController {
                         let data = result.spots[bestIndex]
                         if (data.sector_name != "" && data.building_name != "" && data.level_name != "") {
                             let spotNumber: Int = data.spot_number
-                            let spotProbability: Double = data.ccs*100
+                            let spotCCS: Double = data.ccs
                             
                             self.infoSpotLabel.text = String(spotNumber)
-                            self.infoProbLabel.text = String(format: "%.2f", spotProbability) + " %"
+                            self.infoProbLabel.text = String(format: "%.4f", spotCCS)
                             
                             drawValues(XY: Spots[spotNumber-1])
                             drawSpot(XY: Spots[spotNumber-1])
                             showSpotContents(id: spotNumber)
                         } else {
                             self.infoSpotLabel.text = "Fail"
-                            self.infoProbLabel.text = "0.0 %"
+                            self.infoProbLabel.text = "0.0000"
                         }
                     }
                 } else {

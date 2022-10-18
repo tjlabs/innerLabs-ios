@@ -26,22 +26,24 @@ protocol ServiceViewPageDelegate {
 class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewDataSource, Observer {
     
     func update(result: FineLocationTrackingResult) {
-        let building = result.building_name
-        let level = result.level_name
-        
-        let x = result.x
-        let y = result.y
+        DispatchQueue.main.async {
+            let building = result.building_name
+            let level = result.level_name
 
-        if (buildings.contains(building)) {
-            if let levelList: [String] = levels[building] {
-                if (levelList.contains(level)) {
-                    coordToDisplay.building = building
-                    coordToDisplay.level = level
-                    coordToDisplay.x = x
-                    coordToDisplay.y = y
-                    coordToDisplay.heading = result.absolute_heading
-                    
-                    updateCoord(data: coordToDisplay, flag: isShowRP)
+            let x = result.x
+            let y = result.y
+
+            if (self.buildings.contains(building)) {
+                if let levelList: [String] = self.levels[building] {
+                    if (levelList.contains(level)) {
+                        self.coordToDisplay.building = building
+                        self.coordToDisplay.level = level
+                        self.coordToDisplay.x = x
+                        self.coordToDisplay.y = y
+                        self.coordToDisplay.heading = result.absolute_heading
+
+                        self.updateCoord(data: self.coordToDisplay, flag: self.isShowRP)
+                    }
                 }
             }
         }
@@ -100,6 +102,9 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
     var levels = [String:[String]]()
     var levelList = [String]()
     var currentLevel: String = ""
+    
+    var pastBuilding: String = ""
+    var pastLevel: String = ""
     
     var isShow: Bool = false
     var isRadioMap: Bool = false
@@ -739,8 +744,13 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
             }
         }
         
-//        print("Before Fetch Level : \(currentBuilding) , \(currentLevel)")
-        fetchLevel(building: currentBuilding, level: currentLevel, flag: flag)
+        if (pastBuilding != currentBuilding || pastLevel != currentLevel) {
+            fetchLevel(building: currentBuilding, level: currentLevel, flag: flag)
+        }
+        
+        pastBuilding = currentBuilding
+        pastLevel = currentLevel
+        
         
         let key = "\(currentBuilding)_\(currentLevel)"
         let condition: ((String, [[Double]])) -> Bool = {

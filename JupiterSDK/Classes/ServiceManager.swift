@@ -12,11 +12,11 @@ public class ServiceManager: Observation {
                     result.absolute_heading = result.absolute_heading + 360
                 }
                 result.absolute_heading = result.absolute_heading - floor(result.absolute_heading/360)*360
-                
+
                 // Map Matching
                 if (self.isMapMatching) {
                     let correctResult = correct(building: result.building_name, level: result.level_name, x: result.x, y: result.y, heading: result.absolute_heading, mode: self.mode, isPast: isPast)
-                    
+
                     if (correctResult.isSuccess) {
                         result.x = correctResult.xyh[0]
                         result.y = correctResult.xyh[1]
@@ -28,14 +28,13 @@ public class ServiceManager: Observation {
                         self.matchingFailCount += 1
                         result = pastMatchingResult
                     }
-                    
+
                     if (self.matchingFailCount > MATCHING_FAIL_THRESHOLD) {
-//                        print("(Error) Map Matching Fail A Lot")
-                        self.phase = 3
+                        self.phase = 1
                     }
                 }
                 displayOutput.heading = result.absolute_heading
-                
+
                 // Averaging
                 if (!pastResult.isEmpty) {
                     if abs(pastResult[2] - result.absolute_heading) < 270 {
@@ -53,7 +52,7 @@ public class ServiceManager: Observation {
                     pastResult[1] = result.y
                     pastResult[2] = result.absolute_heading
                 }
-                
+
                 var updatedResult = FineLocationTrackingResult()
                 updatedResult.mobile_time = getCurrentTimeInMilliseconds()
                 updatedResult.building_name = result.building_name
@@ -67,7 +66,7 @@ public class ServiceManager: Observation {
                 updatedResult.calculated_time = result.calculated_time
                 updatedResult.index = result.index
                 updatedResult.velocity = result.velocity
-                
+
                 self.lastTrackingTime = updatedResult.mobile_time
                 self.lastResult = updatedResult
                 
@@ -181,7 +180,7 @@ public class ServiceManager: Observation {
     var preOutputMobileTime: Int = 0
     var preUnitHeading: Double = 0
     
-    var floorUpdateRequestTimer: Double = 0
+    var floorUpdateRequestTimeStack: Double = 0
     var floorUpdateRequestFlag: Bool = true
     let FLOOR_UPDATE_REQUEST_TIME: Double = 15
     
@@ -245,6 +244,9 @@ public class ServiceManager: Observation {
     var isPastServerResult: Bool = false
     let COORD_THRESHOLD: Double = 20
     
+    var pastUVTime = 0
+    var pastRQTime = 0
+    
     public override init() {
         deviceModel = UIDevice.modelName
         os = UIDevice.current.systemVersion
@@ -259,7 +261,9 @@ public class ServiceManager: Observation {
         startTimer()
         startBLE()
         
+        onStartFlag = false
         if (self.service == "FLT") {
+            unitDRInfo = UnitDRInfo()
             unitDRGenerator.setMode(mode: mode)
             
             if (mode == "pdr") {
@@ -298,7 +302,7 @@ public class ServiceManager: Observation {
             numInput = 3
             interval = 1/5
         default:
-            print("(Error) Fail to initialize the service")
+            print("(Jupiter) Error : Fail to initialize the service")
         }
         
         self.SPATIAL_INPUT_NUM = numInput
@@ -307,7 +311,7 @@ public class ServiceManager: Observation {
         self.initService()
         
         if (self.user_id.isEmpty || self.user_id.contains(" ")) {
-            print("(Jupiter) User ID cannot be empty or contain space")
+            print("(Jupiter) Error : User ID cannot be empty or contain space")
         } else {
             let userInfo = UserInfo(user_id: self.user_id, device_model: deviceModel, os_version: osVersion)
             postUser(url: USER_URL, input: userInfo, completion: { statusCode, returnedString in })
@@ -431,12 +435,14 @@ public class ServiceManager: Observation {
                 completion(statusCode, returnedString)
             })
         default:
-            completion(500, "Unvalid Service Name")
+            completion(500, "(Jupiter) Error : Unvalid Service Name")
         }
     }
     
     internal func initialzeSensors() {
+        var sensorActive: Int = 0
         if motionManager.isAccelerometerAvailable {
+            sensorActive += 1
             motionManager.accelerometerUpdateInterval = SENSOR_INTERVAL
             motionManager.startAccelerometerUpdates(to: .main) { [self] (data, error) in
                 if let accX = data?.acceleration.x {
@@ -455,9 +461,12 @@ public class ServiceManager: Observation {
                     collectData.acc[2] = -accZ*G
                 }
             }
+        } else {
+            print("(Jupiter) Error : Fail to initialize accelerometer")
         }
         
         if motionManager.isGyroAvailable {
+            sensorActive += 1
             motionManager.gyroUpdateInterval = SENSOR_INTERVAL
             motionManager.startGyroUpdates(to: .main) { [self] (data, error) in
                 if let gyroX = data?.rotationRate.x {
@@ -476,9 +485,12 @@ public class ServiceManager: Observation {
                     collectData.gyro[2] = gyroZ
                 }
             }
+        } else {
+            print("(Jupiter) Error : Fail to initialize gyroscope")
         }
         
         if motionManager.isMagnetometerAvailable {
+            sensorActive += 1
             motionManager.magnetometerUpdateInterval = SENSOR_INTERVAL
             motionManager.startMagnetometerUpdates(to: .main) { [self] (data, error) in
                 if let magX = data?.magneticField.x {
@@ -497,9 +509,12 @@ public class ServiceManager: Observation {
                     collectData.mag[2] = magZ
                 }
             }
+        } else {
+            print("(Jupiter) Error : Fail to initialize magnetometer")
         }
         
         if CMAltimeter.isRelativeAltitudeAvailable() {
+            sensorActive += 1
             motionAltimeter.startRelativeAltitudeUpdates(to: .main) { [self] (data, error) in
                 if let pressure = data?.pressure {
                     let pressure_: Double = Double(pressure)*10
@@ -508,73 +523,80 @@ public class ServiceManager: Observation {
                     collectData.pressure[0] = pressure_
                 }
             }
+        } else {
+            print("(Jupiter) Error : Fail to initialize pressure sensor")
         }
         
-        motionManager.deviceMotionUpdateInterval = SENSOR_INTERVAL
-        motionManager.startDeviceMotionUpdates(to: .main) { [self] (motion, error) in
-            
-            if let m = motion {
-                self.userAccX = m.userAcceleration.x
-                self.userAccY = m.userAcceleration.y
-                self.userAccZ = m.userAcceleration.z
-                
-                self.gravX = m.gravity.x
-                self.gravY = m.gravity.y
-                self.gravZ = m.gravity.z
-                
-                self.roll = m.attitude.roll
-                self.pitch = m.attitude.pitch
-                self.yaw = m.attitude.yaw
-                
-                sensorData.userAcc[0] = m.userAcceleration.x
-                sensorData.userAcc[1] = m.userAcceleration.y
-                sensorData.userAcc[2] = m.userAcceleration.z
-                
-                collectData.userAcc[0] = m.userAcceleration.x
-                collectData.userAcc[1] = m.userAcceleration.y
-                collectData.userAcc[2] = m.userAcceleration.z
-                
-                sensorData.att[0] = m.attitude.roll
-                sensorData.att[1] = m.attitude.pitch
-                sensorData.att[2] = m.attitude.yaw
-                
-                collectData.att[0] = m.attitude.roll
-                collectData.att[1] = m.attitude.pitch
-                collectData.att[2] = m.attitude.yaw
-                
-                sensorData.rotationMatrix[0][0] = m.attitude.rotationMatrix.m11
-                sensorData.rotationMatrix[0][1] = m.attitude.rotationMatrix.m12
-                sensorData.rotationMatrix[0][2] = m.attitude.rotationMatrix.m13
-                                
-                sensorData.rotationMatrix[1][0] = m.attitude.rotationMatrix.m21
-                sensorData.rotationMatrix[1][1] = m.attitude.rotationMatrix.m22
-                sensorData.rotationMatrix[1][2] = m.attitude.rotationMatrix.m23
-                                
-                sensorData.rotationMatrix[2][0] = m.attitude.rotationMatrix.m31
-                sensorData.rotationMatrix[2][1] = m.attitude.rotationMatrix.m32
-                sensorData.rotationMatrix[2][2] = m.attitude.rotationMatrix.m33
-                
-                collectData.rotationMatrix[0][0] = m.attitude.rotationMatrix.m11
-                collectData.rotationMatrix[0][1] = m.attitude.rotationMatrix.m12
-                collectData.rotationMatrix[0][2] = m.attitude.rotationMatrix.m13
-                                
-                collectData.rotationMatrix[1][0] = m.attitude.rotationMatrix.m21
-                collectData.rotationMatrix[1][1] = m.attitude.rotationMatrix.m22
-                collectData.rotationMatrix[1][2] = m.attitude.rotationMatrix.m23
-                                
-                collectData.rotationMatrix[2][0] = m.attitude.rotationMatrix.m31
-                collectData.rotationMatrix[2][1] = m.attitude.rotationMatrix.m32
-                collectData.rotationMatrix[2][2] = m.attitude.rotationMatrix.m33
-                
-                collectData.quaternion[0] = m.attitude.quaternion.x
-                collectData.quaternion[1] = m.attitude.quaternion.y
-                collectData.quaternion[2] = m.attitude.quaternion.z
-                collectData.quaternion[3] = m.attitude.quaternion.w
+        if motionManager.isDeviceMotionAvailable {
+            sensorActive += 1
+            motionManager.deviceMotionUpdateInterval = SENSOR_INTERVAL
+            motionManager.startDeviceMotionUpdates(to: .main) { [self] (motion, error) in
+                if let m = motion {
+                    self.userAccX = m.userAcceleration.x
+                    self.userAccY = m.userAcceleration.y
+                    self.userAccZ = m.userAcceleration.z
+                    
+                    self.gravX = m.gravity.x
+                    self.gravY = m.gravity.y
+                    self.gravZ = m.gravity.z
+                    
+                    self.roll = m.attitude.roll
+                    self.pitch = m.attitude.pitch
+                    self.yaw = m.attitude.yaw
+                    
+                    sensorData.userAcc[0] = m.userAcceleration.x
+                    sensorData.userAcc[1] = m.userAcceleration.y
+                    sensorData.userAcc[2] = m.userAcceleration.z
+                    
+                    collectData.userAcc[0] = m.userAcceleration.x
+                    collectData.userAcc[1] = m.userAcceleration.y
+                    collectData.userAcc[2] = m.userAcceleration.z
+                    
+                    sensorData.att[0] = m.attitude.roll
+                    sensorData.att[1] = m.attitude.pitch
+                    sensorData.att[2] = m.attitude.yaw
+                    
+                    collectData.att[0] = m.attitude.roll
+                    collectData.att[1] = m.attitude.pitch
+                    collectData.att[2] = m.attitude.yaw
+                    
+                    sensorData.rotationMatrix[0][0] = m.attitude.rotationMatrix.m11
+                    sensorData.rotationMatrix[0][1] = m.attitude.rotationMatrix.m12
+                    sensorData.rotationMatrix[0][2] = m.attitude.rotationMatrix.m13
+                                    
+                    sensorData.rotationMatrix[1][0] = m.attitude.rotationMatrix.m21
+                    sensorData.rotationMatrix[1][1] = m.attitude.rotationMatrix.m22
+                    sensorData.rotationMatrix[1][2] = m.attitude.rotationMatrix.m23
+                                    
+                    sensorData.rotationMatrix[2][0] = m.attitude.rotationMatrix.m31
+                    sensorData.rotationMatrix[2][1] = m.attitude.rotationMatrix.m32
+                    sensorData.rotationMatrix[2][2] = m.attitude.rotationMatrix.m33
+                    
+                    collectData.rotationMatrix[0][0] = m.attitude.rotationMatrix.m11
+                    collectData.rotationMatrix[0][1] = m.attitude.rotationMatrix.m12
+                    collectData.rotationMatrix[0][2] = m.attitude.rotationMatrix.m13
+                                    
+                    collectData.rotationMatrix[1][0] = m.attitude.rotationMatrix.m21
+                    collectData.rotationMatrix[1][1] = m.attitude.rotationMatrix.m22
+                    collectData.rotationMatrix[1][2] = m.attitude.rotationMatrix.m23
+                                    
+                    collectData.rotationMatrix[2][0] = m.attitude.rotationMatrix.m31
+                    collectData.rotationMatrix[2][1] = m.attitude.rotationMatrix.m32
+                    collectData.rotationMatrix[2][2] = m.attitude.rotationMatrix.m33
+                    
+                    collectData.quaternion[0] = m.attitude.quaternion.x
+                    collectData.quaternion[1] = m.attitude.quaternion.y
+                    collectData.quaternion[2] = m.attitude.quaternion.z
+                    collectData.quaternion[3] = m.attitude.quaternion.w
+                    
+                }
             }
+        } else {
+            print("(Jupiter) Error : Fail to initialize motion sensor")
+        }
         
-            if let e = error {
-                print(e.localizedDescription)
-            }
+        if (sensorActive >= 5) {
+            print("(Jupiter) Success : initialize sensors")
         }
     }
     
@@ -678,23 +700,6 @@ public class ServiceManager: Observation {
     @objc func userVelocityTimerUpdate() {
         let currentTime = getCurrentTimeInMilliseconds()
         
-        if (floorUpdateRequestFlag && isActiveService) {
-            floorUpdateRequestTimer += UV_INTERVAL
-            if (floorUpdateRequestTimer > FLOOR_UPDATE_REQUEST_TIME) {
-                let input = FineLocationTracking(user_id: user_id, mobile_time: currentTime, sector_id: sector_id, phase: self.phase)
-                
-                NetworkManager.shared.postFLT(url: FLT_URL, input: input, completion: { [self] statusCode, returnedString in
-                    if (statusCode == 200) {
-                        let result = jsonToResult(json: returnedString)
-                        let finalResult = fromServerToResult(fromServer: result, velocity: displayOutput.velocity)
-                        print("(Tracking) Floor Changed")
-                        self.tracking(input: finalResult, isPast: false)
-                    }
-                })
-                floorUpdateRequestTimer = 0
-            }
-        }
-        
         if (onStartFlag) {
             unitDRInfo = unitDRGenerator.generateDRInfo(sensorData: sensorData)
         }
@@ -728,10 +733,11 @@ public class ServiceManager: Observation {
                 // Put UV
                 if ((inputUserVelocity.count-1) >= UV_INPUT_NUM) {
                     inputUserVelocity.remove(at: 0)
+
                     NetworkManager.shared.putUserVelocity(url: UV_URL, input: inputUserVelocity, completion: { [self] statusCode, returnedString in
                         if (statusCode == 200) {
                             floorUpdateRequestFlag = true
-                            floorUpdateRequestTimer = 0
+                            floorUpdateRequestTimeStack = 0
                             
                             indexSend = Int(returnedString) ?? 0
                             isAnswered = true
@@ -741,6 +747,24 @@ public class ServiceManager: Observation {
                 }
             }
         } else {
+            
+            if (floorUpdateRequestFlag && isActiveService) {
+                floorUpdateRequestTimeStack += UV_INTERVAL
+                if (floorUpdateRequestTimeStack > FLOOR_UPDATE_REQUEST_TIME) {
+                    let input = FineLocationTracking(user_id: user_id, mobile_time: currentTime, sector_id: sector_id, phase: self.phase)
+                    
+                    NetworkManager.shared.postFLT(url: FLT_URL, input: input, completion: { [self] statusCode, returnedString in
+                        if (statusCode == 200) {
+                            let result = jsonToResult(json: returnedString)
+                            let finalResult = fromServerToResult(fromServer: result, velocity: displayOutput.velocity)
+                            print("(Tracking) Floor Changed")
+                            self.tracking(input: finalResult, isPast: false)
+                        }
+                    })
+                    floorUpdateRequestTimeStack = 0
+                }
+            }
+            
             // UV가 발생하지 않음
             timeActiveUV += UV_INTERVAL
             if (timeActiveUV >= STOP_THRESHOLD) {
@@ -760,10 +784,9 @@ public class ServiceManager: Observation {
         
         if (self.isAnswered) {
             self.isAnswered = false
-            
+
             // Request FLT
             nowTime = currentTime
-
             let input = FineLocationTracking(user_id: user_id, mobile_time: currentTime, sector_id: sector_id, phase: self.phase)
             NetworkManager.shared.postFLT(url: FLT_URL, input: input, completion: { [self] statusCode, returnedString in
                 if (statusCode == 200) {
@@ -788,9 +811,8 @@ public class ServiceManager: Observation {
                                     let diffY = pastServerCoord[1] - result.y
                                     let diffNorm = sqrt(diffX*diffX + diffY*diffY)
                                     if (diffNorm > COORD_THRESHOLD) {
-//                                        print("(Error) Huge Coord diff")
-                                        self.phase = 3
-                                        result.phase = 3
+                                        self.phase = 1
+                                        result.phase = 1
                                     }
                                 }
                                 if (result.phase == 4) {
@@ -826,7 +848,6 @@ public class ServiceManager: Observation {
         } else {
             let diffUpdatedTime: Int = currentTime - self.lastTrackingTime
             if (diffUpdatedTime > 950 && self.lastTrackingTime != 0) {
-//                print("(Update) result for guarantee 1Hz")
                 self.tracking(input: self.lastResult, isPast: true)
             }
         }

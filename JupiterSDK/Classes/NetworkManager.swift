@@ -29,7 +29,7 @@ public class NetworkManager {
         let dataTask = URLSession.shared.dataTask(with: requestURL, completionHandler: { (data, response, error) in
             // [error가 존재하면 종료]
             guard error == nil else {
-                print("(Jupiter) Error : Fail to send BLE to Jupiter")
+                print("(Jupiter) Error : Fail to send BLE")
                 return
             }
             
@@ -40,7 +40,10 @@ public class NetworkManager {
             
             // [response 데이터 획득]
             let resultCode = (response as? HTTPURLResponse)?.statusCode ?? 500 // [상태 코드]
-            guard let resultLen = data else { return }
+            guard let resultLen = data else {
+                print("(Jupiter) Error : Fail to send BLE")
+                return
+            }
             let resultData = String(data: resultLen, encoding: .utf8) ?? "" // [데이터 확인]
 //            print("")
 //            print("====================================")
@@ -77,7 +80,7 @@ public class NetworkManager {
             
             // [error가 존재하면 종료]
             guard error == nil else {
-                // [콜백 반환]
+                print("(Jupiter) Error : Fail to send sensor measurements")
                 completion(500, error?.localizedDescription ?? "Fail")
                 return
             }
@@ -86,7 +89,7 @@ public class NetworkManager {
             let successsRange = 200..<300
             guard let statusCode = (response as? HTTPURLResponse)?.statusCode, successsRange.contains(statusCode)
             else {
-                // [콜백 반환]
+                print("(Jupiter) Error : Fail to send sensor measurements")
                 completion(500, (response as? HTTPURLResponse)?.description ?? "Fail")
                 return
             }
@@ -94,6 +97,7 @@ public class NetworkManager {
             // [response 데이터 획득]
             let resultCode = (response as? HTTPURLResponse)?.statusCode ?? 500 // [상태 코드]
             guard let resultLen = data else {
+                print("(Jupiter) Error : Fail to send sensor measurements")
                 completion(500, (response as? HTTPURLResponse)?.description ?? "Fail")
                 return
             }

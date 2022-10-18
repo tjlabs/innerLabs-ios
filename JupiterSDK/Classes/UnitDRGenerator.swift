@@ -25,6 +25,7 @@ public class UnitDRGenerator: NSObject {
         }
         
         let currentTime = getCurrentTimeInMilliseconds()
+        
         var curAttitudeDr = Attitude(Roll: 0, Pitch: 0, Yaw: 0)
         var curAttitudePdr = Attitude(Roll: 0, Pitch: 0, Yaw: 0)
         
@@ -69,19 +70,27 @@ public class UnitDRGenerator: NSObject {
             
             return UnitDRInfo(index: unitDistanceDr.index, length: unitDistanceDr.length, heading: heading, velocity: unitDistanceDr.velocity, lookingFlag: unitStatusDr, isIndexChanged: unitDistanceDr.isIndexChanged)
         default:
-            unitDistancePdr = pdrDistanceEstimator.estimateDistanceInfo(time: currentTime, sensorData: sensorData)
+//            unitDistancePdr = pdrDistanceEstimator.estimateDistanceInfo(time: currentTime, sensorData: sensorData)
+//
+//            let sensorAtt = sensorData.att
+//            curAttitudePdr = Attitude(Roll: sensorAtt[0], Pitch: sensorAtt[1], Yaw: sensorAtt[2])
+//
+//            let unitStatus = unitStatusEstimator.estimateStatus(Attitude: curAttitudePdr, isIndexChanged: unitDistancePdr.isIndexChanged, unitMode: unitMode)
+//            if (!unitStatus && unitMode == MODE_PDR) {
+//                unitDistancePdr.length = 0.7
+//            }
+//
+//            let heading = HF.radian2degree(radian: curAttitudePdr.Yaw)
+//
+//            return UnitDRInfo(index: unitDistancePdr.index, length: unitDistancePdr.length, heading: heading, velocity: unitDistancePdr.velocity, lookingFlag: unitStatus, isIndexChanged: unitDistancePdr.isIndexChanged)
             
-            let sensorAtt = sensorData.att
-            curAttitudePdr = Attitude(Roll: sensorAtt[0], Pitch: sensorAtt[1], Yaw: sensorAtt[2])
+            unitDistanceDr = drDistanceEstimator.estimateDistanceInfo(time: currentTime, sensorData: sensorData)
+            curAttitudeDr = unitAttitudeEstimator.estimateAtt(time: currentTime, acc: sensorData.acc, gyro: sensorData.gyro, rotMatrix: sensorData.rotationMatrix)
             
-            let unitStatus = unitStatusEstimator.estimateStatus(Attitude: curAttitudePdr, isIndexChanged: unitDistancePdr.isIndexChanged, unitMode: unitMode)
-            if (!unitStatus && unitMode == MODE_PDR) {
-                unitDistancePdr.length = 0.7
-            }
+            let heading = HF.radian2degree(radian: curAttitudeDr.Yaw)
             
-            let heading = HF.radian2degree(radian: curAttitudePdr.Yaw)
-            
-            return UnitDRInfo(index: unitDistancePdr.index, length: unitDistancePdr.length, heading: heading, velocity: unitDistancePdr.velocity, lookingFlag: unitStatus, isIndexChanged: unitDistancePdr.isIndexChanged)
+            let unitStatus = unitStatusEstimator.estimateStatus(Attitude: curAttitudeDr, isIndexChanged: unitDistanceDr.isIndexChanged, unitMode: unitMode)
+            return UnitDRInfo(index: unitDistanceDr.index, length: unitDistanceDr.length, heading: heading, velocity: unitDistanceDr.velocity, lookingFlag: unitStatus, isIndexChanged: unitDistanceDr.isIndexChanged)
         }
     }
     
