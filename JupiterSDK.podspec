@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = 'JupiterSDK'
-  s.version          = '1.9.0'
+  s.version          = '1.9.1'
   s.summary          = 'JupiterSDK for iOS'
   s.swift_version    = '4.0'
   
@@ -19,5 +19,7 @@ Pod::Spec.new do |s|
   s.source_files = 'JupiterSDK/Classes/**/*'
 
   s.static_framework = true
+  
+  s.dependency 'Alamofire'
   
 end

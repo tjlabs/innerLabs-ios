@@ -947,6 +947,7 @@ public class ServiceManager: Observation {
                                         result.phase = 1
                                     }
                                 }
+                                
                                 if (result.phase == 4) {
                                     UV_INPUT_NUM = VAR_INPUT_NUM
                                     if (!(result.x == 0 && result.y == 0)) {
