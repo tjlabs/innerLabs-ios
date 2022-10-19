@@ -1,11 +1,3 @@
-//
-//  PrivacyPolicyViewController.swift
-//  JupiterSDK_Example
-//
-//  Created by 신동현 on 2022/05/16.
-//  Copyright © 2022 CocoaPods. All rights reserved.
-//
-
 import UIKit
 import WebKit
 
