@@ -17,7 +17,7 @@ public class NetworkManager {
     
     static let shared = NetworkManager()
     
-    func putReceivedForce(url: String, input: [ReceivedForce]){
+    func putReceivedForce(url: String, input: [ReceivedForce], completion: @escaping (Int, String) -> Void){
         // [http 비동기 방식을 사용해서 http 요청 수행 실시]
         let urlComponents = URLComponents(string: url)
         var requestURL = URLRequest(url: (urlComponents?.url)!)
@@ -31,36 +31,30 @@ public class NetworkManager {
         let dataTask = URLSession.shared.dataTask(with: requestURL, completionHandler: { (data, response, error) in
             // [error가 존재하면 종료]
             guard error == nil else {
-                print("(Jupiter) Error : Fail to send BLE")
+                completion(500, error?.localizedDescription ?? "Fail")
                 return
             }
             
             // [status 코드 체크 실시]
             let successsRange = 200..<300
             guard let statusCode = (response as? HTTPURLResponse)?.statusCode, successsRange.contains(statusCode)
-            else { return }
+            else {
+                completion(500, (response as? HTTPURLResponse)?.description ?? "Fail")
+                return
+            }
             
             // [response 데이터 획득]
             let resultCode = (response as? HTTPURLResponse)?.statusCode ?? 500 // [상태 코드]
             guard let resultLen = data else {
-                print("(Jupiter) Error : Fail to send BLE")
+                completion(500, (response as? HTTPURLResponse)?.description ?? "Fail")
                 return
             }
-            let resultData = String(data: resultLen, encoding: .utf8) ?? "" // [데이터 확인]
-//            print("")
-//            print("====================================")
-//            print(input)
-//            print("http 통신 성공]")
-//            print("-------------------------------")
-//            print("주 소 :: ", requestURL)
-//            print("-------------------------------")
-//            print("resultCode :: ", resultCode)
-//            print("-------------------------------")
-//            print("resultLen :: ", resultLen)
-//            print("-------------------------------")
-//            print("resultData :: ", resultData)
-//            print("====================================")
-//            print("")
+//            let resultData = String(data: resultLen, encoding: .utf8) ?? "" // [데이터 확인]
+            
+            // [콜백 반환]
+            DispatchQueue.main.async {
+                completion(resultCode, "(Jupiter) Success Send RFD")
+            }
         })
         
         // [network 통신 실행]
@@ -82,7 +76,6 @@ public class NetworkManager {
             
             // [error가 존재하면 종료]
             guard error == nil else {
-                print("(Jupiter) Error : Fail to send sensor measurements")
                 completion(500, error?.localizedDescription ?? "Fail")
                 return
             }
@@ -91,7 +84,6 @@ public class NetworkManager {
             let successsRange = 200..<300
             guard let statusCode = (response as? HTTPURLResponse)?.statusCode, successsRange.contains(statusCode)
             else {
-                print("(Jupiter) Error : Fail to send sensor measurements")
                 completion(500, (response as? HTTPURLResponse)?.description ?? "Fail")
                 return
             }
@@ -99,7 +91,6 @@ public class NetworkManager {
             // [response 데이터 획득]
             let resultCode = (response as? HTTPURLResponse)?.statusCode ?? 500 // [상태 코드]
             guard let resultLen = data else {
-                print("(Jupiter) Error : Fail to send sensor measurements")
                 completion(500, (response as? HTTPURLResponse)?.description ?? "Fail")
                 return
             }

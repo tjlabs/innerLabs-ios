@@ -70,6 +70,15 @@ public class ServiceManager: Observation {
                 self.lastTrackingTime = updatedResult.mobile_time
                 self.lastResult = updatedResult
                 
+                do {
+                    let key: String = "JupiterLastResult_\(self.sector_id)"
+                    let jsonData = try JSONEncoder().encode(self.lastResult)
+                    let jsonString = String(data: jsonData, encoding: .utf8)
+                    UserDefaults.standard.set(jsonString, forKey: key)
+                } catch {
+                    print("(Jupiter) Error : Fail to save last result")
+                }
+                
                 observer.update(result: updatedResult)
             } else {
                 var updatedResult = FineLocationTrackingResult()
@@ -85,6 +94,15 @@ public class ServiceManager: Observation {
                 updatedResult.calculated_time = result.calculated_time
                 updatedResult.index = result.index
                 updatedResult.velocity = result.velocity
+                
+                do {
+                    let key: String = "JupiterLastResult_\(self.sector_id)"
+                    let jsonData = try JSONEncoder().encode(self.lastResult)
+                    let jsonString = String(data: jsonData, encoding: .utf8)
+                    UserDefaults.standard.set(jsonString, forKey: key)
+                } catch {
+                    print("(Jupiter) Error : Fail to save last result")
+                }
 
                 self.lastTrackingTime = updatedResult.mobile_time
                 self.lastResult = updatedResult
@@ -265,6 +283,12 @@ public class ServiceManager: Observation {
     var pastUVTime = 0
     var pastRQTime = 0
     
+    // File for write Errors
+    let fileManager = FileManager.default
+    var textFile: URL?
+    var errorLogs: String = ""
+    let flagSaveError: Bool = true
+    
     public override init() {
         deviceModel = UIDevice.modelName
         os = UIDevice.current.systemVersion
@@ -296,6 +320,25 @@ public class ServiceManager: Observation {
             
             onStartFlag = true
         }
+        
+        // File
+        if (flagSaveError) {
+            print("(Jupiter) Process : Creating error log file")
+            let documentsURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask)[0]
+            let fileURL = documentsURL.appendingPathComponent("Jupiter")
+            let localTime: String = getLocalTimeString()
+            print("(Jupiter) Local Time : \(localTime)")
+            if !fileManager.fileExists(atPath: fileURL.path) {
+                do {
+                    try fileManager.createDirectory(atPath: fileURL.path, withIntermediateDirectories: true, attributes: nil)
+                } catch {
+                    NSLog("(Jupiter) Error : Cannot create Jupiter")
+                }
+            } else {
+                let textPath: URL = fileURL.appendingPathComponent("logs_\(localTime).txt")
+                self.textFile = textPath
+            }
+        }
     }
 
     public func startService(id: String, sector_id: Int, service: String, mode: String) {
@@ -321,7 +364,13 @@ public class ServiceManager: Observation {
             numInput = 3
             interval = 1/5
         default:
-            print("(Jupiter) Error : Fail to initialize the service")
+            let localTime: String = getLocalTimeString()
+            let log: String = localTime + " , (Jupiter) Error : Fail to initialize the service\n"
+            if (flagSaveError) {
+                errorLogs.append(log)
+            } else {
+               print(log)
+            }
         }
         
         self.SPATIAL_INPUT_NUM = numInput
@@ -330,7 +379,13 @@ public class ServiceManager: Observation {
         self.initService()
         
         if (self.user_id.isEmpty || self.user_id.contains(" ")) {
-            print("(Jupiter) Error : User ID cannot be empty or contain space")
+            let localTime: String = getLocalTimeString()
+            let log: String = localTime + " , (Jupiter) Error : User ID cannot be empty or contain space\n"
+            if (flagSaveError) {
+                errorLogs.append(log)
+            } else {
+               print(log)
+            }
         } else {
             let userInfo = UserInfo(user_id: self.user_id, device_model: deviceModel, os_version: osVersion)
             postUser(url: USER_URL, input: userInfo, completion: { statusCode, returnedString in })
@@ -413,6 +468,12 @@ public class ServiceManager: Observation {
             unitDRInfo = UnitDRInfo()
             onStartFlag = false
         }
+        
+        if (flagSaveError) {
+            saveErrorFile(log: self.errorLogs)
+        }
+        
+        isFirstStart = true
     }
     
     public func initCollect() {
@@ -481,7 +542,13 @@ public class ServiceManager: Observation {
                 }
             }
         } else {
-            print("(Jupiter) Error : Fail to initialize accelerometer")
+            let localTime: String = getLocalTimeString()
+            let log: String = localTime + " , (Jupiter) Error : Fail to initialize accelerometer\n"
+            if (flagSaveError) {
+                errorLogs.append(log)
+            } else {
+               print(log)
+            }
         }
         
         if motionManager.isGyroAvailable {
@@ -505,7 +572,13 @@ public class ServiceManager: Observation {
                 }
             }
         } else {
-            print("(Jupiter) Error : Fail to initialize gyroscope")
+            let localTime: String = getLocalTimeString()
+            let log: String = localTime + " , (Jupiter) Error : Fail to initialize gyroscope\n"
+            if (flagSaveError) {
+                errorLogs.append(log)
+            } else {
+               print(log)
+            }
         }
         
         if motionManager.isMagnetometerAvailable {
@@ -529,7 +602,13 @@ public class ServiceManager: Observation {
                 }
             }
         } else {
-            print("(Jupiter) Error : Fail to initialize magnetometer")
+            let localTime: String = getLocalTimeString()
+            let log: String = localTime + " , (Jupiter) Error : Fail to initialize magnetometer\n"
+            if (flagSaveError) {
+                errorLogs.append(log)
+            } else {
+               print(log)
+            }
         }
         
         if CMAltimeter.isRelativeAltitudeAvailable() {
@@ -543,7 +622,13 @@ public class ServiceManager: Observation {
                 }
             }
         } else {
-            print("(Jupiter) Error : Fail to initialize pressure sensor")
+            let localTime: String = getLocalTimeString()
+            let log: String = localTime + " , (Jupiter) Error : Fail to initialize pressure sensor\n"
+            if (flagSaveError) {
+                errorLogs.append(log)
+            } else {
+               print(log)
+            }
         }
         
         if motionManager.isDeviceMotionAvailable {
@@ -611,11 +696,23 @@ public class ServiceManager: Observation {
                 }
             }
         } else {
-            print("(Jupiter) Error : Fail to initialize motion sensor")
+            let localTime: String = getLocalTimeString()
+            let log: String = localTime + " , (Jupiter) Error : Fail to initialize motion sensor\n"
+            if (flagSaveError) {
+                errorLogs.append(log)
+            } else {
+               print(log)
+            }
         }
         
         if (sensorActive >= 5) {
-            print("(Jupiter) Success : initialize sensors")
+            let localTime: String = getLocalTimeString()
+            let log: String = localTime + " , (Jupiter) Success : initialize sensors\n"
+            if (flagSaveError) {
+                errorLogs.append(log)
+            } else {
+               print(log)
+            }
         }
     }
     
@@ -702,8 +799,17 @@ public class ServiceManager: Observation {
                 inputReceivedForce.append(data)
                 if ((inputReceivedForce.count-1) == SPATIAL_INPUT_NUM) {
                     inputReceivedForce.remove(at: 0)
-                    NetworkManager.shared.putReceivedForce(url: RF_URL, input: inputReceivedForce)
-
+                    NetworkManager.shared.putReceivedForce(url: RF_URL, input: inputReceivedForce, completion: { [self] statusCode, returnedStrig in
+                        if (statusCode != 200) {
+                            let localTime: String = getLocalTimeString()
+                            let log: String = localTime + " , (Jupiter) Error : Fail to send BLE\n"
+                            if (flagSaveError) {
+                                errorLogs.append(log)
+                            } else {
+                               print(log)
+                            }
+                        }
+                    })
                     inputReceivedForce = [ReceivedForce(user_id: "", mobile_time: 0, ble: [:], pressure: 0)]
                 }
             }
@@ -760,6 +866,14 @@ public class ServiceManager: Observation {
                             
                             indexSend = Int(returnedString) ?? 0
                             isAnswered = true
+                        } else {
+                            let localTime: String = getLocalTimeString()
+                            let log: String = localTime + " , (Jupiter) Error : Fail to send sensor measurements\n"
+                            if (flagSaveError) {
+                                errorLogs.append(log)
+                            } else {
+                               print(log)
+                            }
                         }
                     })
                     inputUserVelocity = [UserVelocity(user_id: user_id, mobile_time: 0, index: 0, length: 0, heading: 0, looking: true)]
@@ -868,20 +982,38 @@ public class ServiceManager: Observation {
             if (diffUpdatedTime > 950) {
                 if (self.lastTrackingTime != 0) {
 //                    print("(Jupiter) Past Result")
-                    print(self.lastResult)
+//                    print(self.lastResult)
                     self.tracking(input: self.lastResult, isPast: true)
                 } else {
                     if (isFirstStart) {
-                        let input = RecentResult(user_id: user_id, mobile_time: currentTime)
-                        NetworkManager.shared.postRecent(url: RECENT_URL, input: input, completion: { [self] statusCode, returnedString in
-                            if (statusCode == 200) {
-//                                print("(Jupiter) Last Known Result")
-                                let result = jsonToResult(json: returnedString)
-                                let finalResult = fromServerToResult(fromServer: result, velocity: displayOutput.velocity)
-                                print(finalResult)
-                                self.tracking(input: finalResult, isPast: true)
+                        let key: String = "JupiterLastResult_\(self.sector_id)"
+                        if let lastKnownResult: String = UserDefaults.standard.object(forKey: key) as? String {
+//                            print("(Jupiter) Success : Load Last Known Result")
+                            let currentTime = getCurrentTimeInMilliseconds()
+                            let result = jsonForTracking(json: lastKnownResult)
+                            if (currentTime - result.mobile_time) < 1000*3600 {
+                                self.tracking(input: result, isPast: false)
                             }
-                        })
+                        } else {
+                            let localTime: String = getLocalTimeString()
+                            let log: String = localTime + " , (Jupiter) Warnings : Empty Last Result\n"
+                            if (flagSaveError) {
+                                errorLogs.append(log)
+                            } else {
+                               print(log)
+                            }
+                        }
+                        
+//                        let input = RecentResult(user_id: user_id, mobile_time: currentTime)
+//                        NetworkManager.shared.postRecent(url: RECENT_URL, input: input, completion: { [self] statusCode, returnedString in
+//                            if (statusCode == 200) {
+////                                print("(Jupiter) Last Known Result")
+//                                let result = jsonToResult(json: returnedString)
+//                                let finalResult = fromServerToResult(fromServer: result, velocity: displayOutput.velocity)
+//                                print(finalResult)
+//                                self.tracking(input: finalResult, isPast: true)
+//                            }
+//                        })
                         isFirstStart = false
                     }
                 }
@@ -922,12 +1054,34 @@ public class ServiceManager: Observation {
         return Int(Date().timeIntervalSince1970 * 1000)
     }
     
+    func getLocalTimeString() -> String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd-HH-mm-ss"
+        dateFormatter.locale = Locale(identifier:"ko_KR")
+        let nowDate = Date()
+        let convertNowStr = dateFormatter.string(from: nowDate)
+        
+        return convertNowStr
+    }
+    
     func jsonToResult(json: String) -> FineLocationTrackingFromServer {
         let result = FineLocationTrackingFromServer()
         let decoder = JSONDecoder()
         let jsonString = json
 
         if let data = jsonString.data(using: .utf8), let decoded = try? decoder.decode(FineLocationTrackingFromServer.self, from: data) {
+            return decoded
+        }
+
+        return result
+    }
+    
+    func jsonForTracking(json: String) -> FineLocationTrackingResult {
+        let result = FineLocationTrackingResult()
+        let decoder = JSONDecoder()
+        let jsonString = json
+
+        if let data = jsonString.data(using: .utf8), let decoded = try? decoder.decode(FineLocationTrackingResult.self, from: data) {
             return decoded
         }
 
@@ -1142,6 +1296,23 @@ public class ServiceManager: Observation {
         }
         
         return result
+    }
+    
+    func saveErrorFile(log: String) {
+        print("(Jupiter) Process : Saving error log file....")
+        if let data: Data = log.data(using: String.Encoding.utf8) {
+            do {
+                guard let errorFile = self.textFile else {
+                    print("(Jupiter) Error : Fail to save error logs")
+                    return
+                }
+                print("(Jupiter) Process : Error logs")
+                print(data)
+                try data.write(to: errorFile)
+            } catch let e {
+                print(e.localizedDescription)
+            }
+        }
     }
     
     // Kalman Filter
