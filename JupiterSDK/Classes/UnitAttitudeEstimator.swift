@@ -15,14 +15,30 @@ public class UnitAttitudeEstimator: NSObject {
     public var preGameVecAttEMA = Attitude(Roll: 0, Pitch: 0, Yaw: 0)
     public var preAccAttEMA = Attitude(Roll: 0, Pitch: 0, Yaw: 0)
     
+    var preRoll: Double = 0
+    var prePitch: Double = 0
+    
     public func estimateAtt(time: Double, acc:[Double], gyro: [Double], rotMatrix: [[Double]]) -> Attitude {
         // 휴대폰의 자세(기울어짐 정도)를 계산하여 각도(Radian)로 저장
         let attFromRotMatrix = CF.calAttitudeUsingRotMatrix(rotationMatrix: rotMatrix)
         let gyroNavGame = CF.transBody2Nav(att: attFromRotMatrix, data: gyro)
         
-        let accRoll = HF.callRollUsingAcc(acc: acc)
-        let accPitch = HF.callPitchUsingAcc(acc: acc)
+        var accRoll = HF.callRollUsingAcc(acc: acc)
+        var accPitch = HF.callPitchUsingAcc(acc: acc)
+        
         let accAttitude = Attitude(Roll: accRoll, Pitch: accPitch, Yaw: 0)
+        
+        if (accRoll.isNaN) {
+            accRoll = preRoll
+        } else {
+            preRoll = accRoll
+        }
+        
+        if (accPitch.isNaN) {
+            accPitch = prePitch
+        } else {
+            prePitch = accPitch
+        }
         
         var accAttEMA = Attitude(Roll: accRoll, Pitch: accPitch, Yaw: 0)
         let gyroNavEMAAcc = CF.transBody2Nav(att: accAttEMA, data: gyro)
@@ -38,7 +54,6 @@ public class UnitAttitudeEstimator: NSObject {
             let accAngleOfRotation = HF.calAngleOfRotation(timeInterval: time - timeBefore, angularVelocity: gyroNavEMAAcc[2])
             headingGyroAcc += accAngleOfRotation
         }
-        print("(Jupiter) HeadingGyroAcc : \(headingGyroAcc)")
         
         var gameVecAttEMA: Attitude
         if (preGameVecAttEMA == Attitude(Roll: 0, Pitch: 0, Yaw: 0)) {

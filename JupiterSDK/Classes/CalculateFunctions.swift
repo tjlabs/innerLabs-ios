@@ -97,11 +97,11 @@ public class CalculateFunctions: NSObject {
         rotationMatrix[0][0] = cos(roll)
         rotationMatrix[0][1] = 0
         rotationMatrix[0][2] = -sin(roll)
-        
+
         rotationMatrix[1][0] = sin(roll) * sin(pitch)
         rotationMatrix[1][1] = 0
         rotationMatrix[1][2] = cos(roll) * sin(pitch)
-        
+
         rotationMatrix[2][0] = cos(pitch) * sin(roll)
         rotationMatrix[2][1] = -sin(pitch)
         rotationMatrix[2][2] = cos(pitch) * cos(roll)
@@ -112,10 +112,6 @@ public class CalculateFunctions: NSObject {
         (gx * rotationMatrix[1][0]) + (gy * rotationMatrix[1][1]) + (gz * rotationMatrix[1][2])
         processedGyro[2] =
         (gx * rotationMatrix[2][0]) + (gy * rotationMatrix[2][1]) + (gz * rotationMatrix[2][2])
-        
-        print("(Jupiter) rotationMatrix : \(rotationMatrix)")
-        print("(Jupiter) gyro : \(gyro)")
-        print("(Jupiter) processedGyro : \(processedGyro)")
         
         return processedGyro
     }
@@ -142,8 +138,6 @@ public class CalculateFunctions: NSObject {
     }
     
     public func transBody2Nav(att: Attitude, data: [Double]) -> [Double] {
-        print("(Jupiter) transBody2Nav att : \(att)")
-        print("(Jupiter) transBody2Nav gyro : \(data)")
         return rotationXY(roll: -att.Roll, pitch: -att.Pitch, gyro: data)
     }
     

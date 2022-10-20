@@ -19,7 +19,6 @@ public class HeadingFunctions: NSObject {
     }
     
     public func callRollUsingAcc(acc: [Double]) -> Double {
-        
         if (acc[0] > 0 && acc[2] < 0) {
             return (atan(acc[0] / sqrt(acc[1]*acc[1] + acc[2]*acc[2])) - Double.pi)
         }
@@ -29,7 +28,6 @@ public class HeadingFunctions: NSObject {
         else {
             return -atan(acc[0] / sqrt(acc[1]*acc[1] + acc[2]*acc[2]))
         }
-        
     }
     
     public func callPitchUsingAcc(acc: [Double]) -> Double {
@@ -37,6 +35,5 @@ public class HeadingFunctions: NSObject {
         
         return result
     }
-
 }
 
