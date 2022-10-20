@@ -332,7 +332,6 @@ extension CardViewController: UICollectionViewDataSource, UICollectionViewDelega
         
         let cardCount = cardItemData.count
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "CardCollectionViewCell", for: indexPath) as! CardCollectionViewCell
-        
         let mod = indexPath.item%cardCount
         
         // Sector Name & Description
