@@ -1,11 +1,3 @@
-//
-//  ViewController.swift
-//  JupiterSDK
-//
-//  Created by Leo on 03/22/2022.
-//  Copyright (c) 2022 Leo. All rights reserved.
-//
-
 import UIKit
 import SwiftUI
 import Alamofire
