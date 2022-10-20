@@ -215,14 +215,6 @@ class MainViewController: UIViewController, UITextFieldDelegate {
                 }
                 break
             case .failure(let err):
-//                print("")
-//                print("====================================")
-//                print("응답 코드 :: ", response.response?.statusCode ?? 0)
-//                print("-------------------------------")
-//                print("에 러 :: ", err.localizedDescription)
-//                print("====================================")
-//                print("")
-                
                 break
             }
         }
