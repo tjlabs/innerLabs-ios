@@ -28,7 +28,6 @@ class MainViewController: UIViewController, UITextFieldDelegate {
     
     let networkManager = Network()
     
-    // UI
     let loginButton: UIButton = UIButton(frame: CGRect(x: 0, y: 0, width: 310, height: 49))
     let loginLabel: UILabel = UILabel(frame: CGRect(x: 0, y: 0, width: 45, height: 19))
     
