@@ -38,6 +38,7 @@ public class UnitAttitudeEstimator: NSObject {
             let accAngleOfRotation = HF.calAngleOfRotation(timeInterval: time - timeBefore, angularVelocity: gyroNavEMAAcc[2])
             headingGyroAcc += accAngleOfRotation
         }
+        print("(Jupiter) HeadingGyroAcc : \(headingGyroAcc)")
         
         var gameVecAttEMA: Attitude
         if (preGameVecAttEMA == Attitude(Roll: 0, Pitch: 0, Yaw: 0)) {

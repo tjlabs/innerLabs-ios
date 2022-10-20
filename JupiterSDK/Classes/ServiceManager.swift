@@ -367,7 +367,7 @@ public class ServiceManager: Observation {
             let localTime: String = getLocalTimeString()
             let log: String = localTime + " , (Jupiter) Error : Fail to initialize the service\n"
             if (flagSaveError) {
-                errorLogs.append(log)
+                self.errorLogs.append(log)
             } else {
                print(log)
             }
@@ -382,7 +382,7 @@ public class ServiceManager: Observation {
             let localTime: String = getLocalTimeString()
             let log: String = localTime + " , (Jupiter) Error : User ID cannot be empty or contain space\n"
             if (flagSaveError) {
-                errorLogs.append(log)
+                self.errorLogs.append(log)
             } else {
                print(log)
             }
@@ -545,7 +545,7 @@ public class ServiceManager: Observation {
             let localTime: String = getLocalTimeString()
             let log: String = localTime + " , (Jupiter) Error : Fail to initialize accelerometer\n"
             if (flagSaveError) {
-                errorLogs.append(log)
+                self.errorLogs.append(log)
             } else {
                print(log)
             }
@@ -575,7 +575,7 @@ public class ServiceManager: Observation {
             let localTime: String = getLocalTimeString()
             let log: String = localTime + " , (Jupiter) Error : Fail to initialize gyroscope\n"
             if (flagSaveError) {
-                errorLogs.append(log)
+                self.errorLogs.append(log)
             } else {
                print(log)
             }
@@ -605,7 +605,7 @@ public class ServiceManager: Observation {
             let localTime: String = getLocalTimeString()
             let log: String = localTime + " , (Jupiter) Error : Fail to initialize magnetometer\n"
             if (flagSaveError) {
-                errorLogs.append(log)
+                self.errorLogs.append(log)
             } else {
                print(log)
             }
@@ -625,7 +625,7 @@ public class ServiceManager: Observation {
             let localTime: String = getLocalTimeString()
             let log: String = localTime + " , (Jupiter) Error : Fail to initialize pressure sensor\n"
             if (flagSaveError) {
-                errorLogs.append(log)
+                self.errorLogs.append(log)
             } else {
                print(log)
             }
@@ -699,7 +699,7 @@ public class ServiceManager: Observation {
             let localTime: String = getLocalTimeString()
             let log: String = localTime + " , (Jupiter) Error : Fail to initialize motion sensor\n"
             if (flagSaveError) {
-                errorLogs.append(log)
+                self.errorLogs.append(log)
             } else {
                print(log)
             }
@@ -709,7 +709,7 @@ public class ServiceManager: Observation {
             let localTime: String = getLocalTimeString()
             let log: String = localTime + " , (Jupiter) Success : initialize sensors\n"
             if (flagSaveError) {
-                errorLogs.append(log)
+                self.errorLogs.append(log)
             } else {
                print(log)
             }
@@ -804,7 +804,7 @@ public class ServiceManager: Observation {
                             let localTime: String = getLocalTimeString()
                             let log: String = localTime + " , (Jupiter) Error : Fail to send BLE\n"
                             if (flagSaveError) {
-                                errorLogs.append(log)
+                                self.errorLogs.append(log)
                             } else {
                                print(log)
                             }
@@ -839,6 +839,7 @@ public class ServiceManager: Observation {
             displayOutput.velocity = unitDRInfo.velocity * 3.6
             
             let data = UserVelocity(user_id: self.user_id, mobile_time: currentTime, index: unitDRInfo.index, length: unitDRInfo.length, heading: unitDRInfo.heading, looking: unitDRInfo.lookingFlag)
+//            let data = UserVelocity(user_id: self.user_id, mobile_time: currentTime, index: unitDRInfo.index, length: unitDRInfo.length, heading: Double.nan, looking: unitDRInfo.lookingFlag)
             
             // Kalman Filter
             let diffHeading = unitDRInfo.heading - preUnitHeading
@@ -870,7 +871,8 @@ public class ServiceManager: Observation {
                             let localTime: String = getLocalTimeString()
                             let log: String = localTime + " , (Jupiter) Error : Fail to send sensor measurements\n"
                             if (flagSaveError) {
-                                errorLogs.append(log)
+                                self.errorLogs.append(log)
+                                print(self.errorLogs)
                             } else {
                                print(log)
                             }
@@ -999,7 +1001,7 @@ public class ServiceManager: Observation {
                             let localTime: String = getLocalTimeString()
                             let log: String = localTime + " , (Jupiter) Warnings : Empty Last Result\n"
                             if (flagSaveError) {
-                                errorLogs.append(log)
+                                self.errorLogs.append(log)
                             } else {
                                print(log)
                             }

@@ -188,7 +188,7 @@ class MainViewController: UIViewController, UITextFieldDelegate {
                                 }
                             }
                             
-                            if (id != 10) {
+                            if (id != 10) { 
                                 // KingFisher Image Download
                                 let urlSector = URL(string: "https://storage.googleapis.com/jupiter_image/card/\(id)/main_image.png")
                                 let urlSectorShow = URL(string: "https://storage.googleapis.com/jupiter_image/card/\(id)/edit_image.png")

@@ -113,6 +113,10 @@ public class CalculateFunctions: NSObject {
         processedGyro[2] =
         (gx * rotationMatrix[2][0]) + (gy * rotationMatrix[2][1]) + (gz * rotationMatrix[2][2])
         
+        print("(Jupiter) rotationMatrix : \(rotationMatrix)")
+        print("(Jupiter) gyro : \(gyro)")
+        print("(Jupiter) processedGyro : \(processedGyro)")
+        
         return processedGyro
     }
     
@@ -138,6 +142,8 @@ public class CalculateFunctions: NSObject {
     }
     
     public func transBody2Nav(att: Attitude, data: [Double]) -> [Double] {
+        print("(Jupiter) transBody2Nav att : \(att)")
+        print("(Jupiter) transBody2Nav gyro : \(data)")
         return rotationXY(roll: -att.Roll, pitch: -att.Pitch, gyro: data)
     }
     
