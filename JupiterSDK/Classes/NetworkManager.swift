@@ -357,101 +357,55 @@ public class NetworkManager {
     }
     
     func postFLT(url: String, input: FineLocationTracking, completion: @escaping (Int, String) -> Void) {
-        // [http 요청 헤더 지정]
-        let header : HTTPHeaders = [
-            "Content-Type" : "application/json"
-        ]
-        
-        AF.request(
-            url, // [주소]
-            method: .post, // [전송 타입]
-            parameters: input, // [전송 데이터]
-            encoder: JSONParameterEncoder.default,
-            headers: header // [헤더 지정]
-        )
-        .validate(statusCode: 200..<300)
-        .responseData { response in
-            switch response.result {
-            case .success(let res):
-                do {
-                    let returnedString = String(data: res, encoding: .utf8) ?? "Fail"
-                    completion(200, returnedString)
-                    
+        // [http 비동기 방식을 사용해서 http 요청 수행 실시]
+        let urlComponents = URLComponents(string: url)
+        var requestURL = URLRequest(url: (urlComponents?.url)!)
+
+        requestURL.httpMethod = "POST"
+        let encodingData = JSONConverter.encodeJson(param: input)
+        requestURL.httpBody = encodingData
+        requestURL.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        requestURL.setValue("\(encodingData)", forHTTPHeaderField: "Content-Length")
+
+        let dataTask = URLSession.shared.dataTask(with: requestURL, completionHandler: { (data, response, error) in
+
+            // [error가 존재하면 종료]
+            guard error == nil else {
+                // [콜백 반환]
+                DispatchQueue.main.async {
+                    completion(500, error?.localizedDescription ?? "Fail")
                 }
-                catch (let err){
-                    print("")
-                    print("====================================")
-                    print("catch :: ", err.localizedDescription)
-                    print("====================================")
-                    print("")
-                    completion(500, "Fail")
-                }
-                break
-            case .failure(let err):
-                print("")
-                print("====================================")
-                print("응답 코드 :: ", response.response?.statusCode ?? 0)
-                print("-------------------------------")
-                print("에 러 :: ", err.localizedDescription)
-                print("====================================")
-                print("")
-                completion(500, "Fail")
-                
-                break
+                return
             }
-        }
+
+            // [status 코드 체크 실시]
+            let successsRange = 200..<300
+            guard let statusCode = (response as? HTTPURLResponse)?.statusCode, successsRange.contains(statusCode)
+            else {
+                // [콜백 반환]
+                DispatchQueue.main.async {
+                    completion(500, (response as? HTTPURLResponse)?.description ?? "Fail")
+                }
+                return
+            }
+
+            // [response 데이터 획득]
+            let resultCode = (response as? HTTPURLResponse)?.statusCode ?? 500 // [상태 코드]
+            guard let resultLen = data else {
+                completion(500, (response as? HTTPURLResponse)?.description ?? "Fail")
+                return
+            }
+            let resultData = String(data: resultLen, encoding: .utf8) ?? "" // [데이터 확인]
+
+            // [콜백 반환]
+            DispatchQueue.main.async {
+                completion(resultCode, resultData)
+            }
+        })
+
+        // [network 통신 실행]
+        dataTask.resume()
     }
-    
-//    func postFLT(url: String, input: FineLocationTracking, completion: @escaping (Int, String) -> Void) {
-//        // [http 비동기 방식을 사용해서 http 요청 수행 실시]
-//        let urlComponents = URLComponents(string: url)
-//        var requestURL = URLRequest(url: (urlComponents?.url)!)
-//
-//        requestURL.httpMethod = "POST"
-//        let encodingData = JSONConverter.encodeJson(param: input)
-//        requestURL.httpBody = encodingData
-//        requestURL.addValue("application/json", forHTTPHeaderField: "Content-Type")
-//        requestURL.setValue("\(encodingData)", forHTTPHeaderField: "Content-Length")
-//
-//        let dataTask = URLSession.shared.dataTask(with: requestURL, completionHandler: { (data, response, error) in
-//
-//            // [error가 존재하면 종료]
-//            guard error == nil else {
-//                // [콜백 반환]
-//                DispatchQueue.main.async {
-//                    completion(500, error?.localizedDescription ?? "Fail")
-//                }
-//                return
-//            }
-//
-//            // [status 코드 체크 실시]
-//            let successsRange = 200..<300
-//            guard let statusCode = (response as? HTTPURLResponse)?.statusCode, successsRange.contains(statusCode)
-//            else {
-//                // [콜백 반환]
-//                DispatchQueue.main.async {
-//                    completion(500, (response as? HTTPURLResponse)?.description ?? "Fail")
-//                }
-//                return
-//            }
-//
-//            // [response 데이터 획득]
-//            let resultCode = (response as? HTTPURLResponse)?.statusCode ?? 500 // [상태 코드]
-//            guard let resultLen = data else {
-//                completion(500, (response as? HTTPURLResponse)?.description ?? "Fail")
-//                return
-//            }
-//            let resultData = String(data: resultLen, encoding: .utf8) ?? "" // [데이터 확인]
-//
-//            // [콜백 반환]
-//            DispatchQueue.main.async {
-//                completion(resultCode, resultData)
-//            }
-//        })
-//
-//        // [network 통신 실행]
-//        dataTask.resume()
-//    }
     
     func postRecent(url: String, input: RecentResult, completion: @escaping (Int, String) -> Void) {
         // [http 비동기 방식을 사용해서 http 요청 수행 실시]
