@@ -258,6 +258,7 @@ class NeptuneViewController: UIViewController {
                         //-------------//
                         
                         let data = result.spots[bestIndex]
+                        print(data)
                         if (data.sector_name != "" && data.building_name != "" && data.level_name != "") {
                             
                             if (data.building_name == "") {

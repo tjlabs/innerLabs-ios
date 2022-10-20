@@ -394,11 +394,17 @@ extension CardViewController: UICollectionViewDataSource, UICollectionViewDelega
             galleryVC.page = currentPage
             self.navigationController?.pushViewController(galleryVC, animated: true)
         } else if (sector_id == 9) {
-            guard let spotVC = self.storyboard?.instantiateViewController(withIdentifier: "NeptuneViewController") as? NeptuneViewController else { return }
+            guard let spotVC = self.storyboard?.instantiateViewController(withIdentifier: "SpotViewController") as? SpotViewController else { return }
             spotVC.cardData = cardItemData[mod]
             spotVC.userId = uuid
             spotVC.page = currentPage
             self.navigationController?.pushViewController(spotVC, animated: true)
+        } else if (sector_id == 14) {
+            guard let neptuneVC = self.storyboard?.instantiateViewController(withIdentifier: "NeptuneViewController") as? NeptuneViewController else { return }
+            neptuneVC.cardData = cardItemData[mod]
+            neptuneVC.userId = uuid
+            neptuneVC.page = currentPage
+            self.navigationController?.pushViewController(neptuneVC, animated: true)
         } else {
             guard let serviceVC = self.storyboard?.instantiateViewController(withIdentifier: "ServiceViewController") as? ServiceViewController else { return }
             serviceVC.cardData = cardItemData[mod]

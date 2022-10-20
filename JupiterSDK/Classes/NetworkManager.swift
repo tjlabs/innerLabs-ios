@@ -63,11 +63,11 @@ public class NetworkManager {
         ]
         
         // [http 요청 수행 실시]
-        //        print("")
-        //        print("====================================")
-        //        print("UV 데이터 :: ", input)
-        //        print("====================================")
-        //        print("")
+        print("")
+        print("====================================")
+        print("PUT UV 데이터 :: ", input)
+        print("====================================")
+        print("")
         
         AF.request(
             url, // [주소]
@@ -81,7 +81,6 @@ public class NetworkManager {
             switch response.result {
             case .success(let res):
                 do {
-                    
                     // [비동기 작업 수행]
                     let returnedString = String(data: res, encoding: .utf8) ?? "Fail"
                     completion(200, String(input[input.count-1].index))
