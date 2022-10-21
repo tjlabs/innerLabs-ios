@@ -165,11 +165,11 @@ public class NetworkManager {
         requestURL.setValue("\(encodingData)", forHTTPHeaderField: "Content-Length")
         
         // [http 요청 수행 실시]
-        print("")
-        print("====================================")
-        print("PUT UV 데이터 :: ", input)
-        print("====================================")
-        print("")
+//        print("")
+//        print("====================================")
+//        print("PUT UV 데이터 :: ", input)
+//        print("====================================")
+//        print("")
         
 
         let dataTask = URLSession.shared.dataTask(with: requestURL, completionHandler: { (data, response, error) in

@@ -392,7 +392,7 @@ extension CardViewController: UICollectionViewDataSource, UICollectionViewDelega
             galleryVC.uuid = uuid
             galleryVC.page = currentPage
             self.navigationController?.pushViewController(galleryVC, animated: true)
-        } else if (sector_id == 9) {
+        } else if (sector_id == 8) {
             guard let spotVC = self.storyboard?.instantiateViewController(withIdentifier: "SpotViewController") as? SpotViewController else { return }
             spotVC.cardData = cardItemData[mod]
             spotVC.userId = uuid

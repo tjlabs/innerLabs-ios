@@ -29,9 +29,10 @@ public class ServiceManager: Observation {
                         result = pastMatchingResult
                     }
 
-                    if (self.matchingFailCount > MATCHING_FAIL_THRESHOLD) {
-                        self.phase = 1
-                    }
+                    // Matching Failed
+//                    if (self.matchingFailCount > MATCHING_FAIL_THRESHOLD) {
+//                        self.phase = 1
+//                    }
                 }
                 displayOutput.heading = result.absolute_heading
 
@@ -327,7 +328,6 @@ public class ServiceManager: Observation {
             let documentsURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask)[0]
             let fileURL = documentsURL.appendingPathComponent("Jupiter")
             let localTime: String = getLocalTimeString()
-            print("(Jupiter) Local Time : \(localTime)")
             if !fileManager.fileExists(atPath: fileURL.path) {
                 do {
                     try fileManager.createDirectory(atPath: fileURL.path, withIntermediateDirectories: true, attributes: nil)
@@ -738,9 +738,9 @@ public class ServiceManager: Observation {
             requestTimer = Timer.scheduledTimer(timeInterval: RQ_INTERVAL, target: self, selector: #selector(self.requestTimerUpdate), userInfo: nil, repeats: true)
         }
 
-        if (interruptTimer == nil && self.service == "FLT") {
-            interruptTimer = Timer.scheduledTimer(timeInterval: CLC_INTERVAL, target: self, selector: #selector(self.runInterrupt), userInfo: nil, repeats: true)
-        }
+//        if (interruptTimer == nil && self.service == "FLT") {
+//            interruptTimer = Timer.scheduledTimer(timeInterval: CLC_INTERVAL, target: self, selector: #selector(self.runInterrupt), userInfo: nil, repeats: true)
+//        }
     }
     
     func stopTimer() {
@@ -839,7 +839,6 @@ public class ServiceManager: Observation {
             displayOutput.velocity = unitDRInfo.velocity * 3.6
             
             let data = UserVelocity(user_id: self.user_id, mobile_time: currentTime, index: unitDRInfo.index, length: unitDRInfo.length, heading: unitDRInfo.heading, looking: unitDRInfo.lookingFlag)
-//            let data = UserVelocity(user_id: self.user_id, mobile_time: currentTime, index: unitDRInfo.index, length: unitDRInfo.length, heading: Double.nan, looking: unitDRInfo.lookingFlag)
             
             // Kalman Filter
             let diffHeading = unitDRInfo.heading - preUnitHeading
@@ -940,15 +939,15 @@ public class ServiceManager: Observation {
                             // Kalman Filter
                             if (result.mobile_time > preOutputMobileTime) {
                                 // Check Coord
-                                if (isPastServerResult) {
-                                    let diffX = pastServerCoord[0] - result.x
-                                    let diffY = pastServerCoord[1] - result.y
-                                    let diffNorm = sqrt(diffX*diffX + diffY*diffY)
-                                    if (diffNorm > COORD_THRESHOLD) {
-                                        self.phase = 1
-                                        result.phase = 1
-                                    }
-                                }
+//                                if (isPastServerResult) {
+//                                    let diffX = pastServerCoord[0] - result.x
+//                                    let diffY = pastServerCoord[1] - result.y
+//                                    let diffNorm = sqrt(diffX*diffX + diffY*diffY)
+//                                    if (diffNorm > COORD_THRESHOLD) {
+//                                        self.phase = 1
+//                                        result.phase = 1
+//                                    }
+//                                }
                                 
                                 if (result.phase == 4) {
                                     UV_INPUT_NUM = VAR_INPUT_NUM
