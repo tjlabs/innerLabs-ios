@@ -132,9 +132,7 @@ class SpotViewController: UIViewController {
         scatterChart.rightAxis.drawLabelsEnabled = chartFlag
         
         scatterChart.legend.enabled = chartFlag
-        
         scatterChart.backgroundColor = .clear
-        
         scatterChart.data = chartData
     }
     
