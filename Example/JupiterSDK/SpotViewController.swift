@@ -72,6 +72,7 @@ class SpotViewController: UIViewController {
     }
     
     func setCardData(cardData: CardItemData) {
+        print(cardData)
         self.sectorNameLabel.text = cardData.sector_name
         
         let imageName: String = cardData.cardColor + "CardTop"
@@ -252,6 +253,7 @@ class SpotViewController: UIViewController {
             // Request Result
             serviceManager.getResult(completion: { [self] statusCode, returnedString in
                 if (statusCode == 200) {
+                    print(returnedString)
                     let result: OnSpotAuthorizationResult = decodeOSA(json: returnedString)
                     
                     if (result.spots.count > 0) {

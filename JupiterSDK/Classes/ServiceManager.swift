@@ -16,7 +16,7 @@ public class ServiceManager: Observation {
                 // Map Matching
                 if (self.isMapMatching) {
                     let correctResult = correct(building: result.building_name, level: result.level_name, x: result.x, y: result.y, heading: result.absolute_heading, mode: self.mode, isPast: isPast)
-
+                    
                     if (correctResult.isSuccess) {
                         result.x = correctResult.xyh[0]
                         result.y = correctResult.xyh[1]
@@ -26,22 +26,22 @@ public class ServiceManager: Observation {
                         self.matchingFailCount = 0
                     } else {
                         self.matchingFailCount += 1
-                        result = pastMatchingResult
+                        result = self.pastMatchingResult
                     }
-
-                    // Matching Failed
-//                    if (self.matchingFailCount > MATCHING_FAIL_THRESHOLD) {
-//                        self.phase = 1
-//                    }
                 }
-                displayOutput.heading = result.absolute_heading
-
                 // Averaging
                 if (!pastResult.isEmpty) {
-                    if abs(pastResult[2] - result.absolute_heading) < 270 {
+                    if (pastResult[2] >= 270 && pastResult[2] <= 360) && (result.absolute_heading >= 0 && result.absolute_heading <= 90) {
+                        result.absolute_heading = ((result.absolute_heading+360) + pastResult[2])/2
+                    } else if (pastResult[2] >= 0 && pastResult[2] <= 90) && (result.absolute_heading >= 270 && result.absolute_heading <= 360) {
+                        result.absolute_heading = (result.absolute_heading + (pastResult[2]+360))/2
+                    } else {
                         result.absolute_heading = (result.absolute_heading + pastResult[2])/2
                     }
+                    result.absolute_heading = result.absolute_heading - floor(result.absolute_heading/360)*360
                 }
+                
+                displayOutput.heading = result.absolute_heading
 
                 // Past Result Update
                 if (pastResult.isEmpty) {
@@ -67,6 +67,7 @@ public class ServiceManager: Observation {
                 updatedResult.calculated_time = result.calculated_time
                 updatedResult.index = result.index
                 updatedResult.velocity = result.velocity
+                
 
                 self.lastTrackingTime = updatedResult.mobile_time
                 self.lastResult = updatedResult
@@ -261,14 +262,19 @@ public class ServiceManager: Observation {
     var isMapMatching: Bool = false
     
     var isActiveService: Bool = true
+    var isActiveRF: Bool = true
     var isAnswered: Bool = false
     var isFirstStart: Bool = true
+    var isStop: Bool = false
     
     var timeActiveRF: Double = 0
     var timeActiveUV: Double = 0
+    var timeInitUV: Double = 0
     var timeUpdateInSleep: Double = 0
     let STOP_THRESHOLD: Double = 0.5 // 0.5 sec
     let SLEEP_THRESHOLD: Double = 600 // 10분
+    let SLEEP_THRESHOLD_RF: Double = 5 // 5s
+    let INIT_HRESHOLD: Double = 10 // 10s
     
     var lastTrackingTime: Int = 0
     var lastResult = FineLocationTrackingResult()
@@ -288,7 +294,7 @@ public class ServiceManager: Observation {
     let fileManager = FileManager.default
     var textFile: URL?
     var errorLogs: String = ""
-    let flagSaveError: Bool = true
+    let flagSaveError: Bool = false
     
     public override init() {
         deviceModel = UIDevice.modelName
@@ -437,7 +443,7 @@ public class ServiceManager: Observation {
                                     let url = "https://storage.googleapis.com/jupiter_image/pp/\(self.sector_id)/\(key).csv"
                                     // [http 비동기 방식을 사용해서 http 요청 수행 실시]
                                     let urlComponents = URLComponents(string: url)
-                                    var requestURL = URLRequest(url: (urlComponents?.url)!)
+                                    let requestURL = URLRequest(url: (urlComponents?.url)!)
                                     let dataTask = URLSession.shared.dataTask(with: requestURL, completionHandler: { (data, response, error) in
                                         let statusCode = (response as? HTTPURLResponse)?.statusCode ?? 500
 
@@ -791,9 +797,10 @@ public class ServiceManager: Observation {
         
         if (!bleDictionary.isEmpty) {
             timeActiveRF = 0
-            isActiveService = true
+            self.isActiveService = true
+            self.isActiveRF = true
             
-            if (isActiveService) {
+            if (self.isActiveService) {
                 let data = ReceivedForce(user_id: self.user_id, mobile_time: currentTime, ble: bleDictionary, pressure: self.pressure)
                 
                 inputReceivedForce.append(data)
@@ -815,8 +822,10 @@ public class ServiceManager: Observation {
             }
         } else {
             timeActiveRF += RF_INTERVAL
-            if (timeActiveRF >= SLEEP_THRESHOLD) {
-                isActiveService = false
+            if (timeActiveRF >= SLEEP_THRESHOLD_RF) {
+//                print("(Jupiter) RF is Empty")
+                self.isActiveService = false
+                self.isActiveRF = false
                 timeActiveRF = 0
             }
         }
@@ -830,8 +839,10 @@ public class ServiceManager: Observation {
         }
         
         if (unitDRInfo.isIndexChanged) {
-            timeActiveUV = 0
-            isActiveService = true
+            self.timeActiveUV = 0
+            self.timeInitUV = 0
+            self.isActiveService = true
+            self.isStop = false
             
             displayOutput.isIndexChanged = unitDRInfo.isIndexChanged
             displayOutput.indexTx = unitDRInfo.index
@@ -844,7 +855,7 @@ public class ServiceManager: Observation {
             let diffHeading = unitDRInfo.heading - preUnitHeading
             let curUnitDRLength = unitDRInfo.length
             
-            if (isActiveService) {
+            if (self.isActiveService && self.isActiveRF) {
                 inputUserVelocity.append(data)
                 
                 // Time Update
@@ -881,32 +892,39 @@ public class ServiceManager: Observation {
                 }
             }
         } else {
-            if (floorUpdateRequestFlag && isActiveService) {
-                floorUpdateRequestTimeStack += UV_INTERVAL
-                if (floorUpdateRequestTimeStack > FLOOR_UPDATE_REQUEST_TIME) {
-                    let input = FineLocationTracking(user_id: user_id, mobile_time: currentTime, sector_id: sector_id, phase: self.phase)
-                    
-                    NetworkManager.shared.postFLT(url: FLT_URL, input: input, completion: { [self] statusCode, returnedString in
-                        if (statusCode == 200) {
-                            let result = jsonToResult(json: returnedString)
-                            let finalResult = fromServerToResult(fromServer: result, velocity: displayOutput.velocity)
-                            print("(Jupiter) Floor Changed")
-                            self.tracking(input: finalResult, isPast: false)
-                        }
-                    })
-                    floorUpdateRequestTimeStack = 0
-                }
-            }
+//            if (floorUpdateRequestFlag && self.isActiveService && self.isActiveRF) {
+//                floorUpdateRequestTimeStack += UV_INTERVAL
+//                if (floorUpdateRequestTimeStack > FLOOR_UPDATE_REQUEST_TIME) {
+//                    let input = FineLocationTracking(user_id: user_id, mobile_time: currentTime, sector_id: sector_id, phase: self.phase)
+//
+//                    NetworkManager.shared.postFLT(url: FLT_URL, input: input, completion: { [self] statusCode, returnedString in
+//                        if (statusCode == 200) {
+//                            let result = jsonToResult(json: returnedString)
+//                            let finalResult = fromServerToResult(fromServer: result, velocity: displayOutput.velocity)
+//                            print("(Jupiter) Floor Changed")
+//                            self.tracking(input: finalResult, isPast: false)
+//                        }
+//                    })
+//                    floorUpdateRequestTimeStack = 0
+//                }
+//            }
             
             // UV가 발생하지 않음
             timeActiveUV += UV_INTERVAL
             if (timeActiveUV >= STOP_THRESHOLD) {
+                self.isStop = true
                 displayOutput.velocity = 0
+            }
+            
+            self.timeInitUV += UV_INTERVAL
+            if (self.timeInitUV >= INIT_HRESHOLD) {
+                self.phase = 1
+                self.timeInitUV = 0
             }
             
             if (timeActiveUV >= SLEEP_THRESHOLD) {
                 print("(Jupiter) Enter Sleep Mode")
-                isActiveService = false
+                self.isActiveService = false
                 timeActiveUV = 0
             }
         }
@@ -915,7 +933,7 @@ public class ServiceManager: Observation {
     @objc func requestTimerUpdate() {
         let currentTime = getCurrentTimeInMilliseconds()
         
-        if (self.isAnswered) {
+        if (self.isAnswered && self.isActiveRF) {
             self.isAnswered = false
 
             // Request FLT
@@ -982,9 +1000,8 @@ public class ServiceManager: Observation {
         } else {
             let diffUpdatedTime: Int = currentTime - self.lastTrackingTime
             if (diffUpdatedTime > 950) {
-                if (self.lastTrackingTime != 0) {
+                if (self.lastTrackingTime != 0 && self.isActiveRF) {
 //                    print("(Jupiter) Past Result")
-//                    print(self.lastResult)
                     self.tracking(input: self.lastResult, isPast: true)
                 } else {
                     if (isFirstStart) {
@@ -994,7 +1011,10 @@ public class ServiceManager: Observation {
                             let currentTime = getCurrentTimeInMilliseconds()
                             let result = jsonForTracking(json: lastKnownResult)
                             if (currentTime - result.mobile_time) < 1000*3600 {
-                                self.tracking(input: result, isPast: false)
+                                var updatedResult = result
+                                updatedResult.absolute_heading = updatedResult.absolute_heading + 180
+//                                print("(Jupiter) Success : \(updatedResult)")
+                                self.tracking(input: updatedResult, isPast: false)
                             }
                         } else {
                             let localTime: String = getLocalTimeString()
@@ -1005,17 +1025,6 @@ public class ServiceManager: Observation {
                                print(log)
                             }
                         }
-                        
-//                        let input = RecentResult(user_id: user_id, mobile_time: currentTime)
-//                        NetworkManager.shared.postRecent(url: RECENT_URL, input: input, completion: { [self] statusCode, returnedString in
-//                            if (statusCode == 200) {
-////                                print("(Jupiter) Last Known Result")
-//                                let result = jsonToResult(json: returnedString)
-//                                let finalResult = fromServerToResult(fromServer: result, velocity: displayOutput.velocity)
-//                                print(finalResult)
-//                                self.tracking(input: finalResult, isPast: true)
-//                            }
-//                        })
                         isFirstStart = false
                     }
                 }
@@ -1158,7 +1167,7 @@ public class ServiceManager: Observation {
             guard let mainHeading: [String] = RoadHeading[key] else {
                 return (isSuccess, xyh)
             }
-            
+            var cc: Double = 0
             // Heading 사용
             var idhArray = [[Double]]()
             var pathArray = [[Double]]()
@@ -1203,12 +1212,20 @@ public class ServiceManager: Observation {
                                     let idxHeading = diffHeading.firstIndex(of: diffHeading.min()!)
                                     let minHeading = Double(headingData[idxHeading!])!
                                     idh[2] = minHeading
-                                    if (abs(heading-minHeading) > 60) {
-                                        isValidIdh = false
+                                    if (heading > 315 && minHeading == 0) {
+                                        if (abs(heading-360) >= 90) {
+                                            isValidIdh = false
+                                        }
+                                    } else {
+                                        if (abs(heading-minHeading) >= 90) {
+                                            isValidIdh = false
+                                        }
                                     }
+                                    
                                     path[2] = minHeading
                                     path[3] = 1
                                     
+                                    cc = minHeading
                                 }
                             }
                             if (isValidIdh) {
@@ -1219,7 +1236,6 @@ public class ServiceManager: Observation {
                     }
                 }
                 
-
                 if (!idhArray.isEmpty) {
                     let sortedIdh = idhArray.sorted(by: {$0[1] < $1[1] })
                     var index: Int = 0

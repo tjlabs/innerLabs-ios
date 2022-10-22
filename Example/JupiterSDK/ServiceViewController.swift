@@ -27,7 +27,7 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
     
     func update(result: FineLocationTrackingResult) {
         DispatchQueue.main.async {
-//            print("VC Result : \(result)")
+//            print("(Jupiter) Result : \(result)")
             let building = result.building_name
             let level = result.level_name
 
