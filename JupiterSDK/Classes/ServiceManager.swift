@@ -103,7 +103,7 @@ public class ServiceManager: Observation {
                     let jsonString = String(data: jsonData, encoding: .utf8)
                     UserDefaults.standard.set(jsonString, forKey: key)
                 } catch {
-                    print("(Jupiter) Error : Fail to save last result")
+                    print("(Jupiter) Warning : Fail to save last result")
                 }
 
                 self.lastTrackingTime = updatedResult.mobile_time
@@ -271,7 +271,7 @@ public class ServiceManager: Observation {
     var timeActiveUV: Double = 0
     var timeInitUV: Double = 0
     var timeUpdateInSleep: Double = 0
-    let STOP_THRESHOLD: Double = 0.5 // 0.5 sec
+    let STOP_THRESHOLD: Double = 1 // 0.5 sec
     let SLEEP_THRESHOLD: Double = 600 // 10분
     let SLEEP_THRESHOLD_RF: Double = 5 // 5s
     let INIT_HRESHOLD: Double = 10 // 10s
@@ -791,7 +791,7 @@ public class ServiceManager: Observation {
         bleManager.trimBleData()
         
         var bleDictionary = bleManager.bleAvg
-        if (deviceModel == "iPhone 13 Mini" || deviceModel == "iPhone 12 Mini") {
+        if (deviceModel == "iPhone 13 Mini" || deviceModel == "iPhone 12 Mini" || deviceModel == "iPhone X") {
             bleDictionary.keys.forEach { bleDictionary[$0] = bleDictionary[$0]! + 7 }
         }
         
@@ -913,6 +913,7 @@ public class ServiceManager: Observation {
             timeActiveUV += UV_INTERVAL
             if (timeActiveUV >= STOP_THRESHOLD) {
                 self.isStop = true
+                timeActiveUV = 0
                 displayOutput.velocity = 0
             }
             
@@ -1213,11 +1214,11 @@ public class ServiceManager: Observation {
                                     let minHeading = Double(headingData[idxHeading!])!
                                     idh[2] = minHeading
                                     if (heading > 315 && minHeading == 0) {
-                                        if (abs(heading-360) >= 90) {
+                                        if (abs(heading-360) >= 60) {
                                             isValidIdh = false
                                         }
                                     } else {
-                                        if (abs(heading-minHeading) >= 90) {
+                                        if (abs(heading-minHeading) >= 60) {
                                             isValidIdh = false
                                         }
                                     }
