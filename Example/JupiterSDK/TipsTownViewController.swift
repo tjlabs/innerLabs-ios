@@ -188,7 +188,6 @@ class TipsTownViewController: UIViewController {
     
     func goToChatViewController() {
         window = UIWindow(frame: UIScreen.main.bounds)
-        
 //        let ratio = UIScreen.main.bounds.height/UIScreen.main.bounds.width
 //        let width = (UIScreen.main.bounds.width/2)
 //        let height = width*ratio
