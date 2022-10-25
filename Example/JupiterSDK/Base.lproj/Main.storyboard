@@ -482,9 +482,10 @@
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="1ZL-rE-6mK">
-                                        <rect key="frame" x="320" y="61.666666666666657" width="50" height="22"/>
+                                        <rect key="frame" x="310" y="52.666666666666657" width="80" height="40"/>
                                         <constraints>
-                                            <constraint firstAttribute="width" constant="50" id="A4k-W9-Vm0"/>
+                                            <constraint firstAttribute="width" constant="80" id="A4k-W9-Vm0"/>
+                                            <constraint firstAttribute="height" constant="40" id="FQs-gr-AK9"/>
                                         </constraints>
                                         <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                                         <state key="normal" image="showInfoButton"/>
@@ -498,7 +499,7 @@
                                 <constraints>
                                     <constraint firstItem="Gyz-ns-ttr" firstAttribute="centerX" secondItem="jqI-TW-uug" secondAttribute="centerX" id="03S-ME-gb6"/>
                                     <constraint firstItem="Gyz-ns-ttr" firstAttribute="centerY" secondItem="WrS-xQ-mlg" secondAttribute="centerY" id="0Oj-PP-Kbp"/>
-                                    <constraint firstAttribute="trailing" secondItem="1ZL-rE-6mK" secondAttribute="trailing" constant="20" id="32k-bc-egn"/>
+                                    <constraint firstAttribute="trailing" secondItem="1ZL-rE-6mK" secondAttribute="trailing" id="32k-bc-egn"/>
                                     <constraint firstAttribute="bottom" secondItem="dMH-0F-2Pr" secondAttribute="bottom" id="AX3-Mh-5gb"/>
                                     <constraint firstAttribute="bottom" secondItem="WrS-xQ-mlg" secondAttribute="bottom" constant="15" id="BGB-QZ-zKn"/>
                                     <constraint firstItem="1ZL-rE-6mK" firstAttribute="centerY" secondItem="Gyz-ns-ttr" secondAttribute="centerY" id="HQ2-iJ-l4s"/>
@@ -962,16 +963,16 @@
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3gD-qq-xTX">
-                                        <rect key="frame" x="320" y="61.666666666666657" width="50" height="22"/>
+                                        <rect key="frame" x="310" y="52.666666666666657" width="80" height="40"/>
                                         <constraints>
-                                            <constraint firstAttribute="width" constant="50" id="J8W-3E-XmO"/>
+                                            <constraint firstAttribute="height" constant="40" id="D3Z-TD-68a"/>
+                                            <constraint firstAttribute="width" constant="80" id="J8W-3E-XmO"/>
                                         </constraints>
                                         <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                                         <state key="normal" image="showInfoButton"/>
                                         <state key="selected" image="closeInfoButton"/>
                                         <connections>
                                             <action selector="tapShowButton:" destination="u7u-1Q-Wm7" eventType="touchUpInside" id="DMN-5k-NgP"/>
-                                            <action selector="tapShowButton:" destination="LqI-KL-YbA" eventType="touchUpInside" id="lAM-JE-6kY"/>
                                         </connections>
                                     </button>
                                 </subviews>
@@ -981,7 +982,7 @@
                                     <constraint firstItem="NaS-qa-jFc" firstAttribute="centerY" secondItem="h9c-Gu-v6d" secondAttribute="centerY" id="DH0-0d-LRg"/>
                                     <constraint firstItem="3gD-qq-xTX" firstAttribute="centerY" secondItem="NaS-qa-jFc" secondAttribute="centerY" id="EWK-ND-QKM"/>
                                     <constraint firstItem="h9c-Gu-v6d" firstAttribute="leading" secondItem="3pm-R5-VUA" secondAttribute="leading" constant="20" id="HU8-qD-bfj"/>
-                                    <constraint firstAttribute="trailing" secondItem="3gD-qq-xTX" secondAttribute="trailing" constant="20" id="LpJ-1Q-8cX"/>
+                                    <constraint firstAttribute="trailing" secondItem="3gD-qq-xTX" secondAttribute="trailing" id="LpJ-1Q-8cX"/>
                                     <constraint firstItem="NaS-qa-jFc" firstAttribute="centerX" secondItem="3pm-R5-VUA" secondAttribute="centerX" id="R9s-dp-Zd5"/>
                                     <constraint firstAttribute="bottom" secondItem="XFK-SY-dYd" secondAttribute="bottom" id="RR2-0h-4uK"/>
                                     <constraint firstAttribute="trailing" secondItem="XFK-SY-dYd" secondAttribute="trailing" constant="-2" id="X2i-C4-oFU"/>
@@ -1005,6 +1006,9 @@
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="MUx-gm-oAb" customClass="ScatterChartView" customModule="Charts">
                                         <rect key="frame" x="0.0" y="10" width="390" height="335"/>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <accessibility key="accessibilityConfiguration">
+                                            <accessibilityTraits key="traits" notEnabled="YES"/>
+                                        </accessibility>
                                     </view>
                                 </subviews>
                                 <color key="backgroundColor" systemColor="systemGray6Color"/>
@@ -1081,6 +1085,7 @@
                         <outlet property="noImageLabel" destination="Bot-I8-pP8" id="8Yr-5U-B3c"/>
                         <outlet property="scatterChart" destination="MUx-gm-oAb" id="0HW-eb-fOP"/>
                         <outlet property="sectorNameLabel" destination="NaS-qa-jFc" id="XIv-4g-ed8"/>
+                        <outlet property="showInfoButton" destination="3gD-qq-xTX" id="XO9-TO-a6N"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="W68-bP-86F" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>

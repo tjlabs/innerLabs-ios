@@ -11,6 +11,7 @@ class NeptuneViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
     @IBOutlet weak var displayView: UIView!
     @IBOutlet weak var displayViewHeight: NSLayoutConstraint!
     
+    @IBOutlet weak var showInfoButton: UIButton!
     
     @IBOutlet weak var imageLevel: UIImageView!
     @IBOutlet weak var scatterChart: ScatterChartView!
@@ -37,6 +38,7 @@ class NeptuneViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
     var levelList = [String]()
     
     var resultToDisplay = Spot()
+    var chartLimits = [String: [Double]]()
     
     var currentBuilding: String = "Unknown"
     var currentLevel: String = "층"
@@ -53,7 +55,22 @@ class NeptuneViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
     var limits: [Double] = [-100, 100, -200, 200]
     
     var tempLevel = ["B1", "3F", "5F", "7F"]
-    var tempCoord: [[Int]] = [[-42, -97], [5, -89], [0, -55], [-40, -56], [-70, -23], [-30, -12]]
+    var tempCoord: [[Int]] = [[7, 16], [5, 27], [14, 6], [20, 6]]
+    var tempSf: [Int] = [6, 6, 5, 5]
+    var tempName: [String] = ["출입구 A", "출입구 B", "회의실 A", "회의실 B"]
+    
+//    var tempCoord: [[Int]] = [[7, 17], [11, 23], [15, 21], [20, 16]]
+//    var tempSf: [Int] = [6, 7, 5, 8]
+//    var tempName: [String] = ["출입구", "탕비실", "회의실", "프린터"]
+    
+//    var tempCoord: [[Int]] = [[7, 16], [12, 10], [19, 15], [16, 10]]
+//    var tempSf: [Int] = [6, 4, 7, 4]
+//    var tempName: [String] = ["출입구", "사무실 복도 A", "쉼터", "사무실 복도 B"]
+    
+//    var tempCoord: [[Int]] = [[13, 17]]
+//    var tempSf: [Int] = [6]
+//    var tempName: [String] = ["출입구"]
+    
     
     var isShow: Bool = false
     var isRadioMap: Bool = false
@@ -69,7 +86,9 @@ class NeptuneViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
         fixChartHeight(flag: true)
         makeDelegate()
         registerXib()
-        showContainerTableView()
+        
+//        showContainerTableView()
+//        self.showInfoButton.isSelected = true
     }
     
     override func viewDidLoad() {
@@ -108,6 +127,34 @@ class NeptuneViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
                 if (!rpXY.isEmpty) {
                     RP[key] = rpXY
                 }
+                
+                // Scale
+                let input = Scale(sector_id: cardData.sector_id, building_name: buildingName, level_name: levelName)
+                Network.shared.postScale(url: SCALE_URL, input: input, completion: { [self] statusCode, returnedString in
+                    let result = jsonToScale(json: returnedString)
+                    if (statusCode >= 200 && statusCode <= 300) {
+                        let scaleString = result.image_scale
+                        
+                        if (scaleString.isEmpty) {
+                            self.chartLimits[key] = [0, 0, 0, 0]
+                        } else if (scaleString == "None") {
+                            self.chartLimits[key] = [0, 0, 0, 0]
+                        } else {
+                            let os = scaleString.components(separatedBy: "/")
+                            let iosScale = os[1].components(separatedBy: " ")
+                            
+                            var data = [Double]()
+                            if (iosScale.count < 4) {
+                                self.chartLimits[key] = [0, 0, 0, 0]
+                            } else {
+                                for i in 0..<iosScale.count {
+                                    data.append(Double(iosScale[i])!)
+                                }
+                                self.chartLimits[key] = data
+                            }
+                        }
+                    }
+                })
             }
         }
         
@@ -185,8 +232,7 @@ class NeptuneViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
             let window = UIApplication.shared.keyWindow
             let bottomPadding = window?.safeAreaInsets.bottom ?? 0.0
 
-            defaultHeight = NeptuneView.bounds.height - 100 - displayViewHeight.constant - bottomPadding
-
+            defaultHeight = NeptuneView.bounds.height - displayViewHeight.constant - bottomPadding
             containerViewHeight.constant = defaultHeight
         } else {
             displayViewHeight.constant = 480
@@ -327,48 +373,42 @@ class NeptuneViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
                         }
                         
                         // --- Test For LUPIUM --- //
-                        
-                        self.currentBuilding = "LUPIUM"
-                        self.currentLevel = "B1"
-                        let coord: [Int] = self.tempCoord[countShake]
-                        countShake += 1
-                        if (countShake > (self.tempCoord.count-1)) {
-                            countShake = 0
-                        }
-                        var data = result.spots[bestIndex]
-                        data.spot_x = coord[0]
-                        data.spot_y = coord[1]
-                        
-//                        let randomInt = Int.random(in: 1...9)
-//                        showSpotContents(data: <#T##Spot#>)
-                        
-//                        let key = "\(currentBuilding)_\(currentLevel)"
-//                        let condition: ((String, [[Double]])) -> Bool = {
-//                            $0.0.contains(key)
+//                        self.currentBuilding = "LUPIUM"
+//                        self.currentLevel = "B1"
+//                        let coord: [Int] = self.tempCoord[countShake]
+//                        let sf: Int = self.tempSf[countShake]
+//                        let name: String = self.tempName[countShake]
+//                        countShake += 1
+//                        if (countShake > (self.tempCoord.count-1)) {
+//                            countShake = 0
 //                        }
-//                        let rp: [[Double]] = RP[key] ?? [[Double]]()
-//                        drawRP(RP_X: rp[0], RP_Y: rp[1], XY: [0, 0])
-                        
+//                        var data = result.spots[bestIndex]
+//                        data.structure_feature_id = sf
+//                        data.spot_name = name
+//                        data.spot_x = coord[0]
+//                        data.spot_y = coord[1]
+//
+//                        let isChanged: Bool = true
                         // --- Test For LUPIUM --- //
                         
-//                        let data = result.spots[bestIndex]
                         
                         // Check Building or Level Changed
-//                        let isChanged: Bool = checkBuildingLevelChanged(data: data)
-                        let isChanged: Bool = true
+                        let data = result.spots[bestIndex]
+                        let isChanged: Bool = checkBuildingLevelChanged(data: data)
                         if (isChanged) {
 //                            fetchLevelTest(building: self.currentBuilding, level: self.currentLevel)
                             fetchLevel(building: self.currentBuilding, level: self.currentLevel, flag: true)
                         }
                         
-                        showOSAResult(data: data)
+                        showOSAResult(data: data, flag: isShowRP)
                     }
                 } else {
+                    print("(Jupiter) Error : Neptune is unavailable")
                     self.scatterChart.isHidden = true
                     self.resultToDisplay.building_name = "Unvalid"
                     self.resultToDisplay.spot_name = "Unvalid"
                     self.resultToDisplay.structure_feature_id = 0
-                    self.resultToDisplay.ccs = 0.0
+                    self.resultToDisplay.ccs = Double(statusCode)
                     if (self.isOpen) {
                         UIView.performWithoutAnimation { self.containerTableView.reloadSections(IndexSet(0...0), with: .none) }
                     }
@@ -390,10 +430,6 @@ class NeptuneViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
                 }
             }
             
-            if (self.pastBuilding != self.currentBuilding || self.pastLevel != self.currentLevel) {
-//                fetchLevel(building: self.currentBuilding, level: self.currentLevel, flag: isShowRP)
-                fetchLevelTest(building: self.currentBuilding, level: self.currentLevel)
-            }
             self.pastBuilding = self.currentBuilding
             self.pastLevel = self.currentLevel
             
@@ -403,21 +439,43 @@ class NeptuneViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
         return false
     }
     
-    func showOSAResult(data: Spot) {
+    func showOSAResult(data: Spot, flag: Bool) {
         let spotX = Double(data.spot_x)
         let spotY = Double(data.spot_y)
         let XY: [Double] = [spotX, spotY]
         
         self.resultToDisplay = data
-        drawValues(XY: XY)
-        drawSpot(XY: XY)
+        
+        let key = "\(currentBuilding)_\(currentLevel)"
+        let condition: ((String, [[Double]])) -> Bool = {
+            $0.0.contains(key)
+        }
+        
+        let limits: [Double] = chartLimits[key] ?? [0, 0, 0, 0]
+        let rp: [[Double]] = RP[key] ?? [[Double]]()
+        
+        if (flag) {
+            if (RP.contains(where: condition)) {
+                if (rp.isEmpty) {
+                    scatterChart.isHidden = true
+                } else {
+                    drawRP(RP_X: rp[0], RP_Y: rp[1], XY: XY, limits: limits)
+                    drawSpot(XY: XY)
+                }
+            }
+        } else {
+            print(XY)
+            print(limits)
+            drawValues(XY: XY, limits: limits)
+            drawSpot(XY: XY)
+        }
             
         if (self.isOpen) {
             UIView.performWithoutAnimation { self.containerTableView.reloadSections(IndexSet(0...0), with: .none) }
         }
     }
     
-    private func drawRP(RP_X: [Double], RP_Y: [Double], XY: [Double]) {
+    private func drawRP(RP_X: [Double], RP_Y: [Double], XY: [Double], limits: [Double]) {
         let xAxisValue: [Double] = RP_X
         let yAxisValue: [Double] = RP_Y
 
@@ -438,25 +496,34 @@ class NeptuneViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
         let set2 = ScatterChartDataSet(entries: values2, label: "User")
         set2.drawValuesEnabled = false
         set2.setScatterShape(.circle)
-        set2.setColor(UIColor.systemRed)
+        set2.setColor(UIColor.black)
         set2.scatterShapeSize = 14
         
         let chartData = ScatterChartData(dataSet: set1)
         chartData.append(set2)
         
-        let xMin = limits[0]
-        let xMax = limits[1]
-        let yMin = limits[2]
-        let yMax = limits[3]
+        let xMin = xAxisValue.min()!
+        let xMax = xAxisValue.max()!
+        let yMin = yAxisValue.min()!
+        let yMax = yAxisValue.max()!
         
         let chartFlag: Bool = false
         scatterChart.isHidden = false
         
         // Configure Chart
-        scatterChart.xAxis.axisMinimum = xMin-5
-        scatterChart.xAxis.axisMaximum = xMax+5
-        scatterChart.leftAxis.axisMinimum = yMin-5
-        scatterChart.leftAxis.axisMaximum = yMax+5
+        if ( limits[0] == 0 && limits[1] == 0 && limits[2] == 0 && limits[3] == 0 ) {
+            scatterChart.xAxis.axisMinimum = xMin
+            scatterChart.xAxis.axisMaximum = xMax
+            scatterChart.leftAxis.axisMinimum = yMin
+            scatterChart.leftAxis.axisMaximum = yMax
+        } else {
+            scatterChart.xAxis.axisMinimum = limits[0]
+            scatterChart.xAxis.axisMaximum = limits[1]
+            scatterChart.leftAxis.axisMinimum = limits[2]
+            scatterChart.leftAxis.axisMaximum = limits[3]
+        }
+        
+//        print("\(self.currentBuilding) \(self.currentLevel) Limits : \(limits[0]) , \(limits[1]), \(limits[2]), \(limits[3])")
         
         scatterChart.xAxis.drawGridLinesEnabled = chartFlag
         scatterChart.leftAxis.drawGridLinesEnabled = chartFlag
@@ -481,7 +548,7 @@ class NeptuneViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
         scatterChart.data = chartData
     }
     
-    private func drawValues(XY: [Double]) {
+    private func drawValues(XY: [Double], limits: [Double]) {
         let values = (0..<1).map { (i) -> ChartDataEntry in
             return ChartDataEntry(x: XY[0], y: XY[1])
         }
@@ -493,19 +560,16 @@ class NeptuneViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
         set.scatterShapeSize = 10
         let chartData = ScatterChartData(dataSet: set)
         
-        let xMin = limits[0]
-        let xMax = limits[1]
-        let yMin = limits[2]
-        let yMax = limits[3]
-        
         let chartFlag: Bool = false
         scatterChart.isHidden = false
+
         
         // Configure Chart
-        scatterChart.xAxis.axisMinimum = xMin-5
-        scatterChart.xAxis.axisMaximum = xMax+5
-        scatterChart.leftAxis.axisMinimum = yMin-5
-        scatterChart.leftAxis.axisMaximum = yMax+5
+        scatterChart.xAxis.axisMinimum = limits[0]
+        scatterChart.xAxis.axisMaximum = limits[1]
+        scatterChart.leftAxis.axisMinimum = limits[2]
+        scatterChart.leftAxis.axisMaximum = limits[3]
+        
         
         scatterChart.xAxis.drawGridLinesEnabled = chartFlag
         scatterChart.leftAxis.drawGridLinesEnabled = chartFlag
@@ -544,6 +608,19 @@ class NeptuneViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
         UIView.animate(withDuration: 0.5) {
             self.scatterChart.addSubview(imageView)
         }
+    }
+    
+    func jsonToScale(json: String) -> ScaleResponse {
+        let result = ScaleResponse(image_scale: "")
+        let decoder = JSONDecoder()
+        
+        let jsonString = json
+        
+        if let data = jsonString.data(using: .utf8), let decoded = try? decoder.decode(ScaleResponse.self, from: data) {
+            return decoded
+        }
+        
+        return result
     }
     
     func tableView(_ tableView: ExpyTableView, expyState state: ExpyState, changeForSection section: Int) {

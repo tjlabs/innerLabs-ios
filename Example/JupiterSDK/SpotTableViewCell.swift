@@ -21,13 +21,21 @@ class SpotTableViewCell: UITableViewCell {
     }
     
     func updateResult(data: Spot) {
-        print("Update Result : \(data)")
-        let locationString: String = "\(data.building_name)_\(data.level_name)"
+        var locationString: String = "Unvalid"
+        var nameString: String = "Unvalid"
+        
+        if (data.building_name != "" && data.level_name != "") {
+            locationString = "\(data.building_name)_\(data.level_name)"
+            nameString = data.spot_name
+        }
+        
         self.locationLabel.text = locationString
-        self.nameLabel.text = data.spot_name
+        self.nameLabel.text = nameString
         
         var typeName: String = ""
         switch(data.structure_feature_id) {
+        case 0:
+            typeName = "Server Error"
         case 1:
             typeName = "계단"
         case 2:
@@ -47,7 +55,7 @@ class SpotTableViewCell: UITableViewCell {
         case 9:
             typeName = "화장실"
         default:
-            typeName = "Unvalid"
+            typeName = "Not Enrolled"
         }
         
         self.typeLabel.text = typeName
