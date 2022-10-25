@@ -1,26 +1,26 @@
 import UIKit
 import Charts
+import ExpyTableView
 import Kingfisher
 import JupiterSDK
 
-class NeptuneViewController: UIViewController {
+class NeptuneViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewDataSource {
     
     @IBOutlet var NeptuneView: UIView!
     
     @IBOutlet weak var displayView: UIView!
+    @IBOutlet weak var displayViewHeight: NSLayoutConstraint!
+    
+    
     @IBOutlet weak var imageLevel: UIImageView!
     @IBOutlet weak var scatterChart: ScatterChartView!
     
     @IBOutlet weak var cardTopImage: UIImageView!
     @IBOutlet weak var sectorNameLabel: UILabel!
-    @IBOutlet weak var mainImage: UIImageView!
     @IBOutlet weak var noImageLabel: UILabel!
-    @IBOutlet weak var contentsView: UIView!
-    
-    @IBOutlet weak var locationLabel: UILabel!
-    @IBOutlet weak var spotNameLabel: UILabel!
-    @IBOutlet weak var typeLabel: UILabel!
-    @IBOutlet weak var ccsLabel: UILabel!
+
+    @IBOutlet weak var containerTableView: ExpyTableView!
+    @IBOutlet weak var containerViewHeight: NSLayoutConstraint!
     
     var serviceManager = ServiceManager()
     
@@ -36,14 +36,15 @@ class NeptuneViewController: UIViewController {
     var levels = [String: [String]]()
     var levelList = [String]()
     
+    var resultToDisplay = Spot()
+    
     var currentBuilding: String = "Unknown"
     var currentLevel: String = "층"
     var pastBuilding: String = "Unknown"
     var pastLevel: String = "Unknown"
     var shakeCount: Int = 0
-    var tempLevel = ["B1", "3F", "5F", "7F"]
     
-    var isShowRP: Bool = true
+    var isShowRP: Bool = false
     var countTap: Int = 0
     var countShake: Int = 0
     
@@ -51,11 +52,24 @@ class NeptuneViewController: UIViewController {
     
     var limits: [Double] = [-100, 100, -200, 200]
     
-    var Spots: [[Double]] = [[-42, -97], [5, -89], [0, -55], [-40, -56], [-70, -23], [-30, -12]]
+    var tempLevel = ["B1", "3F", "5F", "7F"]
+    var tempCoord: [[Int]] = [[-42, -97], [5, -89], [0, -55], [-40, -56], [-70, -23], [-30, -12]]
+    
+    var isShow: Bool = false
+    var isRadioMap: Bool = false
+    var isOpen: Bool = false
+    
+    // View
+    var defaultHeight: CGFloat = 100
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(false)
         setCardData(cardData: cardData!)
+        
+        fixChartHeight(flag: true)
+        makeDelegate()
+        registerXib()
+        showContainerTableView()
     }
     
     override func viewDidLoad() {
@@ -66,8 +80,6 @@ class NeptuneViewController: UIViewController {
         let tapRecognizer = UITapGestureRecognizer()
         tapRecognizer.addTarget(self, action: #selector(self.showRP))
         self.sectorNameLabel.addGestureRecognizer(tapRecognizer)
-        
-        fetchLevel(building: currentBuilding, level: currentLevel, flag: false)
         
         self.hideKeyboardWhenTappedAround()
     }
@@ -98,6 +110,11 @@ class NeptuneViewController: UIViewController {
                 }
             }
         }
+        
+        let initBuilding = self.buildings[0]
+        let initLevels = self.levels[initBuilding]
+        let initLevel = initLevels![0]
+        self.fetchLevel(building: initBuilding, level: initLevel, flag: false)
     }
     
     private func loadRP(fileName: String) -> [[Double]] {
@@ -160,26 +177,44 @@ class NeptuneViewController: UIViewController {
         }
     }
     
-//    func fixChartHeight(flag: Bool) {
-//        if (flag) {
-//            let ratio: Double = 114900 / 68700
-//            displayViewHeight.constant = displayView.bounds.width * ratio
-//
-//            let window = UIApplication.shared.keyWindow
-//            let bottomPadding = window?.safeAreaInsets.bottom ?? 0.0
-//
-//            defaultHeight = ServiceView.bounds.height - 100 - displayViewHeight.constant - bottomPadding
-//
-//            containerViewHeight.constant = defaultHeight
-//        } else {
-//            displayViewHeight.constant = 480
-//            containerViewHeight.constant = 150
-//        }
-//    }
+    func fixChartHeight(flag: Bool) {
+        if (flag) {
+            let ratio: Double = 114900 / 68700
+            displayViewHeight.constant = displayView.bounds.width * ratio
+
+            let window = UIApplication.shared.keyWindow
+            let bottomPadding = window?.safeAreaInsets.bottom ?? 0.0
+
+            defaultHeight = NeptuneView.bounds.height - 100 - displayViewHeight.constant - bottomPadding
+
+            containerViewHeight.constant = defaultHeight
+        } else {
+            displayViewHeight.constant = 480
+            containerViewHeight.constant = 150
+        }
+    }
+    
+    func showContainerTableView() {
+        containerViewHeight.constant = 220
+    }
+    
+    func hideContainerTableView() {
+        containerViewHeight.constant = defaultHeight
+    }
+    
+    private func fetchLevelTest(building: String, level: String) {
+//        noImageLabel.text = "해당 \(level) 이미지가 없습니다"
+        noImageLabel.isHidden = true
+        imageLevel.isHidden = false
+        
+        let imageName: String = building + "_" + level + "_FLOOR"
+        self.imageLevel.image = UIImage(named: imageName)
+    }
     
     private func fetchLevel(building: String, level: String, flag: Bool) {
         // Building -> Level Image Download From URL
         noImageLabel.text = "해당 \(level) 이미지가 없습니다"
+        print("Fetch Level : \(building)_\(level)")
         
         // 빌딩 -> 층 이미지 보이기
         if let urlLevel = URL(string: "https://storage.googleapis.com/jupiter_image/map/\(sectorId)/\(building)_\(level).png") {
@@ -236,6 +271,36 @@ class NeptuneViewController: UIViewController {
         self.navigationController?.popViewController(animated: true)
     }
     
+    @IBAction func tapShowButton(_ sender: UIButton) {
+        UIView.animate(withDuration: 0.5, delay: 0.01, options: .curveLinear, animations: {
+        }) { (success) in
+            sender.isSelected = !sender.isSelected
+            UIView.animate(withDuration: 0.5, delay: 0.01, options: .curveLinear, animations: {
+                sender.transform = .identity
+            }, completion: nil)
+        }
+        
+        if sender.isSelected == false {
+            isShow = true
+            showContainerTableView()
+        }
+        else {
+            isShow = false
+            hideContainerTableView()
+        }
+    }
+    
+    func makeDelegate() {
+        containerTableView.dataSource = self
+        containerTableView.delegate = self
+        containerTableView.bounces = false
+    }
+    
+    func registerXib() {
+        let spotNib = UINib(nibName: "SpotTableViewCell", bundle: nil)
+        containerTableView.register(spotNib, forCellReuseIdentifier: "SpotTableViewCell")
+    }
+    
     override func becomeFirstResponder() -> Bool {
         return true
     }
@@ -247,7 +312,7 @@ class NeptuneViewController: UIViewController {
             serviceManager.getResult(completion: { [self] statusCode, returnedString in
                 if (statusCode == 200) {
                     let result: OnSpotAuthorizationResult = decodeOSA(json: returnedString)
-                    
+
                     if (result.spots.count > 0) {
                         // Find Highest Prob
                         var bestIndex: Int = 0
@@ -261,71 +326,95 @@ class NeptuneViewController: UIViewController {
                             }
                         }
                         
-                        currentBuilding = "LUPIUM"
-                        currentLevel = tempLevel[countShake]
+                        // --- Test For LUPIUM --- //
+                        
+                        self.currentBuilding = "LUPIUM"
+                        self.currentLevel = "B1"
+                        let coord: [Int] = self.tempCoord[countShake]
                         countShake += 1
-                        if (countShake > 3) {
+                        if (countShake > (self.tempCoord.count-1)) {
                             countShake = 0
                         }
-                        fetchLevel(building: currentBuilding, level: currentLevel, flag: isShowRP)
-                        let randomInt = Int.random(in: 1...9)
+                        var data = result.spots[bestIndex]
+                        data.spot_x = coord[0]
+                        data.spot_y = coord[1]
+                        
+//                        let randomInt = Int.random(in: 1...9)
 //                        showSpotContents(data: <#T##Spot#>)
                         
-                        let key = "\(currentBuilding)_\(currentLevel)"
-                        let condition: ((String, [[Double]])) -> Bool = {
-                            $0.0.contains(key)
-                        }
-                        let rp: [[Double]] = RP[key] ?? [[Double]]()
+//                        let key = "\(currentBuilding)_\(currentLevel)"
+//                        let condition: ((String, [[Double]])) -> Bool = {
+//                            $0.0.contains(key)
+//                        }
+//                        let rp: [[Double]] = RP[key] ?? [[Double]]()
 //                        drawRP(RP_X: rp[0], RP_Y: rp[1], XY: [0, 0])
                         
-                        //-------------//
+                        // --- Test For LUPIUM --- //
                         
-                        let data = result.spots[bestIndex]
-                        print(data)
-                        if (data.sector_name != "" && data.building_name != "" && data.level_name != "") {
-                            
-                            if (data.building_name == "") {
-                                currentBuilding = buildings[0]
-                            } else {
-                                currentBuilding = data.building_name
-                                if (data.level_name == "") {
-                                    currentLevel = levels[currentBuilding]![0]
-                                } else {
-                                    currentLevel = data.level_name
-                                }
-                            }
-                            
-                            if (pastBuilding != currentBuilding || pastLevel != currentLevel) {
-                                fetchLevel(building: currentBuilding, level: currentLevel, flag: isShowRP)
-                            }
-                            
-                            pastBuilding = currentBuilding
-                            pastLevel = currentLevel
-                            
-                            let spotNumber: Int = data.spot_number
-                            let spotCCS: Double = data.ccs
-                            
-//                            self.infoSpotLabel.text = String(spotNumber)
-//                            self.infoProbLabel.text = String(format: "%.4f", spotCCS)
-                            
-//                            drawValues(XY: Spots[spotNumber-1])
-//                            drawSpot(XY: Spots[spotNumber-1])
-//                            showSpotContents(id: spotNumber)
-                        } else {
-//                            self.infoSpotLabel.text = "Fail"
-//                            self.infoProbLabel.text = "0.0000"
+//                        let data = result.spots[bestIndex]
+                        
+                        // Check Building or Level Changed
+//                        let isChanged: Bool = checkBuildingLevelChanged(data: data)
+                        let isChanged: Bool = true
+                        if (isChanged) {
+//                            fetchLevelTest(building: self.currentBuilding, level: self.currentLevel)
+                            fetchLevel(building: self.currentBuilding, level: self.currentLevel, flag: true)
                         }
+                        
+                        showOSAResult(data: data)
                     }
                 } else {
-                    self.mainImage.image = UIImage(named: "pinpointMain")
-//                    self.infoSpotLabel.text = "Server Fail"
+                    self.scatterChart.isHidden = true
+                    self.resultToDisplay.building_name = "Unvalid"
+                    self.resultToDisplay.spot_name = "Unvalid"
+                    self.resultToDisplay.structure_feature_id = 0
+                    self.resultToDisplay.ccs = 0.0
+                    if (self.isOpen) {
+                        UIView.performWithoutAnimation { self.containerTableView.reloadSections(IndexSet(0...0), with: .none) }
+                    }
                 }
             })
         }
     }
     
-    func showOSAResult() {
+    func checkBuildingLevelChanged(data: Spot) -> Bool {
+        if (data.sector_name != "" && data.building_name != "" && data.level_name != "") {
+            if (data.building_name == "") {
+                self.currentBuilding = buildings[0]
+            } else {
+                self.currentBuilding = data.building_name
+                if (data.level_name == "") {
+                    self.currentLevel = levels[currentBuilding]![0]
+                } else {
+                    self.currentLevel = data.level_name
+                }
+            }
+            
+            if (self.pastBuilding != self.currentBuilding || self.pastLevel != self.currentLevel) {
+//                fetchLevel(building: self.currentBuilding, level: self.currentLevel, flag: isShowRP)
+                fetchLevelTest(building: self.currentBuilding, level: self.currentLevel)
+            }
+            self.pastBuilding = self.currentBuilding
+            self.pastLevel = self.currentLevel
+            
+            return true
+        }
         
+        return false
+    }
+    
+    func showOSAResult(data: Spot) {
+        let spotX = Double(data.spot_x)
+        let spotY = Double(data.spot_y)
+        let XY: [Double] = [spotX, spotY]
+        
+        self.resultToDisplay = data
+        drawValues(XY: XY)
+        drawSpot(XY: XY)
+            
+        if (self.isOpen) {
+            UIView.performWithoutAnimation { self.containerTableView.reloadSections(IndexSet(0...0), with: .none) }
+        }
     }
     
     private func drawRP(RP_X: [Double], RP_Y: [Double], XY: [Double]) {
@@ -457,117 +546,91 @@ class NeptuneViewController: UIViewController {
         }
     }
     
-    func showSpotContents(data: Spot) {
-        let building = data.building_name
-        let level = data.level_name
-        let spotId = data.spot_id
-        let spotNumber = data.spot_number
-        let spotName = data.spot_name
-        let spotX: Double = Double(data.spot_x)
-        let spotY: Double = Double(data.spot_y)
-        let sfId = data.structure_feature_id
-        let ccs = data.ccs
-        
-        UIView.animate(withDuration: 0.5) {
-//            self.mainView.alpha = 0.0
-            self.contentsView.alpha = 1.0
+    func tableView(_ tableView: ExpyTableView, expyState state: ExpyState, changeForSection section: Int) {
+        switch state {
+        case .willExpand:
+            print("WILL EXPAND")
+            if (section == 0) {
+                isOpen = true
+            }
+            
+        case .willCollapse:
+            print("WILL COLLAPSE")
+            if (section == 0) {
+                isOpen = false
+            }
+            
+        case .didExpand:
+            print("DID EXPAND")
+            
+        case .didCollapse:
+            print("DID COLLAPSE")
         }
-        
-        let locationName: String = building + " " + level
-        let sfImageName: String = "sf_id_\(sfId)"
-        self.mainImage.image = UIImage(named: sfImageName)
-        
-        self.locationLabel.text = locationName
-        self.spotNameLabel.text = spotName
-        
-        var typeName: String = ""
-        switch(sfId) {
-        case 1:
-            typeName = "계단"
-        case 2:
-            typeName = "엘리베이터"
-        case 3:
-            typeName = "에스컬레이터"
-        case 4:
-            typeName = "사무공간"
-        case 5:
-            typeName = "회의실"
-        case 6:
-            typeName = "출입구"
-        case 7:
-            typeName = "탕비실"
-        case 8:
-            typeName = "프린터"
-        case 9:
-            typeName = "화장실"
-        default:
-            typeName = "Unvalid"
-        }
-        self.typeLabel.text = typeName
-        self.ccsLabel.text = String(format: "%.4f", ccs)
-        
-        drawValues(XY: [spotX, spotY])
-        drawSpot(XY: [spotX, spotY])
     }
     
-    func testSpotContents(id: Int) {
-        UIView.animate(withDuration: 0.5) {
-//            self.mainView.alpha = 0.0
-            self.contentsView.alpha = 1.0
-        }
+    func tableView(_ tableView: ExpyTableView, canExpandSection section: Int) -> Bool {
+        return true
+    }
+    
+    func tableView(_ tableView: ExpyTableView, expandableCellForSection section: Int) -> UITableViewCell {
+        let cell = UITableViewCell()
+        cell.backgroundColor = .systemGray6
+        cell.selectionStyle = .none //선택했을 때 회색되는거 없애기
         
-        switch(id) {
-        case 1:
-            self.mainImage.image = UIImage(named: "sf_id_2")
-            self.locationLabel.text = "S3 7F"
-            self.spotNameLabel.text = "엘리베이터"
-            self.typeLabel.text = "엘리베이터"
-            self.ccsLabel.text = "0.6744"
-        case 2:
-            self.mainImage.image = UIImage(named: "sf_id_6")
-            self.locationLabel.text = "S3 7F"
-            self.spotNameLabel.text = "도다마인드 입구"
-            self.typeLabel.text = "출입구"
-            self.ccsLabel.text = "0.6744"
-        case 3:
-            self.mainImage.image = UIImage(named: "sf_id_5")
-            self.locationLabel.text = "S3 7F"
-            self.spotNameLabel.text = "회의실 B"
-            self.typeLabel.text = "회의실"
-            self.ccsLabel.text = "0.6744"
-        case 4:
-            self.mainImage.image = UIImage(named: "sf_id_6")
-            self.locationLabel.text = "S3 7F"
-            self.spotNameLabel.text = "티제이랩스 입구"
-            self.typeLabel.text = "출입구"
-            self.ccsLabel.text = "0.6744"
-        case 5:
-            self.mainImage.image = UIImage(named: "sf_id_4")
-            self.locationLabel.text = "S3 7F"
-            self.spotNameLabel.text = "티제이랩스 A위치"
-            self.typeLabel.text = "사무공간"
-            self.ccsLabel.text = "0.6744"
-        case 6:
-            self.mainImage.image = UIImage(named: "sf_id_4")
-            self.locationLabel.text = "S3 7F"
-            self.spotNameLabel.text = "티제이랩스 B위치"
-            self.typeLabel.text = "사무공간"
-            self.ccsLabel.text = "0.6744"
-        case 7:
-            self.mainImage.image = UIImage(named: "sf_id_5")
-            self.locationLabel.text = "S3 7F"
-            self.spotNameLabel.text = "회의실 A"
-            self.typeLabel.text = "회의실"
-            self.ccsLabel.text = "0.6744"
-        default:
-            self.mainImage.image = UIImage(named: "sf_id_1")
-            self.locationLabel.text = "S3 7F"
-            self.spotNameLabel.text = "Unknown"
-            self.typeLabel.text = "Unknown"
-            self.ccsLabel.text = "0.6744"
+        cell.separatorInset = UIEdgeInsets(top: 5, left: 10, bottom: 0, right: 10)
+        if section == 0 {
+            cell.textLabel?.text = "  🧑🏻‍🔧 Service Information"
+            cell.textLabel?.font = UIFont(name: AppFontName.bold, size: 16)
         }
-        
-        drawSpot(XY: Spots[id-1])
-        drawValues(XY: Spots[id-1])
+        return cell
+    }
+}
+
+extension NeptuneViewController: UITableViewDelegate {
+    // 높이 지정 index별
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        if indexPath.row == 0 {
+            return 40
+        } else {
+            if (indexPath.section == 0) {
+                return 160 + 20
+            } else {
+                return 120 + 20
+            }
+        }
+    }
+    
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return 1
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+//            print("\(indexPath.section)섹션 \(indexPath.row)로우 선택됨")
+    }
+}
+
+extension NeptuneViewController: UITableViewDataSource {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        if section == 0 {
+            return 2
+        } else {
+            return 2
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        if indexPath.section == 0 {
+            let spotTVC = tableView.dequeueReusableCell(withIdentifier: SpotTableViewCell.identifier) as! SpotTableViewCell
+            spotTVC.backgroundColor = .systemGray6
+            spotTVC.updateResult(data: resultToDisplay)
+            return spotTVC
+        } else {
+            let robotTVC = tableView.dequeueReusableCell(withIdentifier: RobotTableViewCell.identifier) as!
+            RobotTableViewCell
+                
+            robotTVC.backgroundColor = .systemGray6
+            
+            return robotTVC
+        }
     }
 }

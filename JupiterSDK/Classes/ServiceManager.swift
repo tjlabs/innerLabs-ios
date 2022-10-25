@@ -795,7 +795,7 @@ public class ServiceManager: Observation {
         }
         
         if (!bleDictionary.isEmpty) {
-            timeActiveRF = 0
+            self.timeActiveRF = 0
             self.isActiveService = true
             self.isActiveRF = true
             
@@ -820,12 +820,13 @@ public class ServiceManager: Observation {
                 }
             }
         } else {
-            timeActiveRF += RF_INTERVAL
-            if (timeActiveRF >= SLEEP_THRESHOLD_RF) {
+            print("(Jupiter) RF is Empty")
+            self.timeActiveRF += RF_INTERVAL
+            if (self.timeActiveRF >= SLEEP_THRESHOLD_RF) {
 //                print("(Jupiter) RF is Empty")
                 self.isActiveService = false
                 self.isActiveRF = false
-                timeActiveRF = 0
+                self.timeActiveRF = 0
             }
         }
     }

@@ -373,6 +373,7 @@ extension CardViewController: UICollectionViewDataSource, UICollectionViewDelega
         let mod = indexPath.item%cardCount
         
         let sector_id = cardItemData[mod].sector_id
+        let serviceName = cardItemData[mod].service
         serviceManager.stopService()
         
         if (sector_id == 0) {
@@ -398,6 +399,12 @@ extension CardViewController: UICollectionViewDataSource, UICollectionViewDelega
             spotVC.userId = uuid
             spotVC.page = currentPage
             self.navigationController?.pushViewController(spotVC, animated: true)
+        } else if (serviceName == "OSA") {
+           guard let neptuneVC = self.storyboard?.instantiateViewController(withIdentifier: "NeptuneViewController") as? NeptuneViewController else { return }
+           neptuneVC.cardData = cardItemData[mod]
+           neptuneVC.userId = uuid
+           neptuneVC.page = currentPage
+           self.navigationController?.pushViewController(neptuneVC, animated: true)
         } else if (sector_id == 14) {
             guard let neptuneVC = self.storyboard?.instantiateViewController(withIdentifier: "NeptuneViewController") as? NeptuneViewController else { return }
             neptuneVC.cardData = cardItemData[mod]
@@ -411,20 +418,6 @@ extension CardViewController: UICollectionViewDataSource, UICollectionViewDelega
             serviceVC.page = currentPage
             self.navigationController?.pushViewController(serviceVC, animated: true)
         }
-//        else if (sector_id == 8) {
-//            guard let serviceVC = self.storyboard?.instantiateViewController(withIdentifier: "ServiceViewController") as? ServiceViewController else { return }
-//            serviceVC.cardData = cardItemData[mod]
-//            serviceVC.uuid = uuid
-//            serviceVC.page = currentPage
-//            self.navigationController?.pushViewController(serviceVC, animated: true)
-//        }
-//        else {
-//            guard let mapVC = self.storyboard?.instantiateViewController(withIdentifier: "MapViewController") as? MapViewController else { return }
-//            mapVC.cardData = cardItemData[mod]
-//            mapVC.uuid = uuid
-//            mapVC.page = currentPage
-//            self.navigationController?.pushViewController(mapVC, animated: true)
-//        }
     }
     
 }

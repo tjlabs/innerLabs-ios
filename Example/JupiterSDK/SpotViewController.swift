@@ -93,26 +93,58 @@ class SpotViewController: UIViewController {
         }
     }
     
-    private func drawSpot(XY: [Double]) {
+    private func drawValues(XY: [Double]) {
         let values = (0..<1).map { (i) -> ChartDataEntry in
             return ChartDataEntry(x: XY[0], y: XY[1])
         }
-
+        
         let set = ScatterChartDataSet(entries: values, label: "User")
         set.drawValuesEnabled = false
         set.setScatterShape(.circle)
         set.setColor(UIColor.black)
         set.scatterShapeSize = 10
         let chartData = ScatterChartData(dataSet: set)
-
+        
         let xMin = limits[0]
         let xMax = limits[1]
         let yMin = limits[2]
         let yMax = limits[3]
-
+        
         let chartFlag: Bool = false
         scatterChart.isHidden = false
+        
+        // Configure Chart
+        scatterChart.xAxis.axisMinimum = xMin-5
+        scatterChart.xAxis.axisMaximum = xMax+5
+        scatterChart.leftAxis.axisMinimum = yMin-5
+        scatterChart.leftAxis.axisMaximum = yMax+5
+        
+        scatterChart.xAxis.drawGridLinesEnabled = chartFlag
+        scatterChart.leftAxis.drawGridLinesEnabled = chartFlag
+        scatterChart.rightAxis.drawGridLinesEnabled = chartFlag
+        
+        scatterChart.xAxis.drawAxisLineEnabled = chartFlag
+        scatterChart.leftAxis.drawAxisLineEnabled = chartFlag
+        scatterChart.rightAxis.drawAxisLineEnabled = chartFlag
+        
+        scatterChart.xAxis.centerAxisLabelsEnabled = chartFlag
+        scatterChart.leftAxis.centerAxisLabelsEnabled = chartFlag
+        scatterChart.rightAxis.centerAxisLabelsEnabled = chartFlag
 
+        scatterChart.xAxis.drawLabelsEnabled = chartFlag
+        scatterChart.leftAxis.drawLabelsEnabled = chartFlag
+        scatterChart.rightAxis.drawLabelsEnabled = chartFlag
+        
+        scatterChart.legend.enabled = chartFlag
+        
+        scatterChart.backgroundColor = .clear
+        
+        scatterChart.data = chartData
+    }
+    
+    private func drawSpot(XY: [Double]) {
+        scatterChart.isHidden = false
+        
         let point = scatterChart.getPosition(entry: ChartDataEntry(x: XY[0], y: XY[1]), axis: .left)
         let imageView = UIImageView(image: spotImage?.resize(newWidth: 40))
         imageView.frame = CGRect(x: point.x-15, y: point.y-35, width: 30, height: 30)
@@ -124,32 +156,6 @@ class SpotViewController: UIViewController {
         UIView.animate(withDuration: 0.5) {
             self.scatterChart.addSubview(imageView)
         }
-
-        // Configure Chart
-        scatterChart.xAxis.axisMinimum = xMin-5
-        scatterChart.xAxis.axisMaximum = xMax+5
-        scatterChart.leftAxis.axisMinimum = yMin-5
-        scatterChart.leftAxis.axisMaximum = yMax+5
-
-        scatterChart.xAxis.drawGridLinesEnabled = chartFlag
-        scatterChart.leftAxis.drawGridLinesEnabled = chartFlag
-        scatterChart.rightAxis.drawGridLinesEnabled = chartFlag
-
-        scatterChart.xAxis.drawAxisLineEnabled = chartFlag
-        scatterChart.leftAxis.drawAxisLineEnabled = chartFlag
-        scatterChart.rightAxis.drawAxisLineEnabled = chartFlag
-
-        scatterChart.xAxis.centerAxisLabelsEnabled = chartFlag
-        scatterChart.leftAxis.centerAxisLabelsEnabled = chartFlag
-        scatterChart.rightAxis.centerAxisLabelsEnabled = chartFlag
-
-        scatterChart.xAxis.drawLabelsEnabled = chartFlag
-        scatterChart.leftAxis.drawLabelsEnabled = chartFlag
-        scatterChart.rightAxis.drawLabelsEnabled = chartFlag
-
-        scatterChart.legend.enabled = chartFlag
-        scatterChart.backgroundColor = .clear
-        scatterChart.data = chartData
     }
     
     @objc func showProbability() {
@@ -236,7 +242,7 @@ class SpotViewController: UIViewController {
             self.typeLabel.text = "Unknown"
             self.ccsLabel.text = "0.6744"
         }
-        
+        drawValues(XY: Spots[id-1])
         drawSpot(XY: Spots[id-1])
     }
     
@@ -289,6 +295,7 @@ class SpotViewController: UIViewController {
         self.typeLabel.text = typeName
         self.ccsLabel.text = String(format: "%.4f", ccs)
         
+        drawValues(XY: [spotX, spotY])
         drawSpot(XY: [spotX, spotY])
     }
     
@@ -297,29 +304,6 @@ class SpotViewController: UIViewController {
         noImageLabel.text = "해당 \(level) 이미지가 없습니다"
         let imageName: String = building + "_" + level + "_FLOOR"
         self.imageLevel.image = UIImage(named: imageName)
-        // 빌딩 -> 층 이미지 보이기
-//        if let urlLevel = URL(string: "https://storage.googleapis.com/jupiter_image/map/\(self.sector_id)/\(building)_\(level).png") {
-//            let data = try? Data(contentsOf: urlLevel)
-//
-//            if (data != nil) {
-//                // 빌딩 -> 층 이미지가 있는 경우
-//                let resourceBuildingLevel = ImageResource(downloadURL: urlLevel, cacheKey: "\(self.sector_id)_\(building)_\(level)_image")
-//
-////                scatterChart.isHidden = false
-//                imageLevel.isHidden = false
-//                noImageLabel.isHidden = true
-//                imageLevel.kf.setImage(with: resourceBuildingLevel, placeholder: nil, options: [.transition(.fade(0.8))], completionHandler: nil)
-//            } else {
-//                scatterChart.isHidden = true
-//                imageLevel.isHidden = true
-//                noImageLabel.isHidden = false
-//            }
-//        } else {
-//            // 빌딩 -> 층 이미지가 없는 경우
-//            scatterChart.isHidden = true
-//            imageLevel.isHidden = true
-//            noImageLabel.isHidden = false
-//        }
     }
     
     
@@ -329,21 +313,6 @@ class SpotViewController: UIViewController {
     
     override func motionEnded(_ motion: UIEvent.EventSubtype, with event: UIEvent?) {
         if motion == .motionShake {
-            shakeCount += 1
-            if (shakeCount > 5) {
-                shakeCount = 1
-            }
-            let tempNumber = shakeCount
-            fetchLevel(building: "S3", level: "6F")
-            
-//            if (shakeCount > 7) {
-//                shakeCount = 1
-//            }
-//            let tempNumber = shakeCount
-//            fetchLevel(building: "S3", level: "7F")
-            
-            testSpotContents(id: tempNumber)
-            
             // Request Result
             serviceManager.getResult(completion: { [self] statusCode, returnedString in
                 if (statusCode == 200) {

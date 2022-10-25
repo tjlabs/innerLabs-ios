@@ -77,6 +77,8 @@
 		B3D194DF282E2782004E6F9A /* GuideViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3D194DE282E2782004E6F9A /* GuideViewController.swift */; };
 		B3D194E2282E2B2B004E6F9A /* LocationTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3D194E0282E2B2B004E6F9A /* LocationTableViewCell.swift */; };
 		B3D194E3282E2B2B004E6F9A /* LocationTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B3D194E1282E2B2B004E6F9A /* LocationTableViewCell.xib */; };
+		B3D19DEC29079CE000A5F7D4 /* SpotTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3D19DEA29079CE000A5F7D4 /* SpotTableViewCell.swift */; };
+		B3D19DED29079CE000A5F7D4 /* SpotTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B3D19DEB29079CE000A5F7D4 /* SpotTableViewCell.xib */; };
 		B3D397A728F5A64700B5DBED /* SpotViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3D397A628F5A64700B5DBED /* SpotViewController.swift */; };
 		B3D488F0289B4D5500A8154C /* UIColorExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3D488EF289B4D5500A8154C /* UIColorExtension.swift */; };
 		B3D488F6289B8B4900A8154C /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = B3D488F5289B8B4900A8154C /* GoogleService-Info.plist */; };
@@ -188,6 +190,8 @@
 		B3D194DE282E2782004E6F9A /* GuideViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GuideViewController.swift; sourceTree = "<group>"; };
 		B3D194E0282E2B2B004E6F9A /* LocationTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationTableViewCell.swift; sourceTree = "<group>"; };
 		B3D194E1282E2B2B004E6F9A /* LocationTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = LocationTableViewCell.xib; sourceTree = "<group>"; };
+		B3D19DEA29079CE000A5F7D4 /* SpotTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotTableViewCell.swift; sourceTree = "<group>"; };
+		B3D19DEB29079CE000A5F7D4 /* SpotTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SpotTableViewCell.xib; sourceTree = "<group>"; };
 		B3D397A628F5A64700B5DBED /* SpotViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotViewController.swift; sourceTree = "<group>"; };
 		B3D488EF289B4D5500A8154C /* UIColorExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIColorExtension.swift; sourceTree = "<group>"; };
 		B3D488F5289B8B4900A8154C /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
@@ -390,6 +394,8 @@
 				B3455282282AB7B400F0DD3E /* ServiceInfoTableViewCell.xib */,
 				B388AC2F282BF6A3001C3D71 /* RobotTableViewCell.swift */,
 				B388AC30282BF6A3001C3D71 /* RobotTableViewCell.xib */,
+				B3D19DEA29079CE000A5F7D4 /* SpotTableViewCell.swift */,
+				B3D19DEB29079CE000A5F7D4 /* SpotTableViewCell.xib */,
 			);
 			name = Output;
 			sourceTree = "<group>";
@@ -577,6 +583,7 @@
 				B3D194E3282E2B2B004E6F9A /* LocationTableViewCell.xib in Resources */,
 				B3B4F85B28114EEB009F9E6C /* ShowCardCollectionViewCell.xib in Resources */,
 				B3B3610B28295E1D00B8E876 /* Autoway_B4.csv in Resources */,
+				B3D19DED29079CE000A5F7D4 /* SpotTableViewCell.xib in Resources */,
 				B369287E28C5BCAC005FD4A9 /* LUPIUM_B1.csv in Resources */,
 				B3FD74ED2869A38800CD4D74 /* Gallery_3F.csv in Resources */,
 				B3BD699A27E9A4BE00A32A7A /* Colors.xcassets in Resources */,
@@ -766,6 +773,7 @@
 				B3D194DC282E2726004E6F9A /* JupiterGuideTableViewCell.swift in Sources */,
 				B3F370D6281B9DC5003A427F /* OutputView.swift in Sources */,
 				B3F5C780282A5519009BEDB9 /* Protocol.swift in Sources */,
+				B3D19DEC29079CE000A5F7D4 /* SpotTableViewCell.swift in Sources */,
 				B3CC3C07283231E000D50522 /* PrivacyPolicyViewController.swift in Sources */,
 				B3D488F0289B4D5500A8154C /* UIColorExtension.swift in Sources */,
 				B3F5C77E282A5408009BEDB9 /* Network.swift in Sources */,
