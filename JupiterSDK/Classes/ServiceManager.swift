@@ -67,7 +67,6 @@ public class ServiceManager: Observation {
                 updatedResult.calculated_time = result.calculated_time
                 updatedResult.index = result.index
                 updatedResult.velocity = result.velocity
-                
 
                 self.lastTrackingTime = updatedResult.mobile_time
                 self.lastResult = updatedResult
@@ -283,7 +282,6 @@ public class ServiceManager: Observation {
     var matchingFailCount: Int = 0
     let MATCHING_FAIL_THRESHOLD: Int = 5
     
-    var pastServerCoord: [Double] = [0, 0]
     var isPastServerResult: Bool = false
     let COORD_THRESHOLD: Double = 20
     
@@ -479,6 +477,7 @@ public class ServiceManager: Observation {
             saveErrorFile(log: self.errorLogs)
         }
         
+        print("(Jupiter) Stop Service")
         isFirstStart = true
     }
     
@@ -892,23 +891,6 @@ public class ServiceManager: Observation {
                 }
             }
         } else {
-//            if (floorUpdateRequestFlag && self.isActiveService && self.isActiveRF) {
-//                floorUpdateRequestTimeStack += UV_INTERVAL
-//                if (floorUpdateRequestTimeStack > FLOOR_UPDATE_REQUEST_TIME) {
-//                    let input = FineLocationTracking(user_id: user_id, mobile_time: currentTime, sector_id: sector_id, phase: self.phase)
-//
-//                    NetworkManager.shared.postFLT(url: FLT_URL, input: input, completion: { [self] statusCode, returnedString in
-//                        if (statusCode == 200) {
-//                            let result = jsonToResult(json: returnedString)
-//                            let finalResult = fromServerToResult(fromServer: result, velocity: displayOutput.velocity)
-//                            print("(Jupiter) Floor Changed")
-//                            self.tracking(input: finalResult, isPast: false)
-//                        }
-//                    })
-//                    floorUpdateRequestTimeStack = 0
-//                }
-//            }
-            
             // UV가 발생하지 않음
             timeActiveUV += UV_INTERVAL
             if (timeActiveUV >= STOP_THRESHOLD) {
@@ -957,17 +939,6 @@ public class ServiceManager: Observation {
 
                             // Kalman Filter
                             if (result.mobile_time > preOutputMobileTime) {
-                                // Check Coord
-//                                if (isPastServerResult) {
-//                                    let diffX = pastServerCoord[0] - result.x
-//                                    let diffY = pastServerCoord[1] - result.y
-//                                    let diffNorm = sqrt(diffX*diffX + diffY*diffY)
-//                                    if (diffNorm > COORD_THRESHOLD) {
-//                                        self.phase = 1
-//                                        result.phase = 1
-//                                    }
-//                                }
-                                
                                 if (result.phase == 4) {
                                     UV_INPUT_NUM = VAR_INPUT_NUM
                                     if (!(result.x == 0 && result.y == 0)) {
@@ -988,8 +959,6 @@ public class ServiceManager: Observation {
                                     self.tracking(input: finalResult, isPast: false)
                                 }
                                 preOutputMobileTime = result.mobile_time
-                                pastServerCoord[0] = result.x
-                                pastServerCoord[1] = result.y
                                 isPastServerResult = true
                             }
                             pastBuildingLevel = [displayOutput.building, displayOutput.level]
@@ -1011,11 +980,11 @@ public class ServiceManager: Observation {
 //                            print("(Jupiter) Success : Load Last Known Result")
                             let currentTime = getCurrentTimeInMilliseconds()
                             let result = jsonForTracking(json: lastKnownResult)
-                            if (currentTime - result.mobile_time) < 1000*3600 {
-                                var updatedResult = result
-                                updatedResult.absolute_heading = updatedResult.absolute_heading + 180
+                            if (currentTime - result.mobile_time) < 1000*3600*12 {
+//                                var updatedResult = result
+//                                updatedResult.absolute_heading = updatedResult.absolute_heading + 180
 //                                print("(Jupiter) Success : \(updatedResult)")
-                                self.tracking(input: updatedResult, isPast: false)
+                                self.tracking(input: result, isPast: false)
                             }
                         } else {
                             let localTime: String = getLocalTimeString()
@@ -1168,7 +1137,7 @@ public class ServiceManager: Observation {
             guard let mainHeading: [String] = RoadHeading[key] else {
                 return (isSuccess, xyh)
             }
-            var cc: Double = 0
+            
             // Heading 사용
             var idhArray = [[Double]]()
             var pathArray = [[Double]]()
@@ -1225,8 +1194,6 @@ public class ServiceManager: Observation {
                                     
                                     path[2] = minHeading
                                     path[3] = 1
-                                    
-                                    cc = minHeading
                                 }
                             }
                             if (isValidIdh) {

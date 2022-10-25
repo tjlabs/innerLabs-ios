@@ -17,6 +17,11 @@ class NeptuneViewController: UIViewController {
     @IBOutlet weak var noImageLabel: UILabel!
     @IBOutlet weak var contentsView: UIView!
     
+    @IBOutlet weak var locationLabel: UILabel!
+    @IBOutlet weak var spotNameLabel: UILabel!
+    @IBOutlet weak var typeLabel: UILabel!
+    @IBOutlet weak var ccsLabel: UILabel!
+    
     var serviceManager = ServiceManager()
     
     var delegate : ServiceViewPageDelegate?
@@ -26,7 +31,7 @@ class NeptuneViewController: UIViewController {
     
     var RP = [String: [[Double]]]()
     
-    var sectorID: Int = 0
+    var sectorId: Int = 0
     var buildings = [String]()
     var levels = [String: [String]]()
     var levelList = [String]()
@@ -68,7 +73,7 @@ class NeptuneViewController: UIViewController {
     }
     
     func setCardData(cardData: CardItemData) {
-        self.sectorID = cardData.sector_id
+        self.sectorId = cardData.sector_id
         self.sectorNameLabel.text = cardData.sector_name
         
         let imageName: String = cardData.cardColor + "CardTop"
@@ -155,17 +160,34 @@ class NeptuneViewController: UIViewController {
         }
     }
     
+//    func fixChartHeight(flag: Bool) {
+//        if (flag) {
+//            let ratio: Double = 114900 / 68700
+//            displayViewHeight.constant = displayView.bounds.width * ratio
+//
+//            let window = UIApplication.shared.keyWindow
+//            let bottomPadding = window?.safeAreaInsets.bottom ?? 0.0
+//
+//            defaultHeight = ServiceView.bounds.height - 100 - displayViewHeight.constant - bottomPadding
+//
+//            containerViewHeight.constant = defaultHeight
+//        } else {
+//            displayViewHeight.constant = 480
+//            containerViewHeight.constant = 150
+//        }
+//    }
+    
     private func fetchLevel(building: String, level: String, flag: Bool) {
         // Building -> Level Image Download From URL
         noImageLabel.text = "해당 \(level) 이미지가 없습니다"
         
         // 빌딩 -> 층 이미지 보이기
-        if let urlLevel = URL(string: "https://storage.googleapis.com/jupiter_image/map/\(sectorID)/\(building)_\(level).png") {
+        if let urlLevel = URL(string: "https://storage.googleapis.com/jupiter_image/map/\(sectorId)/\(building)_\(level).png") {
             let data = try? Data(contentsOf: urlLevel)
             
             if (data != nil) {
                 // 빌딩 -> 층 이미지가 있는 경우
-                let resourceBuildingLevel = ImageResource(downloadURL: urlLevel, cacheKey: "\(sectorID)_\(building)_\(level)_image")
+                let resourceBuildingLevel = ImageResource(downloadURL: urlLevel, cacheKey: "\(sectorId)_\(building)_\(level)_image")
                 
 //                scatterChart.isHidden = false
                 imageLevel.isHidden = false
@@ -220,6 +242,7 @@ class NeptuneViewController: UIViewController {
     
     override func motionEnded(_ motion: UIEvent.EventSubtype, with event: UIEvent?) {
         if motion == .motionShake {
+            
             // Request Result
             serviceManager.getResult(completion: { [self] statusCode, returnedString in
                 if (statusCode == 200) {
@@ -246,7 +269,7 @@ class NeptuneViewController: UIViewController {
                         }
                         fetchLevel(building: currentBuilding, level: currentLevel, flag: isShowRP)
                         let randomInt = Int.random(in: 1...9)
-                        showSpotContents(id: randomInt)
+//                        showSpotContents(data: <#T##Spot#>)
                         
                         let key = "\(currentBuilding)_\(currentLevel)"
                         let condition: ((String, [[Double]])) -> Bool = {
@@ -299,6 +322,10 @@ class NeptuneViewController: UIViewController {
                 }
             })
         }
+    }
+    
+    func showOSAResult() {
+        
     }
     
     private func drawRP(RP_X: [Double], RP_Y: [Double], XY: [Double]) {
@@ -430,14 +457,117 @@ class NeptuneViewController: UIViewController {
         }
     }
     
-    func showSpotContents(id: Int) {
-//        UIView.animate(withDuration: 0.5) {
-//            self.mainView.alpha = 0.0
-//            self.contentsView.alpha = 1.0
-//        }
+    func showSpotContents(data: Spot) {
+        let building = data.building_name
+        let level = data.level_name
+        let spotId = data.spot_id
+        let spotNumber = data.spot_number
+        let spotName = data.spot_name
+        let spotX: Double = Double(data.spot_x)
+        let spotY: Double = Double(data.spot_y)
+        let sfId = data.structure_feature_id
+        let ccs = data.ccs
         
-        let imageName: String = "sf_id_0" + String(id)
-        self.mainImage.image = UIImage(named: imageName)
+        UIView.animate(withDuration: 0.5) {
+//            self.mainView.alpha = 0.0
+            self.contentsView.alpha = 1.0
+        }
+        
+        let locationName: String = building + " " + level
+        let sfImageName: String = "sf_id_\(sfId)"
+        self.mainImage.image = UIImage(named: sfImageName)
+        
+        self.locationLabel.text = locationName
+        self.spotNameLabel.text = spotName
+        
+        var typeName: String = ""
+        switch(sfId) {
+        case 1:
+            typeName = "계단"
+        case 2:
+            typeName = "엘리베이터"
+        case 3:
+            typeName = "에스컬레이터"
+        case 4:
+            typeName = "사무공간"
+        case 5:
+            typeName = "회의실"
+        case 6:
+            typeName = "출입구"
+        case 7:
+            typeName = "탕비실"
+        case 8:
+            typeName = "프린터"
+        case 9:
+            typeName = "화장실"
+        default:
+            typeName = "Unvalid"
+        }
+        self.typeLabel.text = typeName
+        self.ccsLabel.text = String(format: "%.4f", ccs)
+        
+        drawValues(XY: [spotX, spotY])
+        drawSpot(XY: [spotX, spotY])
     }
-
+    
+    func testSpotContents(id: Int) {
+        UIView.animate(withDuration: 0.5) {
+//            self.mainView.alpha = 0.0
+            self.contentsView.alpha = 1.0
+        }
+        
+        switch(id) {
+        case 1:
+            self.mainImage.image = UIImage(named: "sf_id_2")
+            self.locationLabel.text = "S3 7F"
+            self.spotNameLabel.text = "엘리베이터"
+            self.typeLabel.text = "엘리베이터"
+            self.ccsLabel.text = "0.6744"
+        case 2:
+            self.mainImage.image = UIImage(named: "sf_id_6")
+            self.locationLabel.text = "S3 7F"
+            self.spotNameLabel.text = "도다마인드 입구"
+            self.typeLabel.text = "출입구"
+            self.ccsLabel.text = "0.6744"
+        case 3:
+            self.mainImage.image = UIImage(named: "sf_id_5")
+            self.locationLabel.text = "S3 7F"
+            self.spotNameLabel.text = "회의실 B"
+            self.typeLabel.text = "회의실"
+            self.ccsLabel.text = "0.6744"
+        case 4:
+            self.mainImage.image = UIImage(named: "sf_id_6")
+            self.locationLabel.text = "S3 7F"
+            self.spotNameLabel.text = "티제이랩스 입구"
+            self.typeLabel.text = "출입구"
+            self.ccsLabel.text = "0.6744"
+        case 5:
+            self.mainImage.image = UIImage(named: "sf_id_4")
+            self.locationLabel.text = "S3 7F"
+            self.spotNameLabel.text = "티제이랩스 A위치"
+            self.typeLabel.text = "사무공간"
+            self.ccsLabel.text = "0.6744"
+        case 6:
+            self.mainImage.image = UIImage(named: "sf_id_4")
+            self.locationLabel.text = "S3 7F"
+            self.spotNameLabel.text = "티제이랩스 B위치"
+            self.typeLabel.text = "사무공간"
+            self.ccsLabel.text = "0.6744"
+        case 7:
+            self.mainImage.image = UIImage(named: "sf_id_5")
+            self.locationLabel.text = "S3 7F"
+            self.spotNameLabel.text = "회의실 A"
+            self.typeLabel.text = "회의실"
+            self.ccsLabel.text = "0.6744"
+        default:
+            self.mainImage.image = UIImage(named: "sf_id_1")
+            self.locationLabel.text = "S3 7F"
+            self.spotNameLabel.text = "Unknown"
+            self.typeLabel.text = "Unknown"
+            self.ccsLabel.text = "0.6744"
+        }
+        
+        drawSpot(XY: Spots[id-1])
+        drawValues(XY: Spots[id-1])
+    }
 }

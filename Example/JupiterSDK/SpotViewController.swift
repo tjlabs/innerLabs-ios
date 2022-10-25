@@ -1,6 +1,7 @@
 import UIKit
 import SwiftUI
 import Charts
+import Kingfisher
 import JupiterSDK
 
 class SpotViewController: UIViewController {
@@ -14,14 +15,15 @@ class SpotViewController: UIViewController {
     @IBOutlet weak var cardTopImage: UIImageView!
     @IBOutlet weak var sectorNameLabel: UILabel!
     @IBOutlet weak var mainImage: UIImageView!
+    @IBOutlet weak var noImageLabel: UILabel!
     
     @IBOutlet weak var mainView: UIView!
     @IBOutlet weak var contentsView: UIView!
     
     @IBOutlet weak var locationLabel: UILabel!
+    @IBOutlet weak var spotNameLabel: UILabel!
     @IBOutlet weak var typeLabel: UILabel!
-    @IBOutlet weak var ceoLabel: UILabel!
-    @IBOutlet weak var companyLabel: UILabel!
+    @IBOutlet weak var ccsLabel: UILabel!
     
     @IBOutlet weak var infoView: UIView!
     @IBOutlet weak var infoSpotLabel: UILabel!
@@ -34,6 +36,7 @@ class SpotViewController: UIViewController {
     var page: Int = 0
     var userId: String = ""
     
+    var sector_id: Int = 0
     var buildings = [String]()
     var levels = [String: [String]]()
     var levelList = [String]()
@@ -50,7 +53,8 @@ class SpotViewController: UIViewController {
     
     var limits: [Double] = [-100, 100, -200, 200]
     
-    var Spots: [[Double]] = [[-42, -97], [5, -89], [0, -55], [-40, -56], [-70, -23], [-30, -12]]
+    var Spots: [[Double]] = [[-42, -97], [5, -89], [-15, -68], [0, -55], [-40, -56]]
+//    var Spots: [[Double]] = [[-42, -97], [5, -89], [0, -55], [-40, -56], [-70, -23], [-30, -12], [-15, -68]]
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(false)
@@ -72,7 +76,7 @@ class SpotViewController: UIViewController {
     }
     
     func setCardData(cardData: CardItemData) {
-        print(cardData)
+        self.sector_id = cardData.sector_id
         self.sectorNameLabel.text = cardData.sector_name
         
         let imageName: String = cardData.cardColor + "CardTop"
@@ -89,57 +93,26 @@ class SpotViewController: UIViewController {
         }
     }
     
-    private func drawValues(XY: [Double]) {
+    private func drawSpot(XY: [Double]) {
         let values = (0..<1).map { (i) -> ChartDataEntry in
             return ChartDataEntry(x: XY[0], y: XY[1])
         }
-        
+
         let set = ScatterChartDataSet(entries: values, label: "User")
         set.drawValuesEnabled = false
         set.setScatterShape(.circle)
-//        set.setColor(UIColor.systemRed)
         set.setColor(UIColor.black)
         set.scatterShapeSize = 10
         let chartData = ScatterChartData(dataSet: set)
-        
+
         let xMin = limits[0]
         let xMax = limits[1]
         let yMin = limits[2]
         let yMax = limits[3]
-        
+
         let chartFlag: Bool = false
         scatterChart.isHidden = false
-        
-        // Configure Chart
-        scatterChart.xAxis.axisMinimum = xMin-5
-        scatterChart.xAxis.axisMaximum = xMax+5
-        scatterChart.leftAxis.axisMinimum = yMin-5
-        scatterChart.leftAxis.axisMaximum = yMax+5
-        
-        scatterChart.xAxis.drawGridLinesEnabled = chartFlag
-        scatterChart.leftAxis.drawGridLinesEnabled = chartFlag
-        scatterChart.rightAxis.drawGridLinesEnabled = chartFlag
-        
-        scatterChart.xAxis.drawAxisLineEnabled = chartFlag
-        scatterChart.leftAxis.drawAxisLineEnabled = chartFlag
-        scatterChart.rightAxis.drawAxisLineEnabled = chartFlag
-        
-        scatterChart.xAxis.centerAxisLabelsEnabled = chartFlag
-        scatterChart.leftAxis.centerAxisLabelsEnabled = chartFlag
-        scatterChart.rightAxis.centerAxisLabelsEnabled = chartFlag
 
-        scatterChart.xAxis.drawLabelsEnabled = chartFlag
-        scatterChart.leftAxis.drawLabelsEnabled = chartFlag
-        scatterChart.rightAxis.drawLabelsEnabled = chartFlag
-        
-        scatterChart.legend.enabled = chartFlag
-        scatterChart.backgroundColor = .clear
-        scatterChart.data = chartData
-    }
-    
-    private func drawSpot(XY: [Double]) {
-        scatterChart.isHidden = false
-        
         let point = scatterChart.getPosition(entry: ChartDataEntry(x: XY[0], y: XY[1]), axis: .left)
         let imageView = UIImageView(image: spotImage?.resize(newWidth: 40))
         imageView.frame = CGRect(x: point.x-15, y: point.y-35, width: 30, height: 30)
@@ -151,6 +124,32 @@ class SpotViewController: UIViewController {
         UIView.animate(withDuration: 0.5) {
             self.scatterChart.addSubview(imageView)
         }
+
+        // Configure Chart
+        scatterChart.xAxis.axisMinimum = xMin-5
+        scatterChart.xAxis.axisMaximum = xMax+5
+        scatterChart.leftAxis.axisMinimum = yMin-5
+        scatterChart.leftAxis.axisMaximum = yMax+5
+
+        scatterChart.xAxis.drawGridLinesEnabled = chartFlag
+        scatterChart.leftAxis.drawGridLinesEnabled = chartFlag
+        scatterChart.rightAxis.drawGridLinesEnabled = chartFlag
+
+        scatterChart.xAxis.drawAxisLineEnabled = chartFlag
+        scatterChart.leftAxis.drawAxisLineEnabled = chartFlag
+        scatterChart.rightAxis.drawAxisLineEnabled = chartFlag
+
+        scatterChart.xAxis.centerAxisLabelsEnabled = chartFlag
+        scatterChart.leftAxis.centerAxisLabelsEnabled = chartFlag
+        scatterChart.rightAxis.centerAxisLabelsEnabled = chartFlag
+
+        scatterChart.xAxis.drawLabelsEnabled = chartFlag
+        scatterChart.leftAxis.drawLabelsEnabled = chartFlag
+        scatterChart.rightAxis.drawLabelsEnabled = chartFlag
+
+        scatterChart.legend.enabled = chartFlag
+        scatterChart.backgroundColor = .clear
+        scatterChart.data = chartData
     }
     
     @objc func showProbability() {
@@ -181,7 +180,7 @@ class SpotViewController: UIViewController {
         self.navigationController?.popViewController(animated: true)
     }
     
-    func showSpotContents(id: Int) {
+    func testSpotContents(id: Int) {
         UIView.animate(withDuration: 0.5) {
             self.mainView.alpha = 0.0
             self.contentsView.alpha = 1.0
@@ -189,60 +188,140 @@ class SpotViewController: UIViewController {
         
         switch(id) {
         case 1:
-            UIView.animate(withDuration: 0.5) {
-                self.mainImage.image = UIImage(named: "S3_7F_ELEV")
-                self.locationLabel.text = "엘레베이터 앞"
-                self.typeLabel.text = "출입관련"
-                self.ceoLabel.text = "해당없음"
-                self.companyLabel.text = "해당없음"
-            }
+            self.mainImage.image = UIImage(named: "sf_id_2")
+            self.locationLabel.text = "S3 7F"
+            self.spotNameLabel.text = "엘리베이터"
+            self.typeLabel.text = "엘리베이터"
+            self.ccsLabel.text = "0.6744"
         case 2:
-            UIView.animate(withDuration: 0.5) {
-                self.mainImage.image = UIImage(named: "S3_7F_DODA")
-                self.locationLabel.text = "A, B"
-                self.typeLabel.text = "TIPS 창업기업"
-                self.ceoLabel.text = "곽도영"
-                self.companyLabel.text = "소프트웨어"
-            }
+            self.mainImage.image = UIImage(named: "sf_id_6")
+            self.locationLabel.text = "S3 7F"
+            self.spotNameLabel.text = "도다마인드 입구"
+            self.typeLabel.text = "출입구"
+            self.ccsLabel.text = "0.6744"
         case 3:
-            UIView.animate(withDuration: 0.5) {
-                self.mainImage.image = UIImage(named: "S3_7F_MEET")
-                self.locationLabel.text = "회의실B"
-                self.typeLabel.text = "회의공간"
-                self.ceoLabel.text = "해당없음"
-                self.companyLabel.text = "해당없음"
-            }
+            self.mainImage.image = UIImage(named: "sf_id_5")
+            self.locationLabel.text = "S3 7F"
+            self.spotNameLabel.text = "회의실 B"
+            self.typeLabel.text = "회의실"
+            self.ccsLabel.text = "0.6744"
         case 4:
-            UIView.animate(withDuration: 0.5) {
-                self.mainImage.image = UIImage(named: "S3_7F_TJLABS")
-                self.locationLabel.text = "E"
-                self.typeLabel.text = "TIPS 창업기업"
-                self.ceoLabel.text = "이택진"
-                self.companyLabel.text = "소프트웨어"
-            }
+            self.mainImage.image = UIImage(named: "sf_id_6")
+            self.locationLabel.text = "S3 7F"
+            self.spotNameLabel.text = "티제이랩스 입구"
+            self.typeLabel.text = "출입구"
+            self.ccsLabel.text = "0.6744"
         case 5:
-            UIView.animate(withDuration: 0.5) {
-                self.mainImage.image = UIImage(named: "S3_7F_TJLABS")
-                self.locationLabel.text = "E의 A위치"
-                self.typeLabel.text = "사무공간"
-                self.ceoLabel.text = "이택진"
-                self.companyLabel.text = "소프트웨어"
-            }
+            self.mainImage.image = UIImage(named: "sf_id_4")
+            self.locationLabel.text = "S3 7F"
+            self.spotNameLabel.text = "티제이랩스 A위치"
+            self.typeLabel.text = "사무공간"
+            self.ccsLabel.text = "0.6744"
         case 6:
-            UIView.animate(withDuration: 0.5) {
-                self.mainImage.image = UIImage(named: "S3_7F_TJLABS")
-                self.locationLabel.text = "E의 B위치"
-                self.typeLabel.text = "사무공간"
-                self.ceoLabel.text = "이택진"
-                self.companyLabel.text = "소프트웨어"
-            }
+            self.mainImage.image = UIImage(named: "sf_id_4")
+            self.locationLabel.text = "S3 7F"
+            self.spotNameLabel.text = "티제이랩스 B위치"
+            self.typeLabel.text = "사무공간"
+            self.ccsLabel.text = "0.6744"
+        case 7:
+            self.mainImage.image = UIImage(named: "sf_id_5")
+            self.locationLabel.text = "S3 7F"
+            self.spotNameLabel.text = "회의실 A"
+            self.typeLabel.text = "회의실"
+            self.ccsLabel.text = "0.6744"
         default:
-            locationLabel.text = ""
-            typeLabel.text = ""
-            ceoLabel.text = ""
-            companyLabel.text = ""
+            self.mainImage.image = UIImage(named: "sf_id_1")
+            self.locationLabel.text = "S3 7F"
+            self.spotNameLabel.text = "Unknown"
+            self.typeLabel.text = "Unknown"
+            self.ccsLabel.text = "0.6744"
         }
+        
+        drawSpot(XY: Spots[id-1])
     }
+    
+    func showSpotContents(data: Spot) {
+        let building = data.building_name
+        let level = data.level_name
+        let spotId = data.spot_id
+        let spotNumber = data.spot_number
+        let spotName = data.spot_name
+        let spotX: Double = Double(data.spot_x)
+        let spotY: Double = Double(data.spot_y)
+        let sfId = data.structure_feature_id
+        let ccs = data.ccs
+        
+        UIView.animate(withDuration: 0.5) {
+            self.mainView.alpha = 0.0
+            self.contentsView.alpha = 1.0
+        }
+        
+        let locationName: String = building + " " + level
+        let sfImageName: String = "sf_id_\(sfId)"
+        self.mainImage.image = UIImage(named: sfImageName)
+        
+        self.locationLabel.text = locationName
+        self.spotNameLabel.text = spotName
+        
+        var typeName: String = ""
+        switch(sfId) {
+        case 1:
+            typeName = "계단"
+        case 2:
+            typeName = "엘리베이터"
+        case 3:
+            typeName = "에스컬레이터"
+        case 4:
+            typeName = "사무공간"
+        case 5:
+            typeName = "회의실"
+        case 6:
+            typeName = "출입구"
+        case 7:
+            typeName = "탕비실"
+        case 8:
+            typeName = "프린터"
+        case 9:
+            typeName = "화장실"
+        default:
+            typeName = "Unvalid"
+        }
+        self.typeLabel.text = typeName
+        self.ccsLabel.text = String(format: "%.4f", ccs)
+        
+        drawSpot(XY: [spotX, spotY])
+    }
+    
+    private func fetchLevel(building: String, level: String) {
+        // Building -> Level Image Download From URL
+        noImageLabel.text = "해당 \(level) 이미지가 없습니다"
+        let imageName: String = building + "_" + level + "_FLOOR"
+        self.imageLevel.image = UIImage(named: imageName)
+        // 빌딩 -> 층 이미지 보이기
+//        if let urlLevel = URL(string: "https://storage.googleapis.com/jupiter_image/map/\(self.sector_id)/\(building)_\(level).png") {
+//            let data = try? Data(contentsOf: urlLevel)
+//
+//            if (data != nil) {
+//                // 빌딩 -> 층 이미지가 있는 경우
+//                let resourceBuildingLevel = ImageResource(downloadURL: urlLevel, cacheKey: "\(self.sector_id)_\(building)_\(level)_image")
+//
+////                scatterChart.isHidden = false
+//                imageLevel.isHidden = false
+//                noImageLabel.isHidden = true
+//                imageLevel.kf.setImage(with: resourceBuildingLevel, placeholder: nil, options: [.transition(.fade(0.8))], completionHandler: nil)
+//            } else {
+//                scatterChart.isHidden = true
+//                imageLevel.isHidden = true
+//                noImageLabel.isHidden = false
+//            }
+//        } else {
+//            // 빌딩 -> 층 이미지가 없는 경우
+//            scatterChart.isHidden = true
+//            imageLevel.isHidden = true
+//            noImageLabel.isHidden = false
+//        }
+    }
+    
     
     override func becomeFirstResponder() -> Bool {
         return true
@@ -250,6 +329,21 @@ class SpotViewController: UIViewController {
     
     override func motionEnded(_ motion: UIEvent.EventSubtype, with event: UIEvent?) {
         if motion == .motionShake {
+            shakeCount += 1
+            if (shakeCount > 5) {
+                shakeCount = 1
+            }
+            let tempNumber = shakeCount
+            fetchLevel(building: "S3", level: "6F")
+            
+//            if (shakeCount > 7) {
+//                shakeCount = 1
+//            }
+//            let tempNumber = shakeCount
+//            fetchLevel(building: "S3", level: "7F")
+            
+            testSpotContents(id: tempNumber)
+            
             // Request Result
             serviceManager.getResult(completion: { [self] statusCode, returnedString in
                 if (statusCode == 200) {
@@ -271,15 +365,21 @@ class SpotViewController: UIViewController {
                         
                         let data = result.spots[bestIndex]
                         if (data.sector_name != "" && data.building_name != "" && data.level_name != "") {
+                            // Check Building & Level Change
+                            currentBuilding = data.building_name
+                            currentLevel = data.level_name
+                            
+                            if ((pastBuilding != currentBuilding) || (pastLevel != pastLevel)) {
+                                fetchLevel(building: currentBuilding, level: currentLevel)
+                            }
+                            
                             let spotNumber: Int = data.spot_number
                             let spotCCS: Double = data.ccs
                             
                             self.infoSpotLabel.text = String(spotNumber)
                             self.infoProbLabel.text = String(format: "%.4f", spotCCS)
                             
-                            drawValues(XY: Spots[spotNumber-1])
-                            drawSpot(XY: Spots[spotNumber-1])
-                            showSpotContents(id: spotNumber)
+                            showSpotContents(data: data)
                         } else {
                             self.infoSpotLabel.text = "Fail"
                             self.infoProbLabel.text = "0.0000"

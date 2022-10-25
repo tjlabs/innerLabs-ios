@@ -5,109 +5,18 @@ let RECENT_URL = "https://where-run-user-skrgq3jc5a-du.a.run.app/recent"
 let RF_URL = "https://where-run-record-skrgq3jc5a-du.a.run.app/recordRF"
 let UV_URL = "https://where-run-record-skrgq3jc5a-du.a.run.app/recordUV"
 
-let CLD_URL = "https://where-run-ios-skrgq3jc5a-du.a.run.app/CLD"
-let CLE_URL = "https://where-run-ios-skrgq3jc5a-du.a.run.app/CLE"
-let FLT_URL = "https://where-run-ios-skrgq3jc5a-du.a.run.app/FLT"
-let CLC_URL = "https://where-run-ios-skrgq3jc5a-du.a.run.app/CLC"
-let OSA_URL = "https://where-run-ios-skrgq3jc5a-du.a.run.app/OSA"
+let RELEASE_URL = "https://where-run-ios-skrgq3jc5a-du.a.run.app/"
+let TEST_URL = "https://where-run-ios-t-skrgq3jc5a-du.a.run.app/"
+var BASE_URL = RELEASE_URL
+let CLD_URL = BASE_URL + "CLD"
+let CLE_URL = BASE_URL + "CLE"
+let FLT_URL = BASE_URL + "FLT"
+let CLC_URL = BASE_URL + "CLC"
+let OSA_URL = BASE_URL + "OSA"
 
 public class NetworkManager {
     
     static let shared = NetworkManager()
-    
-//    func putReceivedForce(url: String, input: [ReceivedForce], completion: @escaping (Int, String) -> Void){
-//        // [http 요청 헤더 지정]
-//        let header : HTTPHeaders = [
-//            "Content-Type" : "application/json"
-//        ]
-//
-//        // [http 요청 수행 실시]
-//        //        print("")
-//        //        print("====================================")
-//        //        print("주 소 :: ", url)
-//        //        print("-------------------------------")
-//        //        print("데이터 :: ", input)
-//        //        print("====================================")
-//        //        print("")
-//
-//        AF.request(
-//            url, // [주소]
-//            method: .put, // [전송 타입]
-//            parameters: input, // [전송 데이터]
-//            encoder: JSONParameterEncoder.default,
-//            headers: header // [헤더 지정]
-//        )
-//        .validate(statusCode: 200..<300)
-//        .responseData { response in
-//            switch response.result {
-//            case .success(let res):
-//                do {
-//                    completion(200, "Success")
-//                }
-//                catch (let err){
-//                    completion(500, "Fail")
-//                }
-//                break
-//            case .failure(let err):
-//                completion(500, "Fail")
-//                break
-//            }
-//        }
-//    }
-//
-//    func putUserVelocity(url: String, input: [UserVelocity], completion: @escaping (Int, String) -> Void) {
-//        // [http 요청 헤더 지정]
-//        let header : HTTPHeaders = [
-//            "Content-Type" : "application/json"
-//        ]
-//
-//        // [http 요청 수행 실시]
-//        print("")
-//        print("====================================")
-//        print("PUT UV 데이터 :: ", input)
-//        print("====================================")
-//        print("")
-//
-//        AF.request(
-//            url, // [주소]
-//            method: .put, // [전송 타입]
-//            parameters: input, // [전송 데이터]
-//            encoder: JSONParameterEncoder.default,
-//            headers: header // [헤더 지정]
-//        )
-//        .validate(statusCode: 200..<300)
-//        .responseData { response in
-//            switch response.result {
-//            case .success(let res):
-//                do {
-//                    // [비동기 작업 수행]
-//                    let returnedString = String(data: res, encoding: .utf8) ?? "Fail"
-//                    completion(200, String(input[input.count-1].index))
-//                }
-//                catch (let err){
-//                    print("")
-//                    print("====================================")
-//                    print("응답 코드 :: ", response.response?.statusCode ?? 0)
-//                    print("-------------------------------")
-//                    print("에 러 :: ", err.localizedDescription)
-//                    print("====================================")
-//                    print("")
-//                    completion(500, "Fail")
-//                }
-//                break
-//            case .failure(let err):
-//                print("")
-//                print("====================================")
-//                print("응답 코드 :: ", response.response?.statusCode ?? 0)
-//                print("-------------------------------")
-//                print("에 러 :: ", err.localizedDescription)
-//                print("====================================")
-//                print("")
-//                completion(500, "Fail")
-//                break
-//            }
-//        }
-//    }
     
     func putReceivedForce(url: String, input: [ReceivedForce], completion: @escaping (Int, String) -> Void){
         // [http 비동기 방식을 사용해서 http 요청 수행 실시]
@@ -119,6 +28,13 @@ public class NetworkManager {
         requestURL.httpBody = encodingData
         requestURL.addValue("application/json", forHTTPHeaderField: "Content-Type")
         requestURL.setValue("\(encodingData)", forHTTPHeaderField: "Content-Length")
+        
+        // [http 요청 수행 실시]
+//        print("")
+//        print("====================================")
+//        print("PUT RF 데이터 :: ", input)
+//        print("====================================")
+//        print("")
 
         let dataTask = URLSession.shared.dataTask(with: requestURL, completionHandler: { (data, response, error) in
             // [error가 존재하면 종료]
@@ -145,6 +61,11 @@ public class NetworkManager {
 
             // [콜백 반환]
             DispatchQueue.main.async {
+//                print("")
+//                print("====================================")
+//                print("RESPONSE RF 데이터 :: ", resultCode)
+//                print("====================================")
+//                print("")
                 completion(resultCode, "(Jupiter) Success Send RFD")
             }
         })
@@ -197,6 +118,12 @@ public class NetworkManager {
 
             // [콜백 반환]
             DispatchQueue.main.async {
+//                print("")
+//                print("====================================")
+//                print("RESPONSE UV 데이터 :: ", resultCode)
+//                print("====================================")
+//                print("")
+                
                 completion(resultCode, String(input[input.count-1].index))
             }
         })
@@ -366,6 +293,12 @@ public class NetworkManager {
         requestURL.httpBody = encodingData
         requestURL.addValue("application/json", forHTTPHeaderField: "Content-Type")
         requestURL.setValue("\(encodingData)", forHTTPHeaderField: "Content-Length")
+        
+//        print("")
+//        print("====================================")
+//        print("POST FLT 데이터 :: ", input)
+//        print("====================================")
+//        print("")
 
         let dataTask = URLSession.shared.dataTask(with: requestURL, completionHandler: { (data, response, error) in
 
@@ -399,6 +332,12 @@ public class NetworkManager {
 
             // [콜백 반환]
             DispatchQueue.main.async {
+//                print("")
+//                print("====================================")
+//                print("RESPONSE FLT 데이터 :: ", resultCode)
+//                print("                 :: ", resultData)
+//                print("====================================")
+//                print("")
                 completion(resultCode, resultData)
             }
         })

@@ -274,14 +274,14 @@ struct OnSpotAuthorization: Codable {
 
 
 public struct OnSpotAuthorizationResult: Codable {
-    public var spots: [Spots]
+    public var spots: [Spot]
     
     public init() {
         self.spots = []
     }
 }
 
-public struct Spots: Codable {
+public struct Spot: Codable {
     public var mobile_time: Int
     public var sector_name: String
     public var building_name: String
