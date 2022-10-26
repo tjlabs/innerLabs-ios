@@ -48,6 +48,7 @@ class SpotViewController: UIViewController {
     var shakeCount: Int = 0
     
     var countTap: Int = 0
+    let CCS_THRESHOLD: Double = 0.5
     
     var spotImage = UIImage(named: "spotPin")
     
@@ -334,21 +335,27 @@ class SpotViewController: UIViewController {
                         
                         let data = result.spots[bestIndex]
                         if (data.sector_name != "" && data.building_name != "" && data.level_name != "") {
-                            // Check Building & Level Change
-                            currentBuilding = data.building_name
-                            currentLevel = data.level_name
-                            
-                            if ((pastBuilding != currentBuilding) || (pastLevel != pastLevel)) {
-                                fetchLevel(building: currentBuilding, level: currentLevel)
+                            if (data.ccs >= CCS_THRESHOLD) {
+                                // Check Building & Level Change
+                                currentBuilding = data.building_name
+                                currentLevel = data.level_name
+                                
+                                if ((pastBuilding != currentBuilding) || (pastLevel != pastLevel)) {
+                                    fetchLevel(building: currentBuilding, level: currentLevel)
+                                }
+                                
+                                let spotNumber: Int = data.spot_number
+                                let spotCCS: Double = data.ccs
+                                
+                                self.infoSpotLabel.text = String(spotNumber)
+                                self.infoProbLabel.text = String(format: "%.4f", spotCCS)
+                                
+                                showSpotContents(data: data)
+                            } else {
+                                self.infoSpotLabel.text = "Fail"
+                                self.infoProbLabel.text = "0.0000"
                             }
                             
-                            let spotNumber: Int = data.spot_number
-                            let spotCCS: Double = data.ccs
-                            
-                            self.infoSpotLabel.text = String(spotNumber)
-                            self.infoProbLabel.text = String(format: "%.4f", spotCCS)
-                            
-                            showSpotContents(data: data)
                         } else {
                             self.infoSpotLabel.text = "Fail"
                             self.infoProbLabel.text = "0.0000"

@@ -50,6 +50,8 @@ class NeptuneViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
     var countTap: Int = 0
     var countShake: Int = 0
     
+    let CCS_THRESHOLD: Double = 0.5
+    
     var spotImage = UIImage(named: "spotPin")
     
     var limits: [Double] = [-100, 100, -200, 200]
@@ -394,13 +396,24 @@ class NeptuneViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
                         
                         // Check Building or Level Changed
                         let data = result.spots[bestIndex]
-                        let isChanged: Bool = checkBuildingLevelChanged(data: data)
-                        if (isChanged) {
-//                            fetchLevelTest(building: self.currentBuilding, level: self.currentLevel)
-                            fetchLevel(building: self.currentBuilding, level: self.currentLevel, flag: true)
+                        if (data.ccs >= CCS_THRESHOLD) {
+                            let isChanged: Bool = checkBuildingLevelChanged(data: data)
+                            if (isChanged) {
+//                                fetchLevelTest(building: self.currentBuilding, level: self.currentLevel)
+                                fetchLevel(building: self.currentBuilding, level: self.currentLevel, flag: true)
+                            }
+                            showOSAResult(data: data, flag: isShowRP)
+                        } else {
+                            print("(Jupiter) Fail : No Matched Spot")
+                            self.scatterChart.isHidden = true
+                            self.resultToDisplay.building_name = "Unvalid"
+                            self.resultToDisplay.spot_name = "Unvalid"
+                            self.resultToDisplay.structure_feature_id = 0
+                            self.resultToDisplay.ccs = data.ccs
+                            if (self.isOpen) {
+                                UIView.performWithoutAnimation { self.containerTableView.reloadSections(IndexSet(0...0), with: .none) }
+                            }
                         }
-                        
-                        showOSAResult(data: data, flag: isShowRP)
                     }
                 } else {
                     print("(Jupiter) Error : Neptune is unavailable")
