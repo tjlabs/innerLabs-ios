@@ -1,13 +1,15 @@
 import Foundation
 
-let RECENT_URL = "https://where-run-user-skrgq3jc5a-du.a.run.app/recent"
-
 let RF_URL = "https://where-run-record-skrgq3jc5a-du.a.run.app/recordRF"
 let UV_URL = "https://where-run-record-skrgq3jc5a-du.a.run.app/recordUV"
 
-let RELEASE_URL = "https://where-run-ios-skrgq3jc5a-du.a.run.app/"
-let TEST_URL = "https://where-run-ios-t-skrgq3jc5a-du.a.run.app/"
-var BASE_URL = RELEASE_URL
+let RELEASE_URL_i = "https://where-run-ios-skrgq3jc5a-du.a.run.app/"
+let TEST_URL_i = "https://where-run-ios-t-skrgq3jc5a-du.a.run.app/"
+
+let RELEASE_URL_A = "https://where-run-aos-skrgq3jc5a-du.a.run.app/"
+let TEST_URL_A = "https://where-run-aos-t-skrgq3jc5a-du.a.run.app/"
+
+var BASE_URL = RELEASE_URL_i
 let CLD_URL = BASE_URL + "CLD"
 let CLE_URL = BASE_URL + "CLE"
 let FLT_URL = BASE_URL + "FLT"

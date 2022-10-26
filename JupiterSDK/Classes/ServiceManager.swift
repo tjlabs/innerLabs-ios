@@ -118,6 +118,11 @@ public class ServiceManager: Observation {
         }
     }
     
+    // 0 : Release  //  1 : Test
+    var serverType: Int = 0
+    // 0 : Android  //  1 : iOS
+    var osType: Int = 1
+    
     let G: Double = 9.81
     
     var user_id: String = ""
@@ -392,7 +397,19 @@ public class ServiceManager: Observation {
             }
         } else {
             let userInfo = UserInfo(user_id: self.user_id, device_model: deviceModel, os_version: osVersion)
-            postUser(url: USER_URL, input: userInfo, completion: { statusCode, returnedString in })
+            postUser(url: USER_URL, input: userInfo, completion: { [self] statusCode, returnedString in
+                if (statusCode == 200) {
+                    settingURL(server: self.serverType, os: self.osType)
+                } else {
+                    let localTime: String = getLocalTimeString()
+                    let log: String = localTime + " , (Jupiter) Error : Load OS Type Error\n"
+                    if (flagSaveError) {
+                        self.errorLogs.append(log)
+                    } else {
+                       print(log)
+                    }
+                }
+            })
             
             let adminInfo = UserInfo(user_id: "tjlabsAdmin", device_model: deviceModel, os_version: osVersion)
             postUser(url: USER_URL, input: adminInfo, completion: { [self] statusCode, returnedString in
@@ -461,6 +478,23 @@ public class ServiceManager: Observation {
                 }
             })
             print("(Jupiter) Start Service")
+        }
+    }
+    
+    func settingURL(server: Int, os: Int) {
+        // (server) 0 : Release  //  1 : Test
+        // (os) 0 : Android  //  1 : iOS
+        
+        if (server == 0 && os == 0) {
+            BASE_URL = RELEASE_URL_A
+        } else if (server == 0 && os == 1) {
+            BASE_URL = RELEASE_URL_i
+        } else if (server == 1 && os == 0) {
+            BASE_URL = TEST_URL_A
+        } else if (server == 1 && os == 1) {
+            BASE_URL = TEST_URL_i
+        } else {
+            BASE_URL = RELEASE_URL_i
         }
     }
     
@@ -855,7 +889,7 @@ public class ServiceManager: Observation {
             let diffHeading = unitDRInfo.heading - preUnitHeading
             let curUnitDRLength = unitDRInfo.length
             
-            if (self.isActiveService && self.isActiveRF) {
+            if (self.isActiveService) {
                 inputUserVelocity.append(data)
                 
                 // Time Update
