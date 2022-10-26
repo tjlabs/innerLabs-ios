@@ -297,7 +297,7 @@ public class ServiceManager: Observation {
     let fileManager = FileManager.default
     var textFile: URL?
     var errorLogs: String = ""
-    let flagSaveError: Bool = false
+    let flagSaveError: Bool = true
     
     public override init() {
         deviceModel = UIDevice.modelName
@@ -596,19 +596,20 @@ public class ServiceManager: Observation {
             motionManager.startGyroUpdates(to: .main) { [self] (data, error) in
                 if let gyroX = data?.rotationRate.x {
                     self.gyroX = gyroX
-                    sensorData.gyro[0] = gyroX
-                    collectData.gyro[0] = gyroX
+//                    sensorData.gyro[0] = gyroX
+//                    collectData.gyro[0] = gyroX
                 }
                 if let gyroY = data?.rotationRate.y {
                     self.gyroY = gyroY
-                    sensorData.gyro[1] = gyroY
-                    collectData.gyro[1] = gyroY
+//                    sensorData.gyro[1] = gyroY
+//                    collectData.gyro[1] = gyroY
                 }
                 if let gyroZ = data?.rotationRate.z {
                     self.gyroZ = gyroZ
-                    sensorData.gyro[2] = gyroZ
-                    collectData.gyro[2] = gyroZ
+//                    sensorData.gyro[2] = gyroZ
+//                    collectData.gyro[2] = gyroZ
                 }
+//                print("Raw : \(sensorData.gyro[0]), \(sensorData.gyro[1]), \(sensorData.gyro[2])")
             }
         } else {
             let localTime: String = getLocalTimeString()
@@ -686,6 +687,14 @@ public class ServiceManager: Observation {
                     self.roll = m.attitude.roll
                     self.pitch = m.attitude.pitch
                     self.yaw = m.attitude.yaw
+                    
+//                    print("Cal : \(m.rotationRate.x), \(m.rotationRate.y), \(m.rotationRate.z)")
+                    sensorData.gyro[0] = m.rotationRate.x
+                    sensorData.gyro[1] = m.rotationRate.y
+                    sensorData.gyro[2] = m.rotationRate.z
+                    collectData.gyro[0] = m.rotationRate.x
+                    collectData.gyro[1] = m.rotationRate.y
+                    collectData.gyro[2] = m.rotationRate.z
                     
                     sensorData.userAcc[0] = m.userAcceleration.x
                     sensorData.userAcc[1] = m.userAcceleration.y
@@ -826,6 +835,17 @@ public class ServiceManager: Observation {
         var bleDictionary = bleManager.bleAvg
         if (deviceModel == "iPhone 13 Mini" || deviceModel == "iPhone 12 Mini" || deviceModel == "iPhone X") {
             bleDictionary.keys.forEach { bleDictionary[$0] = bleDictionary[$0]! + 7 }
+        }
+    
+        let bleCheckTime = Double(currentTime)
+        let discoveredTime = bleManager.bleDiscoveredTime
+        let diffBleTime = (bleCheckTime - discoveredTime)*1e-3
+        let localTime: String = getLocalTimeString()
+        let log: String = localTime + "__(Jupiter) BLE Check__\(diffBleTime)__\(bleCheckTime)__\(discoveredTime)__\(bleManager.bleCheck)\n"
+        if (flagSaveError) {
+            self.errorLogs.append(log)
+        } else {
+           print(log)
         }
         
         if (!bleDictionary.isEmpty) {
