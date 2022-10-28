@@ -12,7 +12,11 @@ public class ServiceManager: Observation {
                     result.absolute_heading = result.absolute_heading + 360
                 }
                 result.absolute_heading = result.absolute_heading - floor(result.absolute_heading/360)*360
-
+                
+                var beforeX = result.x
+                var beforeY = result.y
+                var beforeHeading = result.absolute_heading
+                
                 // Map Matching
                 if (self.isMapMatching) {
                     let correctResult = correct(building: result.building_name, level: result.level_name, x: result.x, y: result.y, heading: result.absolute_heading, mode: self.mode, isPast: isPast)
@@ -80,6 +84,13 @@ public class ServiceManager: Observation {
                     print("(Jupiter) Error : Fail to save last result")
                 }
                 
+                let localTime: String = getLocalTimeString()
+                let log: String = localTime + "__(Jupiter) Result Check__\(updatedResult.mobile_time)__\(updatedResult.building_name)__\(updatedResult.level_name)__\(updatedResult.scc)__\(updatedResult.x)__\(updatedResult.y)__\(updatedResult.absolute_heading)__\(updatedResult.phase)__\(updatedResult.calculated_time)__\(updatedResult.index)__\(updatedResult.velocity)__\(beforeX)__\(beforeY)__\(beforeHeading)__\(self.muTime)__\(self.muIndex)__\(self.muX)__\(self.muY)__\(self.muHeading)\n"
+                if (self.flagSaveBle) {
+                    self.errorLogs.append(log)
+                } else {
+                   print(log)
+                }
                 observer.update(result: updatedResult)
             } else {
                 var updatedResult = FineLocationTrackingResult()
@@ -95,15 +106,6 @@ public class ServiceManager: Observation {
                 updatedResult.calculated_time = result.calculated_time
                 updatedResult.index = result.index
                 updatedResult.velocity = result.velocity
-                
-                do {
-                    let key: String = "JupiterLastResult_\(self.sector_id)"
-                    let jsonData = try JSONEncoder().encode(self.lastResult)
-                    let jsonString = String(data: jsonData, encoding: .utf8)
-                    UserDefaults.standard.set(jsonString, forKey: key)
-                } catch {
-                    print("(Jupiter) Warning : Fail to save last result")
-                }
 
                 self.lastTrackingTime = updatedResult.mobile_time
                 self.lastResult = updatedResult
@@ -161,6 +163,10 @@ public class ServiceManager: Observation {
     var accX: Double = 0
     var accY: Double = 0
     var accZ: Double = 0
+    
+    var gyroRawX: Double = 0
+    var gyroRawY: Double = 0
+    var gyroRawZ: Double = 0
     
     var gyroX: Double = 0
     var gyroY: Double = 0
@@ -273,12 +279,14 @@ public class ServiceManager: Observation {
     
     var timeActiveRF: Double = 0
     var timeActiveUV: Double = 0
+    var timeSleepRF: Double = 0
+    var timeSleepUV: Double = 0
     var timeInitUV: Double = 0
     var timeUpdateInSleep: Double = 0
     let STOP_THRESHOLD: Double = 1 // 0.5 sec
     let SLEEP_THRESHOLD: Double = 600 // 10분
     let SLEEP_THRESHOLD_RF: Double = 5 // 5s
-    let INIT_HRESHOLD: Double = 10 // 10s
+    let INIT_THRESHOLD: Double = 10 // 10s
     
     var lastTrackingTime: Int = 0
     var lastResult = FineLocationTrackingResult()
@@ -288,16 +296,20 @@ public class ServiceManager: Observation {
     let MATCHING_FAIL_THRESHOLD: Int = 5
     
     var isPastServerResult: Bool = false
+    var muTime: Int = 0
+    var muIndex: Int = 0
+    var muX: Double = 0
+    var muY: Double = 0
+    var muHeading: Double = 0
+    
     let COORD_THRESHOLD: Double = 20
-    
-    var pastUVTime = 0
-    var pastRQTime = 0
-    
+
     // File for write Errors
     let fileManager = FileManager.default
     var textFile: URL?
     var errorLogs: String = ""
     let flagSaveError: Bool = true
+    let flagSaveBle: Bool = true
     
     public override init() {
         deviceModel = UIDevice.modelName
@@ -487,14 +499,19 @@ public class ServiceManager: Observation {
         
         if (server == 0 && os == 0) {
             BASE_URL = RELEASE_URL_A
+            print("(Jupiter) Release-A")
         } else if (server == 0 && os == 1) {
             BASE_URL = RELEASE_URL_i
+            print("(Jupiter) Release-i")
         } else if (server == 1 && os == 0) {
             BASE_URL = TEST_URL_A
+            print("(Jupiter) Test-A")
         } else if (server == 1 && os == 1) {
             BASE_URL = TEST_URL_i
+            print("(Jupiter) Test-i")
         } else {
             BASE_URL = RELEASE_URL_i
+            print("(Jupiter) Release-i")
         }
     }
     
@@ -595,19 +612,13 @@ public class ServiceManager: Observation {
             motionManager.gyroUpdateInterval = SENSOR_INTERVAL
             motionManager.startGyroUpdates(to: .main) { [self] (data, error) in
                 if let gyroX = data?.rotationRate.x {
-                    self.gyroX = gyroX
-//                    sensorData.gyro[0] = gyroX
-//                    collectData.gyro[0] = gyroX
+                    self.gyroRawX = gyroX
                 }
                 if let gyroY = data?.rotationRate.y {
-                    self.gyroY = gyroY
-//                    sensorData.gyro[1] = gyroY
-//                    collectData.gyro[1] = gyroY
+                    self.gyroRawY = gyroY
                 }
                 if let gyroZ = data?.rotationRate.z {
-                    self.gyroZ = gyroZ
-//                    sensorData.gyro[2] = gyroZ
-//                    collectData.gyro[2] = gyroZ
+                    self.gyroRawZ = gyroZ
                 }
 //                print("Raw : \(sensorData.gyro[0]), \(sensorData.gyro[1]), \(sensorData.gyro[2])")
             }
@@ -688,10 +699,10 @@ public class ServiceManager: Observation {
                     self.pitch = m.attitude.pitch
                     self.yaw = m.attitude.yaw
                     
-//                    print("Cal : \(m.rotationRate.x), \(m.rotationRate.y), \(m.rotationRate.z)")
                     sensorData.gyro[0] = m.rotationRate.x
                     sensorData.gyro[1] = m.rotationRate.y
                     sensorData.gyro[2] = m.rotationRate.z
+                    
                     collectData.gyro[0] = m.rotationRate.x
                     collectData.gyro[1] = m.rotationRate.y
                     collectData.gyro[2] = m.rotationRate.z
@@ -842,7 +853,7 @@ public class ServiceManager: Observation {
         let diffBleTime = (bleCheckTime - discoveredTime)*1e-3
         let localTime: String = getLocalTimeString()
         let log: String = localTime + "__(Jupiter) BLE Check__\(diffBleTime)__\(bleCheckTime)__\(discoveredTime)__\(bleManager.bleCheck)\n"
-        if (flagSaveError) {
+        if (flagSaveBle) {
             self.errorLogs.append(log)
         } else {
            print(log)
@@ -874,13 +885,17 @@ public class ServiceManager: Observation {
                 }
             }
         } else {
-            print("(Jupiter) RF is Empty")
+//            print("(Jupiter) RF is Empty")
             self.timeActiveRF += RF_INTERVAL
             if (self.timeActiveRF >= SLEEP_THRESHOLD_RF) {
-//                print("(Jupiter) RF is Empty")
-                self.isActiveService = false
                 self.isActiveRF = false
                 self.timeActiveRF = 0
+            }
+            
+            self.timeSleepRF += RF_INTERVAL
+            if (self.timeSleepRF >= SLEEP_THRESHOLD) {
+                self.isActiveService = false
+                self.timeSleepRF = 0
             }
         }
     }
@@ -909,6 +924,7 @@ public class ServiceManager: Observation {
             let diffHeading = unitDRInfo.heading - preUnitHeading
             let curUnitDRLength = unitDRInfo.length
             
+            // Original : self.isActiveService && self.isActiveRF
             if (self.isActiveService) {
                 inputUserVelocity.append(data)
                 
@@ -916,7 +932,9 @@ public class ServiceManager: Observation {
                 if (timeUpdateFlag) {
                     let tuOutput = timeUpdate(length: curUnitDRLength, diffHeading: diffHeading, mobileTime: currentTime)
                     let tuResult = fromServerToResult(fromServer: tuOutput, velocity: displayOutput.velocity)
-                    self.tracking(input: tuResult, isPast: false)
+                    if (bleManager.bluetoothReady) {
+                        self.tracking(input: tuResult, isPast: false)
+                    }
                 }
                 preUnitHeading = unitDRInfo.heading
                 
@@ -947,23 +965,24 @@ public class ServiceManager: Observation {
             }
         } else {
             // UV가 발생하지 않음
-            timeActiveUV += UV_INTERVAL
-            if (timeActiveUV >= STOP_THRESHOLD) {
+            self.timeActiveUV += UV_INTERVAL
+            if (self.timeActiveUV >= STOP_THRESHOLD) {
                 self.isStop = true
-                timeActiveUV = 0
+                self.timeActiveUV = 0
                 displayOutput.velocity = 0
             }
             
             self.timeInitUV += UV_INTERVAL
-            if (self.timeInitUV >= INIT_HRESHOLD) {
+            if (self.timeInitUV >= INIT_THRESHOLD) {
                 self.phase = 1
                 self.timeInitUV = 0
             }
             
-            if (timeActiveUV >= SLEEP_THRESHOLD) {
+            self.timeSleepUV += UV_INTERVAL
+            if (self.timeSleepUV >= SLEEP_THRESHOLD) {
                 print("(Jupiter) Enter Sleep Mode")
                 self.isActiveService = false
-                timeActiveUV = 0
+                self.timeSleepUV = 0
             }
         }
     }
@@ -979,7 +998,7 @@ public class ServiceManager: Observation {
             let input = FineLocationTracking(user_id: user_id, mobile_time: currentTime, sector_id: sector_id, phase: self.phase)
             NetworkManager.shared.postFLT(url: FLT_URL, input: input, completion: { [self] statusCode, returnedString in
                 if (statusCode == 200) {
-                    var result = jsonToResult(json: returnedString)
+                    let result = jsonToResult(json: returnedString)
                     
                     if ((self.nowTime - result.mobile_time) <= RECENT_THRESHOLD) {
                         self.phase = result.phase
@@ -1000,6 +1019,11 @@ public class ServiceManager: Observation {
                                         // Measurment Update
                                         let diffIndex = abs(indexSend - result.index)
                                         if (measurementUpdateFlag && (diffIndex<1)) {
+                                            muTime = result.mobile_time
+                                            muIndex = result.index
+                                            muX = result.x
+                                            muY = result.y
+                                            muHeading = result.absolute_heading
                                             let muOutput = measurementUpdate(timeUpdatePosition: timeUpdatePosition, serverOutput: result)
                                             let muResult = fromServerToResult(fromServer: muOutput, velocity: displayOutput.velocity)
                                             
@@ -1026,8 +1050,14 @@ public class ServiceManager: Observation {
             let diffUpdatedTime: Int = currentTime - self.lastTrackingTime
             if (diffUpdatedTime > 950) {
                 if (self.lastTrackingTime != 0 && self.isActiveRF) {
-//                    print("(Jupiter) Past Result")
                     self.tracking(input: self.lastResult, isPast: true)
+                    
+                    let localTime: String = getLocalTimeString()
+                    let log: String = localTime + " , (Jupiter) Warnings : Past Result , Stop = \(self.isStop)\n"
+                    if (flagSaveError) {
+                        self.errorLogs.append(log)
+                        print(self.errorLogs)
+                    }
                 } else {
                     if (isFirstStart) {
                         let key: String = "JupiterLastResult_\(self.sector_id)"
@@ -1036,7 +1066,8 @@ public class ServiceManager: Observation {
                             let currentTime = getCurrentTimeInMilliseconds()
                             let result = jsonForTracking(json: lastKnownResult)
                             if (currentTime - result.mobile_time) < 1000*3600*12 {
-//                                var updatedResult = result
+                                var updatedResult = result
+                                updatedResult.index = 0
 //                                updatedResult.absolute_heading = updatedResult.absolute_heading + 180
 //                                print("(Jupiter) Success : \(updatedResult)")
                                 self.tracking(input: result, isPast: false)

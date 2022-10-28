@@ -27,9 +27,11 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
     
     func update(result: FineLocationTrackingResult) {
         DispatchQueue.main.async {
+//            let localTime: String = self.getLocalTimeString()
+//            print(localTime + " , (Jupiter) Result : \(result)")
             let building = result.building_name
             let level = result.level_name
-
+            
             let x = result.x
             let y = result.y
 
@@ -271,6 +273,16 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
                 })
             }
         }
+    }
+    
+    func getLocalTimeString() -> String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd-HH-mm-ss"
+        dateFormatter.locale = Locale(identifier:"ko_KR")
+        let nowDate = Date()
+        let convertNowStr = dateFormatter.string(from: nowDate)
+        
+        return convertNowStr
     }
     
     func displayLevelInfo(infoLevel: [String]) {

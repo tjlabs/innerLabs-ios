@@ -50,7 +50,7 @@ class NeptuneViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
     var countTap: Int = 0
     var countShake: Int = 0
     
-    let CCS_THRESHOLD: Double = 0.5
+    let CCS_THRESHOLD: Double = 0.3
     
     var spotImage = UIImage(named: "spotPin")
     
@@ -359,8 +359,9 @@ class NeptuneViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
             // Request Result
             serviceManager.getResult(completion: { [self] statusCode, returnedString in
                 if (statusCode == 200) {
+                    print(returnedString)
                     let result: OnSpotAuthorizationResult = decodeOSA(json: returnedString)
-
+                    
                     if (result.spots.count > 0) {
                         // Find Highest Prob
                         var bestIndex: Int = 0
@@ -396,6 +397,7 @@ class NeptuneViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
                         
                         // Check Building or Level Changed
                         let data = result.spots[bestIndex]
+                        print(data)
                         if (data.ccs >= CCS_THRESHOLD) {
                             let isChanged: Bool = checkBuildingLevelChanged(data: data)
                             if (isChanged) {
@@ -419,6 +421,7 @@ class NeptuneViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
                     print("(Jupiter) Error : Neptune is unavailable")
                     self.scatterChart.isHidden = true
                     self.resultToDisplay.building_name = "Unvalid"
+                    self.resultToDisplay.level_name = ""
                     self.resultToDisplay.spot_name = "Unvalid"
                     self.resultToDisplay.structure_feature_id = 0
                     self.resultToDisplay.ccs = Double(statusCode)
