@@ -13,9 +13,9 @@ public class ServiceManager: Observation {
                 }
                 result.absolute_heading = result.absolute_heading - floor(result.absolute_heading/360)*360
                 
-                var beforeX = result.x
-                var beforeY = result.y
-                var beforeHeading = result.absolute_heading
+                let beforeX = result.x
+                let beforeY = result.y
+                let beforeHeading = result.absolute_heading
                 
                 // Map Matching
                 if (self.isMapMatching) {
@@ -110,6 +110,7 @@ public class ServiceManager: Observation {
                 self.lastTrackingTime = updatedResult.mobile_time
                 self.lastResult = updatedResult
             }
+            
             // For COEX B1
 //            if (result.building_name == "COEX" && result.level_name == "B1") {
 //
@@ -139,6 +140,7 @@ public class ServiceManager: Observation {
     var Road = [String: [[Double]]]()
     var RoadHeading = [String: [String]]()
     
+    
     // ----- Sensor & BLE ----- //
     var sensorData = SensorData()
     public var collectData = CollectData()
@@ -148,6 +150,7 @@ public class ServiceManager: Observation {
     var bleManager = BLECentralManager()
     // ------------------------ //
     
+    
     // ----- Spatial Force ----- //
     var magX: Double = 0
     var magY: Double = 0
@@ -156,7 +159,7 @@ public class ServiceManager: Observation {
     
     var SPATIAL_INPUT_NUM: Int = 7
     // --------------------- //
-    
+
     
     // ----- Mobile Force ----- //
     var mobilePastTime: Int = 0
@@ -295,7 +298,6 @@ public class ServiceManager: Observation {
     var matchingFailCount: Int = 0
     let MATCHING_FAIL_THRESHOLD: Int = 5
     
-    var isPastServerResult: Bool = false
     var muTime: Int = 0
     var muIndex: Int = 0
     var muX: Double = 0
@@ -310,6 +312,7 @@ public class ServiceManager: Observation {
     var errorLogs: String = ""
     let flagSaveError: Bool = true
     let flagSaveBle: Bool = true
+    let flagSaveUVD: Bool = true
     
     public override init() {
         deviceModel = UIDevice.modelName
@@ -885,7 +888,6 @@ public class ServiceManager: Observation {
                 }
             }
         } else {
-//            print("(Jupiter) RF is Empty")
             self.timeActiveRF += RF_INTERVAL
             if (self.timeActiveRF >= SLEEP_THRESHOLD_RF) {
                 self.isActiveRF = false
@@ -894,6 +896,7 @@ public class ServiceManager: Observation {
             
             self.timeSleepRF += RF_INTERVAL
             if (self.timeSleepRF >= SLEEP_THRESHOLD) {
+                print("(Jupiter) Enter Sleep Mode")
                 self.isActiveService = false
                 self.timeSleepRF = 0
             }
@@ -941,6 +944,15 @@ public class ServiceManager: Observation {
                 // Put UV
                 if ((inputUserVelocity.count-1) >= UV_INPUT_NUM) {
                     inputUserVelocity.remove(at: 0)
+                    
+                    let uvCheckTime = Double(currentTime)
+                    let localTime: String = getLocalTimeString()
+                    let log: String = localTime + "__(Jupiter) UVD Check__\(uvCheckTime)__\(inputUserVelocity)\n"
+                    if (flagSaveUVD) {
+                        self.errorLogs.append(log)
+                    } else {
+                       print(log)
+                    }
 
                     NetworkManager.shared.putUserVelocity(url: UV_URL, input: inputUserVelocity, completion: { [self] statusCode, returnedString in
                         if (statusCode == 200) {
@@ -1024,6 +1036,15 @@ public class ServiceManager: Observation {
                                             muX = result.x
                                             muY = result.y
                                             muHeading = result.absolute_heading
+                                            
+                                            let localTime: String = getLocalTimeString()
+                                            let log: String = localTime + "__(Jupiter) Kalman MU__\(self.nowTime)__\(result.mobile_time)__\(result.index)__\(result.x)__\(result.y)__\(result.absolute_heading)\n"
+                                            if (self.flagSaveBle) {
+                                                self.errorLogs.append(log)
+                                            } else {
+                                               print(log)
+                                            }
+                                            
                                             let muOutput = measurementUpdate(timeUpdatePosition: timeUpdatePosition, serverOutput: result)
                                             let muResult = fromServerToResult(fromServer: muOutput, velocity: displayOutput.velocity)
                                             
@@ -1038,7 +1059,6 @@ public class ServiceManager: Observation {
                                     self.tracking(input: finalResult, isPast: false)
                                 }
                                 preOutputMobileTime = result.mobile_time
-                                isPastServerResult = true
                             }
                             pastBuildingLevel = [displayOutput.building, displayOutput.level]
                         }
@@ -1068,9 +1088,8 @@ public class ServiceManager: Observation {
                             if (currentTime - result.mobile_time) < 1000*3600*12 {
                                 var updatedResult = result
                                 updatedResult.index = 0
-//                                updatedResult.absolute_heading = updatedResult.absolute_heading + 180
-//                                print("(Jupiter) Success : \(updatedResult)")
-                                self.tracking(input: result, isPast: false)
+                                updatedResult.phase = 0
+                                self.tracking(input: updatedResult, isPast: false)
                             }
                         } else {
                             let localTime: String = getLocalTimeString()
