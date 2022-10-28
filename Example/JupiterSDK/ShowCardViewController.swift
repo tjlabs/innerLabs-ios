@@ -58,7 +58,6 @@ class ShowCardViewController: UIViewController, AddCardDelegate {
         
         // Size 확인
         collectionViewSize = [showCardCollectionView.bounds.width, showCardCollectionView.bounds.height]
-        
 //        let sizes = checkImageSize(cards: cardShowImages, sectors: sectorShowImages)
 //        print("Show Card -> Size of CollectionView : \(collectionViewSize)")
 //        print("Show Card -> Size of Card : \(sizes.sizeCard)")
