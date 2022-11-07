@@ -126,12 +126,20 @@ public class DRDistanceEstimator: NSObject {
             
             updateOutputQueue(data: argMaxIndex)
             
-            var outputSum: Int = 0
+            var moveCount: Int = 0
+            var stopCount: Int = 0
             for i in 0..<mlpOutputQueue.count {
-                outputSum += mlpOutputQueue[i]
+                if (mlpOutputQueue[i] == 0) {
+                    stopCount += 1
+                } else {
+                    moveCount += mlpOutputQueue[i]
+                }
             }
             
-            let velocity: Double = Double(outputSum) * VELOCITY_SETTING * exp(-navGyroZSmoothing/1.5)
+            var velocity: Double = Double(moveCount)*VELOCITY_SETTING*exp(-navGyroZSmoothing/1.5) - Double(stopCount)*STOP_SETTING
+            if (velocity < 0) {
+                velocity = 0
+            }
             finalUnitResult.velocity = velocity
             distance += (velocity * OUTPUT_SAMPLE_TIME)
             

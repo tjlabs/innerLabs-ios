@@ -186,8 +186,8 @@ class MainViewController: UIViewController, UITextFieldDelegate {
                                 let resourceSector = ImageResource(downloadURL: urlSector!, cacheKey: "\(id)Main")
                                 let resourceSectorShow = ImageResource(downloadURL: urlSectorShow!, cacheKey: "\(id)Show")
                                 
-                                KingfisherManager.shared.retrieveImage(with: resourceSector, completionHandler: nil)
-                                KingfisherManager.shared.retrieveImage(with: resourceSectorShow, completionHandler: nil)
+//                                KingfisherManager.shared.retrieveImage(with: resourceSector, completionHandler: nil)
+//                                KingfisherManager.shared.retrieveImage(with: resourceSectorShow, completionHandler: nil)
                             }
                             
                             cardDatas.append(CardItemData(sector_id: id, sector_name: name, description: description, cardColor: cardColor, mode: mode, service: service, infoBuilding: infoBuilding, infoLevel: infoLevel))
