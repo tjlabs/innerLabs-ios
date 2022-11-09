@@ -311,9 +311,9 @@ public class ServiceManager: Observation {
     let fileManager = FileManager.default
     var textFile: URL?
     var errorLogs: String = ""
-    let flagSaveError: Bool = true
-    let flagSaveBle: Bool = true
-    let flagSaveUVD: Bool = true
+    let flagSaveError: Bool = false
+    let flagSaveBle: Bool = false
+    let flagSaveUVD: Bool = false
     
     public override init() {
         deviceModel = UIDevice.modelName
