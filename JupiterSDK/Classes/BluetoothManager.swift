@@ -74,6 +74,8 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
     var bleCheck = [String: [Double]]()
     var bleDiscoveredTime: Double = 0
     
+    public var BLE_VALID_TIME: Double = 1500
+    
     override init() {
         super.init()
         
@@ -256,10 +258,15 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
         }
     }
     
-    // MARK: - functions
+    func setValidTime(mode: String) {
+        if (mode == "dr") {
+            self.BLE_VALID_TIME = 1000
+        } else {
+            self.BLE_VALID_TIME = 1500
+        }
+    }
     
     func trimBleData() {
-        // 최근 1.5s 동안의 데이터만 list에 저장해둠
         let nowTime = getCurrentTimeInMilliseconds()
         
         let keys: [String] = Array(bleDictionary.keys.sorted())
@@ -272,7 +279,7 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
                 let rssi = bleData[i][0]
                 let time = bleData[i][1]
                 
-                if ((nowTime - time <= 1500) && (rssi >= -100)) {
+                if ((nowTime - time <= BLE_VALID_TIME) && (rssi >= -100)) {
                     let dataToAdd: [Double] = [rssi, time]
                     newValue.append(dataToAdd)
                 }

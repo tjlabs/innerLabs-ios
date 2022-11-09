@@ -107,7 +107,6 @@ public class DRDistanceEstimator: NSObject {
                                    Float(0.1*magNorm + 0.9*preMagNorm)]
         // ------ //
         finalUnitResult.isIndexChanged = false
-        
         if (mlpEpochCount == 0) {
             // Mag //
             var count = 0
@@ -128,11 +127,18 @@ public class DRDistanceEstimator: NSObject {
             
             var moveCount: Int = 0
             var stopCount: Int = 0
+            var currentStopCount: Int = 0
             for i in 0..<mlpOutputQueue.count {
                 if (mlpOutputQueue[i] == 0) {
                     stopCount += 1
                 } else {
                     moveCount += mlpOutputQueue[i]
+                }
+                
+                if (i > (mlpOutputQueue.count/2)) {
+                    if (mlpOutputQueue[i] == 0) {
+                        currentStopCount += 1
+                    }
                 }
             }
             
@@ -160,7 +166,7 @@ public class DRDistanceEstimator: NSObject {
         preInputMag = inputMag
         preMagNorm = magNorm
         
-        if (mlpEpochCount == OUTPUT_SAMPLE_EPOCH) {
+        if (mlpEpochCount >= OUTPUT_SAMPLE_EPOCH) {
             mlpEpochCount = 0
             output = [0, 0]
         }

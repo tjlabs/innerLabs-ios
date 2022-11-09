@@ -20,30 +20,29 @@ public class ServiceManager: Observation {
                 // Map Matching
                 if (self.isMapMatching) {
                     let correctResult = correct(building: result.building_name, level: result.level_name, x: result.x, y: result.y, heading: result.absolute_heading, mode: self.mode, isPast: isPast)
-                    
+
                     if (correctResult.isSuccess) {
                         result.x = correctResult.xyh[0]
                         result.y = correctResult.xyh[1]
                         result.absolute_heading = correctResult.xyh[2]
 
                         self.pastMatchingResult = result
-                        self.matchingFailCount = 0
                     } else {
-                        self.matchingFailCount += 1
                         result = self.pastMatchingResult
                     }
                 }
+                
                 // Averaging
-                if (!pastResult.isEmpty) {
-                    if (pastResult[2] >= 270 && pastResult[2] <= 360) && (result.absolute_heading >= 0 && result.absolute_heading <= 90) {
-                        result.absolute_heading = ((result.absolute_heading+360) + pastResult[2])/2
-                    } else if (pastResult[2] >= 0 && pastResult[2] <= 90) && (result.absolute_heading >= 270 && result.absolute_heading <= 360) {
-                        result.absolute_heading = (result.absolute_heading + (pastResult[2]+360))/2
-                    } else {
-                        result.absolute_heading = (result.absolute_heading + pastResult[2])/2
-                    }
-                    result.absolute_heading = result.absolute_heading - floor(result.absolute_heading/360)*360
-                }
+//                if (!pastResult.isEmpty) {
+//                    if (pastResult[2] >= 270 && pastResult[2] <= 360) && (result.absolute_heading >= 0 && result.absolute_heading <= 90) {
+//                        result.absolute_heading = ((result.absolute_heading+360) + pastResult[2])/2
+//                    } else if (pastResult[2] >= 0 && pastResult[2] <= 90) && (result.absolute_heading >= 270 && result.absolute_heading <= 360) {
+//                        result.absolute_heading = (result.absolute_heading + (pastResult[2]+360))/2
+//                    } else {
+//                        result.absolute_heading = (result.absolute_heading + pastResult[2])/2
+//                    }
+//                    result.absolute_heading = result.absolute_heading - floor(result.absolute_heading/360)*360
+//                }
                 
                 displayOutput.heading = result.absolute_heading
 
@@ -84,13 +83,12 @@ public class ServiceManager: Observation {
                     print("(Jupiter) Error : Fail to save last result")
                 }
                 
-                let localTime: String = getLocalTimeString()
-                let log: String = localTime + "__(Jupiter) Result Check__\(updatedResult.mobile_time)__\(updatedResult.building_name)__\(updatedResult.level_name)__\(updatedResult.scc)__\(updatedResult.x)__\(updatedResult.y)__\(updatedResult.absolute_heading)__\(updatedResult.phase)__\(updatedResult.calculated_time)__\(updatedResult.index)__\(updatedResult.velocity)__\(beforeX)__\(beforeY)__\(beforeHeading)__\(self.muTime)__\(self.muIndex)__\(self.muX)__\(self.muY)__\(self.muHeading)\n"
                 if (self.flagSaveBle) {
+                    let localTime: String = getLocalTimeString()
+                    let log: String = localTime + "__(Jupiter) Result Check__\(updatedResult.mobile_time)__\(updatedResult.building_name)__\(updatedResult.level_name)__\(updatedResult.scc)__\(updatedResult.x)__\(updatedResult.y)__\(updatedResult.absolute_heading)__\(updatedResult.phase)__\(updatedResult.calculated_time)__\(updatedResult.index)__\(updatedResult.velocity)__\(beforeX)__\(beforeY)__\(beforeHeading)__\(self.muTime)__\(self.muIndex)__\(self.muX)__\(self.muY)__\(self.muHeading)\n"
                     self.errorLogs.append(log)
-                } else {
-                   print(log)
                 }
+                
                 observer.update(result: updatedResult)
             } else {
                 var updatedResult = FineLocationTrackingResult()
@@ -203,7 +201,7 @@ public class ServiceManager: Observation {
     var requestTimer: Timer?
     var RQ_INTERVAL: TimeInterval = 1/40 // second
     
-    let SENSOR_INTERVAL: TimeInterval = 1/200
+    let SENSOR_INTERVAL: TimeInterval = 1/100
     
     var collectTimer: Timer?
     
@@ -237,7 +235,8 @@ public class ServiceManager: Observation {
     public var displayOutput = ServiceResult()
     
     var nowTime: Int = 0
-    let RECENT_THRESHOLD: Int = 2200
+    var RECENT_THRESHOLD: Int = 2200
+    var INDEX_THRESHOLD: Int = 6
     // --------------------------------- //
     
     
@@ -254,13 +253,13 @@ public class ServiceManager: Observation {
 
     var kalmanP: Double = 1
     var kalmanQ: Double = 0.3
-    var kalmanR: Double = 3
+    var kalmanR: Double = 10 // Default : 3
     var kalmanK: Double = 1
 
     var updateHeading: Double = 0
     var headingKalmanP: Double = 0.5
     var headingKalmanQ: Double = 0.5
-    var headingKalmanR: Double = 1
+    var headingKalmanR: Double = 1 // Default : 1
     var headingKalmanK: Double = 1
 
     var timeUpdatePosition = KalmanOutput()
@@ -284,19 +283,17 @@ public class ServiceManager: Observation {
     var timeActiveUV: Double = 0
     var timeSleepRF: Double = 0
     var timeSleepUV: Double = 0
-    var timeInitUV: Double = 0
     var timeUpdateInSleep: Double = 0
     let STOP_THRESHOLD: Double = 1 // 0.5 sec
     let SLEEP_THRESHOLD: Double = 600 // 10분
     let SLEEP_THRESHOLD_RF: Double = 5 // 5s
-    let INIT_THRESHOLD: Double = 10 // 10s
     
     var lastTrackingTime: Int = 0
     var lastResult = FineLocationTrackingResult()
     let SQUARE_RANGE: Double = 10
+    let HEADING_RANGE: Double = 40
     var pastMatchingResult = FineLocationTrackingResult()
     var matchingFailCount: Int = 0
-    let MATCHING_FAIL_THRESHOLD: Int = 5
     
     var muTime: Int = 0
     var muIndex: Int = 0
@@ -304,7 +301,11 @@ public class ServiceManager: Observation {
     var muY: Double = 0
     var muHeading: Double = 0
     
-    let COORD_THRESHOLD: Double = 20
+    var currentTuResult = FineLocationTrackingResult()
+    var pastTuResult = FineLocationTrackingResult()
+    
+    public var serverResult: [Double] = [0, 0, 0]
+    public var timeUpdateResult: [Double] = [0, 0, 0]
 
     // File for write Errors
     let fileManager = FileManager.default
@@ -339,7 +340,7 @@ public class ServiceManager: Observation {
                 VAR_INPUT_NUM = 5
             } else if (mode == "dr") {
                 INIT_INPUT_NUM = 5
-                VAR_INPUT_NUM = 5
+                VAR_INPUT_NUM = 15
             }
             UV_INPUT_NUM = INIT_INPUT_NUM
             
@@ -347,7 +348,7 @@ public class ServiceManager: Observation {
         }
         
         // File
-        if (flagSaveError) {
+        if (self.flagSaveError) {
             print("(Jupiter) Process : Creating error log file")
             let documentsURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask)[0]
             let fileURL = documentsURL.appendingPathComponent("Jupiter")
@@ -390,7 +391,8 @@ public class ServiceManager: Observation {
         default:
             let localTime: String = getLocalTimeString()
             let log: String = localTime + " , (Jupiter) Error : Fail to initialize the service\n"
-            if (flagSaveError) {
+            
+            if (self.flagSaveError) {
                 self.errorLogs.append(log)
             } else {
                print(log)
@@ -405,7 +407,7 @@ public class ServiceManager: Observation {
         if (self.user_id.isEmpty || self.user_id.contains(" ")) {
             let localTime: String = getLocalTimeString()
             let log: String = localTime + " , (Jupiter) Error : User ID cannot be empty or contain space\n"
-            if (flagSaveError) {
+            if (self.flagSaveError) {
                 self.errorLogs.append(log)
             } else {
                print(log)
@@ -418,7 +420,7 @@ public class ServiceManager: Observation {
                 } else {
                     let localTime: String = getLocalTimeString()
                     let log: String = localTime + " , (Jupiter) Error : Load OS Type Error\n"
-                    if (flagSaveError) {
+                    if (self.flagSaveError) {
                         self.errorLogs.append(log)
                     } else {
                        print(log)
@@ -603,7 +605,7 @@ public class ServiceManager: Observation {
         } else {
             let localTime: String = getLocalTimeString()
             let log: String = localTime + " , (Jupiter) Error : Fail to initialize accelerometer\n"
-            if (flagSaveError) {
+            if (self.flagSaveError) {
                 self.errorLogs.append(log)
             } else {
                print(log)
@@ -628,7 +630,7 @@ public class ServiceManager: Observation {
         } else {
             let localTime: String = getLocalTimeString()
             let log: String = localTime + " , (Jupiter) Error : Fail to initialize gyroscope\n"
-            if (flagSaveError) {
+            if (self.flagSaveError) {
                 self.errorLogs.append(log)
             } else {
                print(log)
@@ -658,7 +660,7 @@ public class ServiceManager: Observation {
         } else {
             let localTime: String = getLocalTimeString()
             let log: String = localTime + " , (Jupiter) Error : Fail to initialize magnetometer\n"
-            if (flagSaveError) {
+            if (self.flagSaveError) {
                 self.errorLogs.append(log)
             } else {
                print(log)
@@ -678,7 +680,7 @@ public class ServiceManager: Observation {
         } else {
             let localTime: String = getLocalTimeString()
             let log: String = localTime + " , (Jupiter) Error : Fail to initialize pressure sensor\n"
-            if (flagSaveError) {
+            if (self.flagSaveError) {
                 self.errorLogs.append(log)
             } else {
                print(log)
@@ -760,7 +762,7 @@ public class ServiceManager: Observation {
         } else {
             let localTime: String = getLocalTimeString()
             let log: String = localTime + " , (Jupiter) Error : Fail to initialize motion sensor\n"
-            if (flagSaveError) {
+            if (self.flagSaveError) {
                 self.errorLogs.append(log)
             } else {
                print(log)
@@ -770,7 +772,7 @@ public class ServiceManager: Observation {
         if (sensorActive >= 5) {
             let localTime: String = getLocalTimeString()
             let log: String = localTime + " , (Jupiter) Success : initialize sensors\n"
-            if (flagSaveError) {
+            if (self.flagSaveError) {
                 self.errorLogs.append(log)
             } else {
                print(log)
@@ -779,6 +781,7 @@ public class ServiceManager: Observation {
     }
     
     func startBLE() {
+        bleManager.setValidTime(mode: self.mode)
         bleManager.startScan(option: .Foreground)
     }
 
@@ -842,30 +845,30 @@ public class ServiceManager: Observation {
     }
     
     @objc func receivedForceTimerUpdate() {
-        let currentTime = getCurrentTimeInMilliseconds()
-        
+        let currentTime = getCurrentTimeInMilliseconds() - (Int(bleManager.BLE_VALID_TIME)/2)
         bleManager.trimBleData()
         
         var bleDictionary = bleManager.bleAvg
         if (deviceModel == "iPhone 13 Mini" || deviceModel == "iPhone 12 Mini" || deviceModel == "iPhone X") {
             bleDictionary.keys.forEach { bleDictionary[$0] = bleDictionary[$0]! + 7 }
         }
-    
+        
         let bleCheckTime = Double(currentTime)
         let discoveredTime = bleManager.bleDiscoveredTime
         let diffBleTime = (bleCheckTime - discoveredTime)*1e-3
-        let localTime: String = getLocalTimeString()
-        let log: String = localTime + "__(Jupiter) BLE Check__\(diffBleTime)__\(bleCheckTime)__\(discoveredTime)__\(bleManager.bleCheck)\n"
-        if (flagSaveBle) {
-            self.errorLogs.append(log)
-        } else {
-           print(log)
-        }
         
+        if (self.flagSaveBle) {
+            let localTime: String = getLocalTimeString()
+            let log: String = localTime + "__(Jupiter) BLE Check__\(diffBleTime)__\(bleCheckTime)__\(discoveredTime)__\(bleManager.bleCheck)\n"
+            self.errorLogs.append(log)
+        }
+
         if (!bleDictionary.isEmpty) {
             self.timeActiveRF = 0
-            self.isActiveService = true
+            self.timeSleepRF = 0
+            
             self.isActiveRF = true
+            self.isActiveService = true
             
             if (self.isActiveService) {
                 let data = ReceivedForce(user_id: self.user_id, mobile_time: currentTime, ble: bleDictionary, pressure: self.pressure)
@@ -875,12 +878,10 @@ public class ServiceManager: Observation {
                     inputReceivedForce.remove(at: 0)
                     NetworkManager.shared.putReceivedForce(url: RF_URL, input: inputReceivedForce, completion: { [self] statusCode, returnedStrig in
                         if (statusCode != 200) {
-                            let localTime: String = getLocalTimeString()
-                            let log: String = localTime + " , (Jupiter) Error : Fail to send BLE\n"
-                            if (flagSaveError) {
+                            if (self.flagSaveError) {
+                                let localTime: String = getLocalTimeString()
+                                let log: String = localTime + " , (Jupiter) Error : Fail to send BLE\n"
                                 self.errorLogs.append(log)
-                            } else {
-                               print(log)
                             }
                         }
                     })
@@ -911,10 +912,15 @@ public class ServiceManager: Observation {
         }
         
         if (unitDRInfo.isIndexChanged) {
+            let localTime: String = getLocalTimeString()
+            let log: String = localTime + "(Jupiter) UVD indexChanged !!\n"
+            print(log)
+            
             self.timeActiveUV = 0
-            self.timeInitUV = 0
-            self.isActiveService = true
+            self.timeSleepUV = 0
+            
             self.isStop = false
+            self.isActiveService = true
             
             displayOutput.isIndexChanged = unitDRInfo.isIndexChanged
             displayOutput.indexTx = unitDRInfo.index
@@ -922,12 +928,12 @@ public class ServiceManager: Observation {
             displayOutput.velocity = unitDRInfo.velocity * 3.6
             
             let data = UserVelocity(user_id: self.user_id, mobile_time: currentTime, index: unitDRInfo.index, length: unitDRInfo.length, heading: unitDRInfo.heading, looking: unitDRInfo.lookingFlag)
+            timeUpdateOutput.index = unitDRInfo.index
             
             // Kalman Filter
             let diffHeading = unitDRInfo.heading - preUnitHeading
             let curUnitDRLength = unitDRInfo.length
             
-            // Original : self.isActiveService && self.isActiveRF
             if (self.isActiveService) {
                 inputUserVelocity.append(data)
                 
@@ -935,6 +941,12 @@ public class ServiceManager: Observation {
                 if (timeUpdateFlag) {
                     let tuOutput = timeUpdate(length: curUnitDRLength, diffHeading: diffHeading, mobileTime: currentTime)
                     let tuResult = fromServerToResult(fromServer: tuOutput, velocity: displayOutput.velocity)
+                    
+                    self.timeUpdateResult[0] = tuResult.x
+                    self.timeUpdateResult[1] = tuResult.y
+                    self.timeUpdateResult[2] = tuResult.absolute_heading
+                    
+                    self.currentTuResult = tuResult
                     if (bleManager.bluetoothReady) {
                         self.tracking(input: tuResult, isPast: false)
                     }
@@ -945,30 +957,26 @@ public class ServiceManager: Observation {
                 if ((inputUserVelocity.count-1) >= UV_INPUT_NUM) {
                     inputUserVelocity.remove(at: 0)
                     
-                    let uvCheckTime = Double(currentTime)
-                    let localTime: String = getLocalTimeString()
-                    let log: String = localTime + "__(Jupiter) UVD Check__\(uvCheckTime)__\(inputUserVelocity)\n"
-                    if (flagSaveUVD) {
+                    if (self.flagSaveUVD) {
+                        let uvCheckTime = Double(currentTime)
+                        let localTime: String = getLocalTimeString()
+                        let log: String = localTime + "__(Jupiter) UVD Check__\(uvCheckTime)__\(inputUserVelocity)\n"
                         self.errorLogs.append(log)
-                    } else {
-                       print(log)
                     }
-
+                    
                     NetworkManager.shared.putUserVelocity(url: UV_URL, input: inputUserVelocity, completion: { [self] statusCode, returnedString in
                         if (statusCode == 200) {
                             floorUpdateRequestFlag = true
                             floorUpdateRequestTimeStack = 0
                             
+                            self.pastTuResult = self.currentTuResult
                             indexSend = Int(returnedString) ?? 0
                             isAnswered = true
                         } else {
-                            let localTime: String = getLocalTimeString()
-                            let log: String = localTime + " , (Jupiter) Error : Fail to send sensor measurements\n"
-                            if (flagSaveError) {
+                            if (self.flagSaveError) {
+                                let localTime: String = getLocalTimeString()
+                                let log: String = localTime + " , (Jupiter) Error : Fail to send sensor measurements\n"
                                 self.errorLogs.append(log)
-                                print(self.errorLogs)
-                            } else {
-                               print(log)
                             }
                         }
                     })
@@ -982,12 +990,6 @@ public class ServiceManager: Observation {
                 self.isStop = true
                 self.timeActiveUV = 0
                 displayOutput.velocity = 0
-            }
-            
-            self.timeInitUV += UV_INTERVAL
-            if (self.timeInitUV >= INIT_THRESHOLD) {
-                self.phase = 1
-                self.timeInitUV = 0
             }
             
             self.timeSleepUV += UV_INTERVAL
@@ -1014,11 +1016,18 @@ public class ServiceManager: Observation {
                     
                     if ((self.nowTime - result.mobile_time) <= RECENT_THRESHOLD) {
                         self.phase = result.phase
+                        if (self.phase == 4) {
+                            UV_INPUT_NUM = VAR_INPUT_NUM
+                            INDEX_THRESHOLD = 16
+                        } else {
+                            UV_INPUT_NUM = INIT_INPUT_NUM
+                            INDEX_THRESHOLD = 6
+                        }
 
                         displayOutput.building = result.building_name
                         displayOutput.level = result.level_name
-                        
-                        if ((result.index - indexPast) < 6) {
+
+                        if ((result.index - indexPast) < INDEX_THRESHOLD) {
                             displayOutput.scc = result.scc
                             displayOutput.phase = String(result.phase)
                             displayOutput.indexRx = result.index
@@ -1026,7 +1035,6 @@ public class ServiceManager: Observation {
                             // Kalman Filter
                             if (result.mobile_time > preOutputMobileTime) {
                                 if (result.phase == 4) {
-                                    UV_INPUT_NUM = VAR_INPUT_NUM
                                     if (!(result.x == 0 && result.y == 0)) {
                                         // Measurment Update
                                         let diffIndex = abs(indexSend - result.index)
@@ -1036,28 +1044,53 @@ public class ServiceManager: Observation {
                                             muX = result.x
                                             muY = result.y
                                             muHeading = result.absolute_heading
-                                            
-                                            let localTime: String = getLocalTimeString()
-                                            let log: String = localTime + "__(Jupiter) Kalman MU__\(self.nowTime)__\(result.mobile_time)__\(result.index)__\(result.x)__\(result.y)__\(result.absolute_heading)\n"
+
                                             if (self.flagSaveBle) {
+                                                let localTime: String = getLocalTimeString()
+                                                let log: String = localTime + "__(Jupiter) Kalman MU__\(self.nowTime)__\(result.mobile_time)__\(result.index)__\(result.x)__\(result.y)__\(result.absolute_heading)\n"
                                                 self.errorLogs.append(log)
-                                            } else {
-                                               print(log)
                                             }
-                                            
-                                            let muOutput = measurementUpdate(timeUpdatePosition: timeUpdatePosition, serverOutput: result)
+
+                                            // Measurement Update 하기전에 현재 Time Update 위치를 고려
+                                            var resultForMu = result
+                                            self.serverResult[0] = resultForMu.x
+                                            self.serverResult[1] = resultForMu.y
+                                            self.serverResult[2] = resultForMu.absolute_heading
+                                            if (self.currentTuResult.mobile_time != 0 && self.pastTuResult.mobile_time != 0) {
+                                                let dx = self.currentTuResult.x - self.pastTuResult.x
+                                                let dy = self.currentTuResult.y - self.pastTuResult.y
+                                                if (self.currentTuResult.absolute_heading < 0) {
+                                                    self.currentTuResult.absolute_heading = self.currentTuResult.absolute_heading + 360
+                                                }
+                                                self.currentTuResult.absolute_heading = self.currentTuResult.absolute_heading - floor(self.currentTuResult.absolute_heading/360)*360
+
+                                                if (self.pastTuResult.absolute_heading < 0) {
+                                                    self.pastTuResult.absolute_heading = self.pastTuResult.absolute_heading + 360
+                                                }
+                                                self.pastTuResult.absolute_heading = self.pastTuResult.absolute_heading - floor(self.pastTuResult.absolute_heading/360)*360
+
+                                                let dh = self.currentTuResult.absolute_heading - self.pastTuResult.absolute_heading
+
+//                                                print("(Jupiter) Server : \(self.currentTuResult.x - resultForMu.x) , \(self.currentTuResult.y - resultForMu.y), \(currentTuResult.index) , \(resultForMu.index)")
+//                                                print("(Jupiter) Basic : \(dx) , \(dy), \(currentTuResult.index), \(pastTuResult.index)")
+
+                                                resultForMu.x = resultForMu.x + dx
+                                                resultForMu.y = resultForMu.y + dy
+                                                resultForMu.absolute_heading = resultForMu.absolute_heading + dh
+                                            }
+                                            let muOutput = measurementUpdate(timeUpdatePosition: timeUpdatePosition, serverOutput: resultForMu)
                                             let muResult = fromServerToResult(fromServer: muOutput, velocity: displayOutput.velocity)
-                                            
+
                                             self.tracking(input: muResult, isPast: false)
                                         }
                                         timeUpdatePositionInit(serverOutput: result)
                                     }
                                 } else {
-                                    UV_INPUT_NUM = INIT_INPUT_NUM
                                     kalmanInit()
                                     let finalResult = fromServerToResult(fromServer: result, velocity: displayOutput.velocity)
                                     self.tracking(input: finalResult, isPast: false)
                                 }
+
                                 preOutputMobileTime = result.mobile_time
                             }
                             pastBuildingLevel = [displayOutput.building, displayOutput.level]
@@ -1072,17 +1105,15 @@ public class ServiceManager: Observation {
                 if (self.lastTrackingTime != 0 && self.isActiveRF) {
                     self.tracking(input: self.lastResult, isPast: true)
                     
-                    let localTime: String = getLocalTimeString()
-                    let log: String = localTime + " , (Jupiter) Warnings : Past Result , Stop = \(self.isStop)\n"
                     if (flagSaveError) {
+                        let localTime: String = getLocalTimeString()
+                        let log: String = localTime + " , (Jupiter) Warnings : Past Result , Stop = \(self.isStop)\n"
                         self.errorLogs.append(log)
-                        print(self.errorLogs)
                     }
                 } else {
                     if (isFirstStart) {
                         let key: String = "JupiterLastResult_\(self.sector_id)"
                         if let lastKnownResult: String = UserDefaults.standard.object(forKey: key) as? String {
-//                            print("(Jupiter) Success : Load Last Known Result")
                             let currentTime = getCurrentTimeInMilliseconds()
                             let result = jsonForTracking(json: lastKnownResult)
                             if (currentTime - result.mobile_time) < 1000*3600*12 {
@@ -1092,12 +1123,10 @@ public class ServiceManager: Observation {
                                 self.tracking(input: updatedResult, isPast: false)
                             }
                         } else {
-                            let localTime: String = getLocalTimeString()
-                            let log: String = localTime + " , (Jupiter) Warnings : Empty Last Result\n"
-                            if (flagSaveError) {
+                            if (self.flagSaveError) {
+                                let localTime: String = getLocalTimeString()
+                                let log: String = localTime + " , (Jupiter) Warnings : Empty Last Result\n"
                                 self.errorLogs.append(log)
-                            } else {
-                               print(log)
                             }
                         }
                         isFirstStart = false
@@ -1288,11 +1317,11 @@ public class ServiceManager: Observation {
                                     let minHeading = Double(headingData[idxHeading!])!
                                     idh[2] = minHeading
                                     if (heading > 315 && minHeading == 0) {
-                                        if (abs(heading-360) >= 60) {
+                                        if (abs(heading-360) >= HEADING_RANGE) {
                                             isValidIdh = false
                                         }
                                     } else {
-                                        if (abs(heading-minHeading) >= 60) {
+                                        if (abs(heading-minHeading) >= HEADING_RANGE) {
                                             isValidIdh = false
                                         }
                                     }
@@ -1471,7 +1500,6 @@ public class ServiceManager: Observation {
         measurementOutput.y = measurementPosition.y
         kalmanP -= kalmanK * kalmanP
         headingKalmanP -= headingKalmanK * headingKalmanP
-//        print("(Heading) MU : \(timeUpdatePosition.heading) , \(measurementOutput.absolute_heading), \(timeUpdatePosition.heading - measurementOutput.absolute_heading)")
 
         return measurementOutput
     }
