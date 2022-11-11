@@ -15,6 +15,12 @@ public class UnitDRGenerator: NSObject {
     public let pdrDistanceEstimator = PDRDistanceEstimator()
     public let drDistanceEstimator = DRDistanceEstimator()
     
+    var pdrQueue = LinkedList<DistanceInfo>()
+    var drQueue = LinkedList<DistanceInfo>()
+    
+    var preRoll: Double = 0
+    var prePitch: Double = 0
+    
     public func setMode(mode: String) {
         unitMode = mode
     }
@@ -32,14 +38,25 @@ public class UnitDRGenerator: NSObject {
         var unitDistanceDr = UnitDistance()
         var unitDistancePdr = UnitDistance()
         
-        var unitDistanceDrPast = UnitDistance()
-        var unitDistancePdrPast = UnitDistance()
         
         switch (unitMode) {
         case MODE_PDR:
             unitDistancePdr = pdrDistanceEstimator.estimateDistanceInfo(time: currentTime, sensorData: sensorData)
             
-            let sensorAtt = sensorData.att
+            var sensorAtt = sensorData.att
+            
+            if (sensorAtt[0].isNaN) {
+                sensorAtt[0] = preRoll
+            } else {
+                preRoll = sensorAtt[0]
+            }
+
+            if (sensorAtt[1].isNaN) {
+                sensorAtt[1] = prePitch
+            } else {
+                prePitch = sensorAtt[1]
+            }
+            
             curAttitudePdr = Attitude(Roll: sensorAtt[0], Pitch: sensorAtt[1], Yaw: sensorAtt[2])
             
             let unitStatus = unitStatusEstimator.estimateStatus(Attitude: curAttitudePdr, isIndexChanged: unitDistancePdr.isIndexChanged, unitMode: unitMode)
@@ -62,6 +79,11 @@ public class UnitDRGenerator: NSObject {
             unitDistanceDr = drDistanceEstimator.estimateDistanceInfo(time: currentTime, sensorData: sensorData)
             unitDistancePdr = pdrDistanceEstimator.estimateDistanceInfo(time: currentTime, sensorData: sensorData)
             
+            updateDrQueue(data: DistanceInfo(index: unitDistanceDr.index, length: unitDistanceDr.length, time: currentTime, isIndexChanged: unitDistanceDr.isIndexChanged))
+            updatePdrQueue(data: DistanceInfo(index: unitDistancePdr.index, length: unitDistancePdr.length, time: currentTime, isIndexChanged: unitDistancePdr.isIndexChanged))
+            
+            checkModeChange()
+            
             let sensorAtt = sensorData.att
             curAttitudePdr = Attitude(Roll: sensorAtt[0], Pitch: sensorAtt[1], Yaw: sensorAtt[2])
             curAttitudeDr = unitAttitudeEstimator.estimateAtt(time: currentTime, acc: sensorData.acc, gyro: sensorData.gyro, rotMatrix: sensorData.rotationMatrix)
@@ -83,6 +105,30 @@ public class UnitDRGenerator: NSObject {
             return UnitDRInfo(index: unitDistanceDr.index, length: unitDistanceDr.length, heading: heading, velocity: unitDistanceDr.velocity, lookingFlag: unitStatus, isIndexChanged: unitDistanceDr.isIndexChanged)
         }
     }
+    
+    func checkModeChange() {
+        // PDR 스텝이 연속적으로 발생하면
+        
+        // PDR 스텝이 아주 가끔
+        
+//        print("(Jupiter) DR Queue: \(drQueue)")
+//        print("(Jupiter) PDR Queue: \(pdrQueue)")
+    }
+    
+    public func updateDrQueue(data: DistanceInfo) {
+        if (drQueue.count >= Int(VELOCITY_QUEUE_SIZE)) {
+            drQueue.pop()
+        }
+        drQueue.append(data)
+    }
+    
+    public func updatePdrQueue(data: DistanceInfo) {
+        if (pdrQueue.count >= Int(VELOCITY_QUEUE_SIZE)) {
+            pdrQueue.pop()
+        }
+        pdrQueue.append(data)
+    }
+    
     
     func getCurrentTimeInMilliseconds() -> Double
     {

@@ -7,6 +7,7 @@ public class DRDistanceEstimator: NSObject {
     }
     
     public let CF = CalculateFunctions()
+    public let HF = HeadingFunctions()
     public let PDF = PacingDetectFunctions()
     
     public var epoch = 0
@@ -32,6 +33,9 @@ public class DRDistanceEstimator: NSObject {
     var preInputMag: [Float32] = [0, 0, 0]
     var preMagNorm: Double = 0
     
+    var preRoll: Double = 0
+    var prePitch: Double = 0
+    
     public func argmax(array: [Float]) -> Int {
         let output1 = array[0]
         let output2 = array[1]
@@ -52,9 +56,24 @@ public class DRDistanceEstimator: NSObject {
         let gyro = sensorData.gyro
         let mag = sensorData.mag
         
-        let att = Attitude(Roll: sensorData.att[0], Pitch: sensorData.att[1], Yaw: sensorData.att[2])
+        var accRoll = HF.callRollUsingAcc(acc: acc)
+        var accPitch = HF.callPitchUsingAcc(acc: acc)
+
+        if (accRoll.isNaN) {
+            accRoll = preRoll
+        } else {
+            preRoll = accRoll
+        }
+
+        if (accPitch.isNaN) {
+            accPitch = prePitch
+        } else {
+            prePitch = accPitch
+        }
         
-        let gyroNavZ = abs(CF.transBody2Nav(att: att, data: gyro)[2])
+        let accAttitude = Attitude(Roll: accRoll, Pitch: accPitch, Yaw: 0)
+        
+        let gyroNavZ = abs(CF.transBody2Nav(att: accAttitude, data: gyro)[2])
         
         let accNorm = CF.l2Normalize(originalVector: sensorData.acc)
         let magNorm = CF.l2Normalize(originalVector: sensorData.mag)
@@ -112,8 +131,8 @@ public class DRDistanceEstimator: NSObject {
             var count = 0
             var output = 0
             for i in 0..<inputMag.count {
-                
-                if (inputMag[i] > 0.7) {
+                // Default : 0.7
+                if (inputMag[i] > 1.0) {
                     count += 1
                 }
             }
@@ -132,7 +151,7 @@ public class DRDistanceEstimator: NSObject {
                 if (mlpOutputQueue[i] == 0) {
                     stopCount += 1
                 } else {
-                    moveCount += mlpOutputQueue[i]
+                    moveCount += 1
                 }
                 
                 if (i > (mlpOutputQueue.count/2)) {
@@ -142,7 +161,7 @@ public class DRDistanceEstimator: NSObject {
                 }
             }
             
-            var velocity: Double = Double(moveCount)*VELOCITY_SETTING*exp(-navGyroZSmoothing/1.5) - Double(stopCount)*STOP_SETTING
+            var velocity: Double = Double(moveCount)*VELOCITY_SETTING*exp(-navGyroZSmoothing/1.7) - Double(stopCount)*STOP_SETTING
             if (velocity < 0) {
                 velocity = 0
             }
@@ -208,5 +227,15 @@ public class DRDistanceEstimator: NSObject {
             mlpOutputQueue.remove(at: 0)
         }
         mlpOutputQueue.append(data)
+    }
+    
+    func getLocalTimeString() -> String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd-HH-mm-ss"
+        dateFormatter.locale = Locale(identifier:"ko_KR")
+        let nowDate = Date()
+        let convertNowStr = dateFormatter.string(from: nowDate)
+        
+        return convertNowStr
     }
 }

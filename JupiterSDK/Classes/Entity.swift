@@ -62,6 +62,13 @@ public struct SensorAxisValue: Equatable {
     public var norm: Double = 0
 }
 
+public struct DistanceInfo: Equatable {
+    public var index: Int = 0
+    public var length: Double = 0
+    public var time: Double = 0
+    public var isIndexChanged: Bool = true
+}
+
 public struct KalmanOutput: Equatable {
     public var x: Double = 0
     public var y: Double = 0

@@ -253,13 +253,13 @@ public class ServiceManager: Observation {
 
     var kalmanP: Double = 1
     var kalmanQ: Double = 0.3
-    var kalmanR: Double = 10 // Default : 3
+    var kalmanR: Double = 6
     var kalmanK: Double = 1
 
     var updateHeading: Double = 0
     var headingKalmanP: Double = 0.5
     var headingKalmanQ: Double = 0.5
-    var headingKalmanR: Double = 1 // Default : 1
+    var headingKalmanR: Double = 1
     var headingKalmanK: Double = 1
 
     var timeUpdatePosition = KalmanOutput()
@@ -290,8 +290,8 @@ public class ServiceManager: Observation {
     
     var lastTrackingTime: Int = 0
     var lastResult = FineLocationTrackingResult()
-    let SQUARE_RANGE: Double = 10
-    let HEADING_RANGE: Double = 40
+    let SQUARE_RANGE: Double = 15
+    let HEADING_RANGE: Double = 60
     var pastMatchingResult = FineLocationTrackingResult()
     var matchingFailCount: Int = 0
     
@@ -311,9 +311,9 @@ public class ServiceManager: Observation {
     let fileManager = FileManager.default
     var textFile: URL?
     var errorLogs: String = ""
-    let flagSaveError: Bool = false
-    let flagSaveBle: Bool = false
-    let flagSaveUVD: Bool = false
+    let flagSaveError: Bool = true
+    let flagSaveBle: Bool = true
+    let flagSaveUVD: Bool = true
     
     public override init() {
         deviceModel = UIDevice.modelName
@@ -334,6 +334,7 @@ public class ServiceManager: Observation {
         if (self.service == "FLT") {
             unitDRInfo = UnitDRInfo()
             unitDRGenerator.setMode(mode: mode)
+//            unitDRGenerator.setMode(mode: "auto")
             
             if (mode == "pdr") {
                 INIT_INPUT_NUM = 2
@@ -625,7 +626,6 @@ public class ServiceManager: Observation {
                 if let gyroZ = data?.rotationRate.z {
                     self.gyroRawZ = gyroZ
                 }
-//                print("Raw : \(sensorData.gyro[0]), \(sensorData.gyro[1]), \(sensorData.gyro[2])")
             }
         } else {
             let localTime: String = getLocalTimeString()
@@ -692,9 +692,9 @@ public class ServiceManager: Observation {
             motionManager.deviceMotionUpdateInterval = SENSOR_INTERVAL
             motionManager.startDeviceMotionUpdates(to: .main) { [self] (motion, error) in
                 if let m = motion {
-                    self.userAccX = m.userAcceleration.x
-                    self.userAccY = m.userAcceleration.y
-                    self.userAccZ = m.userAcceleration.z
+                    self.userAccX = -m.userAcceleration.x
+                    self.userAccY = -m.userAcceleration.y
+                    self.userAccZ = -m.userAcceleration.z
                     
                     self.gravX = m.gravity.x
                     self.gravY = m.gravity.y
@@ -712,13 +712,13 @@ public class ServiceManager: Observation {
                     collectData.gyro[1] = m.rotationRate.y
                     collectData.gyro[2] = m.rotationRate.z
                     
-                    sensorData.userAcc[0] = m.userAcceleration.x
-                    sensorData.userAcc[1] = m.userAcceleration.y
-                    sensorData.userAcc[2] = m.userAcceleration.z
+                    sensorData.userAcc[0] = -m.userAcceleration.x*G
+                    sensorData.userAcc[1] = -m.userAcceleration.y*G
+                    sensorData.userAcc[2] = -m.userAcceleration.z*G
                     
-                    collectData.userAcc[0] = m.userAcceleration.x
-                    collectData.userAcc[1] = m.userAcceleration.y
-                    collectData.userAcc[2] = m.userAcceleration.z
+                    collectData.userAcc[0] = -m.userAcceleration.x*G
+                    collectData.userAcc[1] = -m.userAcceleration.y*G
+                    collectData.userAcc[2] = -m.userAcceleration.z*G
                     
                     sensorData.att[0] = m.attitude.roll
                     sensorData.att[1] = m.attitude.pitch
@@ -756,7 +756,6 @@ public class ServiceManager: Observation {
                     collectData.quaternion[1] = m.attitude.quaternion.y
                     collectData.quaternion[2] = m.attitude.quaternion.z
                     collectData.quaternion[3] = m.attitude.quaternion.w
-                    
                 }
             }
         } else {
@@ -909,12 +908,23 @@ public class ServiceManager: Observation {
         
         if (onStartFlag) {
             unitDRInfo = unitDRGenerator.generateDRInfo(sensorData: sensorData)
+            if (self.flagSaveUVD) {
+                let uvCheckTime = Double(currentTime)
+                let localTime: String = getLocalTimeString()
+                let log: String = localTime + "__(Jupiter) generateDRInfo sensor__\(uvCheckTime)__\(sensorData)\n"
+                let log2: String = localTime + "__(Jupiter) generateDRInfo unitDRInfo__\(uvCheckTime)__\(unitDRInfo)\n"
+                self.errorLogs.append(log)
+                self.errorLogs.append(log2)
+            }
         }
         
         if (unitDRInfo.isIndexChanged) {
-            let localTime: String = getLocalTimeString()
-            let log: String = localTime + "(Jupiter) UVD indexChanged !!\n"
-            print(log)
+            if (self.flagSaveUVD) {
+                let uvCheckTime = Double(currentTime)
+                let localTime: String = getLocalTimeString()
+                let log: String = localTime + "__(Jupiter) isIndexChanged__\(uvCheckTime)__\(unitDRInfo)\n"
+                self.errorLogs.append(log)
+            }
             
             self.timeActiveUV = 0
             self.timeSleepUV = 0
@@ -1275,6 +1285,7 @@ public class ServiceManager: Observation {
             // Heading 사용
             var idhArray = [[Double]]()
             var pathArray = [[Double]]()
+            var failArray = [[Double]]()
             if (!mainRoad.isEmpty) {
                 let roadX = mainRoad[0]
                 let roadY = mainRoad[1]
@@ -1283,7 +1294,7 @@ public class ServiceManager: Observation {
                 let xMax = x + SQUARE_RANGE
                 let yMin = y - SQUARE_RANGE
                 let yMax = y + SQUARE_RANGE
-
+                
                 for i in 0..<roadX.count {
                     let xPath = roadX[i]
                     let yPath = roadY[i]
@@ -1304,7 +1315,7 @@ public class ServiceManager: Observation {
                                 for j in 0..<headingData.count {
                                     if(!headingData[j].isEmpty) {
                                         let mapHeading = Double(headingData[j])!
-                                        if (heading > 315 && mapHeading == 0) {
+                                        if (heading > 270 && mapHeading == 0) {
                                             diffHeading.append(abs(heading - 360))
                                         } else {
                                             diffHeading.append(abs(heading - mapHeading))
@@ -1316,16 +1327,17 @@ public class ServiceManager: Observation {
                                     let idxHeading = diffHeading.firstIndex(of: diffHeading.min()!)
                                     let minHeading = Double(headingData[idxHeading!])!
                                     idh[2] = minHeading
-                                    if (heading > 315 && minHeading == 0) {
-                                        if (abs(heading-360) >= HEADING_RANGE) {
-                                            isValidIdh = false
-                                        }
-                                    } else {
-                                        if (abs(heading-minHeading) >= HEADING_RANGE) {
-                                            isValidIdh = false
+                                    if (mode == "dr") {
+                                        if (heading > 270 && minHeading == 0) {
+                                            if (abs(heading-360) >= HEADING_RANGE) {
+                                                isValidIdh = false
+                                            }
+                                        } else {
+                                            if (abs(heading-minHeading) >= HEADING_RANGE) {
+                                                isValidIdh = false
+                                            }
                                         }
                                     }
-                                    
                                     path[2] = minHeading
                                     path[3] = 1
                                 }
@@ -1333,6 +1345,8 @@ public class ServiceManager: Observation {
                             if (isValidIdh) {
                                 idhArray.append(idh)
                                 pathArray.append(path)
+                            } else {
+                                failArray.append(idh)
                             }
                         }
                     }
@@ -1354,6 +1368,10 @@ public class ServiceManager: Observation {
                     }
                     isSuccess = true
                     xyh = [roadX[index], roadY[index], correctedHeading]
+                } else {
+//                    print("(Jupiter) Current XY : \(x), \(y)")
+//                    print("(Jupiter) Current Heading : \(heading)")
+//                    print("(Jupiter) Map Matching Fail : \(failArray)")
                 }
             }
         }

@@ -26,8 +26,6 @@ public class UnitAttitudeEstimator: NSObject {
         var accRoll = HF.callRollUsingAcc(acc: acc)
         var accPitch = HF.callPitchUsingAcc(acc: acc)
         
-        let accAttitude = Attitude(Roll: accRoll, Pitch: accPitch, Yaw: 0)
-        
         if (accRoll.isNaN) {
             accRoll = preRoll
         } else {
@@ -39,6 +37,8 @@ public class UnitAttitudeEstimator: NSObject {
         } else {
             prePitch = accPitch
         }
+        
+        let accAttitude = Attitude(Roll: accRoll, Pitch: accPitch, Yaw: 0)
         
         var accAttEMA = Attitude(Roll: accRoll, Pitch: accPitch, Yaw: 0)
         let gyroNavEMAAcc = CF.transBody2Nav(att: accAttEMA, data: gyro)
@@ -68,16 +68,9 @@ public class UnitAttitudeEstimator: NSObject {
         let curAttitudeOrigin = Attitude(Roll: gameVecAttEMA.Roll, Pitch: gameVecAttEMA.Pitch, Yaw: headingGyroGame)
         let curAttitude = Attitude(Roll: accAttEMA.Roll, Pitch: accAttEMA.Pitch, Yaw: headingGyroAcc)
         
-//        let rollO = HF.radian2degree(radian: curAttitudeOrigin.Roll)
-//        let PitchO = HF.radian2degree(radian: curAttitudeOrigin.Pitch)
-//        let YawO = HF.radian2degree(radian: curAttitudeOrigin.Yaw)
         let rollA = HF.radian2degree(radian: curAttitude.Roll)
         let PitchA = HF.radian2degree(radian: curAttitude.Pitch)
         let YawA = HF.radian2degree(radian: curAttitude.Yaw)
-        
-//        print("Attitude (Origin) : \(rollO) , \(PitchO) , \(YawO)")
-//        print("Attitude (Acc) : \(rollA) , \(PitchA) , \(YawA)")
-//        print("Attitude (Diff) : \(abs(rollO-rollA)) , \(abs(PitchO-PitchA)) , \(abs(YawO-YawA))")
         
         preGameVecAttEMA = gameVecAttEMA
         preAccAttEMA = accAttEMA
