@@ -137,7 +137,6 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(false)
-        
         setCardData(cardData: cardData!)
         
         makeDelegate()
