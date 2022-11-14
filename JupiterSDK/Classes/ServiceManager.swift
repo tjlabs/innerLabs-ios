@@ -291,7 +291,7 @@ public class ServiceManager: Observation {
     var lastTrackingTime: Int = 0
     var lastResult = FineLocationTrackingResult()
     let SQUARE_RANGE: Double = 15
-    let HEADING_RANGE: Double = 60
+    let HEADING_RANGE: Double = 50
     var pastMatchingResult = FineLocationTrackingResult()
     var matchingFailCount: Int = 0
     
@@ -1497,6 +1497,7 @@ public class ServiceManager: Observation {
 
         timeUpdateOutput.x = timeUpdatePosition.x
         timeUpdateOutput.y = timeUpdatePosition.y
+        timeUpdateOutput.absolute_heading = updateHeading
         timeUpdateOutput.mobile_time = mobileTime
 
         measurementUpdateFlag = true

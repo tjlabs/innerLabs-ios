@@ -141,7 +141,7 @@ public class CalculateFunctions: NSObject {
         return rotationXY(roll: -att.Roll, pitch: -att.Pitch, gyro: data)
     }
     
-    public func calSensorAxisVariance(curArray: LinkedList<SensorAxisValue>, bufferMean: SensorAxisValue) -> SensorAxisValue {
+    public func calSensorAxisVariance(curArray: LinkedList<SensorAxisValue>) -> SensorAxisValue {
         var bufferX = [Double]()
         var bufferY = [Double]()
         var bufferZ = [Double]()

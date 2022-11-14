@@ -15,8 +15,6 @@ public class DRDistanceEstimator: NSObject {
     public var finalUnitResult = UnitDistance()
     public var output: [Float] = [0,0]
     
-    public var accQueue = LinkedList<SensorAxisValue>()
-    public var gyroQueue = LinkedList<SensorAxisValue>()
     public var magQueue = LinkedList<SensorAxisValue>()
     public var navGyroZQueue = [Double]()
     public var mlpOutputQueue = [Int]()
@@ -24,14 +22,9 @@ public class DRDistanceEstimator: NSObject {
     public var mlpEpochCount: Double = 0
     public var featureExtractionCount: Double = 0
     
-    public var preAccSmoothing = SensorAxisValue()
-    public var preGyroSmoothing = SensorAxisValue()
-    public var preMagSmoothing = SensorAxisValue()
     public var preNavGyroZSmoothing: Double = 0
     
     public var distance: Double = 0
-    var preInputMag: [Float32] = [0, 0, 0]
-    var preMagNorm: Double = 0
     
     var preRoll: Double = 0
     var prePitch: Double = 0
@@ -75,64 +68,41 @@ public class DRDistanceEstimator: NSObject {
         
         let gyroNavZ = abs(CF.transBody2Nav(att: accAttitude, data: gyro)[2])
         
-        let accNorm = CF.l2Normalize(originalVector: sensorData.acc)
         let magNorm = CF.l2Normalize(originalVector: sensorData.mag)
         
-        updateAccQueue(data: SensorAxisValue(x: acc[0], y: acc[1], z: acc[2], norm: accNorm))
-        updateGyroQueue(data: SensorAxisValue(x: gyro[0], y: gyro[1], z: gyro[2], norm: 0))
-        updateMagQueue(data: SensorAxisValue(x: mag[0], y: mag[1], z: mag[2], norm: 0))
+        updateMagQueue(data: SensorAxisValue(x: mag[0], y: mag[1], z: mag[2], norm: magNorm))
         updateNavGyroZQueue(data: gyroNavZ)
         
-        var accSmoothing = SensorAxisValue()
-        var gyroSmoothing = SensorAxisValue()
-        var magSmoothing = SensorAxisValue()
         var navGyroZSmoothing: Double = 0
         
-        let lastAccQueue = accQueue.last!.value
-        let lastGyroQueue = gyroQueue.last!.value
         let lastMagQueue = magQueue.last!.value
         
         if (featureExtractionCount == 0) {
-            accSmoothing = SensorAxisValue(x: acc[0], y: acc[1], z: acc[2], norm: accNorm)
-            gyroSmoothing = SensorAxisValue(x: gyro[0], y: gyro[1], z: gyro[2], norm: 0)
-            magSmoothing = SensorAxisValue(x: mag[0], y: mag[1], z: mag[2], norm: 0)
             navGyroZSmoothing = gyroNavZ
-        } else if (featureExtractionCount < FEATURE_EXTRATION_SIZE) {
-            accSmoothing = CF.calSensorAxisEMA(preArrayEMA: preAccSmoothing, curArray: lastAccQueue, windowSize: accQueue.count)
-            gyroSmoothing = CF.calSensorAxisEMA(preArrayEMA: preGyroSmoothing, curArray: lastGyroQueue, windowSize: gyroQueue.count)
-            magSmoothing = CF.calSensorAxisEMA(preArrayEMA: preMagSmoothing, curArray: lastMagQueue, windowSize: magQueue.count)
+        } else if (featureExtractionCount < FEATURE_EXTRACTION_SIZE) {
             navGyroZSmoothing = CF.exponentialMovingAverage(preEMA: preNavGyroZSmoothing, curValue: gyroNavZ, windowSize: navGyroZQueue.count)
         } else {
-            accSmoothing = CF.calSensorAxisEMA(preArrayEMA: preAccSmoothing, curArray: lastAccQueue, windowSize: Int(FEATURE_EXTRATION_SIZE))
-            gyroSmoothing = CF.calSensorAxisEMA(preArrayEMA: preGyroSmoothing, curArray: lastGyroQueue, windowSize: Int(FEATURE_EXTRATION_SIZE))
-            magSmoothing = CF.calSensorAxisEMA(preArrayEMA: preMagSmoothing, curArray: lastMagQueue, windowSize: Int(FEATURE_EXTRATION_SIZE))
-            navGyroZSmoothing = CF.exponentialMovingAverage(preEMA: preNavGyroZSmoothing, curValue: gyroNavZ, windowSize: Int(FEATURE_EXTRATION_SIZE))
+            navGyroZSmoothing = CF.exponentialMovingAverage(preEMA: preNavGyroZSmoothing, curValue: gyroNavZ, windowSize: Int(FEATURE_EXTRACTION_SIZE))
         }
         
-        preAccSmoothing = accSmoothing
-        preGyroSmoothing = gyroSmoothing
-        preMagSmoothing = magSmoothing
         preNavGyroZSmoothing = navGyroZSmoothing
         
-        var magVar = CF.calSensorAxisVariance(curArray: magQueue, bufferMean: magSmoothing)
-        
-        if (featureExtractionCount == 0) {
-            magVar = lastMagQueue
-        }
-        
-        let inputMag: [Float32] = [Float(0.1*(magVar.x)) + 0.9*preInputMag[0],
-                                   Float(0.1*(magVar.y)) + 0.9*preInputMag[1],
-                                   Float(0.1*(magVar.z)) + 0.9*preInputMag[2],
-                                   Float(0.1*magNorm + 0.9*preMagNorm)]
         // ------ //
         finalUnitResult.isIndexChanged = false
         if (mlpEpochCount == 0) {
+            
+            var magVar = CF.calSensorAxisVariance(curArray: magQueue)
+            if (featureExtractionCount == 0) {
+                magVar = lastMagQueue
+            }
+            
+            let inputMag: [Float32] = [Float(magVar.x), Float(magVar.y), Float(magVar.z), Float(magVar.norm)]
+            
             // Mag //
             var count = 0
             var output = 0
             for i in 0..<inputMag.count {
-                // Default : 0.7
-                if (inputMag[i] > 1.0) {
+                if (inputMag[i] > 0.6) {
                     count += 1
                 }
             }
@@ -146,27 +116,18 @@ public class DRDistanceEstimator: NSObject {
             
             var moveCount: Int = 0
             var stopCount: Int = 0
-            var currentStopCount: Int = 0
             for i in 0..<mlpOutputQueue.count {
                 if (mlpOutputQueue[i] == 0) {
                     stopCount += 1
                 } else {
                     moveCount += 1
                 }
-                
-                if (i > (mlpOutputQueue.count/2)) {
-                    if (mlpOutputQueue[i] == 0) {
-                        currentStopCount += 1
-                    }
-                }
             }
             
-            var velocity: Double = Double(moveCount)*VELOCITY_SETTING*exp(-navGyroZSmoothing/1.7) - Double(stopCount)*STOP_SETTING
-            if (velocity < 0) {
-                velocity = 0
-            }
+            let velocity: Double = Double(moveCount)*VELOCITY_SETTING*exp(-navGyroZSmoothing/1.7)
+            
             finalUnitResult.velocity = velocity
-            distance += (velocity * OUTPUT_SAMPLE_TIME)
+            distance += (velocity * OUTPUT_SAMPLE_TIME) // * 0.1
             
             if (distance > Double(OUTPUT_DISTANCE_SETTING)) {
                 index += 1
@@ -181,9 +142,6 @@ public class DRDistanceEstimator: NSObject {
         mlpEpochCount += 1
         featureExtractionCount += 1
         
-        // Mag
-        preInputMag = inputMag
-        preMagNorm = magNorm
         
         if (mlpEpochCount >= OUTPUT_SAMPLE_EPOCH) {
             mlpEpochCount = 0
@@ -193,30 +151,15 @@ public class DRDistanceEstimator: NSObject {
         return finalUnitResult
     }
     
-    
-    public func updateAccQueue(data: SensorAxisValue) {
-        if (accQueue.count >= Int(FEATURE_EXTRATION_SIZE)) {
-            accQueue.pop()
-        }
-        accQueue.append(data)
-    }
-    
-    public func updateGyroQueue(data: SensorAxisValue) {
-        if (gyroQueue.count >= Int(FEATURE_EXTRATION_SIZE)) {
-            gyroQueue.pop()
-        }
-        gyroQueue.append(data)
-    }
-    
     public func updateMagQueue(data: SensorAxisValue) {
-        if (magQueue.count >= Int(FEATURE_EXTRATION_SIZE)) {
+        if (magQueue.count >= Int(FEATURE_EXTRACTION_SIZE)) {
             magQueue.pop()
         }
         magQueue.append(data)
     }
     
     public func updateNavGyroZQueue(data: Double) {
-        if (navGyroZQueue.count >= Int(FEATURE_EXTRATION_SIZE)) {
+        if (navGyroZQueue.count >= Int(FEATURE_EXTRACTION_SIZE)) {
             navGyroZQueue.remove(at: 0)
         }
         navGyroZQueue.append(data)
