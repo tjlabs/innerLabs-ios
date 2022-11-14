@@ -15,7 +15,6 @@ class MainViewController: UIViewController, UITextFieldDelegate {
     
     @IBOutlet weak var codeTextField: UITextField!
     @IBOutlet weak var guideLabel: UILabel!
-    
     @IBOutlet weak var saveUuidButton: UIButton!
     
     var isSaveUuid: Bool = false
