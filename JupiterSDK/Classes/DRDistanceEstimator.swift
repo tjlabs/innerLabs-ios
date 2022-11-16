@@ -102,11 +102,11 @@ public class DRDistanceEstimator: NSObject {
             var count = 0
             var output = 0
             for i in 0..<inputMag.count {
-                if (inputMag[i] > 0.6) {
+                if (inputMag[i] > 0.75) {
                     count += 1
                 }
             }
-            if (count >= 2) {
+            if (count >= 1) {
                 output = 1
             }
             let argMaxIndex: Int = output
@@ -124,7 +124,7 @@ public class DRDistanceEstimator: NSObject {
                 }
             }
             
-            let velocity: Double = Double(moveCount)*VELOCITY_SETTING*exp(-navGyroZSmoothing/1.7)
+            let velocity: Double = Double(moveCount)*VELOCITY_SETTING*exp(-navGyroZSmoothing/1.6)
             
             finalUnitResult.velocity = velocity
             distance += (velocity * OUTPUT_SAMPLE_TIME) // * 0.1

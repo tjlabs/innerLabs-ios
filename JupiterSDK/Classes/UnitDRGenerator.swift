@@ -6,6 +6,10 @@ public class UnitDRGenerator: NSObject {
         
     }
     
+    let STEP_TO_MODE_CHANGE = 5
+    var STEP_VALID_TIME: Double = 1000
+    var validStepCount = 0
+    
     public var unitMode = String()
     
     public let CF = CalculateFunctions()
@@ -107,23 +111,47 @@ public class UnitDRGenerator: NSObject {
     }
     
     func checkModeChange() {
+        let drQueueLen = drQueue.count
+        let pdrQueueLen = pdrQueue.count
+        
+        // 최근 N개의 PDR 스텝이 연속적으로 발생하는지 확인
+        if (pdrQueueLen > STEP_TO_MODE_CHANGE) {
+            for i in (pdrQueueLen-STEP_TO_MODE_CHANGE)..<pdrQueueLen {
+                let pdrCurrent = pdrQueue.node(at: i)!.value
+                let pdrBefore = pdrQueue.node(at: i-1)!.value
+                
+                let timeDiff = pdrCurrent.time - pdrBefore.time
+                
+                if timeDiff < STEP_VALID_TIME {
+                    self.validStepCount += 1
+                }
+            }
+        }
+        
+        if (self.validStepCount > STEP_TO_MODE_CHANGE) {
+            // 현재 모드는 PDR
+            self.validStepCount = 0
+        }
+        
+        // DR 상황에서는 스텝이 연속적으로 발생하지 않음
+        
         // PDR 스텝이 연속적으로 발생하면
         
         // PDR 스텝이 아주 가끔
         
-//        print("(Jupiter) DR Queue: \(drQueue)")
-//        print("(Jupiter) PDR Queue: \(pdrQueue)")
+//        print(getLocalTimeString() + " (Jupiter) DR Queue: \(drQueue)")
+//        print(getLocalTimeString() + " (Jupiter) PDR Queue: \(pdrQueue)")
     }
     
     public func updateDrQueue(data: DistanceInfo) {
-        if (drQueue.count >= Int(VELOCITY_QUEUE_SIZE)) {
+        if (drQueue.count >= Int(MODE_QUEUE_SIZE)) {
             drQueue.pop()
         }
         drQueue.append(data)
     }
     
     public func updatePdrQueue(data: DistanceInfo) {
-        if (pdrQueue.count >= Int(VELOCITY_QUEUE_SIZE)) {
+        if (pdrQueue.count >= Int(MODE_QUEUE_SIZE)) {
             pdrQueue.pop()
         }
         pdrQueue.append(data)
@@ -133,5 +161,15 @@ public class UnitDRGenerator: NSObject {
     func getCurrentTimeInMilliseconds() -> Double
     {
         return Double(Date().timeIntervalSince1970 * 1000)
+    }
+    
+    func getLocalTimeString() -> String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd-HH-mm-ss"
+        dateFormatter.locale = Locale(identifier:"ko_KR")
+        let nowDate = Date()
+        let convertNowStr = dateFormatter.string(from: nowDate)
+        
+        return convertNowStr
     }
 }

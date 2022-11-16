@@ -154,6 +154,32 @@ struct UserVelocity: Codable {
     var looking: Bool
 }
 
+// Sector Detection
+public struct SectorDetectionResult: Codable {
+    public var mobile_time: Int
+    public var sector_name: String
+    public var calculated_time: Double
+    
+    public init() {
+        self.mobile_time = 0
+        self.sector_name = ""
+        self.calculated_time = 0
+    }
+}
+
+// Building Detection
+public struct BuildingDetectionResult: Codable {
+    public var mobile_time: Int
+    public var building_name: String
+    public var calculated_time: Double
+    
+    public init() {
+        self.mobile_time = 0
+        self.building_name = ""
+        self.calculated_time = 0
+    }
+}
+
 // Coarse Level Detection
 struct CoarseLevelDetection: Codable {
     var user_id: String
@@ -172,6 +198,25 @@ public struct CoarseLevelDetectionResult: Codable {
         self.sector_name = ""
         self.building_name = ""
         self.level_name = ""
+        self.calculated_time = 0
+    }
+}
+
+// Fine Level Detection
+public struct FineLevelDetectionResult: Codable {
+    public var mobile_time: Int
+    public var building_name: String
+    public var level_name: String
+    public var scc: Double
+    public var scr: Double
+    public var calculated_time: Double
+    
+    public init() {
+        self.mobile_time = 0
+        self.building_name = ""
+        self.level_name = ""
+        self.scc = 0
+        self.scr = 0
         self.calculated_time = 0
     }
 }

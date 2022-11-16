@@ -880,8 +880,8 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
         } else {
             if (buildings.contains(currentBuilding)) {
                 if (XY[0] != 0 && XY[1] != 0) {
-                    drawUser(XY: XY, heading: heading, limits: limits)
-//                    drawAll(XY: XY, serverXY: serviceManager.serverResult, tuXY: serviceManager.timeUpdateResult, heading: heading, limits: limits)
+//                    drawUser(XY: XY, heading: heading, limits: limits)
+                    drawAll(XY: XY, serverXY: serviceManager.serverResult, tuXY: serviceManager.timeUpdateResult, heading: heading, limits: limits)
                 }
             }
         }

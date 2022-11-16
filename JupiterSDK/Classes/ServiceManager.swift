@@ -284,7 +284,7 @@ public class ServiceManager: Observation {
     var timeSleepRF: Double = 0
     var timeSleepUV: Double = 0
     var timeUpdateInSleep: Double = 0
-    let STOP_THRESHOLD: Double = 1 // 0.5 sec
+    let STOP_THRESHOLD: Double = 1
     let SLEEP_THRESHOLD: Double = 600 // 10분
     let SLEEP_THRESHOLD_RF: Double = 5 // 5s
     
@@ -326,7 +326,6 @@ public class ServiceManager: Observation {
     
     public func initService() {
         initialzeSensors()
-        startTimer()
         startBLE()
         
         isFirstStart = true
@@ -377,7 +376,16 @@ public class ServiceManager: Observation {
         var numInput = 7
         
         switch(service) {
+        case "SD":
+            numInput = 3
+            interval = 1/2
+        case "BD":
+            numInput = 3
+            interval = 1/2
         case "CLD":
+            numInput = 3
+            interval = 1/2
+        case "FLD":
             numInput = 3
             interval = 1/2
         case "CLE":
@@ -414,10 +422,12 @@ public class ServiceManager: Observation {
                print(log)
             }
         } else {
+            // Login Success
             let userInfo = UserInfo(user_id: self.user_id, device_model: deviceModel, os_version: osVersion)
             postUser(url: USER_URL, input: userInfo, completion: { [self] statusCode, returnedString in
                 if (statusCode == 200) {
                     settingURL(server: self.serverType, os: self.osType)
+                    startTimer()
                 } else {
                     let localTime: String = getLocalTimeString()
                     let log: String = localTime + " , (Jupiter) Error : Load OS Type Error\n"
@@ -561,9 +571,24 @@ public class ServiceManager: Observation {
         let currentTime: Int = getCurrentTimeInMilliseconds()
         
         switch(self.service) {
+        case "SD":
+            let input = CoarseLevelDetection(user_id: self.user_id, mobile_time: currentTime)
+            NetworkManager.shared.postCLD(url: CLD_URL, input: input, completion: { statusCode, returnedString in
+                completion(statusCode, returnedString)
+            })
+        case "BD":
+            let input = CoarseLevelDetection(user_id: self.user_id, mobile_time: currentTime)
+            NetworkManager.shared.postCLD(url: CLD_URL, input: input, completion: { statusCode, returnedString in
+                completion(statusCode, returnedString)
+            })
         case "CLD":
             let input = CoarseLevelDetection(user_id: self.user_id, mobile_time: currentTime)
             NetworkManager.shared.postCLD(url: CLD_URL, input: input, completion: { statusCode, returnedString in
+                completion(statusCode, returnedString)
+            })
+        case "FLD":
+            let input = CoarseLocationEstimation(user_id: self.user_id, mobile_time: currentTime, sector_id: self.sector_id)
+            NetworkManager.shared.postCLE(url: CLE_URL, input: input, completion: { statusCode, returnedString in
                 completion(statusCode, returnedString)
             })
         case "CLE":
@@ -1081,9 +1106,6 @@ public class ServiceManager: Observation {
 
                                                 let dh = self.currentTuResult.absolute_heading - self.pastTuResult.absolute_heading
 
-//                                                print("(Jupiter) Server : \(self.currentTuResult.x - resultForMu.x) , \(self.currentTuResult.y - resultForMu.y), \(currentTuResult.index) , \(resultForMu.index)")
-//                                                print("(Jupiter) Basic : \(dx) , \(dy), \(currentTuResult.index), \(pastTuResult.index)")
-
                                                 resultForMu.x = resultForMu.x + dx
                                                 resultForMu.y = resultForMu.y + dy
                                                 resultForMu.absolute_heading = resultForMu.absolute_heading + dh
@@ -1098,6 +1120,11 @@ public class ServiceManager: Observation {
                                 } else {
                                     kalmanInit()
                                     let finalResult = fromServerToResult(fromServer: result, velocity: displayOutput.velocity)
+                                    
+                                    self.serverResult[0] = result.x
+                                    self.serverResult[1] = result.y
+                                    self.serverResult[2] = result.absolute_heading
+                                    
                                     self.tracking(input: finalResult, isPast: false)
                                 }
 
