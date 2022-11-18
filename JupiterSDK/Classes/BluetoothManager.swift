@@ -74,7 +74,7 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
     var bleCheck = [String: [Double]]()
     var bleDiscoveredTime: Double = 0
     
-    public var BLE_VALID_TIME: Double = 1500
+    public var BLE_VALID_TIME: Double = 1000
     
     override init() {
         super.init()

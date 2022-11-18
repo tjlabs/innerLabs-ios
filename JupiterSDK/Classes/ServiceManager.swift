@@ -269,7 +269,6 @@ public class ServiceManager: Observation {
     var measurementOutput = FineLocationTrackingFromServer()
     
     var pastResult = [Double]()
-    var pastBuildingLevel = ["", ""]
     
     var isMapMatching: Bool = false
     
@@ -281,6 +280,7 @@ public class ServiceManager: Observation {
     
     var timeActiveRF: Double = 0
     var timeActiveUV: Double = 0
+    var timeRequest: Double = 0
     var timeSleepRF: Double = 0
     var timeSleepUV: Double = 0
     var timeUpdateInSleep: Double = 0
@@ -426,6 +426,7 @@ public class ServiceManager: Observation {
             let userInfo = UserInfo(user_id: self.user_id, device_model: deviceModel, os_version: osVersion)
             postUser(url: USER_URL, input: userInfo, completion: { [self] statusCode, returnedString in
                 if (statusCode == 200) {
+                    print("(Jupiter) Succes : User Login")
                     settingURL(server: self.serverType, os: self.osType)
                     startTimer()
                 } else {
@@ -822,7 +823,7 @@ public class ServiceManager: Observation {
             floorUpdateRequestFlag = true
             userVelocityTimer = Timer.scheduledTimer(timeInterval: UV_INTERVAL, target: self, selector: #selector(self.userVelocityTimerUpdate), userInfo: nil, repeats: true)
         }
-        
+         
         if (requestTimer == nil && self.service == "FLT") {
             requestTimer = Timer.scheduledTimer(timeInterval: RQ_INTERVAL, target: self, selector: #selector(self.requestTimerUpdate), userInfo: nil, repeats: true)
         }
@@ -1130,44 +1131,109 @@ public class ServiceManager: Observation {
 
                                 preOutputMobileTime = result.mobile_time
                             }
-                            pastBuildingLevel = [displayOutput.building, displayOutput.level]
                         }
                         indexPast = result.index
                     }
                 }
             })
         } else {
-            let diffUpdatedTime: Int = currentTime - self.lastTrackingTime
-            if (diffUpdatedTime > 950) {
-                if (self.lastTrackingTime != 0 && self.isActiveRF) {
-                    self.tracking(input: self.lastResult, isPast: true)
-                    
-                    if (flagSaveError) {
-                        let localTime: String = getLocalTimeString()
-                        let log: String = localTime + " , (Jupiter) Warnings : Past Result , Stop = \(self.isStop)\n"
-                        self.errorLogs.append(log)
-                    }
-                } else {
-                    if (isFirstStart) {
-                        let key: String = "JupiterLastResult_\(self.sector_id)"
-                        if let lastKnownResult: String = UserDefaults.standard.object(forKey: key) as? String {
-                            let currentTime = getCurrentTimeInMilliseconds()
-                            let result = jsonForTracking(json: lastKnownResult)
-                            if (currentTime - result.mobile_time) < 1000*3600*12 {
-                                var updatedResult = result
-                                updatedResult.index = 0
-                                updatedResult.phase = 0
-                                self.tracking(input: updatedResult, isPast: false)
-                            }
-                        } else {
-                            if (self.flagSaveError) {
-                                let localTime: String = getLocalTimeString()
-                                let log: String = localTime + " , (Jupiter) Warnings : Empty Last Result\n"
-                                self.errorLogs.append(log)
-                            }
+            // UVD Stop
+            if (self.phase == 4) {
+                // Gurantee 1Hz
+                self.updateLastResult(currentTime: currentTime)
+            } else {
+                // Request
+                self.timeRequest += RQ_INTERVAL
+                if (self.timeRequest >= 2) {
+                    let input = FineLocationTracking(user_id: user_id, mobile_time: currentTime, sector_id: sector_id, phase: self.phase)
+                    NetworkManager.shared.postFLT(url: FLT_URL, input: input, completion: { [self] statusCode, returnedString in
+                        if (statusCode == 200) {
+                            print(returnedString)
+                            let result = jsonToResult(json: returnedString)
+                            self.serverResult[0] = result.x
+                            self.serverResult[1] = result.y
+                            self.serverResult[2] = result.absolute_heading
+
+                            let finalResult = fromServerToResult(fromServer: result, velocity: displayOutput.velocity)
+                            self.tracking(input: finalResult, isPast: false)
                         }
-                        isFirstStart = false
+                    })
+                    self.timeRequest = 0
+                }
+                
+                // Gurantee 1Hz
+                self.updateLastResult(currentTime: currentTime)
+            }
+            
+//            let diffUpdatedTime: Int = currentTime - self.lastTrackingTime
+//            if (diffUpdatedTime > 950) {
+//                if (self.lastTrackingTime != 0 && self.isActiveRF) {
+//                    self.tracking(input: self.lastResult, isPast: true)
+//
+//                    if (flagSaveError) {
+//                        let localTime: String = getLocalTimeString()
+//                        let log: String = localTime + " , (Jupiter) Warnings : Past Result , Stop = \(self.isStop)\n"
+//                        self.errorLogs.append(log)
+//                    }
+//                } else {
+//                    if (isFirstStart) {
+//                        let key: String = "JupiterLastResult_\(self.sector_id)"
+//                        if let lastKnownResult: String = UserDefaults.standard.object(forKey: key) as? String {
+//                            let currentTime = getCurrentTimeInMilliseconds()
+//                            let result = jsonForTracking(json: lastKnownResult)
+//                            if (currentTime - result.mobile_time) < 1000*3600*12 {
+//                                var updatedResult = result
+//                                updatedResult.mobile_time = currentTime
+//                                updatedResult.index = 0
+//                                updatedResult.phase = 0
+//                                self.tracking(input: updatedResult, isPast: false)
+//                            }
+//                        } else {
+//                            if (self.flagSaveError) {
+//                                let localTime: String = getLocalTimeString()
+//                                let log: String = localTime + " , (Jupiter) Warnings : Empty Last Result\n"
+//                                self.errorLogs.append(log)
+//                            }
+//                        }
+//                        isFirstStart = false
+//                    }
+//                }
+//            }
+        }
+    }
+    
+    func updateLastResult(currentTime: Int) {
+        let diffUpdatedTime: Int = currentTime - self.lastTrackingTime
+        if (diffUpdatedTime >= 1000) {
+            if (self.lastTrackingTime != 0 && self.isActiveRF) {
+                self.tracking(input: self.lastResult, isPast: true)
+                
+                if (flagSaveError) {
+                    let localTime: String = getLocalTimeString()
+                    let log: String = localTime + " , (Jupiter) Warnings : Past Result , Stop = \(self.isStop)\n"
+                    self.errorLogs.append(log)
+                }
+            } else {
+                if (isFirstStart) {
+                    let key: String = "JupiterLastResult_\(self.sector_id)"
+                    if let lastKnownResult: String = UserDefaults.standard.object(forKey: key) as? String {
+                        let currentTime = getCurrentTimeInMilliseconds()
+                        let result = jsonForTracking(json: lastKnownResult)
+                        if (currentTime - result.mobile_time) < 1000*3600*12 {
+                            var updatedResult = result
+                            updatedResult.mobile_time = currentTime
+                            updatedResult.index = 0
+                            updatedResult.phase = 0
+                            self.tracking(input: updatedResult, isPast: false)
+                        }
+                    } else {
+                        if (self.flagSaveError) {
+                            let localTime: String = getLocalTimeString()
+                            let log: String = localTime + " , (Jupiter) Warnings : Empty Last Result\n"
+                            self.errorLogs.append(log)
+                        }
                     }
+                    isFirstStart = false
                 }
             }
         }
@@ -1395,10 +1461,6 @@ public class ServiceManager: Observation {
                     }
                     isSuccess = true
                     xyh = [roadX[index], roadY[index], correctedHeading]
-                } else {
-//                    print("(Jupiter) Current XY : \(x), \(y)")
-//                    print("(Jupiter) Current Heading : \(heading)")
-//                    print("(Jupiter) Map Matching Fail : \(failArray)")
                 }
             }
         }
