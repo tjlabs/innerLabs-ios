@@ -534,49 +534,109 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
         return result
     }
     
+    private func loadLevel(building: String, level: String, flag: Bool, completion: @escaping (UIImage?, Error?) -> Void) {
+        let urlString: String = "https://storage.googleapis.com/jupiter_image/map/\(self.sectorID)/\(building)_\(level).png"
+        if let urlLevel = URL(string: urlString) {
+            let cacheKey = NSString(string: urlString)
+            
+            if let cachedImage = ImageCacheManager.shared.object(forKey: cacheKey) {
+                completion(cachedImage, nil)
+            } else {
+                let task = URLSession.shared.dataTask(with: urlLevel) { (data, response, error) in
+                    if let error = error {
+                        completion(nil, error)
+                    }
+                    
+                    if let data = data, let httpResponse = response as? HTTPURLResponse,
+                       httpResponse.statusCode == 200 {
+                        DispatchQueue.main.async {
+                            ImageCacheManager.shared.setObject(UIImage(data: data)!, forKey: cacheKey)
+                            completion(UIImage(data: data), nil)
+                        }
+                    } else {
+                        completion(nil, error)
+                    }
+                }
+                task.resume()
+            }
+        } else {
+            completion(nil, nil)
+        }
+    }
+    
+    private func displayLevel(building: String, level: String, flag: Bool) {
+        self.loadLevel(building: building, level: level, flag: flag, completion: { [self] data, error in
+            DispatchQueue.main.async {
+                if (data != nil) {
+                    // 빌딩 -> 층 이미지가 있는 경우
+                    self.imageLevel.isHidden = false
+                    self.noImageLabel.isHidden = true
+
+                    self.imageLevel.image = data
+                } else {
+                    // 빌딩 -> 층 이미지가 없는 경우
+                    if (isShowRP) {
+                        self.imageLevel.isHidden = false
+                        self.noImageLabel.isHidden = true
+
+                        self.imageLevel.image = UIImage(named: "emptyLevel")
+                    } else {
+                        self.scatterChart.isHidden = true
+                        self.imageLevel.isHidden = true
+                        self.noImageLabel.isHidden = false
+                    }
+
+                }
+            }
+        })
+    }
+    
     private func fetchLevel(building: String, level: String, flag: Bool) {
         // Building -> Level Image Download From URL
         noImageLabel.text = "해당 \(level) 이미지가 없습니다"
         
-        // 빌딩 -> 층 이미지 보이기
-        if let urlLevel = URL(string: "https://storage.googleapis.com/jupiter_image/map/\(sectorID)/\(building)_\(level).png") {
-            let data = try? Data(contentsOf: urlLevel)
-            
-            if (data != nil) {
-                // 빌딩 -> 층 이미지가 있는 경우
-                let resourceBuildingLevel = ImageResource(downloadURL: urlLevel, cacheKey: "\(sectorID)_\(building)_\(level)_image")
+        DispatchQueue.main.async  {
+            // 빌딩 -> 층 이미지 보이기
+            if let urlLevel = URL(string: "https://storage.googleapis.com/jupiter_image/map/\(self.sectorID)/\(building)_\(level).png") {
+                let data = try? Data(contentsOf: urlLevel)
+//                let data = try await URLSession.shared.data(from: urlLevel)
                 
-//                scatterChart.isHidden = false
-                imageLevel.isHidden = false
-                noImageLabel.isHidden = true
-                imageLevel.kf.setImage(with: resourceBuildingLevel, placeholder: nil, options: [.transition(.fade(0.8))], completionHandler: nil)
+                if (data != nil) {
+                    // 빌딩 -> 층 이미지가 있는 경우
+                    let resourceBuildingLevel = ImageResource(downloadURL: urlLevel, cacheKey: "\(self.sectorID)_\(building)_\(level)_image")
+                    
+    //                scatterChart.isHidden = false
+                    self.imageLevel.isHidden = false
+                    self.noImageLabel.isHidden = true
+                    self.imageLevel.kf.setImage(with: resourceBuildingLevel, placeholder: nil, options: [.transition(.fade(0.8))], completionHandler: nil)
+                } else {
+                    // 빌딩 -> 층 이미지가 없는 경우
+                    if (flag) {
+    //                    scatterChart.isHidden = false
+                        self.imageLevel.isHidden = false
+                        self.noImageLabel.isHidden = true
+                        
+                        self.imageLevel.image = UIImage(named: "emptyLevel")
+                    } else {
+                        self.scatterChart.isHidden = true
+                        self.imageLevel.isHidden = true
+                        self.noImageLabel.isHidden = false
+                    }
+                    
+                }
             } else {
                 // 빌딩 -> 층 이미지가 없는 경우
                 if (flag) {
-//                    scatterChart.isHidden = false
-                    imageLevel.isHidden = false
-                    noImageLabel.isHidden = true
+    //                scatterChart.isHidden = false
+                    self.imageLevel.isHidden = false
+                    self.noImageLabel.isHidden = true
                     
-                    imageLevel.image = UIImage(named: "emptyLevel")
+                    self.imageLevel.image = UIImage(named: "emptyLevel")
                 } else {
-                    scatterChart.isHidden = true
-                    imageLevel.isHidden = true
-                    noImageLabel.isHidden = false
+                    self.scatterChart.isHidden = true
+                    self.imageLevel.isHidden = true
+                    self.noImageLabel.isHidden = false
                 }
-                
-            }
-        } else {
-            // 빌딩 -> 층 이미지가 없는 경우
-            if (flag) {
-//                scatterChart.isHidden = false
-                imageLevel.isHidden = false
-                noImageLabel.isHidden = true
-                
-                imageLevel.image = UIImage(named: "emptyLevel")
-            } else {
-                scatterChart.isHidden = true
-                imageLevel.isHidden = true
-                noImageLabel.isHidden = false
             }
         }
     }
@@ -643,11 +703,16 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
             scatterChart.leftAxis.axisMinimum = yMin
             scatterChart.leftAxis.axisMaximum = yMax
         } else {
-            print("-- Scale Setting --")
-            scatterChart.xAxis.axisMinimum = xMin - 17.6
-            scatterChart.xAxis.axisMaximum = xMax + 3.6
-            scatterChart.leftAxis.axisMinimum = yMin - 38
-            scatterChart.leftAxis.axisMaximum = yMax + 35.2
+//            print("-- Scale Setting --")
+//            scatterChart.xAxis.axisMinimum = xMin - 66
+//            scatterChart.xAxis.axisMaximum = xMax + 23
+//            scatterChart.leftAxis.axisMinimum = yMin - 1
+//            scatterChart.leftAxis.axisMaximum = yMax + 38
+            
+            scatterChart.xAxis.axisMinimum = xMin - 48
+            scatterChart.xAxis.axisMaximum = xMax + 30
+            scatterChart.leftAxis.axisMinimum = yMin - 4
+            scatterChart.leftAxis.axisMaximum = yMax + 40
             
 //            scatterChart.xAxis.axisMinimum = limits[0]
 //            scatterChart.xAxis.axisMaximum = limits[1]
@@ -854,7 +919,8 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
         }
         
         if (pastBuilding != currentBuilding || pastLevel != currentLevel) {
-            fetchLevel(building: currentBuilding, level: currentLevel, flag: flag)
+            displayLevel(building: currentBuilding, level: currentLevel, flag: flag)
+//            fetchLevel(building: currentBuilding, level: currentLevel, flag: flag)
         }
         
         pastBuilding = currentBuilding
@@ -1043,7 +1109,8 @@ extension ServiceViewController : UICollectionViewDelegate{
             if (isShowRP) {
                 drawRP(RP_X: rp[0], RP_Y: rp[1], XY: XY, heading: 0, limits: limits)
             }
-            fetchLevel(building: currentBuilding, level: currentLevel, flag: isShowRP)
+            displayLevel(building: currentBuilding, level: currentLevel, flag: isShowRP)
+//            fetchLevel(building: currentBuilding, level: currentLevel, flag: isShowRP)
         }
         
         levelCollectionView.reloadData()
@@ -1062,7 +1129,8 @@ extension ServiceViewController : UICollectionViewDataSource{
 
         levelCollectionView.setName(level: levels[currentBuilding]![indexPath.row],
                                     isClicked: currentLevel == levels[currentBuilding]![indexPath.row] ? true : false)
-        fetchLevel(building: currentBuilding, level: currentLevel, flag: isShowRP)
+        displayLevel(building: currentBuilding, level: currentLevel, flag: isShowRP)
+//        fetchLevel(building: currentBuilding, level: currentLevel, flag: isShowRP)
         
         levelCollectionView.layer.cornerRadius = 15
         levelCollectionView.layer.borderColor = UIColor.blue1.cgColor

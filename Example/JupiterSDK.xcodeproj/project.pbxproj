@@ -87,7 +87,8 @@
 		B3E094EC28ADCD3100D3BC59 /* S3_7F_Road.csv in Resources */ = {isa = PBXBuildFile; fileRef = B3E094EB28ADCD3100D3BC59 /* S3_7F_Road.csv */; };
 		B3E094EE28AE270400D3BC59 /* S3_7F.csv in Resources */ = {isa = PBXBuildFile; fileRef = B3E094ED28AE270400D3BC59 /* S3_7F.csv */; };
 		B3E0A4F62887E51700B88E08 /* Environment.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3E0A4F52887E51700B88E08 /* Environment.swift */; };
-		B3E6C0EA292D306100D0AC13 /* COEX_B2.csv in Resources */ = {isa = PBXBuildFile; fileRef = B3E6C0E9292D306100D0AC13 /* COEX_B2.csv */; };
+		B3E6C0F6292D522C00D0AC13 /* COEX_B2.csv in Resources */ = {isa = PBXBuildFile; fileRef = B3E6C0F5292D522C00D0AC13 /* COEX_B2.csv */; };
+		B3E6C0F8292D6B1400D0AC13 /* ImageCacheManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3E6C0F7292D6B1400D0AC13 /* ImageCacheManager.swift */; };
 		B3F370D4281B9B85003A427F /* OutputView.xib in Resources */ = {isa = PBXBuildFile; fileRef = B3F370D3281B9B85003A427F /* OutputView.xib */; };
 		B3F370D6281B9DC5003A427F /* OutputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3F370D5281B9DC5003A427F /* OutputView.swift */; };
 		B3F370D8281BA1CC003A427F /* RobotView.xib in Resources */ = {isa = PBXBuildFile; fileRef = B3F370D7281BA1CC003A427F /* RobotView.xib */; };
@@ -200,7 +201,8 @@
 		B3E094EB28ADCD3100D3BC59 /* S3_7F_Road.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = S3_7F_Road.csv; sourceTree = "<group>"; };
 		B3E094ED28AE270400D3BC59 /* S3_7F.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = S3_7F.csv; sourceTree = "<group>"; };
 		B3E0A4F52887E51700B88E08 /* Environment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Environment.swift; sourceTree = "<group>"; };
-		B3E6C0E9292D306100D0AC13 /* COEX_B2.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = COEX_B2.csv; path = ../../../../Downloads/COEX_B2.csv; sourceTree = "<group>"; };
+		B3E6C0F5292D522C00D0AC13 /* COEX_B2.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = COEX_B2.csv; sourceTree = "<group>"; };
+		B3E6C0F7292D6B1400D0AC13 /* ImageCacheManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageCacheManager.swift; sourceTree = "<group>"; };
 		B3F370D3281B9B85003A427F /* OutputView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = OutputView.xib; sourceTree = "<group>"; };
 		B3F370D5281B9DC5003A427F /* OutputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutputView.swift; sourceTree = "<group>"; };
 		B3F370D7281BA1CC003A427F /* RobotView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = RobotView.xib; sourceTree = "<group>"; };
@@ -306,12 +308,12 @@
 				B3FD74EA2869A38800CD4D74 /* Gallery_4F.csv */,
 				B364B35428BCD8C5001A8950 /* LUPIUM_3F.csv */,
 				B364B35228BCD8C5001A8950 /* LUPIUM_5F.csv */,
-				B3E6C0E9292D306100D0AC13 /* COEX_B2.csv */,
 				B364B35328BCD8C5001A8950 /* LUPIUM_7F.csv */,
 				B36928AD28C5D290005FD4A9 /* L8_B1.csv */,
 				B38807EF283390280029B174 /* L1_1F.csv */,
 				B36B964D289A024900951457 /* L1_2F.csv */,
 				B3B3610828295E1400B8E876 /* Autoway_B3.csv */,
+				B3E6C0F5292D522C00D0AC13 /* COEX_B2.csv */,
 				B3B3610A28295E1D00B8E876 /* Autoway_B4.csv */,
 				B3D488F5289B8B4900A8154C /* GoogleService-Info.plist */,
 				B38807F0283390280029B174 /* L1_3F.csv */,
@@ -439,6 +441,7 @@
 				B3D488EF289B4D5500A8154C /* UIColorExtension.swift */,
 				B3C6F99D289CCF78003FB402 /* NSObjectExtension.swift */,
 				B3C6F99F289CCF92003FB402 /* UIImageExtension.swift */,
+				B3E6C0F7292D6B1400D0AC13 /* ImageCacheManager.swift */,
 			);
 			name = Utils;
 			sourceTree = "<group>";
@@ -575,6 +578,7 @@
 				B364B35828BCD8C5001A8950 /* LUPIUM_3F.csv in Resources */,
 				B360D89128090D6A0084FB22 /* NotoSansKR-Black.otf in Resources */,
 				B3FF6A9028E5585000CFA824 /* COEX_B1.csv in Resources */,
+				B3E6C0F6292D522C00D0AC13 /* COEX_B2.csv in Resources */,
 				B364B35728BCD8C5001A8950 /* LUPIUM_7F.csv in Resources */,
 				B364B35628BCD8C5001A8950 /* LUPIUM_5F.csv in Resources */,
 				607FACDB1AFB9204008FA782 /* Main.storyboard in Resources */,
@@ -594,7 +598,6 @@
 				B30F06D528EBC93500633CC9 /* Museum_1F.csv in Resources */,
 				607FACDD1AFB9204008FA782 /* Images.xcassets in Resources */,
 				B3E094EE28AE270400D3BC59 /* S3_7F.csv in Resources */,
-				B3E6C0EA292D306100D0AC13 /* COEX_B2.csv in Resources */,
 				B360D88F28090D6A0084FB22 /* NotoSansKR-Light.otf in Resources */,
 				B3B9F4E5286C2EA300FEE914 /* Gallery_4F_Road.csv in Resources */,
 				B38807F2283390280029B174 /* L1_1F.csv in Resources */,
@@ -780,6 +783,7 @@
 				B3BD69A627E9A55400A32A7A /* UIViewExtension.swift in Sources */,
 				B3BD699827E9A4A500A32A7A /* ColorPalette.swift in Sources */,
 				B3B7FBF52856DA4000E23EDF /* PopUpViewController.swift in Sources */,
+				B3E6C0F8292D6B1400D0AC13 /* ImageCacheManager.swift in Sources */,
 				B38C7F4C28FE6AC200DEEF32 /* NeptuneViewController.swift in Sources */,
 				B3BD69A827E9A56B00A32A7A /* UITableViewRegisterable.swift in Sources */,
 				B3E0A4F62887E51700B88E08 /* Environment.swift in Sources */,
