@@ -296,11 +296,11 @@ public class NetworkManager {
         requestURL.addValue("application/json", forHTTPHeaderField: "Content-Type")
         requestURL.setValue("\(encodingData)", forHTTPHeaderField: "Content-Length")
         
-//        print("")
-//        print("====================================")
-//        print("POST FLT 데이터 :: ", input)
-//        print("====================================")
-//        print("")
+        print("")
+        print("====================================")
+        print("POST FLT 데이터 :: ", input)
+        print("====================================")
+        print("")
 
         let dataTask = URLSession.shared.dataTask(with: requestURL, completionHandler: { (data, response, error) in
 
@@ -334,12 +334,12 @@ public class NetworkManager {
 
             // [콜백 반환]
             DispatchQueue.main.async {
-//                print("")
-//                print("====================================")
-//                print("RESPONSE FLT 데이터 :: ", resultCode)
-//                print("                 :: ", resultData)
-//                print("====================================")
-//                print("")
+                print("")
+                print("====================================")
+                print("RESPONSE FLT 데이터 :: ", resultCode)
+                print("                 :: ", resultData)
+                print("====================================")
+                print("")
                 completion(resultCode, resultData)
             }
         })

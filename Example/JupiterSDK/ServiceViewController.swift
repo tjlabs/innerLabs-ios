@@ -27,6 +27,7 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
     
     func update(result: FineLocationTrackingResult) {
         DispatchQueue.main.async {
+//            print("(Jupiter) Time Diff : \(result.mobile_time - self.observerTime)")
             let building = result.building_name
             let level = result.level_name
             
@@ -44,9 +45,8 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
                     }
                 }
             }
+            self.observerTime = result.mobile_time
         }
-        
-        self.observerTime = result.mobile_time
     }
     
     @IBOutlet var ServiceView: UIView!
@@ -643,15 +643,16 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
             scatterChart.leftAxis.axisMinimum = yMin
             scatterChart.leftAxis.axisMaximum = yMax
         } else {
-//            scatterChart.xAxis.axisMinimum = xMin - 17.6
-//            scatterChart.xAxis.axisMaximum = xMax + 3.6
-//            scatterChart.leftAxis.axisMinimum = yMin - 38
-//            scatterChart.leftAxis.axisMaximum = yMax + 35.2
+            print("-- Scale Setting --")
+            scatterChart.xAxis.axisMinimum = xMin - 17.6
+            scatterChart.xAxis.axisMaximum = xMax + 3.6
+            scatterChart.leftAxis.axisMinimum = yMin - 38
+            scatterChart.leftAxis.axisMaximum = yMax + 35.2
             
-            scatterChart.xAxis.axisMinimum = limits[0]
-            scatterChart.xAxis.axisMaximum = limits[1]
-            scatterChart.leftAxis.axisMinimum = limits[2]
-            scatterChart.leftAxis.axisMaximum = limits[3]
+//            scatterChart.xAxis.axisMinimum = limits[0]
+//            scatterChart.xAxis.axisMaximum = limits[1]
+//            scatterChart.leftAxis.axisMinimum = limits[2]
+//            scatterChart.leftAxis.axisMaximum = limits[3]
         }
         
 //        print("\(currentBuilding) \(currentLevel) Limits : \(limits[0]) , \(limits[1]), \(limits[2]), \(limits[3])")
@@ -880,8 +881,8 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
         } else {
             if (buildings.contains(currentBuilding)) {
                 if (XY[0] != 0 && XY[1] != 0) {
-                    drawUser(XY: XY, heading: heading, limits: limits)
-//                    drawAll(XY: XY, serverXY: serviceManager.serverResult, tuXY: serviceManager.timeUpdateResult, heading: heading, limits: limits)
+//                    drawUser(XY: XY, heading: heading, limits: limits)
+                    drawAll(XY: XY, serverXY: serviceManager.serverResult, tuXY: serviceManager.timeUpdateResult, heading: heading, limits: limits)
                 }
             }
         }
