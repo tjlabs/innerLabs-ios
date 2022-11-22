@@ -564,7 +564,7 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
         }
     }
     
-    private func displayLevel(building: String, level: String, flag: Bool) {
+    private func displayLevelImage(building: String, level: String, flag: Bool) {
         self.loadLevel(building: building, level: level, flag: flag, completion: { [self] data, error in
             DispatchQueue.main.async {
                 if (data != nil) {
@@ -575,7 +575,7 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
                     self.imageLevel.image = data
                 } else {
                     // 빌딩 -> 층 이미지가 없는 경우
-                    if (isShowRP) {
+                    if (flag) {
                         self.imageLevel.isHidden = false
                         self.noImageLabel.isHidden = true
 
@@ -686,7 +686,7 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
         let yMin = yAxisValue.min()!
         let yMax = yAxisValue.max()!
         
-//        print("\(currentBuilding) \(currentLevel) MinMax : \(xMin) , \(xMax), \(yMin), \(yMax)")
+        print("\(currentBuilding) \(currentLevel) MinMax : \(xMin) , \(xMax), \(yMin), \(yMax)")
         
         let chartFlag: Bool = false
         scatterChart.isHidden = false
@@ -919,7 +919,7 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
         }
         
         if (pastBuilding != currentBuilding || pastLevel != currentLevel) {
-            displayLevel(building: currentBuilding, level: currentLevel, flag: flag)
+            displayLevelImage(building: currentBuilding, level: currentLevel, flag: flag)
 //            fetchLevel(building: currentBuilding, level: currentLevel, flag: flag)
         }
         
@@ -1109,7 +1109,7 @@ extension ServiceViewController : UICollectionViewDelegate{
             if (isShowRP) {
                 drawRP(RP_X: rp[0], RP_Y: rp[1], XY: XY, heading: 0, limits: limits)
             }
-            displayLevel(building: currentBuilding, level: currentLevel, flag: isShowRP)
+            displayLevelImage(building: currentBuilding, level: currentLevel, flag: isShowRP)
 //            fetchLevel(building: currentBuilding, level: currentLevel, flag: isShowRP)
         }
         
@@ -1129,7 +1129,7 @@ extension ServiceViewController : UICollectionViewDataSource{
 
         levelCollectionView.setName(level: levels[currentBuilding]![indexPath.row],
                                     isClicked: currentLevel == levels[currentBuilding]![indexPath.row] ? true : false)
-        displayLevel(building: currentBuilding, level: currentLevel, flag: isShowRP)
+        displayLevelImage(building: currentBuilding, level: currentLevel, flag: isShowRP)
 //        fetchLevel(building: currentBuilding, level: currentLevel, flag: isShowRP)
         
         levelCollectionView.layer.cornerRadius = 15

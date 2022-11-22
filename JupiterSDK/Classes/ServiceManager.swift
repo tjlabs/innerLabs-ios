@@ -226,7 +226,7 @@ public class ServiceManager: Observation {
     public var displayOutput = ServiceResult()
     
     var nowTime: Int = 0
-    var RECENT_THRESHOLD: Int = 2200
+    var RECENT_THRESHOLD: Int = 10000 // 2200
     var INDEX_THRESHOLD: Int = 6
     let MM_THRESHOLD: Int = 19
     
@@ -948,7 +948,6 @@ public class ServiceManager: Observation {
                 let log: String = localTime + "__(Jupiter) isIndexChanged__\(uvCheckTime)__\(unitDRInfo)\n"
                 self.errorLogs.append(log)
             }
-            print("(Jupiter) : indexChanged \(unitDRInfo.index)")
             self.timeActiveUV = 0
             self.timeSleepUV = 0
             
@@ -1114,11 +1113,11 @@ public class ServiceManager: Observation {
                                                 self.isActiveKf = true
                                             }
                                             
-                                            if (self.phase == 4 && result.phase != 4) {
-                                                let localTime: String = getLocalTimeString()
-                                                let log: String = localTime + " , (Jupiter) Phase Changed : \(self.phase) -> \(result.phase)\n"
-                                                print(log)
-                                            }
+//                                            if (self.phase == 4 && result.phase != 4) {
+//                                                let localTime: String = getLocalTimeString()
+//                                                let log: String = localTime + " , (Jupiter) Phase Changed : \(self.phase) -> \(result.phase)\n"
+//                                                print(log)
+//                                            }
                                             
                                             self.phase = result.phase
                                             self.preOutputMobileTime = result.mobile_time
@@ -1168,9 +1167,9 @@ public class ServiceManager: Observation {
                                                         let muResult = fromServerToResult(fromServer: muOutput, velocity: displayOutput.velocity)
 
                                                         self.tracking(input: muResult, isPast: false)
-                                                        let localTime: String = getLocalTimeString()
-                                                        let log: String = localTime + " , (Jupiter) Success : Kalman Filter MU\n"
-                                                        print(log)
+//                                                        let localTime: String = getLocalTimeString()
+//                                                        let log: String = localTime + " , (Jupiter) Success : Kalman Filter MU\n"
+//                                                        print(log)
                                                     }
                                                     timeUpdatePositionInit(serverOutput: result)
                                                 }
