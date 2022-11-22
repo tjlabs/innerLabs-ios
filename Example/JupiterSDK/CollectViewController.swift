@@ -32,6 +32,20 @@ class Measurements {
     var ble: String = ""
 }
 
+class Trajectory {
+    var time: Int = 0
+
+    var index: Int = 0
+    
+    var length: Double = 0
+    
+    var heading: Double = 0
+
+    var pressure: Double = 0
+
+    var ble: String = ""
+}
+
 class CollectViewController: UIViewController {
     let R2D: Double = 180 / Double.pi
     let D2R: Double = Double.pi / 180
@@ -129,7 +143,8 @@ class CollectViewController: UIViewController {
     }
     
     func goToBack() {
-        self.saveData()
+//        self.saveData()
+        self.saveTrajData()
         
         serviceManager.stopCollect()
         self.saveFlag = false
@@ -220,8 +235,66 @@ class CollectViewController: UIViewController {
         data.add(listPropertiesWithValues(meas))
     }
     
+    func writeTrajectoryData(collectData: CollectData) {
+        let time = collectData.time
+
+        let index = collectData.index
+        let length = collectData.length
+        let heading = collectData.heading
+        let pressure = collectData.pressure[0]
+
+        let traj = Trajectory()
+
+        traj.time = time
+        traj.index = index
+        traj.length = length
+        traj.heading = heading
+        traj.pressure = pressure
+        
+        let bleData = collectData.bleAvg
+        let bleString = (bleData.flatMap({ (key, value) -> String in
+            let str = String(format: "%.2f", value)
+            return "\(key),\(str)"
+        }) as Array).joined(separator: ",")
+        traj.ble = bleString
+
+        data.add(listPropertiesWithValues(traj))
+    }
+    
     func saveData() {
         let header = ["time","accX","accY","accZ","gyroX","gyroY","gyroZ","magX","magY","magZ","roll","pitch","yaw","qx","qy","qz","qw","pressure","ble"]
+        let a = ["time", "index", "length", "heading", "pressure", "ble"]
+        
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd-HH-mm"
+        dateFormatter.locale = Locale(identifier:"ko_KR")
+        let nowDate = Date()
+        let convertNowStr = dateFormatter.string(from: nowDate)
+        
+        // Create a object for write CSV
+        let writeCSVObj = CSV()
+        writeCSVObj.rows = self.data
+        writeCSVObj.delimiter = DividerType.comma.rawValue
+        writeCSVObj.fields = header as NSArray
+        writeCSVObj.name = "iosData_" + convertNowStr
+        
+        // Write File using CSV class object
+        let output = CSVExport.export(writeCSVObj)
+        if output.result.isSuccess {
+            guard let filePath =  output.filePath else {
+                print("Export Error: \(String(describing: output.message))")
+                return
+            }
+            
+            print("File Path: \(filePath)")
+            self.readCSVPath(filePath)
+        } else {
+            print("Export Error: \(String(describing: output.message))")
+        }
+    }
+    
+    func saveTrajData() {
+        let header = ["time", "index", "length", "heading", "pressure", "ble"]
         
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd-HH-mm"
@@ -252,7 +325,6 @@ class CollectViewController: UIViewController {
     }
     
     func readCSVPath(_ filePath: String) {
-        
         let request = NSURLRequest(url:  URL(fileURLWithPath: filePath) )
         
         // Read File and convert as CSV class object
@@ -316,9 +388,10 @@ class CollectViewController: UIViewController {
         }
         
         if (saveFlag) {
-            writeData(collectData: serviceManager.collectData)
+//            writeData(collectData: serviceManager.collectData)
 //            print("Writing : \(serviceManager.collectData)")
             if (serviceManager.collectData.isIndexChanged) {
+                writeTrajectoryData(collectData: serviceManager.collectData)
                 let index = serviceManager.collectData.index
                 let length = serviceManager.collectData.length
                 indexLabel.text = String(index)

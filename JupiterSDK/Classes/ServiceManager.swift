@@ -27,8 +27,16 @@ public class ServiceManager: Observation {
                         result.absolute_heading = correctResult.xyh[2]
 
                         self.pastMatchingResult = result
+                        
+                        self.mmFailCount = 0
                     } else {
                         result = self.pastMatchingResult
+                        
+                        self.mmFailCount += 1
+                        
+                        if (self.mmFailCount >= self.MM_THRESHOLD) {
+                            self.phase = 3
+                        }
                     }
                 }
                 
@@ -237,6 +245,9 @@ public class ServiceManager: Observation {
     var nowTime: Int = 0
     var RECENT_THRESHOLD: Int = 2200
     var INDEX_THRESHOLD: Int = 6
+    let MM_THRESHOLD: Int = 19
+    
+    var mmFailCount: Int = 0
     // --------------------------------- //
     
     
@@ -269,6 +280,7 @@ public class ServiceManager: Observation {
     var measurementOutput = FineLocationTrackingFromServer()
     
     var pastResult = [Double]()
+    var pastBuildingLevel: [String] = ["",""]
     
     var isMapMatching: Bool = false
     
@@ -281,9 +293,10 @@ public class ServiceManager: Observation {
     var timeActiveRF: Double = 0
     var timeActiveUV: Double = 0
     var timeRequest: Double = 0
+    var timePhaseChange: Double = 0
     var timeSleepRF: Double = 0
     var timeSleepUV: Double = 0
-    var timeUpdateInSleep: Double = 0
+    var phaseUnstableCount: Double = 0
     let STOP_THRESHOLD: Double = 1
     let SLEEP_THRESHOLD: Double = 600 // 10분
     let SLEEP_THRESHOLD_RF: Double = 5 // 5s
@@ -1051,7 +1064,6 @@ public class ServiceManager: Observation {
                     let result = jsonToResult(json: returnedString)
                     
                     if ((self.nowTime - result.mobile_time) <= RECENT_THRESHOLD) {
-                        self.phase = result.phase
                         if (self.phase == 4) {
                             UV_INPUT_NUM = VAR_INPUT_NUM
                             INDEX_THRESHOLD = 16
@@ -1070,7 +1082,10 @@ public class ServiceManager: Observation {
 
                             // Kalman Filter
                             if (result.mobile_time > preOutputMobileTime) {
-                                if (result.phase == 4) {
+                                let isChanged: Bool = checkBuildingLevelChange(currentBuillding: result.building_name, currentLevel: result.level_name, pastBuilding: pastBuildingLevel[0], pastLevel: pastBuildingLevel[1])
+                                if (self.phase == 4 && result.phase == 4 && !isChanged) {
+                                    self.phase = result.phase
+                                    self.phaseUnstableCount = 0
                                     if (!(result.x == 0 && result.y == 0)) {
                                         // Measurment Update
                                         let diffIndex = abs(indexSend - result.index)
@@ -1118,7 +1133,22 @@ public class ServiceManager: Observation {
                                         }
                                         timeUpdatePositionInit(serverOutput: result)
                                     }
+                                } else if (self.phase == 4 && result.phase != 4) {
+                                    let localTime: String = getLocalTimeString()
+                                    let log: String = localTime + " , (Jupiter) Warnings : Phase is changed 4 -> \(result.phase)\n"
+                                    print(log)
+                                    
+                                    if (self.phaseUnstableCount >= 3) {
+                                        self.phase = result.phase
+                                        self.phaseUnstableCount = 0
+                                        
+                                        let log: String = localTime + " , (Jupiter) Warnings : Phase is unstable \(self.phaseUnstableCount)\n"
+                                        print(log)
+                                    }
+                                    self.phaseUnstableCount += 1
                                 } else {
+                                    self.phase = result.phase
+                                    
                                     kalmanInit()
                                     let finalResult = fromServerToResult(fromServer: result, velocity: displayOutput.velocity)
                                     
@@ -1128,11 +1158,11 @@ public class ServiceManager: Observation {
                                     
                                     self.tracking(input: finalResult, isPast: false)
                                 }
-
                                 preOutputMobileTime = result.mobile_time
                             }
                         }
                         indexPast = result.index
+                        pastBuildingLevel = [result.building_name, result.level_name]
                     }
                 }
             })
@@ -1144,67 +1174,41 @@ public class ServiceManager: Observation {
             } else {
                 // Request
                 self.timeRequest += RQ_INTERVAL
-                if (self.timeRequest >= 2) {
+                if (self.timeRequest >= 1.95) {
+                    self.timeRequest = 0
+                    
                     let input = FineLocationTracking(user_id: user_id, mobile_time: currentTime, sector_id: sector_id, phase: self.phase)
                     NetworkManager.shared.postFLT(url: FLT_URL, input: input, completion: { [self] statusCode, returnedString in
                         if (statusCode == 200) {
-                            print(returnedString)
                             let result = jsonToResult(json: returnedString)
                             self.serverResult[0] = result.x
                             self.serverResult[1] = result.y
                             self.serverResult[2] = result.absolute_heading
 
                             let finalResult = fromServerToResult(fromServer: result, velocity: displayOutput.velocity)
+                            self.lastTrackingTime = getCurrentTimeInMilliseconds()
                             self.tracking(input: finalResult, isPast: false)
                         }
                     })
-                    self.timeRequest = 0
+                } else {
+                    // Gurantee 1Hz
+                    self.updateLastResult(currentTime: currentTime)
                 }
-                
-                // Gurantee 1Hz
-                self.updateLastResult(currentTime: currentTime)
             }
-            
-//            let diffUpdatedTime: Int = currentTime - self.lastTrackingTime
-//            if (diffUpdatedTime > 950) {
-//                if (self.lastTrackingTime != 0 && self.isActiveRF) {
-//                    self.tracking(input: self.lastResult, isPast: true)
-//
-//                    if (flagSaveError) {
-//                        let localTime: String = getLocalTimeString()
-//                        let log: String = localTime + " , (Jupiter) Warnings : Past Result , Stop = \(self.isStop)\n"
-//                        self.errorLogs.append(log)
-//                    }
-//                } else {
-//                    if (isFirstStart) {
-//                        let key: String = "JupiterLastResult_\(self.sector_id)"
-//                        if let lastKnownResult: String = UserDefaults.standard.object(forKey: key) as? String {
-//                            let currentTime = getCurrentTimeInMilliseconds()
-//                            let result = jsonForTracking(json: lastKnownResult)
-//                            if (currentTime - result.mobile_time) < 1000*3600*12 {
-//                                var updatedResult = result
-//                                updatedResult.mobile_time = currentTime
-//                                updatedResult.index = 0
-//                                updatedResult.phase = 0
-//                                self.tracking(input: updatedResult, isPast: false)
-//                            }
-//                        } else {
-//                            if (self.flagSaveError) {
-//                                let localTime: String = getLocalTimeString()
-//                                let log: String = localTime + " , (Jupiter) Warnings : Empty Last Result\n"
-//                                self.errorLogs.append(log)
-//                            }
-//                        }
-//                        isFirstStart = false
-//                    }
-//                }
-//            }
+        }
+    }
+    
+    func checkBuildingLevelChange(currentBuillding: String, currentLevel: String, pastBuilding: String, pastLevel: String) -> Bool {
+        if (currentBuillding == pastBuilding) && (currentLevel == pastLevel) {
+            return false
+        } else {
+            return true
         }
     }
     
     func updateLastResult(currentTime: Int) {
         let diffUpdatedTime: Int = currentTime - self.lastTrackingTime
-        if (diffUpdatedTime >= 1000) {
+        if (diffUpdatedTime >= 950) {
             if (self.lastTrackingTime != 0 && self.isActiveRF) {
                 self.tracking(input: self.lastResult, isPast: true)
                 

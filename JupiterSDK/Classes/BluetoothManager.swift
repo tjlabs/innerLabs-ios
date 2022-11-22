@@ -264,6 +264,7 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
         } else {
             self.BLE_VALID_TIME = 1500
         }
+//        print("(Jupiter) BLE Valid Time : \(self.BLE_VALID_TIME)")
     }
     
     func trimBleData() {
