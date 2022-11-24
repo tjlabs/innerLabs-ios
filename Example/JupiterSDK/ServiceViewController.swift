@@ -1126,13 +1126,11 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
             if (section == 0) {
                 isOpen = true
             }
-            
         case .willCollapse:
             print("WILL COLLAPSE")
             if (section == 0) {
                 isOpen = false
             }
-            
         case .didExpand:
             print("DID EXPAND")
             
