@@ -27,6 +27,10 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
     
     func update(result: FineLocationTrackingResult) {
         DispatchQueue.main.async {
+//            let localTime: String = self.getLocalTimeString()
+//            let log: String = localTime + " , (Jupiter) Output // Building : \(result.building_name) , Level : \(result.level_name)"
+//            print(log)
+            
 //            print("(Jupiter) Time Diff : \(result.mobile_time - self.observerTime)")
             let building = result.building_name
             let level = result.level_name
@@ -566,6 +570,7 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
     
     private func displayLevelImage(building: String, level: String, flag: Bool) {
         self.loadLevel(building: building, level: level, flag: flag, completion: { [self] data, error in
+//            print("(Jupiter) Building Level : \(building) , \(level)")
             DispatchQueue.main.async {
                 if (data != nil) {
                     // 빌딩 -> 층 이미지가 있는 경우
@@ -582,8 +587,8 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
                         self.imageLevel.image = UIImage(named: "emptyLevel")
                     } else {
                         self.scatterChart.isHidden = true
-                        self.imageLevel.isHidden = true
                         self.noImageLabel.isHidden = false
+                        self.imageLevel.isHidden = true
                     }
 
                 }
@@ -686,7 +691,7 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
         let yMin = yAxisValue.min()!
         let yMax = yAxisValue.max()!
         
-        print("\(currentBuilding) \(currentLevel) MinMax : \(xMin) , \(xMax), \(yMin), \(yMax)")
+//        print("\(currentBuilding) \(currentLevel) MinMax : \(xMin) , \(xMax), \(yMin), \(yMax)")
         
         let chartFlag: Bool = false
         scatterChart.isHidden = false
@@ -698,10 +703,15 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
             scatterChart.leftAxis.axisMinimum = yMin-7.5
             scatterChart.leftAxis.axisMaximum = yMax+7.5
         } else if ( limits[0] == 0 && limits[1] == 0 && limits[2] == 0 && limits[3] == 0 ) {
-            scatterChart.xAxis.axisMinimum = xMin
-            scatterChart.xAxis.axisMaximum = xMax
-            scatterChart.leftAxis.axisMinimum = yMin
-            scatterChart.leftAxis.axisMaximum = yMax
+//            scatterChart.xAxis.axisMinimum = xMin
+//            scatterChart.xAxis.axisMaximum = xMax
+//            scatterChart.leftAxis.axisMinimum = yMin
+//            scatterChart.leftAxis.axisMaximum = yMax
+            
+            scatterChart.xAxis.axisMinimum = -35
+            scatterChart.xAxis.axisMaximum = 316
+            scatterChart.leftAxis.axisMinimum = 9
+            scatterChart.leftAxis.axisMaximum = 509
         } else {
 //            print("-- Scale Setting --")
 //            scatterChart.xAxis.axisMinimum = xMin - 66
@@ -709,10 +719,15 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
 //            scatterChart.leftAxis.axisMinimum = yMin - 1
 //            scatterChart.leftAxis.axisMaximum = yMax + 38
             
-            scatterChart.xAxis.axisMinimum = xMin - 48
-            scatterChart.xAxis.axisMaximum = xMax + 30
-            scatterChart.leftAxis.axisMinimum = yMin - 4
-            scatterChart.leftAxis.axisMaximum = yMax + 40
+//            scatterChart.xAxis.axisMinimum = xMin - 48
+//            scatterChart.xAxis.axisMaximum = xMax + 30
+//            scatterChart.leftAxis.axisMinimum = yMin - 4
+//            scatterChart.leftAxis.axisMaximum = yMax + 40
+            
+            scatterChart.xAxis.axisMinimum = -35
+            scatterChart.xAxis.axisMaximum = 316
+            scatterChart.leftAxis.axisMinimum = 9
+            scatterChart.leftAxis.axisMaximum = 509
             
 //            scatterChart.xAxis.axisMinimum = limits[0]
 //            scatterChart.xAxis.axisMaximum = limits[1]
@@ -775,6 +790,121 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
         scatterChart.isHidden = false
 //        print("\(currentBuilding) \(currentLevel) Limits : \(limits[0]) , \(limits[1]), \(limits[2]), \(limits[3])")
         
+        // Configure Chart
+        scatterChart.xAxis.axisMinimum = limits[0]
+        scatterChart.xAxis.axisMaximum = limits[1]
+        scatterChart.leftAxis.axisMinimum = limits[2]
+        scatterChart.leftAxis.axisMaximum = limits[3]
+        
+        scatterChart.xAxis.drawGridLinesEnabled = chartFlag
+        scatterChart.leftAxis.drawGridLinesEnabled = chartFlag
+        scatterChart.rightAxis.drawGridLinesEnabled = chartFlag
+        
+        scatterChart.xAxis.drawAxisLineEnabled = chartFlag
+        scatterChart.leftAxis.drawAxisLineEnabled = chartFlag
+        scatterChart.rightAxis.drawAxisLineEnabled = chartFlag
+        
+        scatterChart.xAxis.centerAxisLabelsEnabled = chartFlag
+        scatterChart.leftAxis.centerAxisLabelsEnabled = chartFlag
+        scatterChart.rightAxis.centerAxisLabelsEnabled = chartFlag
+
+        scatterChart.xAxis.drawLabelsEnabled = chartFlag
+        scatterChart.leftAxis.drawLabelsEnabled = chartFlag
+        scatterChart.rightAxis.drawLabelsEnabled = chartFlag
+        
+        scatterChart.legend.enabled = chartFlag
+        
+        scatterChart.backgroundColor = .clear
+        
+        scatterChart.data = chartData
+    }
+    
+    private func drawDebug(XY: [Double], RP_X: [Double], RP_Y: [Double],  serverXY: [Double], tuXY: [Double], heading: Double, limits: [Double]) {
+        let xAxisValue: [Double] = RP_X
+        let yAxisValue: [Double] = RP_Y
+
+        let values0 = (0..<xAxisValue.count).map { (i) -> ChartDataEntry in
+            return ChartDataEntry(x: xAxisValue[i], y: yAxisValue[i])
+        }
+        
+        let set0 = ScatterChartDataSet(entries: values0, label: "RP")
+        set0.drawValuesEnabled = false
+        set0.setScatterShape(.square)
+        set0.setColor(UIColor.yellow)
+        set0.scatterShapeSize = 4
+        
+        let values1 = (0..<1).map { (i) -> ChartDataEntry in
+            return ChartDataEntry(x: XY[0], y: XY[1])
+        }
+        let set1 = ScatterChartDataSet(entries: values1, label: "USER")
+        set1.drawValuesEnabled = false
+        set1.setScatterShape(.circle)
+        set1.setColor(UIColor.systemRed)
+        set1.scatterShapeSize = 16
+        
+        let values2 = (0..<1).map { (i) -> ChartDataEntry in
+            return ChartDataEntry(x: serverXY[0], y: serverXY[1])
+        }
+        
+        let set2 = ScatterChartDataSet(entries: values2, label: "SERVER")
+        set2.drawValuesEnabled = false
+        set2.setScatterShape(.circle)
+        set2.setColor(.yellow)
+        set2.scatterShapeSize = 12
+        
+        let values3 = (0..<1).map { (i) -> ChartDataEntry in
+            return ChartDataEntry(x: tuXY[0], y: tuXY[1])
+        }
+        
+        let set3 = ScatterChartDataSet(entries: values3, label: "TU")
+        set3.drawValuesEnabled = false
+        set3.setScatterShape(.circle)
+        set3.setColor(.systemGreen)
+        set3.scatterShapeSize = 12
+        
+        let chartData = ScatterChartData(dataSet: set0)
+        chartData.append(set1)
+        chartData.append(set2)
+        chartData.append(set3)
+        chartData.setDrawValues(false)
+        
+        
+        // Heading
+        let point = scatterChart.getPosition(entry: ChartDataEntry(x: XY[0], y: XY[1]), axis: .left)
+        let imageView = UIImageView(image: headingImage!.rotate(degrees: -heading+90))
+        imageView.frame = CGRect(x: point.x - 15, y: point.y - 15, width: 30, height: 30)
+        imageView.contentMode = .center
+        imageView.tag = 100
+        if let viewWithTag = scatterChart.viewWithTag(100) {
+            viewWithTag.removeFromSuperview()
+        }
+        scatterChart.addSubview(imageView)
+        
+        let point2 = scatterChart.getPosition(entry: ChartDataEntry(x: serverXY[0], y: serverXY[1]), axis: .left)
+        let imageView2 = UIImageView(image: headingImage!.rotate(degrees: -serverXY[2]+90))
+        imageView2.frame = CGRect(x: point2.x - 15, y: point2.y - 15, width: 30, height: 30)
+        imageView2.contentMode = .center
+        imageView2.tag = 200
+        if let viewWithTag2 = scatterChart.viewWithTag(200) {
+            viewWithTag2.removeFromSuperview()
+        }
+        scatterChart.addSubview(imageView2)
+        
+        let point3 = scatterChart.getPosition(entry: ChartDataEntry(x: tuXY[0], y: tuXY[1]), axis: .left)
+        let imageView3 = UIImageView(image: headingImage!.rotate(degrees: -tuXY[2]+90))
+        imageView3.frame = CGRect(x: point3.x - 15, y: point3.y - 15, width: 30, height: 30)
+        imageView3.contentMode = .center
+        imageView3.tag = 300
+        if let viewWithTag3 = scatterChart.viewWithTag(300) {
+            viewWithTag3.removeFromSuperview()
+        }
+        scatterChart.addSubview(imageView3)
+        
+        
+        let chartFlag: Bool = false
+        scatterChart.isHidden = false
+        
+//        print("\(currentBuilding) \(currentLevel) Limits : \(limits[0]) , \(limits[1]), \(limits[2]), \(limits[3])")
         // Configure Chart
         scatterChart.xAxis.axisMinimum = limits[0]
         scatterChart.xAxis.axisMaximum = limits[1]
@@ -941,7 +1071,8 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
                 if (rp.isEmpty) {
                     scatterChart.isHidden = true
                 } else {
-                    drawRP(RP_X: rp[0], RP_Y: rp[1], XY: XY, heading: heading, limits: limits)
+//                    drawRP(RP_X: rp[0], RP_Y: rp[1], XY: XY, heading: heading, limits: limits)
+                    drawDebug(XY: XY, RP_X: rp[0], RP_Y: rp[1], serverXY: serviceManager.serverResult, tuXY: serviceManager.timeUpdateResult, heading: heading, limits: limits)
                 }
             }
         } else {
@@ -1107,7 +1238,8 @@ extension ServiceViewController : UICollectionViewDelegate{
             scatterChart.isHidden = true
         } else {
             if (isShowRP) {
-                drawRP(RP_X: rp[0], RP_Y: rp[1], XY: XY, heading: 0, limits: limits)
+//                drawRP(RP_X: rp[0], RP_Y: rp[1], XY: XY, heading: 0, limits: limits)
+                drawDebug(XY: XY, RP_X: rp[0], RP_Y: rp[1], serverXY: serviceManager.serverResult, tuXY: serviceManager.timeUpdateResult, heading: 0, limits: limits)
             }
             displayLevelImage(building: currentBuilding, level: currentLevel, flag: isShowRP)
 //            fetchLevel(building: currentBuilding, level: currentLevel, flag: isShowRP)

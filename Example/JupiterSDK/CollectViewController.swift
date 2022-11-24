@@ -143,8 +143,8 @@ class CollectViewController: UIViewController {
     }
     
     func goToBack() {
-//        self.saveData()
-        self.saveTrajData()
+        self.saveData()
+//        self.saveTrajData()
         
         serviceManager.stopCollect()
         self.saveFlag = false
@@ -388,10 +388,10 @@ class CollectViewController: UIViewController {
         }
         
         if (saveFlag) {
-//            writeData(collectData: serviceManager.collectData)
+            writeData(collectData: serviceManager.collectData)
 //            print("Writing : \(serviceManager.collectData)")
             if (serviceManager.collectData.isIndexChanged) {
-                writeTrajectoryData(collectData: serviceManager.collectData)
+//                writeTrajectoryData(collectData: serviceManager.collectData)
                 let index = serviceManager.collectData.index
                 let length = serviceManager.collectData.length
                 indexLabel.text = String(index)
