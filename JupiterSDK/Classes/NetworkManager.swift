@@ -197,6 +197,14 @@ public class NetworkManager {
         
         let dataTask = URLSession.shared.dataTask(with: requestURL, completionHandler: { (data, response, error) in
             
+//            print("")
+//            print("====================================")
+//            print("RESPONSE CLE 데이터 :: ", data)
+//            print("RESPONSE CLE 데이터 :: ", response)
+//            print("RESPONSE CLE 데이터 :: ", error)
+//            print("====================================")
+//            print("")
+            
             // [error가 존재하면 종료]
             guard error == nil else {
                 // [콜백 반환]

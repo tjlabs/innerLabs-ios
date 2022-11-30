@@ -27,9 +27,9 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
     
     func update(result: FineLocationTrackingResult) {
         DispatchQueue.main.async {
-//            let localTime: String = self.getLocalTimeString()
-//            let log: String = localTime + " , (Jupiter) Output // Building : \(result.building_name) , Level : \(result.level_name)"
-//            print(log)
+            let localTime: String = self.getLocalTimeString()
+            let log: String = localTime + " , (Jupiter) Output // Building : \(result.building_name) , Level : \(result.level_name)"
+            print(log)
             
 //            print("(Jupiter) Time Diff : \(result.mobile_time - self.observerTime)")
             let building = result.building_name

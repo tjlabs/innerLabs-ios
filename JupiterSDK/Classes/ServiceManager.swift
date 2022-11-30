@@ -567,12 +567,14 @@ public class ServiceManager: Observation {
         case "SD":
             let input = CoarseLevelDetection(user_id: self.user_id, mobile_time: currentTime)
             NetworkManager.shared.postCLD(url: CLD_URL, input: input, completion: { statusCode, returnedString in
-                completion(statusCode, returnedString)
+                let sdString = self.CLDToSD(json: returnedString)
+                completion(statusCode, sdString)
             })
         case "BD":
             let input = CoarseLevelDetection(user_id: self.user_id, mobile_time: currentTime)
             NetworkManager.shared.postCLD(url: CLD_URL, input: input, completion: { statusCode, returnedString in
-                completion(statusCode, returnedString)
+                let bdString = self.CLDToBD(json: returnedString)
+                completion(statusCode, bdString)
             })
         case "CLD":
             let input = CoarseLevelDetection(user_id: self.user_id, mobile_time: currentTime)
@@ -582,7 +584,8 @@ public class ServiceManager: Observation {
         case "FLD":
             let input = CoarseLocationEstimation(user_id: self.user_id, mobile_time: currentTime, sector_id: self.sector_id)
             NetworkManager.shared.postCLE(url: CLE_URL, input: input, completion: { statusCode, returnedString in
-                completion(statusCode, returnedString)
+                let fldString = self.CLEtoFLD(json: returnedString)
+                completion(statusCode, fldString)
             })
         case "CLE":
             let input = CoarseLocationEstimation(user_id: self.user_id, mobile_time: currentTime, sector_id: self.sector_id)
@@ -596,6 +599,19 @@ public class ServiceManager: Observation {
             })
         default:
             completion(500, "(Jupiter) Error : Unvalid Service Name")
+        }
+    }
+    
+    public func getSpotResult(completion: @escaping (Int, String) -> Void) {
+        let currentTime: Int = getCurrentTimeInMilliseconds()
+        
+        if (self.user_id != "") {
+            let input = OnSpotAuthorization(user_id: self.user_id, mobile_time: currentTime)
+            NetworkManager.shared.postOSA(url: OSA_URL, input: input, completion: { statusCode, returnedString in
+                completion(statusCode, returnedString)
+            })
+        } else {
+            completion(500, "(Jupiter) Error : Unvalid User ID")
         }
     }
     
@@ -1060,9 +1076,9 @@ public class ServiceManager: Observation {
                             if (statusCode == 200) {
                                 let result = jsonToResult(json: returnedString)
                                 if (result.mobile_time > preOutputMobileTime) {
-//                                    let localTime: String = self.getLocalTimeString()
-//                                    let log: String = localTime + " , (Jupiter) Result 1~3 // Building : \(result.building_name) , Level : \(result.level_name)"
-//                                    print(log)
+                                    let localTime: String = self.getLocalTimeString()
+                                    let log: String = localTime + " , (Jupiter) Result 1~3 // Building : \(result.building_name) , Level : \(result.level_name)"
+                                    print(log)
                                     
                                     self.phase = result.phase
                                     self.preOutputMobileTime = result.mobile_time
@@ -1071,33 +1087,35 @@ public class ServiceManager: Observation {
                                     self.serverResult[1] = result.y
                                     self.serverResult[2] = result.absolute_heading
                                     
-                                    if (!isActiveKf) {
+                                    if (!self.isActiveKf) {
                                         let finalResult = fromServerToResult(fromServer: result, velocity: displayOutput.velocity)
                                         self.lastTrackingTime = getCurrentTimeInMilliseconds()
                                         self.tracking(input: finalResult, isPast: false)
                                     } else {
                                         // Check Building Level Change
                                         if (result.building_name != self.pastBuildingLevel[0] || result.level_name != self.pastBuildingLevel[1]) {
-                                            var finalResult = fromServerToResult(fromServer: result, velocity: displayOutput.velocity)
                                             if (!self.pastResult.isEmpty) {
-                                                finalResult.x = self.pastResult[0]
-                                                finalResult.y = self.pastResult[1]
-                                                finalResult.absolute_heading = self.pastResult[2]
+                                                // FinalResult -> Result from Server when Building Level Changed
                                                 
-                                                timeUpdateOutput.x = finalResult.x
-                                                timeUpdateOutput.y = finalResult.y
-                                                timeUpdateOutput.phase = finalResult.phase
-                                                timeUpdateOutput.building_name = finalResult.building_name
-                                                timeUpdateOutput.level_name = finalResult.level_name
-                                                timeUpdateOutput.absolute_heading = finalResult.absolute_heading
-                                                timeUpdateOutput.mobile_time = finalResult.mobile_time
+                                                var timUpdateOutputCopy = self.timeUpdateOutput
+                                                timUpdateOutputCopy.phase = result.phase
+                                                timUpdateOutputCopy.building_name = result.building_name
+                                                timUpdateOutputCopy.level_name = result.level_name
+                                                timUpdateOutputCopy.mobile_time = result.mobile_time
                                                 
-                                                let updatedResult = fromServerToResult(fromServer: timeUpdateOutput, velocity: displayOutput.velocity)
+                                                let updatedResult = fromServerToResult(fromServer: timUpdateOutputCopy, velocity: displayOutput.velocity)
+                                                self.timeUpdateOutput = timUpdateOutputCopy
+                                                
+//                                                let localTime: String = self.getLocalTimeString()
+//                                                let log: String = localTime + " , (Jupiter) Updated Result 1~3 // Building : \(self.timeUpdateOutput)"
+//                                                print(log)
+                                                
                                                 self.lastTrackingTime = getCurrentTimeInMilliseconds()
                                                 self.tracking(input: updatedResult, isPast: false)
                                             }
                                         }
                                     }
+                                    self.pastBuildingLevel = [result.building_name, result.level_name]
                                 }
                             }
                         })
@@ -1207,7 +1225,7 @@ public class ServiceManager: Observation {
     
     func updateLastResult(currentTime: Int) {
         let diffUpdatedTime: Int = currentTime - self.lastTrackingTime
-        if (diffUpdatedTime >= 500) {
+        if (diffUpdatedTime >= 200) {
             if (self.lastTrackingTime != 0 && self.isActiveRF) {
                 self.tracking(input: self.lastResult, isPast: true)
                 
@@ -1639,4 +1657,90 @@ public class ServiceManager: Observation {
 
         return measurementOutput
     }
+    
+    func CLDToSD(json: String) -> String {
+        let decoder = JSONDecoder()
+
+        let jsonString = json
+
+        if let data = jsonString.data(using: .utf8), let decoded = try? decoder.decode(CoarseLevelDetectionResult.self, from: data) {
+            var result = SectorDetectionResult()
+            result.mobile_time = decoded.mobile_time
+            result.sector_name = decoded.sector_name
+            result.calculated_time = decoded.calculated_time
+            
+            if (result.sector_name != "") {
+                let encodedData = try! JSONEncoder().encode(result)
+                if let encodedResult: String = String(data: encodedData, encoding: .utf8) {
+                    return encodedResult
+                } else {
+                    return "Fail"
+                }
+            }
+        }
+        return "Fail"
+    }
+    
+    func CLDToBD(json: String) -> String {
+        let decoder = JSONDecoder()
+
+        let jsonString = json
+
+        if let data = jsonString.data(using: .utf8), let decoded = try? decoder.decode(CoarseLevelDetectionResult.self, from: data) {
+            var result = BuildingDetectionResult()
+            result.mobile_time = decoded.mobile_time
+            result.building_name = decoded.building_name
+            result.calculated_time = decoded.calculated_time
+            
+            if (result.building_name != "") {
+                let encodedData = try! JSONEncoder().encode(result)
+                if let encodedResult: String = String(data: encodedData, encoding: .utf8) {
+                    return encodedResult
+                } else {
+                    return "Fail"
+                }
+            }
+        }
+        return "Fail"
+    }
+    
+    func CLEtoFLD(json: String) -> String {
+        let decoder = JSONDecoder()
+
+        let jsonString = json
+
+        if let data = jsonString.data(using: .utf8), let decoded = try? decoder.decode(CoarseLocationEstimationResult.self, from: data) {
+            var result = FineLevelDetectionResult()
+            
+            result.mobile_time = decoded.mobile_time
+            result.building_name = decoded.building_name
+            result.level_name = decoded.level_name
+            result.scc = decoded.scc
+            result.scr = decoded.scr
+            result.calculated_time = decoded.calculated_time
+            
+            if (result.building_name != "" && result.level_name != "") {
+                let encodedData = try! JSONEncoder().encode(result)
+                if let encodedResult: String = String(data: encodedData, encoding: .utf8) {
+                    return encodedResult
+                } else {
+                    return "Fail"
+                }
+            }
+        }
+        return "Fail"
+    }
+    
+//    func jsonToBD(json: String) -> CoarseLevelDetectionResult {
+//        let result = CoarseLevelDetectionResult.init()
+//        let decoder = JSONDecoder()
+//
+//        let jsonString = json
+//
+//        if let data = jsonString.data(using: .utf8), let decoded = try? decoder.decode(CoarseLevelDetectionResult.self, from: data) {
+//            return decoded
+//        }
+//
+//        return result
+//    }
 }

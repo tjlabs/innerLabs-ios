@@ -16,7 +16,7 @@ class TipsTownViewController: UIViewController {
     @IBOutlet weak var tipsTownImage: UIImageView!
     
     var serviceManager = ServiceManager()
-    var serviceName = "OSA"
+    var serviceName = "FLD"
     var userId: String = ""
     
     var delegate : ServiceViewPageDelegate?
@@ -162,9 +162,14 @@ class TipsTownViewController: UIViewController {
     func getResult() {
         serviceManager.getResult(completion: { [self] statusCode, returnedString in
             if (statusCode == 200) {
+                print(returnedString)
+            }
+        })
+        
+        serviceManager.getSpotResult(completion: { [self] statusCode, returnedString in
+            if (statusCode == 200) {
                 let result = decodeOSA(json: returnedString)
                 print(result)
-//                print(result.count)
                 
 //                if (result.building_name != "") {
 //                    self.pastBuilding = currentBuilding
