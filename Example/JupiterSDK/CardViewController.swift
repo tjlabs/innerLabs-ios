@@ -419,6 +419,7 @@ extension CardViewController: UICollectionViewDataSource, UICollectionViewDelega
             self.navigationController?.pushViewController(neptuneVC, animated: true)
         } else {
             guard let serviceVC = self.storyboard?.instantiateViewController(withIdentifier: "ServiceViewController") as? ServiceViewController else { return }
+//            guard let serviceVC = self.storyboard?.instantiateViewController(withIdentifier: "FusionViewController") as? FusionViewController else { return }
             serviceVC.cardData = cardItemData[mod]
             serviceVC.uuid = uuid
             serviceVC.page = currentPage

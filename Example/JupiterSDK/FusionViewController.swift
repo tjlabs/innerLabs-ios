@@ -11,7 +11,7 @@ protocol FusionViewPageDelegate {
     func sendPage(data: Int)
 }
 
-class FusionViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewDataSource, Observer {
+class FusionViewController: UIViewController, Observer {
     
     func update(result: FineLocationTrackingResult) {
         DispatchQueue.main.async {
@@ -119,9 +119,6 @@ class FusionViewController: UIViewController, ExpyTableViewDelegate, ExpyTableVi
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(false)
         setCardData(cardData: cardData!)
-        
-        makeDelegate()
-        registerXib()
         
         setCells()
         setLevelCollectionView()
@@ -277,19 +274,11 @@ class FusionViewController: UIViewController, ExpyTableViewDelegate, ExpyTableVi
         }
     }
     
-    func showContainerTableView() {
-//        containerViewHeight.constant = 220
-    }
-    
-    func hideContainerTableView() {
-//        containerViewHeight.constant = defaultHeight
-    }
     
     func fixChartHeight(flag: Bool) {
         if (flag) {
             if ( cardData?.sector_id == 1 || cardData?.sector_id == 2 ) {
                 displayViewHeight.constant = 480
-//                containerViewHeight.constant = 150
             } else {
                 let ratio: Double = 114900 / 68700
                 displayViewHeight.constant = displayView.bounds.width * ratio
@@ -298,12 +287,9 @@ class FusionViewController: UIViewController, ExpyTableViewDelegate, ExpyTableVi
                 let bottomPadding = window?.safeAreaInsets.bottom ?? 0.0
                 
                 defaultHeight = FusionView.bounds.height - 100 - displayViewHeight.constant - bottomPadding
-                
-//                containerViewHeight.constant = defaultHeight
             }
         } else {
             displayViewHeight.constant = 480
-//            containerViewHeight.constant = 150
         }
     }
     
@@ -317,24 +303,6 @@ class FusionViewController: UIViewController, ExpyTableViewDelegate, ExpyTableVi
         levelCollectionView.reloadData()
     }
     
-    func registerXib() {
-//        let serviceInfoNib = UINib(nibName: "ServiceInfoTableViewCell", bundle: nil)
-//        containerTableView.register(serviceInfoNib, forCellReuseIdentifier: "ServiceInfoTableViewCell")
-//
-//        let robotNib = UINib(nibName: "RobotTableViewCell", bundle: nil)
-//        containerTableView.register(robotNib, forCellReuseIdentifier: "RobotTableViewCell")
-    }
-    
-    func makeDelegate() {
-//        containerTableView.dataSource = self
-//        containerTableView.delegate = self
-//        containerTableView.bounces = false
-    }
-    
-    func setTableView() {
-        //테이블 뷰 셀 사이의 회색 선 없애기
-//        containerTableView.separatorStyle = UITableViewCell.SeparatorStyle.none
-    }
     
     private func initDropDown() {
         dropView.layer.cornerRadius = 6
@@ -478,10 +446,6 @@ class FusionViewController: UIViewController, ExpyTableViewDelegate, ExpyTableVi
             resultToDisplay.unitLength = serviceManager.displayOutput.length
             resultToDisplay.scc = serviceManager.displayOutput.scc
             resultToDisplay.phase = serviceManager.displayOutput.phase
-            
-            if (isOpen) {
-//                UIView.performWithoutAnimation { self.containerTableView.reloadSections(IndexSet(0...0), with: .none) }
-            }
         }
     }
     
@@ -1080,105 +1044,8 @@ class FusionViewController: UIViewController, ExpyTableViewDelegate, ExpyTableVi
             switchButtonOffset.constant = 10
         }
     }
-    
-    
-    func tableView(_ tableView: ExpyTableView, expyState state: ExpyState, changeForSection section: Int) {
-        switch state {
-        case .willExpand:
-            print("WILL EXPAND")
-            if (section == 0) {
-                isOpen = true
-            }
-        case .willCollapse:
-            print("WILL COLLAPSE")
-            if (section == 0) {
-                isOpen = false
-            }
-        case .didExpand:
-            print("DID EXPAND")
-            
-        case .didCollapse:
-            print("DID COLLAPSE")
-        }
-    }
-    
-    func tableView(_ tableView: ExpyTableView, canExpandSection section: Int) -> Bool {
-        return true
-    }
-    
-    func tableView(_ tableView: ExpyTableView, expandableCellForSection section: Int) -> UITableViewCell {
-        let cell = UITableViewCell()
-        cell.backgroundColor = .systemGray6
-        cell.selectionStyle = .none //선택했을 때 회색되는거 없애기
-        
-        cell.separatorInset = UIEdgeInsets(top: 5, left: 10, bottom: 0, right: 10)
-        if section == 0 {
-            cell.textLabel?.text = "  🧑🏻‍🔧 Service Information"
-            cell.textLabel?.font = UIFont(name: AppFontName.bold, size: 16)
-        } else {
-            cell.textLabel?.text = "  🤖 Robot"
-            cell.textLabel?.font = UIFont(name: AppFontName.bold, size: 16)
-            
-        }
-        return cell
-    }
 }
 
-extension FusionViewController: UITableViewDelegate {
-    // 높이 지정 index별
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-            if indexPath.row == 0 {
-                return 40
-            } else {
-                if (indexPath.section == 0) {
-                    return 220 + 20
-                } else {
-                    return 120 + 20
-                }
-                
-            }
-    }
-    
-    func numberOfSections(in tableView: UITableView) -> Int {
-        return 2
-    }
-    
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-//            print("\(indexPath.section)섹션 \(indexPath.row)로우 선택됨")
-    }
-}
-
-extension FusionViewController: UITableViewDataSource {
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-            if section == 0 {
-                return 2
-            } else {
-                return 2
-            }
-    }
-    
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-            if indexPath.section == 0 {
-                let serviceInfoTVC = tableView.dequeueReusableCell(withIdentifier: ServiceInfoTableViewCell.identifier) as!
-                ServiceInfoTableViewCell
-                
-                serviceInfoTVC.backgroundColor = .systemGray6
-                serviceInfoTVC.infoOfLevelsLabel.text = infoOfLevels
-                serviceInfoTVC.velocityLabel.text = "0"
-                
-                serviceInfoTVC.updateResult(data: resultToDisplay)
-                
-                return serviceInfoTVC
-            } else {
-                let robotTVC = tableView.dequeueReusableCell(withIdentifier: RobotTableViewCell.identifier) as!
-                RobotTableViewCell
-                
-                robotTVC.backgroundColor = .systemGray6
-                
-                return robotTVC
-            }
-    }
-}
 
 extension FusionViewController : UICollectionViewDelegate{
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
