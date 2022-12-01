@@ -1,11 +1,3 @@
-//
-//  ServiceViewController.swift
-//  JupiterSDK_Example
-//
-//  Created by 신동현 on 2022/07/07.
-//  Copyright © 2022 CocoaPods. All rights reserved.
-//
-
 import UIKit
 import JupiterSDK
 import Alamofire
@@ -15,23 +7,14 @@ import Charts
 import DropDown
 import SwiftUI
 
-enum TableList{
-    case sector
-}
-
-protocol ServiceViewPageDelegate {
+protocol FusionViewPageDelegate {
     func sendPage(data: Int)
 }
 
-class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewDataSource, Observer {
+class FusionViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewDataSource, Observer {
     
     func update(result: FineLocationTrackingResult) {
         DispatchQueue.main.async {
-//            let localTime: String = self.getLocalTimeString()
-//            let log: String = localTime + " , (Jupiter) Output // Building : \(result.building_name) , Level : \(result.level_name)"
-//            print(log)
-//            print("(Jupiter) Time Diff : \(result.mobile_time - self.observerTime) \\ Phase : \(result.phase)")
-            
             let building = result.building_name
             let level = result.level_name
             
@@ -53,22 +36,28 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
         }
     }
     
-    @IBOutlet var ServiceView: UIView!
+    @IBOutlet var FusionView: UIView!
+    @IBOutlet weak var cardTopImage: UIImageView!
+    @IBOutlet weak var sectorNameLabel: UILabel!
+    @IBOutlet weak var showInfoButton: UIButton!
     
     @IBOutlet weak var displayView: UIView!
     @IBOutlet weak var displayViewHeight: NSLayoutConstraint!
     
+    @IBOutlet weak var switchButton: CustomSwitchButton!
+    @IBOutlet weak var switchButtonOffset: NSLayoutConstraint!
+    
+    @IBOutlet weak var dropView: UIView!
+    @IBOutlet weak var dropImage: UIImageView!
+    @IBOutlet weak var dropText: UITextField!
+    @IBOutlet weak var dropButton: UIButton!
+    
+    @IBOutlet weak var levelCollectionView: UICollectionView!
     @IBOutlet weak var imageLevel: UIImageView!
     @IBOutlet weak var scatterChart: ScatterChartView!
     @IBOutlet weak var noImageLabel: UILabel!
     
-    @IBOutlet weak var containerTableView: ExpyTableView!
-    @IBOutlet weak var containerViewHeight: NSLayoutConstraint!
-    
     private let tableList: [TableList] = [.sector]
-    
-    @IBOutlet weak var sectorNameLabel: UILabel!
-    @IBOutlet weak var cardTopImage: UIImageView!
     
     var serviceManager = ServiceManager()
     var serviceName = "FLT"
@@ -120,20 +109,8 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
     var headingImage = UIImage(named: "heading")
     var observerTime = 0
     
-    // Level Collection View
-    @IBOutlet weak var levelCollectionView: UICollectionView!
-    
-    // DropDown
-    @IBOutlet weak var dropView: UIView!
-    @IBOutlet weak var dropImage: UIImageView!
-    @IBOutlet weak var dropText: UITextField!
-    @IBOutlet weak var dropButton: UIButton!
-    
     let dropDown = DropDown()
     
-    // Switch
-    @IBOutlet weak var switchButton: CustomSwitchButton!
-    @IBOutlet weak var switchButtonOffset: NSLayoutConstraint!
     var modeAuto: Bool = false
     
     // View
@@ -182,33 +159,15 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
         self.hideKeyboardWhenTappedAround()
     }
     
-    
     @IBAction func tapBackButton(_ sender: UIButton) {
-        self.delegate?.sendPage(data: page)
+        goToBack()
+    }
+    
+    func goToBack() {
         serviceManager.stopService()
+        self.delegate?.sendPage(data: page)
         self.navigationController?.popViewController(animated: true)
     }
-    
-    
-    @IBAction func tapShowButton(_ sender: UIButton) {
-        UIView.animate(withDuration: 0.5, delay: 0.01, options: .curveLinear, animations: {
-        }) { (success) in
-            sender.isSelected = !sender.isSelected
-            UIView.animate(withDuration: 0.5, delay: 0.01, options: .curveLinear, animations: {
-                sender.transform = .identity
-            }, completion: nil)
-        }
-        
-        if sender.isSelected == false {
-            isShow = true
-            showContainerTableView()
-        }
-        else {
-            isShow = false
-            hideContainerTableView()
-        }
-    }
-    
     
     func setCardData(cardData: CardItemData) {
         self.sectorID = cardData.sector_id
@@ -319,18 +278,18 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
     }
     
     func showContainerTableView() {
-        containerViewHeight.constant = 220
+//        containerViewHeight.constant = 220
     }
     
     func hideContainerTableView() {
-        containerViewHeight.constant = defaultHeight
+//        containerViewHeight.constant = defaultHeight
     }
     
     func fixChartHeight(flag: Bool) {
         if (flag) {
             if ( cardData?.sector_id == 1 || cardData?.sector_id == 2 ) {
                 displayViewHeight.constant = 480
-                containerViewHeight.constant = 150
+//                containerViewHeight.constant = 150
             } else {
                 let ratio: Double = 114900 / 68700
                 displayViewHeight.constant = displayView.bounds.width * ratio
@@ -338,13 +297,13 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
                 let window = UIApplication.shared.keyWindow
                 let bottomPadding = window?.safeAreaInsets.bottom ?? 0.0
                 
-                defaultHeight = ServiceView.bounds.height - 100 - displayViewHeight.constant - bottomPadding
+                defaultHeight = FusionView.bounds.height - 100 - displayViewHeight.constant - bottomPadding
                 
-                containerViewHeight.constant = defaultHeight
+//                containerViewHeight.constant = defaultHeight
             }
         } else {
             displayViewHeight.constant = 480
-            containerViewHeight.constant = 150
+//            containerViewHeight.constant = 150
         }
     }
     
@@ -359,22 +318,22 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
     }
     
     func registerXib() {
-        let serviceInfoNib = UINib(nibName: "ServiceInfoTableViewCell", bundle: nil)
-        containerTableView.register(serviceInfoNib, forCellReuseIdentifier: "ServiceInfoTableViewCell")
-        
-        let robotNib = UINib(nibName: "RobotTableViewCell", bundle: nil)
-        containerTableView.register(robotNib, forCellReuseIdentifier: "RobotTableViewCell")
+//        let serviceInfoNib = UINib(nibName: "ServiceInfoTableViewCell", bundle: nil)
+//        containerTableView.register(serviceInfoNib, forCellReuseIdentifier: "ServiceInfoTableViewCell")
+//
+//        let robotNib = UINib(nibName: "RobotTableViewCell", bundle: nil)
+//        containerTableView.register(robotNib, forCellReuseIdentifier: "RobotTableViewCell")
     }
     
     func makeDelegate() {
-        containerTableView.dataSource = self
-        containerTableView.delegate = self
-        containerTableView.bounces = false
+//        containerTableView.dataSource = self
+//        containerTableView.delegate = self
+//        containerTableView.bounces = false
     }
     
     func setTableView() {
         //테이블 뷰 셀 사이의 회색 선 없애기
-        containerTableView.separatorStyle = UITableViewCell.SeparatorStyle.none
+//        containerTableView.separatorStyle = UITableViewCell.SeparatorStyle.none
     }
     
     private func initDropDown() {
@@ -521,7 +480,7 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
             resultToDisplay.phase = serviceManager.displayOutput.phase
             
             if (isOpen) {
-                UIView.performWithoutAnimation { self.containerTableView.reloadSections(IndexSet(0...0), with: .none) }
+//                UIView.performWithoutAnimation { self.containerTableView.reloadSections(IndexSet(0...0), with: .none) }
             }
         }
     }
@@ -1165,8 +1124,7 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
     }
 }
 
-
-extension ServiceViewController: UITableViewDelegate {
+extension FusionViewController: UITableViewDelegate {
     // 높이 지정 index별
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
             if indexPath.row == 0 {
@@ -1190,7 +1148,7 @@ extension ServiceViewController: UITableViewDelegate {
     }
 }
 
-extension ServiceViewController: UITableViewDataSource {
+extension FusionViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
             if section == 0 {
                 return 2
@@ -1222,7 +1180,7 @@ extension ServiceViewController: UITableViewDataSource {
     }
 }
 
-extension ServiceViewController : UICollectionViewDelegate{
+extension FusionViewController : UICollectionViewDelegate{
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         currentLevel = levels[currentBuilding]![indexPath.row]
         
@@ -1252,7 +1210,7 @@ extension ServiceViewController : UICollectionViewDelegate{
     
 }
 
-extension ServiceViewController : UICollectionViewDataSource{
+extension FusionViewController : UICollectionViewDataSource{
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         levels[currentBuilding]!.count
     }
@@ -1274,7 +1232,7 @@ extension ServiceViewController : UICollectionViewDataSource{
     }
 }
 
-extension ServiceViewController : UICollectionViewDelegateFlowLayout{
+extension FusionViewController : UICollectionViewDelegateFlowLayout{
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let label = UILabel()
         label.font = .systemFont(ofSize: 14)
@@ -1297,7 +1255,7 @@ extension ServiceViewController : UICollectionViewDelegateFlowLayout{
     }
 }
 
-extension ServiceViewController: CustomSwitchButtonDelegate {
+extension FusionViewController: CustomSwitchButtonDelegate {
     func isOnValueChange(isOn: Bool) {
         self.modeAuto = isOn
         

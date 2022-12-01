@@ -24,6 +24,7 @@
 		B340EE3328093FB20096E404 /* CardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B340EE3228093FB20096E404 /* CardViewController.swift */; };
 		B3455283282AB7B400F0DD3E /* ServiceInfoTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3455281282AB7B400F0DD3E /* ServiceInfoTableViewCell.swift */; };
 		B3455284282AB7B400F0DD3E /* ServiceInfoTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B3455282282AB7B400F0DD3E /* ServiceInfoTableViewCell.xib */; };
+		B3497310293847DC0078C872 /* FusionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B349730F293847DC0078C872 /* FusionViewController.swift */; };
 		B35272B2281F8DC300321CC6 /* SplashScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B35272B1281F8DC300321CC6 /* SplashScreen.storyboard */; };
 		B360D88E28090D6A0084FB22 /* NotoSansKR-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = B360D88828090D680084FB22 /* NotoSansKR-Bold.otf */; };
 		B360D88F28090D6A0084FB22 /* NotoSansKR-Light.otf in Resources */ = {isa = PBXBuildFile; fileRef = B360D88928090D680084FB22 /* NotoSansKR-Light.otf */; };
@@ -139,6 +140,7 @@
 		B340EE3228093FB20096E404 /* CardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardViewController.swift; sourceTree = "<group>"; };
 		B3455281282AB7B400F0DD3E /* ServiceInfoTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceInfoTableViewCell.swift; sourceTree = "<group>"; };
 		B3455282282AB7B400F0DD3E /* ServiceInfoTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ServiceInfoTableViewCell.xib; sourceTree = "<group>"; };
+		B349730F293847DC0078C872 /* FusionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FusionViewController.swift; sourceTree = "<group>"; };
 		B35272B1281F8DC300321CC6 /* SplashScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = SplashScreen.storyboard; sourceTree = "<group>"; };
 		B360D8642807C6090084FB22 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../../Downloads/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		B360D88828090D680084FB22 /* NotoSansKR-Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "NotoSansKR-Bold.otf"; sourceTree = "<group>"; };
@@ -382,6 +384,7 @@
 				B30EED862893B64C009A3EDA /* CollectViewController.swift */,
 				B3D397A628F5A64700B5DBED /* SpotViewController.swift */,
 				B38C7F4B28FE6AC200DEEF32 /* NeptuneViewController.swift */,
+				B349730F293847DC0078C872 /* FusionViewController.swift */,
 			);
 			name = ViewController;
 			sourceTree = "<group>";
@@ -791,6 +794,7 @@
 				B3BD69A627E9A55400A32A7A /* UIViewExtension.swift in Sources */,
 				B3BD699827E9A4A500A32A7A /* ColorPalette.swift in Sources */,
 				B3B7FBF52856DA4000E23EDF /* PopUpViewController.swift in Sources */,
+				B3497310293847DC0078C872 /* FusionViewController.swift in Sources */,
 				B3E6C0F8292D6B1400D0AC13 /* ImageCacheManager.swift in Sources */,
 				B38C7F4C28FE6AC200DEEF32 /* NeptuneViewController.swift in Sources */,
 				B3BD69A827E9A56B00A32A7A /* UITableViewRegisterable.swift in Sources */,
