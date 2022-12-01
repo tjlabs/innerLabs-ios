@@ -136,9 +136,7 @@ class FusionViewController: UIViewController, Observer {
             let firstBuildingLevels: [String] = (cardData?.infoLevel[firstBuilding])!
             
             displayLevelInfo(infoLevel: firstBuildingLevels)
-            
             levelList = firstBuildingLevels
-
             isRadioMap = true
         } else {
             isRadioMap = false
