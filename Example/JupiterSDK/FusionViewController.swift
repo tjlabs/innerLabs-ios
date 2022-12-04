@@ -39,7 +39,7 @@ class FusionViewController: UIViewController, Observer {
     @IBOutlet var FusionView: UIView!
     @IBOutlet weak var cardTopImage: UIImageView!
     @IBOutlet weak var sectorNameLabel: UILabel!
-    @IBOutlet weak var showInfoButton: UIButton!
+    @IBOutlet weak var onSpotButton: UIButton!
     
     @IBOutlet weak var displayView: UIView!
     @IBOutlet weak var displayViewHeight: NSLayoutConstraint!
