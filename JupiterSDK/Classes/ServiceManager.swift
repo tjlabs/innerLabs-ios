@@ -33,12 +33,6 @@ public class ServiceManager: Observation {
                         result = self.lastResult
                         
                         self.mmFailCount += 1
-                        
-                        if (self.mmFailCount >= 30) {
-//                            print("(Jupiter) Map Matching Fail : Kalman Init")
-                            self.timeUpdatePositionInit(serverOutput: self.lastServerResult)
-                            self.isActiveKf = false
-                        }
                     }
                 }
                 
@@ -1024,6 +1018,7 @@ public class ServiceManager: Observation {
                             let trackingTime = getCurrentTimeInMilliseconds()
                             tuResult.mobile_time = trackingTime
                             self.outputResult = tuResult
+                            
                             self.flagPast = false
                         }
                     }
@@ -1113,6 +1108,12 @@ public class ServiceManager: Observation {
                                     self.phase = result.phase
                                     self.preOutputMobileTime = result.mobile_time
                                     
+                                    let resultCorrected = self.correct(building: result.building_name, level: result.level_name, x: result.x, y: result.y, heading: result.absolute_heading, mode: self.mode, isPast: false)
+                                    
+//                                    self.timeUpdateResult[0] = resultCorrected.xyh[0]
+//                                    self.timeUpdateResult[1] = resultCorrected.xyh[1]
+//                                    self.timeUpdateResult[2] = resultCorrected.xyh[2]
+                                    
                                     self.serverResult[0] = result.x
                                     self.serverResult[1] = result.y
                                     self.serverResult[2] = result.absolute_heading
@@ -1145,7 +1146,8 @@ public class ServiceManager: Observation {
                                                 self.outputResult = updatedResult
                                                 self.flagPast = false
                                             }
-                                        } else {
+                                        }
+                                        else {
                                             var timUpdateOutputCopy = self.timeUpdateOutput
                                             timUpdateOutputCopy.phase = result.phase
                                             timUpdateOutputCopy.mobile_time = result.mobile_time
@@ -1188,6 +1190,7 @@ public class ServiceManager: Observation {
                                             
                                             self.phase = result.phase
                                             self.preOutputMobileTime = result.mobile_time
+                                            self.lastServerResult = result
                                             
                                             if (self.isActiveKf && result.phase == 4) {
                                                 if (!(result.x == 0 && result.y == 0)) {
@@ -1211,13 +1214,14 @@ public class ServiceManager: Observation {
 
                                                         // Measurement Update 하기전에 현재 Time Update 위치를 고려
                                                         var resultForMu = result
+                                                        let resultCorrected = self.correct(building: result.building_name, level: result.level_name, x: result.x, y: result.y, heading: result.absolute_heading, mode: self.mode, isPast: false)
                                                         
-//                                                        self.serverResult[0] = resultForMu.x
-//                                                        self.serverResult[1] = resultForMu.y
-//                                                        self.serverResult[2] = resultForMu.absolute_heading
+//                                                        self.timeUpdateResult[0] = resultCorrected.xyh[0]
+//                                                        self.timeUpdateResult[1] = resultCorrected.xyh[1]
+//                                                        self.timeUpdateResult[2] = resultCorrected.xyh[2]
                                                         if (self.currentTuResult.mobile_time != 0 && self.pastTuResult.mobile_time != 0) {
-                                                            var dx = self.currentTuResult.x - self.pastTuResult.x
-                                                            var dy = self.currentTuResult.y - self.pastTuResult.y
+                                                            let dx = self.currentTuResult.x - self.pastTuResult.x
+                                                            let dy = self.currentTuResult.y - self.pastTuResult.y
                                                             if (self.currentTuResult.absolute_heading < 0) {
                                                                 self.currentTuResult.absolute_heading = self.currentTuResult.absolute_heading + 360
                                                             }
@@ -1229,22 +1233,36 @@ public class ServiceManager: Observation {
                                                             self.pastTuResult.absolute_heading = self.pastTuResult.absolute_heading - floor(self.pastTuResult.absolute_heading/360)*360
 
                                                             let dh = self.currentTuResult.absolute_heading - self.pastTuResult.absolute_heading
-                                                            let dxdy = sqrt(dx*dx + dy*dy)
-                                                            
-//                                                            if (dxdy > 11) {
-//                                                                print("(Jupiter) dxdy -> 0")
-//                                                                dx = 0
-//                                                                dy = 0
-//                                                            }
                                                             
                                                             resultForMu.x = resultForMu.x + dx
                                                             resultForMu.y = resultForMu.y + dy
-//                                                            resultForMu.absolute_heading = resultForMu.absolute_heading
+//                                                            resultForMu.absolute_heading = self.currentTuResult.absolute_heading
                                                         }
                                                         let trackingTime = getCurrentTimeInMilliseconds()
                                                         
-                                                        let muOutput = measurementUpdate(timeUpdatePosition: timeUpdatePosition, serverOutput: resultForMu)
+                                                        let muOutput = measurementUpdate(timeUpdatePosition: timeUpdatePosition, serverOutput: resultForMu, originalHeading: result.absolute_heading)
                                                         var muResult = fromServerToResult(fromServer: muOutput, velocity: displayOutput.velocity)
+                                                        
+                                                        let diffX = resultCorrected.xyh[0] - muResult.x
+                                                        let diffY = resultCorrected.xyh[1] - muResult.y
+                                                        let diffH = resultCorrected.xyh[2] - muResult.absolute_heading
+                                                        
+//                                                        print("(Jupiter) Past TU Heading : \(self.pastTuResult.absolute_heading)")
+//                                                        print("(Jupiter) dx : \(diffX) // dy : \(diffY) // dh : \(diffH)")
+                                                        
+                                                        let diffXY: Double = sqrt(diffX*diffX + diffY*diffY)
+                                                        let diffIndex: Int = self.currentTuResult.index - self.pastTuResult.index
+                                                        var diffTh: Double = Double(diffIndex)*5.5
+                                                        if (diffIndex == 0) {
+                                                            diffTh = 5
+                                                        }
+                                                        
+                                                        if (diffXY > 15) {
+                                                            muResult.x = result.x
+                                                            muResult.y = result.y
+                                                            print("(Jupiter) diffXY : \(diffXY) // diffIndex : \(diffIndex)")
+                                                        }
+                                                        
                                                         self.serverResult[0] = muResult.x
                                                         self.serverResult[1] = muResult.y
                                                         self.serverResult[2] = muResult.absolute_heading
@@ -1255,8 +1273,6 @@ public class ServiceManager: Observation {
                                                     }
                                                     timeUpdatePositionInit(serverOutput: result)
                                                 }
-                                            } else {
-                                                self.lastServerResult = result
                                             }
                                         }
                                     }
@@ -1724,7 +1740,7 @@ public class ServiceManager: Observation {
         return timeUpdateOutput
     }
 
-    func measurementUpdate(timeUpdatePosition: KalmanOutput, serverOutput: FineLocationTrackingFromServer) -> FineLocationTrackingFromServer {
+    func measurementUpdate(timeUpdatePosition: KalmanOutput, serverOutput: FineLocationTrackingFromServer, originalHeading: Double) -> FineLocationTrackingFromServer {
         var serverOutputCopy = serverOutput
         if (serverOutputCopy.absolute_heading < 0) {
             serverOutputCopy.absolute_heading = serverOutputCopy.absolute_heading + 360
@@ -1750,6 +1766,8 @@ public class ServiceManager: Observation {
             }
             
             self.updateCorrectResult(x: correctedServerOutput.x, y: correctedServerOutput.y, h: correctedServerOutput.absolute_heading)
+        } else {
+            correctedServerOutput.absolute_heading = originalHeading
         }
         
         measurementOutput = correctedServerOutput

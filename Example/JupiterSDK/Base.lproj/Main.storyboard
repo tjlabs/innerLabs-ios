@@ -604,8 +604,6 @@
                                         <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                                         <state key="normal" image="backButtonWhite"/>
                                         <connections>
-                                            <action selector="tapBackButton:" destination="xoA-3y-VN5" eventType="touchUpInside" id="1CW-qc-6Cr"/>
-                                            <action selector="tapBackButton:" destination="LqI-KL-YbA" eventType="touchUpInside" id="kxl-3r-gaq"/>
                                             <action selector="tapBackButton:" destination="hPU-WQ-fgf" eventType="touchUpInside" id="viU-2n-b9H"/>
                                         </connections>
                                     </button>
@@ -615,26 +613,12 @@
                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <nil key="highlightedColor"/>
                                     </label>
-                                    <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="g2b-2f-WQr">
-                                        <rect key="frame" x="320" y="61.666666666666657" width="50" height="22"/>
-                                        <constraints>
-                                            <constraint firstAttribute="width" constant="50" id="HIM-5K-qZY"/>
-                                        </constraints>
-                                        <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                                        <state key="normal" image="showInfoButton"/>
-                                        <state key="selected" image="closeInfoButton"/>
-                                        <connections>
-                                            <action selector="tapShowButton:" destination="LqI-KL-YbA" eventType="touchUpInside" id="zbn-lL-k5w"/>
-                                        </connections>
-                                    </button>
                                 </subviews>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <constraints>
                                     <constraint firstItem="ETj-qJ-NP3" firstAttribute="top" secondItem="aHa-aH-Fj5" secondAttribute="top" constant="-2" id="Hxy-nc-age"/>
                                     <constraint firstAttribute="trailing" secondItem="ETj-qJ-NP3" secondAttribute="trailing" constant="-2" id="K04-74-Icv"/>
                                     <constraint firstItem="XRD-dg-0a6" firstAttribute="centerY" secondItem="2Is-GQ-ijV" secondAttribute="centerY" id="PN6-de-ZDk"/>
-                                    <constraint firstItem="g2b-2f-WQr" firstAttribute="centerY" secondItem="XRD-dg-0a6" secondAttribute="centerY" id="TDl-Pz-vfY"/>
-                                    <constraint firstAttribute="trailing" secondItem="g2b-2f-WQr" secondAttribute="trailing" constant="20" id="Tfu-fe-UjI"/>
                                     <constraint firstItem="2Is-GQ-ijV" firstAttribute="leading" secondItem="aHa-aH-Fj5" secondAttribute="leading" constant="20" id="a1F-lu-PdT"/>
                                     <constraint firstItem="XRD-dg-0a6" firstAttribute="centerX" secondItem="aHa-aH-Fj5" secondAttribute="centerX" id="a8Z-NC-3YK"/>
                                     <constraint firstAttribute="bottom" secondItem="2Is-GQ-ijV" secondAttribute="bottom" constant="15" id="gQG-wn-Q8j"/>
@@ -950,10 +934,7 @@
                                         <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                                         <state key="normal" image="backButtonWhite"/>
                                         <connections>
-                                            <action selector="tapBackButton:" destination="hPU-WQ-fgf" eventType="touchUpInside" id="1Uf-jh-bgn"/>
                                             <action selector="tapBackButton:" destination="u7u-1Q-Wm7" eventType="touchUpInside" id="HcD-tk-fgb"/>
-                                            <action selector="tapBackButton:" destination="LqI-KL-YbA" eventType="touchUpInside" id="dC4-hC-akq"/>
-                                            <action selector="tapBackButton:" destination="xoA-3y-VN5" eventType="touchUpInside" id="oxu-GY-2Qw"/>
                                         </connections>
                                     </button>
                                     <label opaque="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Neptune" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="NaS-qa-jFc">
@@ -1627,8 +1608,7 @@
                                                 <rect key="frame" x="0.0" y="0.0" width="155" height="35"/>
                                                 <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                                                 <connections>
-                                                    <action selector="dropButton:" destination="3sZ-Iz-6FU" eventType="touchUpInside" id="xbE-Pc-MhK"/>
-                                                    <action selector="dropDownClicked:" destination="LqI-KL-YbA" eventType="touchUpInside" id="r6p-v5-pI0"/>
+                                                    <action selector="dropDownClicked:" destination="3sZ-Iz-6FU" eventType="touchUpInside" id="McY-s6-85a"/>
                                                 </connections>
                                             </button>
                                         </subviews>

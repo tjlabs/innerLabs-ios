@@ -349,6 +349,7 @@ class FusionViewController: UIViewController, Observer {
         }
     }
     
+    
     @IBAction func dropDownClicked(_ sender: UIButton) {
         dropDown.show() // 아이템 팝업을 보여준다.
         // 아이콘 이미지를 변경하여 DropDown이 펼쳐진 것을 표현
@@ -625,36 +626,26 @@ class FusionViewController: UIViewController, Observer {
             scatterChart.leftAxis.axisMinimum = yMin-7.5
             scatterChart.leftAxis.axisMaximum = yMax+7.5
         } else if ( limits[0] == 0 && limits[1] == 0 && limits[2] == 0 && limits[3] == 0 ) {
-//            scatterChart.xAxis.axisMinimum = xMin
-//            scatterChart.xAxis.axisMaximum = xMax
-//            scatterChart.leftAxis.axisMinimum = yMin
-//            scatterChart.leftAxis.axisMaximum = yMax
+            scatterChart.xAxis.axisMinimum = xMin
+            scatterChart.xAxis.axisMaximum = xMax
+            scatterChart.leftAxis.axisMinimum = yMin
+            scatterChart.leftAxis.axisMaximum = yMax
             
-            scatterChart.xAxis.axisMinimum = -35
-            scatterChart.xAxis.axisMaximum = 316
-            scatterChart.leftAxis.axisMinimum = 9
-            scatterChart.leftAxis.axisMaximum = 509
+//            scatterChart.xAxis.axisMinimum = -35
+//            scatterChart.xAxis.axisMaximum = 316
+//            scatterChart.leftAxis.axisMinimum = 9
+//            scatterChart.leftAxis.axisMaximum = 509
         } else {
-//            print("-- Scale Setting --")
-//            scatterChart.xAxis.axisMinimum = xMin - 66
-//            scatterChart.xAxis.axisMaximum = xMax + 23
-//            scatterChart.leftAxis.axisMinimum = yMin - 1
-//            scatterChart.leftAxis.axisMaximum = yMax + 38
             
-//            scatterChart.xAxis.axisMinimum = xMin - 48
-//            scatterChart.xAxis.axisMaximum = xMax + 30
-//            scatterChart.leftAxis.axisMinimum = yMin - 4
-//            scatterChart.leftAxis.axisMaximum = yMax + 40
+//            scatterChart.xAxis.axisMinimum = -35
+//            scatterChart.xAxis.axisMaximum = 316
+//            scatterChart.leftAxis.axisMinimum = 9
+//            scatterChart.leftAxis.axisMaximum = 509
             
-            scatterChart.xAxis.axisMinimum = -35
-            scatterChart.xAxis.axisMaximum = 316
-            scatterChart.leftAxis.axisMinimum = 9
-            scatterChart.leftAxis.axisMaximum = 509
-            
-//            scatterChart.xAxis.axisMinimum = limits[0]
-//            scatterChart.xAxis.axisMaximum = limits[1]
-//            scatterChart.leftAxis.axisMinimum = limits[2]
-//            scatterChart.leftAxis.axisMaximum = limits[3]
+            scatterChart.xAxis.axisMinimum = limits[0]
+            scatterChart.xAxis.axisMaximum = limits[1]
+            scatterChart.leftAxis.axisMinimum = limits[2]
+            scatterChart.leftAxis.axisMaximum = limits[3]
         }
         
 //        print("\(currentBuilding) \(currentLevel) Limits : \(limits[0]) , \(limits[1]), \(limits[2]), \(limits[3])")
@@ -975,7 +966,6 @@ class FusionViewController: UIViewController, Observer {
         
         if (pastBuilding != currentBuilding || pastLevel != currentLevel) {
             displayLevelImage(building: currentBuilding, level: currentLevel, flag: flag)
-//            fetchLevel(building: currentBuilding, level: currentLevel, flag: flag)
         }
         
         pastBuilding = currentBuilding
@@ -1067,7 +1057,6 @@ extension FusionViewController : UICollectionViewDelegate{
                 drawDebug(XY: XY, RP_X: rp[0], RP_Y: rp[1], serverXY: serviceManager.serverResult, tuXY: serviceManager.timeUpdateResult, heading: 0, limits: limits)
             }
             displayLevelImage(building: currentBuilding, level: currentLevel, flag: isShowRP)
-//            fetchLevel(building: currentBuilding, level: currentLevel, flag: isShowRP)
         }
         
         levelCollectionView.reloadData()
@@ -1087,7 +1076,6 @@ extension FusionViewController : UICollectionViewDataSource{
         levelCollectionView.setName(level: levels[currentBuilding]![indexPath.row],
                                     isClicked: currentLevel == levels[currentBuilding]![indexPath.row] ? true : false)
         displayLevelImage(building: currentBuilding, level: currentLevel, flag: isShowRP)
-//        fetchLevel(building: currentBuilding, level: currentLevel, flag: isShowRP)
         
         levelCollectionView.layer.cornerRadius = 15
         levelCollectionView.layer.borderColor = UIColor.blue1.cgColor
