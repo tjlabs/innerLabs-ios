@@ -380,7 +380,7 @@ extension CardViewController: UICollectionViewDataSource, UICollectionViewDelega
             guard let guideVC = self.storyboard?.instantiateViewController(withIdentifier: "GuideViewController") as? GuideViewController else { return }
             guideVC.page = currentPage
             self.navigationController?.pushViewController(guideVC, animated: true)
-        } else if (sector_id == 1 || sector_id == 2) {
+        } else if (sector_id == 1) {
             guard let fusionVC = self.storyboard?.instantiateViewController(withIdentifier: "FusionViewController") as? FusionViewController else { return }
             fusionVC.cardData = cardItemData[mod]
             fusionVC.uuid = uuid
