@@ -251,6 +251,7 @@ public class NetworkManager {
         requestURL.addValue("application/json", forHTTPHeaderField: "Content-Type")
         requestURL.setValue("\(encodingData)", forHTTPHeaderField: "Content-Length")
         
+        
         let dataTask = URLSession.shared.dataTask(with: requestURL, completionHandler: { (data, response, error) in
             
             // [error가 존재하면 종료]

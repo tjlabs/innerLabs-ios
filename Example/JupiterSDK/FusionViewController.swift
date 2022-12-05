@@ -57,6 +57,13 @@ class FusionViewController: UIViewController, Observer {
     @IBOutlet weak var scatterChart: ScatterChartView!
     @IBOutlet weak var noImageLabel: UILabel!
     
+    @IBOutlet weak var mainImage: UIImageView!
+    
+    @IBOutlet weak var spotLocationLabel: UILabel!
+    @IBOutlet weak var spotNameLabel: UILabel!
+    @IBOutlet weak var spotTypeLabel: UILabel!
+    @IBOutlet weak var spotCcsLabel: UILabel!
+    
     private let tableList: [TableList] = [.sector]
     
     var serviceManager = ServiceManager()
@@ -113,7 +120,15 @@ class FusionViewController: UIViewController, Observer {
     
     var modeAuto: Bool = false
     
+    // Neptune
+    @IBOutlet weak var spotContentsView: UIView!
+    
+    var spotToDisplay = Spot()
+    var spotAuthTime = 0
     var spotImage = UIImage(named: "spotPin")
+    var spotCircle = UIImage(named: "spotCircle")
+    
+    let CCS_THRESHOLD: Double = 0.3
     
     // View
     var defaultHeight: CGFloat = 100
@@ -328,33 +343,22 @@ class FusionViewController: UIViewController, Observer {
     
     private func setDropDown() {
         dropDown.dataSource = self.buildings
-        
-        // anchorView를 통해 UI와 연결
         dropDown.anchorView = self.dropView
-            
-        // View를 갖리지 않고 View아래에 Item 팝업이 붙도록 설정
         dropDown.bottomOffset = CGPoint(x: 0, y: dropView.bounds.height)
-            
-        // Item 선택 시 처리
         dropDown.selectionAction = { [weak self] (index, item) in
-            //선택한 Item을 TextField에 넣어준다.
             self!.dropText.text = item
             self!.currentBuilding = item
             self!.levelCollectionView.reloadData()
             self!.dropImage.image = UIImage.init(named: "showInfoToggle")
         }
-            
-        // 취소 시 처리
         dropDown.cancelAction = { [weak self] in
-            //빈 화면 터치 시 DropDown이 사라지고 아이콘을 원래대로 변경
             self!.dropImage.image = UIImage.init(named: "showInfoToggle")
         }
     }
     
     
     @IBAction func dropDownClicked(_ sender: UIButton) {
-        dropDown.show() // 아이템 팝업을 보여준다.
-        // 아이콘 이미지를 변경하여 DropDown이 펼쳐진 것을 표현
+        dropDown.show()
         self.dropImage.image = UIImage.init(named: "closeInfoToggle")
     }
     
@@ -421,16 +425,18 @@ class FusionViewController: UIViewController, Observer {
     }
     
     @objc func timerUpdate() {
-        let timeStamp = getCurrentTimeInMilliseconds()
-        let dt = timeStamp - pastTime
-        pastTime = timeStamp
-        
-        if (dt < 100) {
-            elapsedTime += (dt*1e-3)
-        }
+        let timeStamp: Double = getCurrentTimeInMilliseconds()
         
         // Map
         self.updateCoord(data: self.coordToDisplay, flag: self.isShowRP)
+        if (spotAuthTime != 0) {
+            if (Int(timeStamp) - self.spotAuthTime > 4000) {
+                print("(Jupiter) Time to dissaper the spot")
+                let spotXY: [Double] = [Double(self.spotToDisplay.spot_x), Double(self.spotToDisplay.spot_y)]
+                dissapearSpot(XY: spotXY)
+                self.spotAuthTime = 0
+            }
+        }
         
         // Info
         if (serviceManager.displayOutput.isIndexChanged) {
@@ -502,8 +508,8 @@ class FusionViewController: UIViewController, Observer {
                     self.imageLevel.isHidden = false
                     self.noImageLabel.isHidden = true
                     
-                    self.imageLevel.image = UIImage(named: "L3_Map")
-//                    self.imageLevel.image = data
+//                    self.imageLevel.image = UIImage(named: "L3_Map")
+                    self.imageLevel.image = data
                 } else {
                     // 빌딩 -> 층 이미지가 없는 경우
                     if (flag) {
@@ -516,114 +522,12 @@ class FusionViewController: UIViewController, Observer {
                         self.noImageLabel.isHidden = false
                         self.imageLevel.isHidden = true
                     }
-
+//                    self.imageLevel.isHidden = false
+//                    self.noImageLabel.isHidden = true
+//                    self.imageLevel.image = UIImage(named: "L3_Map")
                 }
             }
         })
-    }
-    
-    private func drawRP(RP_X: [Double], RP_Y: [Double], XY: [Double], heading: Double, limits: [Double]) {
-        let xAxisValue: [Double] = RP_X
-        let yAxisValue: [Double] = RP_Y
-
-        let values1 = (0..<xAxisValue.count).map { (i) -> ChartDataEntry in
-            return ChartDataEntry(x: xAxisValue[i], y: yAxisValue[i])
-        }
-        
-        let values2 = (0..<1).map { (i) -> ChartDataEntry in
-            return ChartDataEntry(x: XY[0], y: XY[1])
-        }
-        
-        let set1 = ScatterChartDataSet(entries: values1, label: "RP")
-        set1.drawValuesEnabled = false
-        set1.setScatterShape(.square)
-        set1.setColor(UIColor.yellow)
-        set1.scatterShapeSize = 4
-        
-        let set2 = ScatterChartDataSet(entries: values2, label: "User")
-        set2.drawValuesEnabled = false
-        set2.setScatterShape(.circle)
-        set2.setColor(UIColor.systemRed)
-        set2.scatterShapeSize = 14
-        
-        let chartData = ScatterChartData(dataSet: set1)
-        chartData.append(set2)
-        
-        // Heading
-        if (XY[0] != 0 && XY[1] != 0) {
-            let point = scatterChart.getPosition(entry: ChartDataEntry(x: XY[0], y: XY[1]), axis: .left)
-            let imageView = UIImageView(image: headingImage!.rotate(degrees: -heading+90))
-            imageView.frame = CGRect(x: point.x - 15, y: point.y - 15, width: 30, height: 30)
-            imageView.contentMode = .center
-            imageView.tag = 100
-            if let viewWithTag = scatterChart.viewWithTag(100) {
-                viewWithTag.removeFromSuperview()
-            }
-            scatterChart.addSubview(imageView)
-        }
-        
-        let xMin = xAxisValue.min()!
-        let xMax = xAxisValue.max()!
-        let yMin = yAxisValue.min()!
-        let yMax = yAxisValue.max()!
-        
-//        print("\(currentBuilding) \(currentLevel) MinMax : \(xMin) , \(xMax), \(yMin), \(yMax)")
-        
-        let chartFlag: Bool = false
-        scatterChart.isHidden = false
-        
-        // Configure Chart
-        if (self.sectorID == 9 && currentLevel == "7F") {
-            scatterChart.xAxis.axisMinimum = xMin-2.5
-            scatterChart.xAxis.axisMaximum = xMax+2.5
-            scatterChart.leftAxis.axisMinimum = yMin-7.5
-            scatterChart.leftAxis.axisMaximum = yMax+7.5
-        } else if ( limits[0] == 0 && limits[1] == 0 && limits[2] == 0 && limits[3] == 0 ) {
-            scatterChart.xAxis.axisMinimum = xMin
-            scatterChart.xAxis.axisMaximum = xMax
-            scatterChart.leftAxis.axisMinimum = yMin
-            scatterChart.leftAxis.axisMaximum = yMax
-            
-//            scatterChart.xAxis.axisMinimum = -35
-//            scatterChart.xAxis.axisMaximum = 316
-//            scatterChart.leftAxis.axisMinimum = 9
-//            scatterChart.leftAxis.axisMaximum = 509
-        } else {
-            
-//            scatterChart.xAxis.axisMinimum = -35
-//            scatterChart.xAxis.axisMaximum = 316
-//            scatterChart.leftAxis.axisMinimum = 9
-//            scatterChart.leftAxis.axisMaximum = 509
-            
-            scatterChart.xAxis.axisMinimum = limits[0]
-            scatterChart.xAxis.axisMaximum = limits[1]
-            scatterChart.leftAxis.axisMinimum = limits[2]
-            scatterChart.leftAxis.axisMaximum = limits[3]
-        }
-        
-//        print("\(currentBuilding) \(currentLevel) Limits : \(limits[0]) , \(limits[1]), \(limits[2]), \(limits[3])")
-        
-        scatterChart.xAxis.drawGridLinesEnabled = chartFlag
-        scatterChart.leftAxis.drawGridLinesEnabled = chartFlag
-        scatterChart.rightAxis.drawGridLinesEnabled = chartFlag
-        
-        scatterChart.xAxis.drawAxisLineEnabled = chartFlag
-        scatterChart.leftAxis.drawAxisLineEnabled = chartFlag
-        scatterChart.rightAxis.drawAxisLineEnabled = chartFlag
-        
-        scatterChart.xAxis.centerAxisLabelsEnabled = chartFlag
-        scatterChart.leftAxis.centerAxisLabelsEnabled = chartFlag
-        scatterChart.rightAxis.centerAxisLabelsEnabled = chartFlag
-
-        scatterChart.xAxis.drawLabelsEnabled = chartFlag
-        scatterChart.leftAxis.drawLabelsEnabled = chartFlag
-        scatterChart.rightAxis.drawLabelsEnabled = chartFlag
-        
-        scatterChart.legend.enabled = chartFlag
-        
-        scatterChart.backgroundColor = .clear
-        
-        scatterChart.data = chartData
     }
     
     private func drawUser(XY: [Double], heading: Double, limits: [Double]) {
@@ -693,7 +597,7 @@ class FusionViewController: UIViewController, Observer {
     private func drawDebug(XY: [Double], RP_X: [Double], RP_Y: [Double],  serverXY: [Double], tuXY: [Double], heading: Double, limits: [Double]) {
         let xAxisValue: [Double] = RP_X
         let yAxisValue: [Double] = RP_Y
-
+        
         let values0 = (0..<xAxisValue.count).map { (i) -> ChartDataEntry in
             return ChartDataEntry(x: xAxisValue[i], y: yAxisValue[i])
         }
@@ -773,112 +677,27 @@ class FusionViewController: UIViewController, Observer {
         let chartFlag: Bool = false
         scatterChart.isHidden = false
         
-//        print("\(currentBuilding) \(currentLevel) Limits : \(limits[0]) , \(limits[1]), \(limits[2]), \(limits[3])")
-        // Configure Chart
-        scatterChart.xAxis.axisMinimum = limits[0]
-        scatterChart.xAxis.axisMaximum = limits[1]
-        scatterChart.leftAxis.axisMinimum = limits[2]
-        scatterChart.leftAxis.axisMaximum = limits[3]
+        let xMin = xAxisValue.min()!
+        let xMax = xAxisValue.max()!
+        let yMin = yAxisValue.min()!
+        let yMax = yAxisValue.max()!
         
-        scatterChart.xAxis.drawGridLinesEnabled = chartFlag
-        scatterChart.leftAxis.drawGridLinesEnabled = chartFlag
-        scatterChart.rightAxis.drawGridLinesEnabled = chartFlag
+//        print("\(currentBuilding) \(currentLevel) MinMax : \(xMin) , \(xMax), \(yMin), \(yMax)")
+        print("\(currentBuilding) \(currentLevel) Limits : \(limits[0]) , \(limits[1]), \(limits[2]), \(limits[3])")
         
-        scatterChart.xAxis.drawAxisLineEnabled = chartFlag
-        scatterChart.leftAxis.drawAxisLineEnabled = chartFlag
-        scatterChart.rightAxis.drawAxisLineEnabled = chartFlag
-        
-        scatterChart.xAxis.centerAxisLabelsEnabled = chartFlag
-        scatterChart.leftAxis.centerAxisLabelsEnabled = chartFlag
-        scatterChart.rightAxis.centerAxisLabelsEnabled = chartFlag
-
-        scatterChart.xAxis.drawLabelsEnabled = chartFlag
-        scatterChart.leftAxis.drawLabelsEnabled = chartFlag
-        scatterChart.rightAxis.drawLabelsEnabled = chartFlag
-        
-        scatterChart.legend.enabled = chartFlag
-        
-        scatterChart.backgroundColor = .clear
-        
-        scatterChart.data = chartData
-    }
-    
-    private func drawAll(XY: [Double], serverXY: [Double], tuXY: [Double], heading: Double, limits: [Double]) {
-        let values1 = (0..<1).map { (i) -> ChartDataEntry in
-            return ChartDataEntry(x: XY[0], y: XY[1])
+        if ( limits[0] == 0 && limits[1] == 0 && limits[2] == 0 && limits[3] == 0 ) {
+            scatterChart.xAxis.axisMinimum = xMin - 7
+            scatterChart.xAxis.axisMaximum = xMax + 3.5
+            scatterChart.leftAxis.axisMinimum = yMin - 22.5
+            scatterChart.leftAxis.axisMaximum = yMax + 23
+        } else {
+            scatterChart.xAxis.axisMinimum = limits[0]
+            scatterChart.xAxis.axisMaximum = limits[1]
+            scatterChart.leftAxis.axisMinimum = limits[2]
+            scatterChart.leftAxis.axisMaximum = limits[3]
         }
-        let set1 = ScatterChartDataSet(entries: values1, label: "USER")
-        set1.drawValuesEnabled = false
-        set1.setScatterShape(.circle)
-        set1.setColor(UIColor.systemRed)
-        set1.scatterShapeSize = 16
-        
-        let values2 = (0..<1).map { (i) -> ChartDataEntry in
-            return ChartDataEntry(x: serverXY[0], y: serverXY[1])
-        }
-        
-        let set2 = ScatterChartDataSet(entries: values2, label: "SERVER")
-        set2.drawValuesEnabled = false
-        set2.setScatterShape(.circle)
-        set2.setColor(.yellow)
-        set2.scatterShapeSize = 12
-        
-        let values3 = (0..<1).map { (i) -> ChartDataEntry in
-            return ChartDataEntry(x: tuXY[0], y: tuXY[1])
-        }
-        
-        let set3 = ScatterChartDataSet(entries: values3, label: "TU")
-        set3.drawValuesEnabled = false
-        set3.setScatterShape(.circle)
-        set3.setColor(.systemGreen)
-        set3.scatterShapeSize = 12
-        
-        let chartData = ScatterChartData(dataSet: set1)
-        chartData.append(set2)
-        chartData.append(set3)
-        chartData.setDrawValues(false)
-        
-        // Heading
-        let point = scatterChart.getPosition(entry: ChartDataEntry(x: XY[0], y: XY[1]), axis: .left)
-        let imageView = UIImageView(image: headingImage!.rotate(degrees: -heading+90))
-        imageView.frame = CGRect(x: point.x - 15, y: point.y - 15, width: 30, height: 30)
-        imageView.contentMode = .center
-        imageView.tag = 100
-        if let viewWithTag = scatterChart.viewWithTag(100) {
-            viewWithTag.removeFromSuperview()
-        }
-        scatterChart.addSubview(imageView)
-        
-        let point2 = scatterChart.getPosition(entry: ChartDataEntry(x: serverXY[0], y: serverXY[1]), axis: .left)
-        let imageView2 = UIImageView(image: headingImage!.rotate(degrees: -serverXY[2]+90))
-        imageView2.frame = CGRect(x: point2.x - 15, y: point2.y - 15, width: 30, height: 30)
-        imageView2.contentMode = .center
-        imageView2.tag = 200
-        if let viewWithTag2 = scatterChart.viewWithTag(200) {
-            viewWithTag2.removeFromSuperview()
-        }
-        scatterChart.addSubview(imageView2)
-        
-        let point3 = scatterChart.getPosition(entry: ChartDataEntry(x: tuXY[0], y: tuXY[1]), axis: .left)
-        let imageView3 = UIImageView(image: headingImage!.rotate(degrees: -tuXY[2]+90))
-        imageView3.frame = CGRect(x: point3.x - 15, y: point3.y - 15, width: 30, height: 30)
-        imageView3.contentMode = .center
-        imageView3.tag = 300
-        if let viewWithTag3 = scatterChart.viewWithTag(300) {
-            viewWithTag3.removeFromSuperview()
-        }
-        scatterChart.addSubview(imageView3)
-        
-        
-        let chartFlag: Bool = false
-        scatterChart.isHidden = false
         
         // Configure Chart
-        scatterChart.xAxis.axisMinimum = limits[0]
-        scatterChart.xAxis.axisMaximum = limits[1]
-        scatterChart.leftAxis.axisMinimum = limits[2]
-        scatterChart.leftAxis.axisMaximum = limits[3]
-        
         scatterChart.xAxis.drawGridLinesEnabled = chartFlag
         scatterChart.leftAxis.drawGridLinesEnabled = chartFlag
         scatterChart.rightAxis.drawGridLinesEnabled = chartFlag
@@ -939,7 +758,6 @@ class FusionViewController: UIViewController, Observer {
                 if (rp.isEmpty) {
                     scatterChart.isHidden = true
                 } else {
-//                    drawRP(RP_X: rp[0], RP_Y: rp[1], XY: XY, heading: heading, limits: limits)
                     drawDebug(XY: XY, RP_X: rp[0], RP_Y: rp[1], serverXY: serviceManager.serverResult, tuXY: serviceManager.timeUpdateResult, heading: heading, limits: limits)
                 }
             }
@@ -947,7 +765,6 @@ class FusionViewController: UIViewController, Observer {
             if (buildings.contains(currentBuilding)) {
                 if (XY[0] != 0 && XY[1] != 0) {
                     drawUser(XY: XY, heading: heading, limits: limits)
-//                    drawAll(XY: XY, serverXY: serviceManager.serverResult, tuXY: serviceManager.timeUpdateResult, heading: heading, limits: limits)
                 }
             }
         }
@@ -989,19 +806,76 @@ class FusionViewController: UIViewController, Observer {
     @IBAction func topOnSpotButton(_ sender: UIButton) {
         serviceManager.getSpotResult(completion: { [self] statusCode, returnedString in
             if (statusCode == 200) {
-                print(returnedString)
+                let result: OnSpotAuthorizationResult = decodeOSA(json: returnedString)
+                
+                if (result.spots.count > 0) {
+                    // Find Highest Prob
+                    var bestIndex: Int = 0
+                    var bestProb: Double = 0
+                    for i in 0..<result.spots.count {
+                        let data = result.spots[i]
+                        let prob = data.ccs
+                        if (prob > bestProb) {
+                            bestProb = prob
+                            bestIndex = i
+                        }
+                    }
+                    
+                    let data = result.spots[bestIndex]
+                    
+                    if (data.ccs >= CCS_THRESHOLD) {
+                        showOSAResult(data: data, flag: isShowRP)
+                    } else {
+                        print("(Jupiter) Fail : No Matched Spot")
+                        self.scatterChart.isHidden = true
+                        self.spotToDisplay.building_name = "Unvalid"
+                        self.spotToDisplay.spot_name = "Unvalid"
+                        self.spotToDisplay.structure_feature_id = 0
+                        self.spotToDisplay.ccs = data.ccs
+                        
+//                        var temp = Spot()
+//                        temp.spot_x = 80
+//                        temp.spot_y = 80
+//                        temp.building_name = "L3"
+//                        temp.level_name = "1F"
+//                        temp.ccs = 0.7200
+//                        temp.sector_name = "KIST"
+//                        temp.mobile_time = Int(getCurrentTimeInMilliseconds())
+//                        temp.spot_id = 40
+//                        temp.spot_name = "임시 회의실"
+//                        temp.spot_number = 4
+//                        temp.structure_feature_id = 4
+//                        showOSAResult(data: temp, flag: isShowRP)
+                    }
+                }
             } else {
                 print("(Jupiter) Warnings : \(statusCode) , Cannot find spot")
+                
+                var temp = Spot()
+                temp.spot_x = 60
+                temp.spot_y = 40
+                temp.building_name = "L3"
+                temp.level_name = "1F"
+                temp.ccs = 0.7200
+                temp.sector_name = "KIST"
+                temp.mobile_time = Int(getCurrentTimeInMilliseconds())
+                temp.spot_id = 40
+                temp.spot_name = "임시 회의실"
+                temp.spot_number = 4
+                temp.structure_feature_id = 4
+                showOSAResult(data: temp, flag: isShowRP)
             }
         })
     }
     
     func showOSAResult(data: Spot, flag: Bool) {
+        self.spotAuthTime = data.mobile_time
+        
         let spotX = Double(data.spot_x)
         let spotY = Double(data.spot_y)
         let XY: [Double] = [spotX, spotY]
         
-//        self.resultToDisplay = data
+        self.spotToDisplay = data
         
         let key = "\(currentBuilding)_\(currentLevel)"
         let condition: ((String, [[Double]])) -> Bool = {
@@ -1016,15 +890,13 @@ class FusionViewController: UIViewController, Observer {
                 if (rp.isEmpty) {
                     scatterChart.isHidden = true
                 } else {
-//                    drawRP(RP_X: rp[0], RP_Y: rp[1], XY: XY, limits: limits)
-//                    drawSpot(XY: XY)
+                    showSpotContents(data: data)
+                    drawSpot(XY: XY)
                 }
             }
         } else {
-            print(XY)
-            print(limits)
-//            drawValues(XY: XY, limits: limits)
-//            drawSpot(XY: XY)
+            showSpotContents(data: data)
+            drawSpot(XY: XY)
         }
     }
     
@@ -1032,16 +904,95 @@ class FusionViewController: UIViewController, Observer {
         scatterChart.isHidden = false
 
         let point = scatterChart.getPosition(entry: ChartDataEntry(x: XY[0], y: XY[1]), axis: .left)
-        let imageView = UIImageView(image: spotImage?.resize(newWidth: 40))
+        
+        var imageCircle = UIImageView(image: spotCircle?.resize(newWidth: 80))
+        imageCircle.alpha = 0.6
+        imageCircle.frame = CGRect(x: point.x-15, y: point.y-35, width: 30, height: 30)
+        imageCircle.contentMode = .center
+        imageCircle.tag = 150
+        
+        let imageView = UIImageView(image: spotImage?.resize(newWidth: 20))
         imageView.frame = CGRect(x: point.x-15, y: point.y-35, width: 30, height: 30)
         imageView.contentMode = .center
-        imageView.tag = 100
-        if let viewWithTag = scatterChart.viewWithTag(100) {
-            viewWithTag.removeFromSuperview()
+        imageView.tag = 151
+        
+        if let viewWithTagCircle = scatterChart.viewWithTag(150) {
+            viewWithTagCircle.removeFromSuperview()
         }
+        
+        if let viewWithTagPin = scatterChart.viewWithTag(151) {
+            viewWithTagPin.removeFromSuperview()
+        }
+        
+        
         UIView.animate(withDuration: 0.5) {
             self.scatterChart.addSubview(imageView)
+            self.scatterChart.addSubview(imageCircle)
         }
+    }
+    
+    private func dissapearSpot(XY: [Double]) {
+        if let viewWithTagCircle = scatterChart.viewWithTag(150) {
+            UIView.animate(withDuration: 1.0) {
+                viewWithTagCircle.removeFromSuperview()
+            }
+        }
+        
+        if let viewWithTagPin = scatterChart.viewWithTag(151) {
+            UIView.animate(withDuration: 1.0) {
+                viewWithTagPin.removeFromSuperview()
+            }
+        }
+    }
+    
+    func showSpotContents(data: Spot) {
+        let building = data.building_name
+        let level = data.level_name
+        let spotId = data.spot_id
+        let spotNumber = data.spot_number
+        let spotName = data.spot_name
+        let spotX: Double = Double(data.spot_x)
+        let spotY: Double = Double(data.spot_y)
+        let sfId = data.structure_feature_id
+        let ccs = data.ccs
+        
+        UIView.animate(withDuration: 0.5) {
+//            self.mainView.alpha = 0.0
+            self.spotContentsView.alpha = 1.0
+        }
+        
+        let locationName: String = building + " " + level
+        let sfImageName: String = "sf_id_\(sfId)_small"
+        self.mainImage.image = UIImage(named: sfImageName)
+        
+        self.spotLocationLabel.text = locationName
+        self.spotNameLabel.text = spotName
+        
+        var typeName: String = ""
+        switch(sfId) {
+        case 1:
+            typeName = "계단"
+        case 2:
+            typeName = "엘리베이터"
+        case 3:
+            typeName = "에스컬레이터"
+        case 4:
+            typeName = "사무공간"
+        case 5:
+            typeName = "회의실"
+        case 6:
+            typeName = "출입구"
+        case 7:
+            typeName = "탕비실"
+        case 8:
+            typeName = "프린터"
+        case 9:
+            typeName = "화장실"
+        default:
+            typeName = "Unvalid"
+        }
+        self.spotTypeLabel.text = typeName
+        self.spotCcsLabel.text = String(format: "%.4f", ccs)
     }
 }
 
@@ -1064,7 +1015,6 @@ extension FusionViewController : UICollectionViewDelegate{
             scatterChart.isHidden = true
         } else {
             if (isShowRP) {
-//                drawRP(RP_X: rp[0], RP_Y: rp[1], XY: XY, heading: 0, limits: limits)
                 drawDebug(XY: XY, RP_X: rp[0], RP_Y: rp[1], serverXY: serviceManager.serverResult, tuXY: serviceManager.timeUpdateResult, heading: 0, limits: limits)
             }
             displayLevelImage(building: currentBuilding, level: currentLevel, flag: isShowRP)

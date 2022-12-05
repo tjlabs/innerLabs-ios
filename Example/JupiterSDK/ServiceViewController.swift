@@ -153,8 +153,7 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
         setDropDown()
         
         switchButton.delegate = self
-        let switchColor: (UIColor, UIColor) = (#colorLiteral(red: 0.5291011186, green: 0.7673488115, blue: 1, alpha: 1), #colorLiteral(red: 0.2705247761, green: 0.3820963617, blue: 1, alpha: 1))
-        switchButton.onColor = switchColor
+        switchButton.setSwitchButtonColor(colorName: self.cardData!.cardColor)
         self.imageLevel.bringSubviewToFront(switchButton)
         
         if (cardData?.sector_id != 0 && cardData?.sector_id != 7) {
@@ -382,7 +381,8 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
     
     private func initDropDown() {
         dropView.layer.cornerRadius = 6
-        dropView.borderColor = .blue1
+//        dropView.borderColor = .blue1
+        dropView.borderColor = .darkgrey4
         
         DropDown.appearance().textColor = UIColor.black // 아이템 텍스트 색상
         DropDown.appearance().selectedTextColor = UIColor.red // 선택된 아이템 텍스트 색상
@@ -397,7 +397,8 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
             dropText.text = self.currentBuilding
         }
         
-        dropText.textColor = .blue1
+//        dropText.textColor = .blue1
+        dropText.textColor = .darkgrey4
         
         dropDown.dismissMode = .automatic // 팝업을 닫을 모드 설정
     }
@@ -1270,7 +1271,7 @@ extension ServiceViewController : UICollectionViewDataSource{
 //        fetchLevel(building: currentBuilding, level: currentLevel, flag: isShowRP)
         
         levelCollectionView.layer.cornerRadius = 15
-        levelCollectionView.layer.borderColor = UIColor.blue1.cgColor
+        levelCollectionView.layer.borderColor = UIColor.darkgrey4.cgColor
         levelCollectionView.layer.borderWidth = 1
         
         return levelCollectionView

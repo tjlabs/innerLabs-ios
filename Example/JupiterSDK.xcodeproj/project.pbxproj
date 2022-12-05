@@ -101,6 +101,7 @@
 		B3FD74E9286989A600CD4D74 /* CustomSwitchButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3FD74E8286989A600CD4D74 /* CustomSwitchButton.swift */; };
 		B3FD74EC2869A38800CD4D74 /* Gallery_4F.csv in Resources */ = {isa = PBXBuildFile; fileRef = B3FD74EA2869A38800CD4D74 /* Gallery_4F.csv */; };
 		B3FD74ED2869A38800CD4D74 /* Gallery_3F.csv in Resources */ = {isa = PBXBuildFile; fileRef = B3FD74EB2869A38800CD4D74 /* Gallery_3F.csv */; };
+		B3FF2B5A293DF498009082FF /* L3_1F.csv in Resources */ = {isa = PBXBuildFile; fileRef = B3FF2B59293DF498009082FF /* L3_1F.csv */; };
 		B3FF6A9028E5585000CFA824 /* COEX_B1.csv in Resources */ = {isa = PBXBuildFile; fileRef = B3FF6A8F28E5585000CFA824 /* COEX_B1.csv */; };
 /* End PBXBuildFile section */
 
@@ -218,6 +219,7 @@
 		B3FD74E8286989A600CD4D74 /* CustomSwitchButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomSwitchButton.swift; sourceTree = "<group>"; };
 		B3FD74EA2869A38800CD4D74 /* Gallery_4F.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Gallery_4F.csv; sourceTree = "<group>"; };
 		B3FD74EB2869A38800CD4D74 /* Gallery_3F.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Gallery_3F.csv; sourceTree = "<group>"; };
+		B3FF2B59293DF498009082FF /* L3_1F.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = L3_1F.csv; sourceTree = "<group>"; };
 		B3FF6A8F28E5585000CFA824 /* COEX_B1.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = COEX_B1.csv; sourceTree = "<group>"; };
 		D004876B84847F9E6841D160 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
 		DB77B350B78C4D6D3DA0D745 /* Pods_JupiterSDK_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_JupiterSDK_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -320,6 +322,7 @@
 				B36928AD28C5D290005FD4A9 /* L8_B1.csv */,
 				B38807EF283390280029B174 /* L1_1F.csv */,
 				B36B964D289A024900951457 /* L1_2F.csv */,
+				B3FF2B59293DF498009082FF /* L3_1F.csv */,
 				B3B3610828295E1400B8E876 /* Autoway_B3.csv */,
 				B3E6C0F5292D522C00D0AC13 /* COEX_B2.csv */,
 				B3B3610A28295E1D00B8E876 /* Autoway_B4.csv */,
@@ -610,6 +613,7 @@
 				607FACDD1AFB9204008FA782 /* Images.xcassets in Resources */,
 				B3E094EE28AE270400D3BC59 /* S3_7F.csv in Resources */,
 				B360D88F28090D6A0084FB22 /* NotoSansKR-Light.otf in Resources */,
+				B3FF2B5A293DF498009082FF /* L3_1F.csv in Resources */,
 				B3B9F4E5286C2EA300FEE914 /* Gallery_4F_Road.csv in Resources */,
 				B38807F2283390280029B174 /* L1_1F.csv in Resources */,
 				B3BD69B027E9A78000A32A7A /* SectorContainerTableViewCell.xib in Resources */,
