@@ -486,7 +486,6 @@ public class ServiceManager: Observation {
                                     let key: String = "\(buildingName)_\(levelName)"
 
                                     let url = "https://storage.googleapis.com/jupiter_image/pp/\(self.sector_id)/\(key).csv"
-                                    // [http 비동기 방식을 사용해서 http 요청 수행 실시]
                                     let urlComponents = URLComponents(string: url)
                                     let requestURL = URLRequest(url: (urlComponents?.url)!)
                                     let dataTask = URLSession.shared.dataTask(with: requestURL, completionHandler: { (data, response, error) in
@@ -1234,8 +1233,11 @@ public class ServiceManager: Observation {
 
                                                             let dh = self.currentTuResult.absolute_heading - self.pastTuResult.absolute_heading
                                                             
-                                                            resultForMu.x = resultForMu.x + dx
-                                                            resultForMu.y = resultForMu.y + dy
+//                                                            resultForMu.x = resultForMu.x + dx
+//                                                            resultForMu.y = resultForMu.y + dy
+                                                            resultForMu.x = resultCorrected.xyh[0] + dx
+                                                            resultForMu.y = resultCorrected.xyh[1] + dy
+                                                            
 //                                                            resultForMu.absolute_heading = self.currentTuResult.absolute_heading
                                                         }
                                                         let trackingTime = getCurrentTimeInMilliseconds()
@@ -1247,8 +1249,8 @@ public class ServiceManager: Observation {
                                                         let diffY = resultCorrected.xyh[1] - muResult.y
                                                         let diffH = resultCorrected.xyh[2] - muResult.absolute_heading
                                                         
-//                                                        print("(Jupiter) Past TU Heading : \(self.pastTuResult.absolute_heading)")
-//                                                        print("(Jupiter) dx : \(diffX) // dy : \(diffY) // dh : \(diffH)")
+                                                        print("(Jupiter) TU Heading // past : \(self.pastTuResult.absolute_heading) // current : \(self.currentTuResult.absolute_heading) // diff : \(self.pastTuResult.absolute_heading - self.currentTuResult.absolute_heading)")
+                                                        print("(Jupiter) Diff MU // dx : \(diffX) // dy : \(diffY) // dh : \(diffH)")
                                                         
                                                         let diffXY: Double = sqrt(diffX*diffX + diffY*diffY)
                                                         let diffIndex: Int = self.currentTuResult.index - self.pastTuResult.index

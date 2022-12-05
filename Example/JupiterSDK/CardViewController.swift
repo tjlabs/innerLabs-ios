@@ -380,7 +380,14 @@ extension CardViewController: UICollectionViewDataSource, UICollectionViewDelega
             guard let guideVC = self.storyboard?.instantiateViewController(withIdentifier: "GuideViewController") as? GuideViewController else { return }
             guideVC.page = currentPage
             self.navigationController?.pushViewController(guideVC, animated: true)
-        } else if (sector_id == 10) {
+        } else if (sector_id == 1 || sector_id == 2) {
+            guard let fusionVC = self.storyboard?.instantiateViewController(withIdentifier: "FusionViewController") as? FusionViewController else { return }
+            fusionVC.cardData = cardItemData[mod]
+            fusionVC.uuid = uuid
+            fusionVC.page = currentPage
+            self.navigationController?.pushViewController(fusionVC, animated: true)
+        }
+        else if (sector_id == 10) {
             guard let collectVC = self.storyboard?.instantiateViewController(withIdentifier: "CollectViewController") as? CollectViewController else { return }
             collectVC.cardData = cardItemData[mod]
             collectVC.userId = uuid
@@ -418,8 +425,8 @@ extension CardViewController: UICollectionViewDataSource, UICollectionViewDelega
             neptuneVC.page = currentPage
             self.navigationController?.pushViewController(neptuneVC, animated: true)
         } else {
-//            guard let serviceVC = self.storyboard?.instantiateViewController(withIdentifier: "ServiceViewController") as? ServiceViewController else { return }
-            guard let serviceVC = self.storyboard?.instantiateViewController(withIdentifier: "FusionViewController") as? FusionViewController else { return }
+            guard let serviceVC = self.storyboard?.instantiateViewController(withIdentifier: "ServiceViewController") as? ServiceViewController else { return }
+//            guard let serviceVC = self.storyboard?.instantiateViewController(withIdentifier: "FusionViewController") as? FusionViewController else { return }
             serviceVC.cardData = cardItemData[mod]
             serviceVC.uuid = uuid
             serviceVC.page = currentPage

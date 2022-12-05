@@ -113,6 +113,8 @@ class FusionViewController: UIViewController, Observer {
     
     var modeAuto: Bool = false
     
+    var spotImage = UIImage(named: "spotPin")
+    
     // View
     var defaultHeight: CGFloat = 100
     
@@ -127,8 +129,7 @@ class FusionViewController: UIViewController, Observer {
         setDropDown()
         
         switchButton.delegate = self
-        let switchColor: (UIColor, UIColor) = (#colorLiteral(red: 0.5291011186, green: 0.7673488115, blue: 1, alpha: 1), #colorLiteral(red: 0.2705247761, green: 0.3820963617, blue: 1, alpha: 1))
-        switchButton.onColor = switchColor
+        switchButton.setSwitchButtonColor(colorName: self.cardData!.cardColor)
         self.imageLevel.bringSubviewToFront(switchButton)
         
         if (cardData?.sector_id != 0 && cardData?.sector_id != 7) {
@@ -304,7 +305,8 @@ class FusionViewController: UIViewController, Observer {
     
     private func initDropDown() {
         dropView.layer.cornerRadius = 6
-        dropView.borderColor = .blue1
+//        dropView.borderColor = .blue1
+        dropView.borderColor = .darkgrey4
         
         DropDown.appearance().textColor = UIColor.black // 아이템 텍스트 색상
         DropDown.appearance().selectedTextColor = UIColor.red // 선택된 아이템 텍스트 색상
@@ -319,7 +321,7 @@ class FusionViewController: UIViewController, Observer {
             dropText.text = self.currentBuilding
         }
         
-        dropText.textColor = .blue1
+        dropText.textColor = .darkgrey4
         
         dropDown.dismissMode = .automatic // 팝업을 닫을 모드 설정
     }
@@ -499,8 +501,9 @@ class FusionViewController: UIViewController, Observer {
                     // 빌딩 -> 층 이미지가 있는 경우
                     self.imageLevel.isHidden = false
                     self.noImageLabel.isHidden = true
-
-                    self.imageLevel.image = data
+                    
+                    self.imageLevel.image = UIImage(named: "L3_Map")
+//                    self.imageLevel.image = data
                 } else {
                     // 빌딩 -> 층 이미지가 없는 경우
                     if (flag) {
@@ -517,56 +520,6 @@ class FusionViewController: UIViewController, Observer {
                 }
             }
         })
-    }
-    
-    private func fetchLevel(building: String, level: String, flag: Bool) {
-        // Building -> Level Image Download From URL
-        noImageLabel.text = "해당 \(level) 이미지가 없습니다"
-        
-        DispatchQueue.main.async  {
-            // 빌딩 -> 층 이미지 보이기
-            if let urlLevel = URL(string: "https://storage.googleapis.com/jupiter_image/map/\(self.sectorID)/\(building)_\(level).png") {
-                let data = try? Data(contentsOf: urlLevel)
-//                let data = try await URLSession.shared.data(from: urlLevel)
-                
-                if (data != nil) {
-                    // 빌딩 -> 층 이미지가 있는 경우
-                    let resourceBuildingLevel = ImageResource(downloadURL: urlLevel, cacheKey: "\(self.sectorID)_\(building)_\(level)_image")
-                    
-    //                scatterChart.isHidden = false
-                    self.imageLevel.isHidden = false
-                    self.noImageLabel.isHidden = true
-                    self.imageLevel.kf.setImage(with: resourceBuildingLevel, placeholder: nil, options: [.transition(.fade(0.8))], completionHandler: nil)
-                } else {
-                    // 빌딩 -> 층 이미지가 없는 경우
-                    if (flag) {
-    //                    scatterChart.isHidden = false
-                        self.imageLevel.isHidden = false
-                        self.noImageLabel.isHidden = true
-                        
-                        self.imageLevel.image = UIImage(named: "emptyLevel")
-                    } else {
-                        self.scatterChart.isHidden = true
-                        self.imageLevel.isHidden = true
-                        self.noImageLabel.isHidden = false
-                    }
-                    
-                }
-            } else {
-                // 빌딩 -> 층 이미지가 없는 경우
-                if (flag) {
-    //                scatterChart.isHidden = false
-                    self.imageLevel.isHidden = false
-                    self.noImageLabel.isHidden = true
-                    
-                    self.imageLevel.image = UIImage(named: "emptyLevel")
-                } else {
-                    self.scatterChart.isHidden = true
-                    self.imageLevel.isHidden = true
-                    self.noImageLabel.isHidden = false
-                }
-            }
-        }
     }
     
     private func drawRP(RP_X: [Double], RP_Y: [Double], XY: [Double], heading: Double, limits: [Double]) {
@@ -1032,6 +985,64 @@ class FusionViewController: UIViewController, Observer {
             switchButtonOffset.constant = 10
         }
     }
+    
+    @IBAction func topOnSpotButton(_ sender: UIButton) {
+        serviceManager.getSpotResult(completion: { [self] statusCode, returnedString in
+            if (statusCode == 200) {
+                print(returnedString)
+            } else {
+                print("(Jupiter) Warnings : \(statusCode) , Cannot find spot")
+            }
+        })
+    }
+    
+    func showOSAResult(data: Spot, flag: Bool) {
+        let spotX = Double(data.spot_x)
+        let spotY = Double(data.spot_y)
+        let XY: [Double] = [spotX, spotY]
+        
+//        self.resultToDisplay = data
+        
+        let key = "\(currentBuilding)_\(currentLevel)"
+        let condition: ((String, [[Double]])) -> Bool = {
+            $0.0.contains(key)
+        }
+        
+        let limits: [Double] = chartLimits[key] ?? [0, 0, 0, 0]
+        let rp: [[Double]] = RP[key] ?? [[Double]]()
+        
+        if (flag) {
+            if (RP.contains(where: condition)) {
+                if (rp.isEmpty) {
+                    scatterChart.isHidden = true
+                } else {
+//                    drawRP(RP_X: rp[0], RP_Y: rp[1], XY: XY, limits: limits)
+//                    drawSpot(XY: XY)
+                }
+            }
+        } else {
+            print(XY)
+            print(limits)
+//            drawValues(XY: XY, limits: limits)
+//            drawSpot(XY: XY)
+        }
+    }
+    
+    private func drawSpot(XY: [Double]) {
+        scatterChart.isHidden = false
+
+        let point = scatterChart.getPosition(entry: ChartDataEntry(x: XY[0], y: XY[1]), axis: .left)
+        let imageView = UIImageView(image: spotImage?.resize(newWidth: 40))
+        imageView.frame = CGRect(x: point.x-15, y: point.y-35, width: 30, height: 30)
+        imageView.contentMode = .center
+        imageView.tag = 100
+        if let viewWithTag = scatterChart.viewWithTag(100) {
+            viewWithTag.removeFromSuperview()
+        }
+        UIView.animate(withDuration: 0.5) {
+            self.scatterChart.addSubview(imageView)
+        }
+    }
 }
 
 
@@ -1078,7 +1089,8 @@ extension FusionViewController : UICollectionViewDataSource{
         displayLevelImage(building: currentBuilding, level: currentLevel, flag: isShowRP)
         
         levelCollectionView.layer.cornerRadius = 15
-        levelCollectionView.layer.borderColor = UIColor.blue1.cgColor
+//        levelCollectionView.layer.borderColor = UIColor.blue1.cgColor
+        levelCollectionView.layer.borderColor = UIColor.darkgrey4.cgColor
         levelCollectionView.layer.borderWidth = 1
         
         return levelCollectionView

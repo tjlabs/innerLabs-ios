@@ -862,7 +862,6 @@
                                     <constraint firstItem="QLe-Ir-cc9" firstAttribute="top" secondItem="KTP-16-jXW" secondAttribute="bottom" id="hNF-Td-u6D"/>
                                     <constraint firstAttribute="trailing" secondItem="4di-sR-Hc3" secondAttribute="trailing" id="mwd-OG-9xZ"/>
                                     <constraint firstItem="4di-sR-Hc3" firstAttribute="top" secondItem="KTP-16-jXW" secondAttribute="bottom" id="xcg-Pj-j7W"/>
-                                    <constraint firstAttribute="height" constant="250" id="yyW-pT-vXw"/>
                                 </constraints>
                                 <userDefinedRuntimeAttributes>
                                     <userDefinedRuntimeAttribute type="color" keyPath="shadowColor">
@@ -1556,6 +1555,9 @@
                                         <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                                         <state key="normal" image="onSpot"/>
                                         <state key="selected" image="onSpot"/>
+                                        <connections>
+                                            <action selector="topOnSpotButton:" destination="3sZ-Iz-6FU" eventType="touchUpInside" id="kdC-qs-gFL"/>
+                                        </connections>
                                     </button>
                                     <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="59B-Pb-lNU">
                                         <rect key="frame" x="325" y="42.666666666666657" width="60" height="60"/>

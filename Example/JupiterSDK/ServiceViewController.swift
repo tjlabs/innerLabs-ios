@@ -311,6 +311,9 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
         if (countTap == 5) {
             isShowRP = true
             self.sectorNameLabel.textColor = .yellow
+            for view in self.scatterChart.subviews {
+                view.removeFromSuperview()
+            }
         } else if (countTap > 9) {
             isShowRP = false
             countTap = 0
