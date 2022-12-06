@@ -406,7 +406,6 @@ extension CardViewController: UICollectionViewDataSource, UICollectionViewDelega
             spotVC.userId = uuid
             spotVC.page = currentPage
             self.navigationController?.pushViewController(spotVC, animated: true)
-            
 //            guard let tipstownVC = self.storyboard?.instantiateViewController(withIdentifier: "TipsTownViewController") as? TipsTownViewController else { return }
 //            tipstownVC.cardData = cardItemData[mod]
 //            tipstownVC.userId = uuid
