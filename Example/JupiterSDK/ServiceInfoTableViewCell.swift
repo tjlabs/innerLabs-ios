@@ -45,7 +45,7 @@ class ServiceInfoTableViewCell: UITableViewCell {
         if ( abs(data.scc) < 100 ) {
             self.sccLabel.text = String(format: "%.4f", data.scc)
         } else {
-            self.sccLabel.text = "Unvalid"
+            self.sccLabel.text = "Invalid"
         }
         self.phaseLabel.text = String(data.phase)
     }

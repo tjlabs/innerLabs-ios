@@ -828,8 +828,8 @@ class FusionViewController: UIViewController, Observer {
                     } else {
                         print("(Jupiter) Fail : No Matched Spot")
                         self.scatterChart.isHidden = true
-                        self.spotToDisplay.building_name = "Unvalid"
-                        self.spotToDisplay.spot_name = "Unvalid"
+                        self.spotToDisplay.building_name = "Invalid"
+                        self.spotToDisplay.spot_name = "Invalid"
                         self.spotToDisplay.structure_feature_id = 0
                         self.spotToDisplay.ccs = data.ccs
                         
@@ -989,7 +989,7 @@ class FusionViewController: UIViewController, Observer {
         case 9:
             typeName = "화장실"
         default:
-            typeName = "Unvalid"
+            typeName = "Invalid"
         }
         self.spotTypeLabel.text = typeName
         self.spotCcsLabel.text = String(format: "%.4f", ccs)

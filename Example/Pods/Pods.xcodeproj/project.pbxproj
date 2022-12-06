@@ -16,6 +16,7 @@
 				F1B8DEA01CE3AD7BE8783CFDD16AC788 /* PBXTargetDependency */,
 			);
 			name = GooglePlaces;
+			productName = GooglePlaces;
 		};
 		E5B4BBC6DD552AC8943C7E22772FC1D3 /* GoogleMaps */ = {
 			isa = PBXAggregateTarget;
@@ -25,6 +26,7 @@
 			dependencies = (
 			);
 			name = GoogleMaps;
+			productName = GoogleMaps;
 		};
 /* End PBXAggregateTarget section */
 
@@ -999,7 +1001,7 @@
 		14CD55BFB95CBF9B90502397699374FD /* ConstraintDescription.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ConstraintDescription.swift; path = Sources/ConstraintDescription.swift; sourceTree = "<group>"; };
 		167F9CAD52E4F98CAD4E5EB8141B40CC /* SwiftCSVExport-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "SwiftCSVExport-dummy.m"; sourceTree = "<group>"; };
 		16840E0C4C313A230D7C7DD0AE583A2D /* ImageDataProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ImageDataProvider.swift; path = Sources/General/ImageSource/ImageDataProvider.swift; sourceTree = "<group>"; };
-		171434EC74E7A52D8B838E2E3937512B /* JupiterSDK.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = JupiterSDK.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		171434EC74E7A52D8B838E2E3937512B /* JupiterSDK.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; path = JupiterSDK.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		17410B71D3DF75ECF5A238BC786F1AB5 /* PieChartDataSet.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = PieChartDataSet.swift; path = Source/Charts/Data/Implementations/Standard/PieChartDataSet.swift; sourceTree = "<group>"; };
 		17723FAC7A2A21886AF324A2FD9EF208 /* FBLPromiseError.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = FBLPromiseError.h; path = Sources/FBLPromises/include/FBLPromiseError.h; sourceTree = "<group>"; };
 		179C3739076ED36A81BE77ABF1FEF1A5 /* Request.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Request.swift; path = Source/Request.swift; sourceTree = "<group>"; };
@@ -1088,7 +1090,7 @@
 		349D705ADC01642523FE8FB63BCB6802 /* YoshikoTextField.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = YoshikoTextField.swift; path = TextFieldEffects/TextFieldEffects/YoshikoTextField.swift; sourceTree = "<group>"; };
 		3518EC865B493D594ADBF560070639D0 /* Storage.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Storage.swift; path = FirebaseCore/Internal/Sources/HeartbeatLogging/Storage.swift; sourceTree = "<group>"; };
 		35B136E01EBF4181BFEDA422D3F8E07D /* PacingDetectFunctions.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = PacingDetectFunctions.swift; path = JupiterSDK/Classes/PacingDetectFunctions.swift; sourceTree = "<group>"; };
-		364E73C86E44229E27A9DB88DD9F1729 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; path = README.md; sourceTree = "<group>"; };
+		364E73C86E44229E27A9DB88DD9F1729 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		36F1A4AF0B459057EBE19D9644534AAF /* FIRInstallationsErrorUtil.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = FIRInstallationsErrorUtil.h; path = FirebaseInstallations/Source/Library/Errors/FIRInstallationsErrorUtil.h; sourceTree = "<group>"; };
 		3727A61880BE3A10267E42F1E1CE5C8D /* Pods-JupiterSDK_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-JupiterSDK_Tests.release.xcconfig"; sourceTree = "<group>"; };
 		37399B7FF4A2122D678E8C45B94E4C55 /* MarkerImage.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MarkerImage.swift; path = Source/Charts/Components/MarkerImage.swift; sourceTree = "<group>"; };
@@ -1323,7 +1325,7 @@
 		85968C5E35C6ACAD16C473F9B382CA60 /* YAxisRenderer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = YAxisRenderer.swift; path = Source/Charts/Renderers/YAxisRenderer.swift; sourceTree = "<group>"; };
 		85CCA862D43D5D4D5971E138697CE5CF /* SnapKit.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = SnapKit.modulemap; sourceTree = "<group>"; };
 		87A31A8A61F0905F795A42EA6AE6D55B /* ConstraintLayoutSupportDSL.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ConstraintLayoutSupportDSL.swift; path = Sources/ConstraintLayoutSupportDSL.swift; sourceTree = "<group>"; };
-		87B1A65FE5D0D244059173EABF328AE0 /* ServiceManager.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ServiceManager.swift; path = JupiterSDK/Classes/ServiceManager.swift; sourceTree = "<group>"; };
+		87B1A65FE5D0D244059173EABF328AE0 /* ServiceManager.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ServiceManager.swift; sourceTree = "<group>"; };
 		87E882AD6A4DADC6E28C6CE885E493B1 /* DropDown-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "DropDown-prefix.pch"; sourceTree = "<group>"; };
 		87EB1AD753FCE8CEFE19CF6E7DC4D70B /* NSURLSession+GULPromises.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "NSURLSession+GULPromises.m"; path = "GoogleUtilities/Environment/URLSessionPromiseWrapper/NSURLSession+GULPromises.m"; sourceTree = "<group>"; };
 		87FA93EBA6F8605526F5754E35B99F18 /* GULHeartbeatDateStorageUserDefaults.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GULHeartbeatDateStorageUserDefaults.h; path = GoogleUtilities/Environment/Public/GoogleUtilities/GULHeartbeatDateStorageUserDefaults.h; sourceTree = "<group>"; };
@@ -1392,7 +1394,7 @@
 		9D85242108364B9BD517823BB72268F3 /* RadarChartView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = RadarChartView.swift; path = Source/Charts/Charts/RadarChartView.swift; sourceTree = "<group>"; };
 		9D877BEBED94B121B7DA6DB02DCB74CB /* JupiterSDK-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "JupiterSDK-dummy.m"; sourceTree = "<group>"; };
 		9D87D56752141FA58905757701DFF16D /* FIRInstallationsItem.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = FIRInstallationsItem.h; path = FirebaseInstallations/Source/Library/FIRInstallationsItem.h; sourceTree = "<group>"; };
-		9D940727FF8FB9C785EB98E56350EF41 /* Podfile */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; name = Podfile; path = ../Podfile; sourceTree = SOURCE_ROOT; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		9D940727FF8FB9C785EB98E56350EF41 /* Podfile */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; name = Podfile; path = ../Podfile; sourceTree = SOURCE_ROOT; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		9DA8E39CED0DC8155048A91BE0C263C0 /* FloatyDelegate.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = FloatyDelegate.swift; path = Sources/FloatyDelegate.swift; sourceTree = "<group>"; };
 		9E20B25959AED3F7938589137EC4B02C /* FIRExperimentController.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = FIRExperimentController.m; path = FirebaseABTesting/Sources/FIRExperimentController.m; sourceTree = "<group>"; };
 		9E37146BACBEA3DFC124C142D4325605 /* LinkedList.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = LinkedList.swift; path = JupiterSDK/Classes/LinkedList.swift; sourceTree = "<group>"; };
@@ -1531,7 +1533,7 @@
 		C71C2078C995E483C926B5748C3367BE /* ViewPortHandler.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ViewPortHandler.swift; path = Source/Charts/Utils/ViewPortHandler.swift; sourceTree = "<group>"; };
 		C745E83FE46A9B2F39776831451CEB37 /* ExpyTableView */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = ExpyTableView; path = ExpyTableView.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		C798A704122A69CA824E9308A1E1F6C1 /* LegendRenderer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = LegendRenderer.swift; path = Source/Charts/Renderers/LegendRenderer.swift; sourceTree = "<group>"; };
-		C7A3B000B7DCD80504431859C4019942 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; path = LICENSE; sourceTree = "<group>"; };
+		C7A3B000B7DCD80504431859C4019942 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		C87CAD5E1AF717221BBE821F31D878A2 /* StepLengthEstimator.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = StepLengthEstimator.swift; path = JupiterSDK/Classes/StepLengthEstimator.swift; sourceTree = "<group>"; };
 		C8FF67A508FF3B6514BBAF8A1EBCE340 /* TextFieldEffects-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "TextFieldEffects-umbrella.h"; sourceTree = "<group>"; };
 		C97183A5BED158EFDCDA63542BF3ABE2 /* SwiftCSVExport.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = SwiftCSVExport.modulemap; sourceTree = "<group>"; };
@@ -1928,7 +1930,6 @@
 				78CE286DF6A7F3D69A2EF6E198048F7C /* ExpyTableView.swift */,
 				AC205790F9443EA419769BF436FEF8B5 /* Support Files */,
 			);
-			name = ExpyTableView;
 			path = ExpyTableView;
 			sourceTree = "<group>";
 		};
@@ -1952,7 +1953,6 @@
 				58425C68B072D8C0DC9F35DCECE3368D /* PDRDistanceEstimator.swift */,
 				BA9F28D71E834638595E183A8709D877 /* PeakValleyDetector.swift */,
 				47D9E520EDE9EA0C35F6515B43B518EE /* SensorData.swift */,
-				87B1A65FE5D0D244059173EABF328AE0 /* ServiceManager.swift */,
 				C87CAD5E1AF717221BBE821F31D878A2 /* StepLengthEstimator.swift */,
 				AD07AA367AB2900C0F2C158094EA910E /* StringExtension.swift */,
 				B2CCFBAAA7B5EB00897D0C2367CEBCF3 /* UnitAttitudeEstimator.swift */,
@@ -2107,7 +2107,6 @@
 				0CB84DFE6ADABD5A26B2FCBD0E436DA4 /* SwiftCSVExport.h */,
 				5D349745F8D90409A115E5C985C30DAD /* Support Files */,
 			);
-			name = SwiftCSVExport;
 			path = SwiftCSVExport;
 			sourceTree = "<group>";
 		};
@@ -2127,7 +2126,6 @@
 				77AE7EAE06242B1D9A33606BFB6660C0 /* WeakContainer.swift */,
 				212E74C3DC38765D048D0C7EB8FFB8CA /* Support Files */,
 			);
-			name = FirebaseCoreInternal;
 			path = FirebaseCoreInternal;
 			sourceTree = "<group>";
 		};
@@ -2143,7 +2141,6 @@
 				8396A5D5A51D0B865F1B67AA5F7BC7C8 /* UIView+Draggable.swift */,
 				CBA86B2016F647BEB0AE103574860675 /* Support Files */,
 			);
-			name = Floaty;
 			path = Floaty;
 			sourceTree = "<group>";
 		};
@@ -2162,7 +2159,6 @@
 				349D705ADC01642523FE8FB63BCB6802 /* YoshikoTextField.swift */,
 				1A7228167AF7E6ABF18FD75FDE067065 /* Support Files */,
 			);
-			name = TextFieldEffects;
 			path = TextFieldEffects;
 			sourceTree = "<group>";
 		};
@@ -2183,7 +2179,6 @@
 				4A70EDB5E7D688BBCC566F677E7A6E71 /* Resources */,
 				2021724771C55B6FF98CA33DE6B734D7 /* Support Files */,
 			);
-			name = GooglePlaces;
 			path = GooglePlaces;
 			sourceTree = "<group>";
 		};
@@ -2246,7 +2241,6 @@
 				2075F0AC806BA60760E204C815E7701E /* FBLPromises.h */,
 				3EC7BD8425F9EBD335D6FF7FD0DC0F7B /* Support Files */,
 			);
-			name = PromisesObjC;
 			path = PromisesObjC;
 			sourceTree = "<group>";
 		};
@@ -2289,7 +2283,6 @@
 				9C3E35F07C66D8AD78CCC4271AA66623 /* Core */,
 				29437B8AD3E40C48BC8485F5380DF3A0 /* Support Files */,
 			);
-			name = Charts;
 			path = Charts;
 			sourceTree = "<group>";
 		};
@@ -2417,7 +2410,6 @@
 				588B56516FA18A18B992D67084DA49F7 /* WKInterfaceImage+Kingfisher.swift */,
 				5C4723B134C6B224B1F92F6D9CA3E13D /* Support Files */,
 			);
-			name = Kingfisher;
 			path = Kingfisher;
 			sourceTree = "<group>";
 		};
@@ -2468,7 +2460,6 @@
 				7112720BA6E4A3CEC3E0FBE6E457E1B0 /* Windows.swift */,
 				A3F88A7B8967FF820F56352D6F690874 /* Support Files */,
 			);
-			name = SwiftAlgorithms;
 			path = SwiftAlgorithms;
 			sourceTree = "<group>";
 		};
@@ -2549,7 +2540,6 @@
 				503A03D2C92E744604F82DDDC40A5024 /* FIROptionsInternal.h */,
 				A6BFDF87F91A0456BA3575FDB7BCBE4D /* Support Files */,
 			);
-			name = FirebaseInstallations;
 			path = FirebaseInstallations;
 			sourceTree = "<group>";
 		};
@@ -2772,7 +2762,6 @@
 				3B5C4C465561DACC207A3688C88F3A33 /* FIRVersion.m */,
 				56E29C5B98DC1FCD4DE741FC7D393560 /* Support Files */,
 			);
-			name = FirebaseCore;
 			path = FirebaseCore;
 			sourceTree = "<group>";
 		};
@@ -2835,7 +2824,6 @@
 				4A41CA72A3842CC9004D485409FA61AC /* FIROptionsInternal.h */,
 				1E1CF384220D85EA47C9B9CB30E9B696 /* Support Files */,
 			);
-			name = FirebaseABTesting;
 			path = FirebaseABTesting;
 			sourceTree = "<group>";
 		};
@@ -2865,6 +2853,7 @@
 		B94D7768568A9992200DB461E8CF687F /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				87B1A65FE5D0D244059173EABF328AE0 /* ServiceManager.swift */,
 				2686B964D716BAE314198BD314E80094 /* iOS */,
 			);
 			name = Frameworks;
@@ -2879,7 +2868,6 @@
 				5825B65C3E33C253B2FE206C4867EC1A /* Support Files */,
 				2112B16068896E0149F6DA58C9416730 /* UserDefaults */,
 			);
-			name = GoogleUtilities;
 			path = GoogleUtilities;
 			sourceTree = "<group>";
 		};
@@ -2941,7 +2929,6 @@
 				00EAC17D154EAFB1F3F1A8BF509D04EB /* RCNUserDefaultsManager.m */,
 				E2839BEAB961AA918B51837A118A86CE /* Support Files */,
 			);
-			name = FirebaseRemoteConfig;
 			path = FirebaseRemoteConfig;
 			sourceTree = "<group>";
 		};
@@ -3001,7 +2988,6 @@
 				ADE632C72BB0FAD9ABF63EA53A045932 /* Validation.swift */,
 				D3453CE6F4B9EFB3792129B8DFA71877 /* Support Files */,
 			);
-			name = Alamofire;
 			path = Alamofire;
 			sourceTree = "<group>";
 		};
@@ -3029,7 +3015,6 @@
 				9FE380210ED849BF60ED031F869860A5 /* Resources */,
 				B87970FE95850A98D86433E9D9825F64 /* Support Files */,
 			);
-			name = DropDown;
 			path = DropDown;
 			sourceTree = "<group>";
 		};
@@ -3081,7 +3066,6 @@
 				E8047C201A6E8B0E8AFA19749C897AA3 /* Maps */,
 				49689F65BA5CA3C5B2A08E66D112D550 /* Support Files */,
 			);
-			name = GoogleMaps;
 			path = GoogleMaps;
 			sourceTree = "<group>";
 		};
@@ -3141,7 +3125,6 @@
 				7E69EA3AB8558F8BE79ECFD3D862E7EA /* UILayoutSupport+Extensions.swift */,
 				501E72EB90AA03A21FB54700F702BB22 /* Support Files */,
 			);
-			name = SnapKit;
 			path = SnapKit;
 			sourceTree = "<group>";
 		};
@@ -5553,8 +5536,7 @@
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRIP_INSTALLED_PRODUCT = NO;
-				SWIFT_COMPILATION_MODE = wholemodule;
-				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				SWIFT_VERSION = 5.0;
 				SYMROOT = "${SRCROOT}/../build";
 			};

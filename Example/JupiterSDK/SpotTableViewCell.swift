@@ -21,8 +21,8 @@ class SpotTableViewCell: UITableViewCell {
     }
     
     func updateResult(data: Spot) {
-        var locationString: String = "Unvalid"
-        var nameString: String = "Unvalid"
+        var locationString: String = "Invalid"
+        var nameString: String = "Invalid"
         
         if (data.building_name != "" && data.level_name != "") {
             locationString = "\(data.building_name)_\(data.level_name)"

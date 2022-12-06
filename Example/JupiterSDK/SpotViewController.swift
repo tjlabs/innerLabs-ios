@@ -291,7 +291,7 @@ class SpotViewController: UIViewController {
         case 9:
             typeName = "화장실"
         default:
-            typeName = "Unvalid"
+            typeName = "Invalid"
         }
         self.typeLabel.text = typeName
         self.ccsLabel.text = String(format: "%.4f", ccs)

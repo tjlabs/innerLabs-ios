@@ -408,8 +408,8 @@ class NeptuneViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
                         } else {
                             print("(Jupiter) Fail : No Matched Spot")
                             self.scatterChart.isHidden = true
-                            self.resultToDisplay.building_name = "Unvalid"
-                            self.resultToDisplay.spot_name = "Unvalid"
+                            self.resultToDisplay.building_name = "Invalid"
+                            self.resultToDisplay.spot_name = "Invalid"
                             self.resultToDisplay.structure_feature_id = 0
                             self.resultToDisplay.ccs = data.ccs
                             if (self.isOpen) {
@@ -420,9 +420,9 @@ class NeptuneViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
                 } else {
                     print("(Jupiter) Error : Neptune is unavailable")
                     self.scatterChart.isHidden = true
-                    self.resultToDisplay.building_name = "Unvalid"
+                    self.resultToDisplay.building_name = "Invalid"
                     self.resultToDisplay.level_name = ""
-                    self.resultToDisplay.spot_name = "Unvalid"
+                    self.resultToDisplay.spot_name = "Invalid"
                     self.resultToDisplay.structure_feature_id = 0
                     self.resultToDisplay.ccs = Double(statusCode)
                     if (self.isOpen) {

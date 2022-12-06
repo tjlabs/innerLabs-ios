@@ -601,7 +601,7 @@ public class ServiceManager: Observation {
                 completion(statusCode, returnedString)
             })
         default:
-            completion(500, "(Jupiter) Error : Unvalid Service Name")
+            completion(500, "(Jupiter) Error : Invalid Service Name")
         }
     }
     
@@ -615,7 +615,7 @@ public class ServiceManager: Observation {
                 completion(statusCode, returnedString)
             })
         } else {
-            completion(500, "(Jupiter) Error : Unvalid User ID")
+            completion(500, "(Jupiter) Error : Invalid User ID")
         }
     }
     
@@ -1204,8 +1204,9 @@ public class ServiceManager: Observation {
 
                                                         // Measurement Update 하기전에 현재 Time Update 위치를 고려
                                                         var resultForMu = result
-                                                        var resultCorrected = self.correct(building: result.building_name, level: result.level_name, x: result.x, y: result.y, heading: result.absolute_heading, mode: self.mode, isPast: false)
-                                                        resultCorrected.xyh[2] = compensateHeading(heading: resultCorrected.xyh[2], mode: self.mode)
+                                                        resultForMu.absolute_heading = compensateHeading(heading: resultForMu.absolute_heading, mode: self.mode)
+                                                        var resultCorrected = self.correct(building: resultForMu.building_name, level: resultForMu.level_name, x: resultForMu.x, y: resultForMu.y, heading: resultForMu.absolute_heading, mode: self.mode, isPast: false)
+//                                                        resultCorrected.xyh[2] = compensateHeading(heading: resultCorrected.xyh[2], mode: self.mode)
                                                         
                                                         if (self.currentTuResult.mobile_time != 0 && self.pastTuResult.mobile_time != 0) {
                                                             let dx = self.currentTuResult.x - self.pastTuResult.x
@@ -1218,6 +1219,7 @@ public class ServiceManager: Observation {
                                                             
                                                             resultForMu.x = resultCorrected.xyh[0] + dx
                                                             resultForMu.y = resultCorrected.xyh[1] + dy
+                                                            resultForMu.absolute_heading = resultCorrected.xyh[2] + dh
                                                             let isApplyDh = checkApplyDh(tuHeading: self.currentTuResult.absolute_heading, serverHeading: resultCorrected.xyh[2])
 //                                                            if (isApplyDh) {
 //                                                                print("(Jupiter) TU Heading // past : \(self.pastTuResult.absolute_heading) // current : \(self.currentTuResult.absolute_heading) // diff : \(self.currentTuResult.absolute_heading - self.pastTuResult.absolute_heading)")
@@ -1238,14 +1240,11 @@ public class ServiceManager: Observation {
                                                         
                                                         let diffXY: Double = sqrt(diffX*diffX + diffY*diffY)
                                                         let diffIndex: Int = self.currentTuResult.index - self.pastTuResult.index
-                                                        var diffTh: Double = Double(diffIndex)*5.5
-                                                        if (diffIndex == 0) {
-                                                            diffTh = 5
-                                                        }
                                                         
                                                         if (diffXY > 12.5) {
                                                             muResult.x = result.x
                                                             muResult.y = result.y
+                                                            muResult.absolute_heading = result.absolute_heading
 //                                                            print("(Jupiter) diffXY : \(diffXY) // diffIndex : \(diffIndex)")
                                                         }
                                                         
@@ -1681,7 +1680,16 @@ public class ServiceManager: Observation {
         timeUpdatePosition.x = timeUpdatePosition.x + dx
         timeUpdatePosition.y = timeUpdatePosition.y + dy
         timeUpdatePosition.heading = updateHeading
-
+        
+        var timeUpdateCopy = timeUpdatePosition
+        let correctedTuCopy = self.correct(building: timeUpdateOutput.building_name, level: timeUpdateOutput.level_name, x: timeUpdatePosition.x, y: timeUpdatePosition.y, heading: timeUpdatePosition.heading, mode: self.mode, isPast: false)
+        if (correctedTuCopy.isSuccess && self.mode == "dr") {
+            timeUpdateCopy.x = correctedTuCopy.xyh[0]
+            timeUpdateCopy.y = correctedTuCopy.xyh[1]
+            timeUpdateCopy.heading = correctedTuCopy.xyh[2]
+        }
+        timeUpdatePosition = timeUpdateCopy
+        
         kalmanP += kalmanQ
         headingKalmanP += headingKalmanQ
 
@@ -1690,15 +1698,15 @@ public class ServiceManager: Observation {
         timeUpdateOutput.absolute_heading = updateHeading
         timeUpdateOutput.mobile_time = mobileTime
         
-        var outputCopy = timeUpdateOutput
-        let correctedOutput = self.correct(building: outputCopy.building_name, level: outputCopy.level_name, x: outputCopy.x, y: outputCopy.y, heading: outputCopy.absolute_heading, mode: self.mode, isPast: false)
-        if (correctedOutput.isSuccess && self.mode == "dr") {
-            outputCopy.x = correctedOutput.xyh[0]
-            outputCopy.y = correctedOutput.xyh[1]
-            outputCopy.absolute_heading = correctedOutput.xyh[2]
-            
-            timeUpdateOutput = outputCopy
-        }
+//        var outputCopy = timeUpdateOutput
+//        let correctedOutput = self.correct(building: outputCopy.building_name, level: outputCopy.level_name, x: outputCopy.x, y: outputCopy.y, heading: outputCopy.absolute_heading, mode: self.mode, isPast: false)
+//        if (correctedOutput.isSuccess && self.mode == "dr") {
+//            outputCopy.x = correctedOutput.xyh[0]
+//            outputCopy.y = correctedOutput.xyh[1]
+//            outputCopy.absolute_heading = correctedOutput.xyh[2]
+//
+//            timeUpdateOutput = outputCopy
+//        }
 
         measurementUpdateFlag = true
 
