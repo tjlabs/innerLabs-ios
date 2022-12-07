@@ -491,6 +491,7 @@
 		B252CA7310954D398A838E021B9EABA1 /* GULNSData+zlib.h in Headers */ = {isa = PBXBuildFile; fileRef = AB812E37EA7091D7B6F0FA8805F0A302 /* GULNSData+zlib.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B25E07EA645911443A38DA1E68166156 /* Box.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE9BAD3ADA86A43A516829BBBD65208D /* Box.swift */; };
 		B2DD7CF96035374C7AC80D88B8904691 /* ShapeRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 682FF418407E7EEB1C7FCB8B807023E8 /* ShapeRenderer.swift */; };
+		B3191AD12940310F000F2C00 /* ServiceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3191AD02940310F000F2C00 /* ServiceManager.swift */; };
 		B3658C29BBDE1033F6269A92E612CB30 /* Request.swift in Sources */ = {isa = PBXBuildFile; fileRef = 179C3739076ED36A81BE77ABF1FEF1A5 /* Request.swift */; };
 		B373B6DE977C39AC68DC4898FA9A1579 /* YokoTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC63FA001FF812FC41E6C1BB2B7A9902 /* YokoTextField.swift */; };
 		B4015BE1313094DACA3DBB86191C5030 /* CombinedHighlighter.swift in Sources */ = {isa = PBXBuildFile; fileRef = D70BDAC755EF1F7B74AD9C9D11081A38 /* CombinedHighlighter.swift */; };
@@ -552,7 +553,6 @@
 		CF53CF4998B07E3B054A32F34598D911 /* CombinedChartRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6CD1A0D7FCFC47BE7ACEF886D908265 /* CombinedChartRenderer.swift */; };
 		CF5D032BA6A77C9C63C71548375C92EF /* FIRDependency.h in Headers */ = {isa = PBXBuildFile; fileRef = 282318891E79F9EADA6DFBB722AC7C72 /* FIRDependency.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		D07C41CADECBB3C16108C338B470E889 /* MinoruTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE79DF134F8495FA6CB53D94DE912245 /* MinoruTextField.swift */; };
-		D0CDBE0203931FAC794B10F08CCFCCFB /* ServiceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87B1A65FE5D0D244059173EABF328AE0 /* ServiceManager.swift */; };
 		D0EA90FBF83350C49E6EF6C8A98D6F00 /* AFError.swift in Sources */ = {isa = PBXBuildFile; fileRef = D911E32D3C2C148ACFE231C7C8403259 /* AFError.swift */; };
 		D3214C9C78BB1008BBE89C1F11A42B77 /* Floaty.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1200DB9A5DA399253A1D5BA86AE3388 /* Floaty.swift */; };
 		D44078A1F1CDB70D6EE87689EE274CAD /* AnimatedMoveViewJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = A28B13C37F849DFFCE5A1C9F1A750676 /* AnimatedMoveViewJob.swift */; };
@@ -1325,7 +1325,6 @@
 		85968C5E35C6ACAD16C473F9B382CA60 /* YAxisRenderer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = YAxisRenderer.swift; path = Source/Charts/Renderers/YAxisRenderer.swift; sourceTree = "<group>"; };
 		85CCA862D43D5D4D5971E138697CE5CF /* SnapKit.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = SnapKit.modulemap; sourceTree = "<group>"; };
 		87A31A8A61F0905F795A42EA6AE6D55B /* ConstraintLayoutSupportDSL.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ConstraintLayoutSupportDSL.swift; path = Sources/ConstraintLayoutSupportDSL.swift; sourceTree = "<group>"; };
-		87B1A65FE5D0D244059173EABF328AE0 /* ServiceManager.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ServiceManager.swift; sourceTree = "<group>"; };
 		87E882AD6A4DADC6E28C6CE885E493B1 /* DropDown-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "DropDown-prefix.pch"; sourceTree = "<group>"; };
 		87EB1AD753FCE8CEFE19CF6E7DC4D70B /* NSURLSession+GULPromises.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "NSURLSession+GULPromises.m"; path = "GoogleUtilities/Environment/URLSessionPromiseWrapper/NSURLSession+GULPromises.m"; sourceTree = "<group>"; };
 		87FA93EBA6F8605526F5754E35B99F18 /* GULHeartbeatDateStorageUserDefaults.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GULHeartbeatDateStorageUserDefaults.h; path = GoogleUtilities/Environment/Public/GoogleUtilities/GULHeartbeatDateStorageUserDefaults.h; sourceTree = "<group>"; };
@@ -1467,6 +1466,7 @@
 		B2882D4760FC603A04E649D6D830DA64 /* Chain.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Chain.swift; path = Sources/Algorithms/Chain.swift; sourceTree = "<group>"; };
 		B2CCFBAAA7B5EB00897D0C2367CEBCF3 /* UnitAttitudeEstimator.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = UnitAttitudeEstimator.swift; path = JupiterSDK/Classes/UnitAttitudeEstimator.swift; sourceTree = "<group>"; };
 		B31496F2CB8D318B3EEBE2CF5A7702B7 /* ExpyTableView-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "ExpyTableView-Info.plist"; sourceTree = "<group>"; };
+		B3191AD02940310F000F2C00 /* ServiceManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ServiceManager.swift; path = JupiterSDK/Classes/ServiceManager.swift; sourceTree = "<group>"; };
 		B3B5AD4A340E5E34E3D4D58F3C93A1AE /* SwiftAlgorithms.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = SwiftAlgorithms.debug.xcconfig; sourceTree = "<group>"; };
 		B3FA8235057F76AE7A98E28808ECB86C /* FIRDependency.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = FIRDependency.h; path = FirebaseCore/Extension/FIRDependency.h; sourceTree = "<group>"; };
 		B43874C6CBB50E7134FBEC24BABFE14F /* GoogleUtilities */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = GoogleUtilities; path = GoogleUtilities.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1938,7 +1938,6 @@
 			children = (
 				D1386CF79B352AF8814F96FF24ED8F0E /* ArrayExtension.swift */,
 				24433039A4A8AA2633A451C590B151D3 /* BluetoothManager.swift */,
-				87B1A65FE5D0D244059173EABF328AE0 /* ServiceManager.swift */,
 				E0905852BAF1720630545E97089EEDA5 /* CalculateFunctions.swift */,
 				E991EA31462036CF1F1F17830D3FAF6B /* Constants.swift */,
 				D599E4284EDC46CCCFC3030A077305AA /* DeviceModel.swift */,
@@ -1959,6 +1958,7 @@
 				B2CCFBAAA7B5EB00897D0C2367CEBCF3 /* UnitAttitudeEstimator.swift */,
 				FBE90579F2CA9F1730C074FEED161901 /* UnitDRGenerator.swift */,
 				5260BDBDBD9F5B0DC8CC8177498AAE6A /* UnitStatusEstimator.swift */,
+				B3191AD02940310F000F2C00 /* ServiceManager.swift */,
 				39AE2EBFD258EE92E1C666CD96C67CF6 /* Pod */,
 				86CDE7882064950DC224932D6BD1874D /* Support Files */,
 			);
@@ -4552,6 +4552,7 @@
 				544A5322F0E95292BEC19A4BE5A97FCE /* JSONConverter.swift in Sources */,
 				6C63C030F26BADB41FFDA35324E8BBF9 /* JupiterSDK-dummy.m in Sources */,
 				FECFFCD9828D8F008685A7FDE6947DE3 /* LinkedList.swift in Sources */,
+				B3191AD12940310F000F2C00 /* ServiceManager.swift in Sources */,
 				F610C9B999A0ABD6C2954E8AFF420AF7 /* NetworkManager.swift in Sources */,
 				6EC2714206288DD26F2D07B1BDF8EED7 /* Node.swift in Sources */,
 				66E00D2457AF586E7B04831E42E8F184 /* Observer.swift in Sources */,
@@ -4559,7 +4560,6 @@
 				7B8DB0B16DE75DE863D21EE1DDDAC5C7 /* PDRDistanceEstimator.swift in Sources */,
 				73A02C1788816F8A90957075389A859C /* PeakValleyDetector.swift in Sources */,
 				AEC8229889DDB6B562A147E173A395CF /* SensorData.swift in Sources */,
-				D0CDBE0203931FAC794B10F08CCFCCFB /* ServiceManager.swift in Sources */,
 				F511D5AB48B7D8A65BD569269A150355 /* StepLengthEstimator.swift in Sources */,
 				521AADE33726D05965D5D7EEC32CF951 /* StringExtension.swift in Sources */,
 				E131211B54644CF7CAA5E39F9F4C9213 /* UnitAttitudeEstimator.swift in Sources */,
