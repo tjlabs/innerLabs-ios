@@ -298,10 +298,8 @@ class FusionViewController: UIViewController, Observer {
             } else {
                 let ratio: Double = 114900 / 68700
                 displayViewHeight.constant = displayView.bounds.width * ratio
-                
                 let window = UIApplication.shared.keyWindow
                 let bottomPadding = window?.safeAreaInsets.bottom ?? 0.0
-                
                 defaultHeight = FusionView.bounds.height - 100 - displayViewHeight.constant - bottomPadding
             }
         } else {
