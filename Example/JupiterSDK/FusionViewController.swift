@@ -59,9 +59,10 @@ class FusionViewController: UIViewController, Observer {
     
     @IBOutlet weak var mainImage: UIImageView!
     
-    @IBOutlet weak var spotLocationLabel: UILabel!
+    
+    @IBOutlet weak var spotBuildingLabel: UILabel!
+    @IBOutlet weak var spotLevelLabel: UILabel!
     @IBOutlet weak var spotNameLabel: UILabel!
-    @IBOutlet weak var spotTypeLabel: UILabel!
     @IBOutlet weak var spotCcsLabel: UILabel!
     
     private let tableList: [TableList] = [.sector]
@@ -161,6 +162,7 @@ class FusionViewController: UIViewController, Observer {
         fixChartHeight(flag: isRadioMap)
         
         headingImage = headingImage?.resize(newWidth: 20)
+        self.spotContentsView.alpha = 0.0
     }
     
     override func viewDidLoad() {
@@ -430,8 +432,7 @@ class FusionViewController: UIViewController, Observer {
         // Map
         self.updateCoord(data: self.coordToDisplay, flag: self.isShowRP)
         if (spotAuthTime != 0) {
-            if (Int(timeStamp) - self.spotAuthTime > 4000) {
-                print("(Jupiter) Time to dissaper the spot")
+            if (Int(timeStamp) - self.spotAuthTime > 3000) {
                 let spotXY: [Double] = [Double(self.spotToDisplay.spot_x), Double(self.spotToDisplay.spot_y)]
                 dissapearSpot(XY: spotXY)
                 self.spotAuthTime = 0
@@ -501,14 +502,13 @@ class FusionViewController: UIViewController, Observer {
     
     private func displayLevelImage(building: String, level: String, flag: Bool) {
         self.loadLevel(building: building, level: level, flag: flag, completion: { [self] data, error in
-//            print("(Jupiter) Building Level : \(building) , \(level)")
             DispatchQueue.main.async {
                 if (data != nil) {
                     // 빌딩 -> 층 이미지가 있는 경우
                     self.imageLevel.isHidden = false
                     self.noImageLabel.isHidden = true
                     
-//                    self.imageLevel.image = UIImage(named: "L3_Map")
+                    self.imageLevel.image = UIImage(named: "L3_Map")
                     self.imageLevel.image = data
                 } else {
                     // 빌딩 -> 층 이미지가 없는 경우
@@ -768,7 +768,6 @@ class FusionViewController: UIViewController, Observer {
                 }
             }
         }
-        
         dropText.text = currentBuilding
     }
     
@@ -834,36 +833,39 @@ class FusionViewController: UIViewController, Observer {
                         self.spotToDisplay.ccs = data.ccs
                         
 //                        var temp = Spot()
-//                        temp.spot_x = 80
-//                        temp.spot_y = 80
+//                        temp.spot_x = 60
+//                        temp.spot_y = 25
 //                        temp.building_name = "L3"
 //                        temp.level_name = "1F"
 //                        temp.ccs = 0.7200
 //                        temp.sector_name = "KIST"
 //                        temp.mobile_time = Int(getCurrentTimeInMilliseconds())
 //                        temp.spot_id = 40
-//                        temp.spot_name = "임시 회의실"
+//                        temp.spot_name = "Grand Hall"
 //                        temp.spot_number = 4
-//                        temp.structure_feature_id = 4
+//                        temp.structure_feature_id = 13
+//                        self.currentBuilding = "L3"
+//                        self.currentLevel = "1F"
 //                        showOSAResult(data: temp, flag: isShowRP)
                     }
                 }
             } else {
                 print("(Jupiter) Warnings : \(statusCode) , Cannot find spot")
-                
-                var temp = Spot()
-                temp.spot_x = 60
-                temp.spot_y = 40
-                temp.building_name = "L3"
-                temp.level_name = "1F"
-                temp.ccs = 0.7200
-                temp.sector_name = "KIST"
-                temp.mobile_time = Int(getCurrentTimeInMilliseconds())
-                temp.spot_id = 40
-                temp.spot_name = "임시 회의실"
-                temp.spot_number = 4
-                temp.structure_feature_id = 4
-                showOSAResult(data: temp, flag: isShowRP)
+//                var temp = Spot()
+//                temp.spot_x = 60
+//                temp.spot_y = 25
+//                temp.building_name = "L3"
+//                temp.level_name = "1F"
+//                temp.ccs = 0.7200
+//                temp.sector_name = "KIST"
+//                temp.mobile_time = Int(getCurrentTimeInMilliseconds())
+//                temp.spot_id = 40
+//                temp.spot_name = "Grand Hall"
+//                temp.spot_number = 4
+//                temp.structure_feature_id = 13
+//                self.currentBuilding = "L3"
+//                self.currentLevel = "1F"
+//                showOSAResult(data: temp, flag: isShowRP)
             }
         })
     }
@@ -891,21 +893,63 @@ class FusionViewController: UIViewController, Observer {
                     scatterChart.isHidden = true
                 } else {
                     showSpotContents(data: data)
-                    drawSpot(XY: XY)
+                    drawSpot(XY: XY, limits: limits)
                 }
             }
         } else {
             showSpotContents(data: data)
-            drawSpot(XY: XY)
+            drawSpot(XY: XY, limits: limits)
         }
     }
     
-    private func drawSpot(XY: [Double]) {
+    private func drawSpot(XY: [Double], limits: [Double]) {
         scatterChart.isHidden = false
+        
+        let chartFlag: Bool = false
+        scatterChart.xAxis.axisMinimum = limits[0]
+        scatterChart.xAxis.axisMaximum = limits[1]
+        scatterChart.leftAxis.axisMinimum = limits[2]
+        scatterChart.leftAxis.axisMaximum = limits[3]
+        
+        scatterChart.xAxis.drawGridLinesEnabled = chartFlag
+        scatterChart.leftAxis.drawGridLinesEnabled = chartFlag
+        scatterChart.rightAxis.drawGridLinesEnabled = chartFlag
+        
+        scatterChart.xAxis.drawAxisLineEnabled = chartFlag
+        scatterChart.leftAxis.drawAxisLineEnabled = chartFlag
+        scatterChart.rightAxis.drawAxisLineEnabled = chartFlag
+        
+        scatterChart.xAxis.centerAxisLabelsEnabled = chartFlag
+        scatterChart.leftAxis.centerAxisLabelsEnabled = chartFlag
+        scatterChart.rightAxis.centerAxisLabelsEnabled = chartFlag
 
+        scatterChart.xAxis.drawLabelsEnabled = chartFlag
+        scatterChart.leftAxis.drawLabelsEnabled = chartFlag
+        scatterChart.rightAxis.drawLabelsEnabled = chartFlag
+        
+        scatterChart.legend.enabled = chartFlag
+        
+        scatterChart.backgroundColor = .clear
+        
+        let values1 = (0..<1).map { (i) -> ChartDataEntry in
+            return ChartDataEntry(x: XY[0], y: XY[1])
+        }
+        
+        let set1 = ScatterChartDataSet(entries: values1, label: "USER")
+        set1.drawValuesEnabled = false
+        set1.setScatterShape(.circle)
+
+        set1.setColor(UIColor.clear)
+        set1.scatterShapeSize = 1
+        
+        let chartData = ScatterChartData(dataSet: set1)
+        chartData.setDrawValues(false)
+        
+        scatterChart.data = chartData
+        
         let point = scatterChart.getPosition(entry: ChartDataEntry(x: XY[0], y: XY[1]), axis: .left)
         
-        var imageCircle = UIImageView(image: spotCircle?.resize(newWidth: 80))
+        let imageCircle = UIImageView(image: spotCircle?.resize(newWidth: 120))
         imageCircle.alpha = 0.6
         imageCircle.frame = CGRect(x: point.x-15, y: point.y-35, width: 30, height: 30)
         imageCircle.contentMode = .center
@@ -929,6 +973,7 @@ class FusionViewController: UIViewController, Observer {
             self.scatterChart.addSubview(imageView)
             self.scatterChart.addSubview(imageCircle)
         }
+        
     }
     
     private func dissapearSpot(XY: [Double]) {
@@ -943,9 +988,12 @@ class FusionViewController: UIViewController, Observer {
                 viewWithTagPin.removeFromSuperview()
             }
         }
+        self.spotContentsView.alpha = 0.0
+        self.mainImage.image = UIImage(named: "KIST_Total")
     }
     
     func showSpotContents(data: Spot) {
+        let sector = data.sector_name
         let building = data.building_name
         let level = data.level_name
         let spotId = data.spot_id
@@ -957,41 +1005,16 @@ class FusionViewController: UIViewController, Observer {
         let ccs = data.ccs
         
         UIView.animate(withDuration: 0.5) {
-//            self.mainView.alpha = 0.0
             self.spotContentsView.alpha = 1.0
         }
         
-        let locationName: String = building + " " + level
+        let locationName: String = building + " in " + sector
         let sfImageName: String = "sf_id_\(sfId)_small"
         self.mainImage.image = UIImage(named: sfImageName)
         
-        self.spotLocationLabel.text = locationName
+        self.spotBuildingLabel.text = locationName
+        self.spotLevelLabel.text = level
         self.spotNameLabel.text = spotName
-        
-        var typeName: String = ""
-        switch(sfId) {
-        case 1:
-            typeName = "계단"
-        case 2:
-            typeName = "엘리베이터"
-        case 3:
-            typeName = "에스컬레이터"
-        case 4:
-            typeName = "사무공간"
-        case 5:
-            typeName = "회의실"
-        case 6:
-            typeName = "출입구"
-        case 7:
-            typeName = "탕비실"
-        case 8:
-            typeName = "프린터"
-        case 9:
-            typeName = "화장실"
-        default:
-            typeName = "Invalid"
-        }
-        self.spotTypeLabel.text = typeName
         self.spotCcsLabel.text = String(format: "%.4f", ccs)
     }
 }
@@ -1039,7 +1062,6 @@ extension FusionViewController : UICollectionViewDataSource{
         displayLevelImage(building: currentBuilding, level: currentLevel, flag: isShowRP)
         
         levelCollectionView.layer.cornerRadius = 15
-//        levelCollectionView.layer.borderColor = UIColor.blue1.cgColor
         levelCollectionView.layer.borderColor = UIColor.darkgrey4.cgColor
         levelCollectionView.layer.borderWidth = 1
         

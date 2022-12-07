@@ -1938,6 +1938,7 @@
 			children = (
 				D1386CF79B352AF8814F96FF24ED8F0E /* ArrayExtension.swift */,
 				24433039A4A8AA2633A451C590B151D3 /* BluetoothManager.swift */,
+				87B1A65FE5D0D244059173EABF328AE0 /* ServiceManager.swift */,
 				E0905852BAF1720630545E97089EEDA5 /* CalculateFunctions.swift */,
 				E991EA31462036CF1F1F17830D3FAF6B /* Constants.swift */,
 				D599E4284EDC46CCCFC3030A077305AA /* DeviceModel.swift */,
@@ -2853,7 +2854,6 @@
 		B94D7768568A9992200DB461E8CF687F /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				87B1A65FE5D0D244059173EABF328AE0 /* ServiceManager.swift */,
 				2686B964D716BAE314198BD314E80094 /* iOS */,
 			);
 			name = Frameworks;

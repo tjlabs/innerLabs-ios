@@ -53,7 +53,15 @@ class SpotTableViewCell: UITableViewCell {
         case 8:
             typeName = "프린터"
         case 9:
+            typeName = "라운지"
+        case 10:
             typeName = "화장실"
+        case 11:
+            typeName = "책상"
+        case 12:
+            typeName = "가게"
+        case 13:
+            typeName = "홀"
         default:
             typeName = "Not Enrolled"
         }
