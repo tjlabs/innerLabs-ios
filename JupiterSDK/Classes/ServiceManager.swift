@@ -16,17 +16,15 @@ public class ServiceManager: Observation {
                 
                 // Map Matching
                 if (self.isMapMatching) {
-                    let correctResult = correct(building: result.building_name, level: result.level_name, x: result.x, y: result.y, heading: result.absolute_heading, mode: self.mode, isPast: isPast)
+                    let correctResult = correct(building: result.building_name, level: result.level_name, x: result.x, y: result.y, heading: result.absolute_heading, mode: self.mode, isPast: isPast, HEADING_RANGE: self.HEADING_RANGE)
 
                     if (correctResult.isSuccess) {
                         result.x = correctResult.xyh[0]
                         result.y = correctResult.xyh[1]
                         result.absolute_heading = correctResult.xyh[2]
-                        
                         self.mmFailCount = 0
                     } else if (isActiveKf) {
                         result = self.lastResult
-                        
                         self.mmFailCount += 1
                     }
                 }
@@ -281,6 +279,7 @@ public class ServiceManager: Observation {
     var lastResult = FineLocationTrackingResult()
     let SQUARE_RANGE: Double = 10
     let HEADING_RANGE: Double = 50
+    let HEADING_RANGE_TU : Double = 60
     var pastMatchingResult: [Double] = [0, 0, 0, 0]
     var matchingFailCount: Int = 0
     
@@ -878,6 +877,19 @@ public class ServiceManager: Observation {
         }
     }
     
+    func enterSleepMode() {
+        if (self.updateTimer != nil) {
+            self.updateTimer!.invalidate()
+            self.updateTimer = nil
+        }
+    }
+    
+    func wakeUpFromSleepMode() {
+        if (self.updateTimer == nil && self.service == "FLT") {
+            self.updateTimer = Timer.scheduledTimer(timeInterval: UPDATE_INTERVAL, target: self, selector: #selector(self.outputTimerUpdate), userInfo: nil, repeats: true)
+        }
+    }
+    
     func startCollectTimer() {
         if (collectTimer == nil) {
             collectTimer = Timer.scheduledTimer(timeInterval: UV_INTERVAL, target: self, selector: #selector(self.collectTimerUpdate), userInfo: nil, repeats: true)
@@ -921,6 +933,7 @@ public class ServiceManager: Observation {
             self.isActiveRF = true
             self.isActiveService = true
             
+            self.wakeUpFromSleepMode()
             if (self.isActiveService) {
                 let data = ReceivedForce(user_id: self.user_id, mobile_time: currentTime, ble: bleDictionary, pressure: self.pressure)
                 
@@ -951,6 +964,8 @@ public class ServiceManager: Observation {
                 print("(Jupiter) Enter Sleep Mode")
                 self.isActiveService = false
                 self.timeSleepRF = 0
+                
+                self.enterSleepMode()
             }
         }
     }
@@ -977,6 +992,8 @@ public class ServiceManager: Observation {
                 let log: String = localTime + "__(Jupiter) isIndexChanged__\(uvCheckTime)__\(unitDRInfo)\n"
                 self.errorLogs.append(log)
             }
+            
+            self.wakeUpFromSleepMode()
             self.timeActiveUV = 0
             self.timeSleepUV = 0
             
@@ -1031,6 +1048,13 @@ public class ServiceManager: Observation {
                         self.errorLogs.append(log)
                     }
                     
+                    if (self.isActiveKf) {
+                        let correctedTuResult = self.correct(building: timeUpdateOutput.building_name, level: timeUpdateOutput.level_name, x: timeUpdateOutput.x, y: timeUpdateOutput.y, heading: timeUpdateOutput.absolute_heading, mode: self.mode, isPast: false, HEADING_RANGE: self.HEADING_RANGE_TU)
+                        self.timeUpdatePosition.x = correctedTuResult.xyh[0]
+                        self.timeUpdatePosition.y = correctedTuResult.xyh[1]
+                        self.timeUpdatePosition.heading = correctedTuResult.xyh[2]
+                    }
+                    
                     NetworkManager.shared.putUserVelocity(url: UV_URL, input: inputUserVelocity, completion: { [self] statusCode, returnedString in
                         if (statusCode == 200) {
                             floorUpdateRequestFlag = true
@@ -1064,6 +1088,8 @@ public class ServiceManager: Observation {
                 print("(Jupiter) Enter Sleep Mode")
                 self.isActiveService = false
                 self.timeSleepUV = 0
+                
+                self.enterSleepMode()
             }
         }
     }
@@ -1103,7 +1129,7 @@ public class ServiceManager: Observation {
                                     self.phase = result.phase
                                     self.preOutputMobileTime = result.mobile_time
                                     
-                                    var resultCorrected = self.correct(building: result.building_name, level: result.level_name, x: result.x, y: result.y, heading: result.absolute_heading, mode: self.mode, isPast: false)
+                                    var resultCorrected = self.correct(building: result.building_name, level: result.level_name, x: result.x, y: result.y, heading: result.absolute_heading, mode: self.mode, isPast: false, HEADING_RANGE: self.HEADING_RANGE)
                                     resultCorrected.xyh[2] = compensateHeading(heading: resultCorrected.xyh[2], mode: self.mode)
                                     
                                     self.serverResult[0] = result.x
@@ -1205,8 +1231,7 @@ public class ServiceManager: Observation {
                                                         // Measurement Update 하기전에 현재 Time Update 위치를 고려
                                                         var resultForMu = result
                                                         resultForMu.absolute_heading = compensateHeading(heading: resultForMu.absolute_heading, mode: self.mode)
-                                                        var resultCorrected = self.correct(building: resultForMu.building_name, level: resultForMu.level_name, x: resultForMu.x, y: resultForMu.y, heading: resultForMu.absolute_heading, mode: self.mode, isPast: false)
-//                                                        resultCorrected.xyh[2] = compensateHeading(heading: resultCorrected.xyh[2], mode: self.mode)
+                                                        var resultCorrected = self.correct(building: resultForMu.building_name, level: resultForMu.level_name, x: resultForMu.x, y: resultForMu.y, heading: resultForMu.absolute_heading, mode: self.mode, isPast: false, HEADING_RANGE: self.HEADING_RANGE)
                                                         
                                                         if (self.currentTuResult.mobile_time != 0 && self.pastTuResult.mobile_time != 0) {
                                                             let dx = self.currentTuResult.x - self.pastTuResult.x
@@ -1220,13 +1245,6 @@ public class ServiceManager: Observation {
                                                             resultForMu.x = resultCorrected.xyh[0] + dx
                                                             resultForMu.y = resultCorrected.xyh[1] + dy
                                                             resultForMu.absolute_heading = resultCorrected.xyh[2] + dh
-                                                            let isApplyDh = checkApplyDh(tuHeading: self.currentTuResult.absolute_heading, serverHeading: resultCorrected.xyh[2])
-//                                                            if (isApplyDh) {
-//                                                                print("(Jupiter) TU Heading // past : \(self.pastTuResult.absolute_heading) // current : \(self.currentTuResult.absolute_heading) // diff : \(self.currentTuResult.absolute_heading - self.pastTuResult.absolute_heading)")
-//                                                                print("(Jupiter) Server Heading : \(resultCorrected.xyh[2])")
-//                                                                print("(Jupiter) Apply dh : \(dh)")
-//                                                                resultForMu.absolute_heading = self.currentTuResult.absolute_heading
-//                                                            }
                                                         }
                                                         let trackingTime = getCurrentTimeInMilliseconds()
                                                         
@@ -1237,15 +1255,13 @@ public class ServiceManager: Observation {
                                                         let diffX = resultCorrected.xyh[0] - muResult.x
                                                         let diffY = resultCorrected.xyh[1] - muResult.y
                                                         let diffH = resultCorrected.xyh[2] - muResult.absolute_heading
-                                                        
                                                         let diffXY: Double = sqrt(diffX*diffX + diffY*diffY)
-                                                        let diffIndex: Int = self.currentTuResult.index - self.pastTuResult.index
                                                         
                                                         if (diffXY > 12.5) {
                                                             muResult.x = result.x
                                                             muResult.y = result.y
                                                             muResult.absolute_heading = result.absolute_heading
-//                                                            print("(Jupiter) diffXY : \(diffXY) // diffIndex : \(diffIndex)")
+//                                                            print("(Jupiter) diffXY : \(diffXY)")
                                                         }
                                                         
                                                         self.serverResult[0] = muResult.x
@@ -1449,7 +1465,7 @@ public class ServiceManager: Observation {
         return (road, roadHeading)
     }
     
-    private func correct(building: String, level: String, x: Double, y: Double, heading: Double, mode: String, isPast :Bool) -> (isSuccess: Bool, xyh: [Double]) {
+    private func correct(building: String, level: String, x: Double, y: Double, heading: Double, mode: String, isPast: Bool, HEADING_RANGE: Double) -> (isSuccess: Bool, xyh: [Double]) {
         var isSuccess: Bool = false
         var xyh: [Double] = [x, y, heading]
         let key: String = "\(building)_\(level)"
@@ -1682,11 +1698,10 @@ public class ServiceManager: Observation {
         timeUpdatePosition.heading = updateHeading
         
         var timeUpdateCopy = timeUpdatePosition
-        let correctedTuCopy = self.correct(building: timeUpdateOutput.building_name, level: timeUpdateOutput.level_name, x: timeUpdatePosition.x, y: timeUpdatePosition.y, heading: timeUpdatePosition.heading, mode: self.mode, isPast: false)
+        let correctedTuCopy = self.correct(building: timeUpdateOutput.building_name, level: timeUpdateOutput.level_name, x: timeUpdatePosition.x, y: timeUpdatePosition.y, heading: timeUpdatePosition.heading, mode: self.mode, isPast: false, HEADING_RANGE: self.HEADING_RANGE)
         if (correctedTuCopy.isSuccess && self.mode == "dr") {
             timeUpdateCopy.x = correctedTuCopy.xyh[0]
             timeUpdateCopy.y = correctedTuCopy.xyh[1]
-            timeUpdateCopy.heading = correctedTuCopy.xyh[2]
         }
         timeUpdatePosition = timeUpdateCopy
         
@@ -1697,16 +1712,6 @@ public class ServiceManager: Observation {
         timeUpdateOutput.y = timeUpdatePosition.y
         timeUpdateOutput.absolute_heading = updateHeading
         timeUpdateOutput.mobile_time = mobileTime
-        
-//        var outputCopy = timeUpdateOutput
-//        let correctedOutput = self.correct(building: outputCopy.building_name, level: outputCopy.level_name, x: outputCopy.x, y: outputCopy.y, heading: outputCopy.absolute_heading, mode: self.mode, isPast: false)
-//        if (correctedOutput.isSuccess && self.mode == "dr") {
-//            outputCopy.x = correctedOutput.xyh[0]
-//            outputCopy.y = correctedOutput.xyh[1]
-//            outputCopy.absolute_heading = correctedOutput.xyh[2]
-//
-//            timeUpdateOutput = outputCopy
-//        }
 
         measurementUpdateFlag = true
 
@@ -1717,7 +1722,7 @@ public class ServiceManager: Observation {
         var serverOutputCopy = serverOutput
         serverOutputCopy.absolute_heading = compensateHeading(heading: serverOutputCopy.absolute_heading, mode: self.mode)
         
-        let correctedOutput = self.correct(building: serverOutputCopy.building_name, level: serverOutputCopy.level_name, x: serverOutputCopy.x, y: serverOutputCopy.y, heading: serverOutputCopy.absolute_heading, mode: self.mode, isPast: false)
+        let correctedOutput = self.correct(building: serverOutputCopy.building_name, level: serverOutputCopy.level_name, x: serverOutputCopy.x, y: serverOutputCopy.y, heading: serverOutputCopy.absolute_heading, mode: self.mode, isPast: false, HEADING_RANGE: self.HEADING_RANGE)
         
         var correctedServerOutput: FineLocationTrackingFromServer = serverOutputCopy
         
@@ -1752,7 +1757,7 @@ public class ServiceManager: Observation {
         kalmanP -= kalmanK * kalmanP
         headingKalmanP -= headingKalmanK * headingKalmanP
         
-        let measurementOutputCorrected = self.correct(building: measurementOutput.building_name, level: measurementOutput.level_name, x: measurementOutput.x, y: measurementOutput.y, heading: updateHeading, mode: self.mode, isPast: false)
+        let measurementOutputCorrected = self.correct(building: measurementOutput.building_name, level: measurementOutput.level_name, x: measurementOutput.x, y: measurementOutput.y, heading: updateHeading, mode: self.mode, isPast: false, HEADING_RANGE: self.HEADING_RANGE)
         
         if (measurementOutputCorrected.isSuccess) {
             measurementOutput.x = measurementOutputCorrected.xyh[0]
@@ -1773,15 +1778,6 @@ public class ServiceManager: Observation {
         }
         
         return headingToReturn
-    }
-    
-    func checkApplyDh(tuHeading: Double, serverHeading: Double) -> Bool {
-        let diffHeading = abs(serverHeading - tuHeading)
-        if (diffHeading < 20) {
-            return false
-        } else {
-            return true
-        }
     }
     
     func CLDtoSD(json: String) -> String {
