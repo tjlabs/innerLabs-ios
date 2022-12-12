@@ -142,7 +142,6 @@ public class DRDistanceEstimator: NSObject {
         mlpEpochCount += 1
         featureExtractionCount += 1
         
-        
         if (mlpEpochCount >= OUTPUT_SAMPLE_EPOCH) {
             mlpEpochCount = 0
             output = [0, 0]
