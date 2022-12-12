@@ -370,11 +370,9 @@ struct RecentResult: Codable {
 public func decodeOSA(json: String) -> OnSpotAuthorizationResult {
     let result = OnSpotAuthorizationResult.init()
     let decoder = JSONDecoder()
-
     let jsonString = json
 
     if let data = jsonString.data(using: .utf8), let decoded = try? decoder.decode(OnSpotAuthorizationResult.self, from: data) {
-
         return decoded
     }
 
