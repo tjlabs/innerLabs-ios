@@ -33,7 +33,7 @@ class SpotTableViewCell: UITableViewCell {
         self.nameLabel.text = nameString
         
         var typeName: String = ""
-        switch(data.structure_feature_id) {
+        switch(data.spot_feature_id) {
         case 0:
             typeName = "Server Error"
         case 1:

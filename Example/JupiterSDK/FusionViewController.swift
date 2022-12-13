@@ -827,7 +827,7 @@ class FusionViewController: UIViewController, Observer {
                         self.scatterChart.isHidden = true
                         self.spotToDisplay.building_name = "Invalid"
                         self.spotToDisplay.spot_name = "Invalid"
-                        self.spotToDisplay.structure_feature_id = 0
+                        self.spotToDisplay.spot_feature_id = 0
                         self.spotToDisplay.ccs = data.ccs
                         
 //                        var temp = Spot()
@@ -841,7 +841,7 @@ class FusionViewController: UIViewController, Observer {
 //                        temp.spot_id = 40
 //                        temp.spot_name = "Grand Hall"
 //                        temp.spot_number = 4
-//                        temp.structure_feature_id = 13
+//                        temp.spot_feature_id = 13
 //                        self.currentBuilding = "L3"
 //                        self.currentLevel = "1F"
 //                        showOSAResult(data: temp, flag: isShowRP)
@@ -860,7 +860,7 @@ class FusionViewController: UIViewController, Observer {
 //                temp.spot_id = 40
 //                temp.spot_name = "Grand Hall"
 //                temp.spot_number = 4
-//                temp.structure_feature_id = 13
+//                temp.spot_feature_id = 13
 //                self.currentBuilding = "L3"
 //                self.currentLevel = "1F"
 //                showOSAResult(data: temp, flag: isShowRP)
@@ -999,7 +999,7 @@ class FusionViewController: UIViewController, Observer {
         let spotName = data.spot_name
         let spotX: Double = Double(data.spot_x)
         let spotY: Double = Double(data.spot_y)
-        let sfId = data.structure_feature_id
+        let sfId = data.spot_feature_id
         let ccs = data.ccs
         
         UIView.animate(withDuration: 0.5) {

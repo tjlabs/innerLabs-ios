@@ -257,6 +257,9 @@ struct FineLocationTracking: Codable {
     var user_id: String
     var mobile_time: Int
     var sector_id: Int
+    var building_name: String
+    var level_name: String
+    var spot_id: Int
     var phase: Int
 }
 
@@ -318,6 +321,28 @@ public struct FineLocationTrackingResult: Codable {
     }
 }
 
+// On Spot Recognition
+struct OnSpotRecognition: Codable {
+    var user_id: String
+    var mobile_time: Int
+}
+
+public struct OnSpotRecognitionResult: Codable {
+    public var mobile_time: Int
+    public var building_name: String
+    public var level_name: String
+    public var linked_level_name: String
+    public var spot_id: Int
+
+    public init() {
+        self.mobile_time = 0
+        self.building_name = ""
+        self.level_name = ""
+        self.linked_level_name = ""
+        self.spot_id = 0
+    }
+}
+
 // On Spot Authorizationds
 struct OnSpotAuthorization: Codable {
     var user_id: String
@@ -341,7 +366,7 @@ public struct Spot: Codable {
     public var spot_id: Int
     public var spot_number: Int
     public var spot_name: String
-    public var structure_feature_id: Int
+    public var spot_feature_id: Int
     public var spot_x: Int
     public var spot_y: Int
     public var ccs: Double
@@ -354,7 +379,7 @@ public struct Spot: Codable {
         self.spot_id = 0
         self.spot_number = 0
         self.spot_name = ""
-        self.structure_feature_id = 0
+        self.spot_feature_id = 0
         self.spot_x = 0
         self.spot_y = 0
         self.ccs = 0
@@ -373,6 +398,18 @@ public func decodeOSA(json: String) -> OnSpotAuthorizationResult {
     let jsonString = json
 
     if let data = jsonString.data(using: .utf8), let decoded = try? decoder.decode(OnSpotAuthorizationResult.self, from: data) {
+        return decoded
+    }
+
+    return result
+}
+
+public func decodeOSR(json: String) -> OnSpotRecognitionResult {
+    let result = OnSpotRecognitionResult.init()
+    let decoder = JSONDecoder()
+    let jsonString = json
+
+    if let data = jsonString.data(using: .utf8), let decoded = try? decoder.decode(OnSpotRecognitionResult.self, from: data) {
         return decoded
     }
 

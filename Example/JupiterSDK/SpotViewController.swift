@@ -255,7 +255,7 @@ class SpotViewController: UIViewController {
         let spotName = data.spot_name
         let spotX: Double = Double(data.spot_x)
         let spotY: Double = Double(data.spot_y)
-        let sfId = data.structure_feature_id
+        let sfId = data.spot_feature_id
         let ccs = data.ccs
         
         UIView.animate(withDuration: 0.5) {

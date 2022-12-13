@@ -27,9 +27,9 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
     
     func update(result: FineLocationTrackingResult) {
         DispatchQueue.main.async {
-//            let localTime: String = self.getLocalTimeString()
-//            let log: String = localTime + " , (Jupiter) Output // Building : \(result.building_name) , Level : \(result.level_name)"
-//            print(log)
+            let localTime: String = self.getLocalTimeString()
+            let log: String = localTime + " , (Jupiter) Output // Building : \(result.building_name) , Level : \(result.level_name)"
+            print(log)
 //            print("(Jupiter) Time Diff : \(result.mobile_time - self.observerTime) \\ Phase : \(result.phase)")
             
             let building = result.building_name
@@ -1080,7 +1080,7 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
                     scatterChart.isHidden = true
                 } else {
 //                    drawRP(RP_X: rp[0], RP_Y: rp[1], XY: XY, heading: heading, limits: limits)
-                    drawDebug(XY: [0, 0], RP_X: rp[0], RP_Y: rp[1], serverXY: serviceManager.serverResult, tuXY: serviceManager.timeUpdateResult, heading: heading, limits: limits)
+                    drawDebug(XY: XY, RP_X: rp[0], RP_Y: rp[1], serverXY: serviceManager.serverResult, tuXY: serviceManager.timeUpdateResult, heading: heading, limits: limits)
                 }
             }
         } else {

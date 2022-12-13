@@ -386,7 +386,7 @@ class NeptuneViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
                         //                            countShake = 0
                         //                        }
                         //                        var data = result.spots[bestIndex]
-                        //                        data.structure_feature_id = sf
+                        //                        data.spot_feature_id = sf
                         //                        data.spot_name = name
                         //                        data.spot_x = coord[0]
                         //                        data.spot_y = coord[1]
@@ -410,7 +410,7 @@ class NeptuneViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
                             self.scatterChart.isHidden = true
                             self.resultToDisplay.building_name = "Invalid"
                             self.resultToDisplay.spot_name = "Invalid"
-                            self.resultToDisplay.structure_feature_id = 0
+                            self.resultToDisplay.spot_feature_id = 0
                             self.resultToDisplay.ccs = data.ccs
                             if (self.isOpen) {
                                 UIView.performWithoutAnimation { self.containerTableView.reloadSections(IndexSet(0...0), with: .none) }
@@ -423,7 +423,7 @@ class NeptuneViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
                     self.resultToDisplay.building_name = "Invalid"
                     self.resultToDisplay.level_name = ""
                     self.resultToDisplay.spot_name = "Invalid"
-                    self.resultToDisplay.structure_feature_id = 0
+                    self.resultToDisplay.spot_feature_id = 0
                     self.resultToDisplay.ccs = Double(statusCode)
                     if (self.isOpen) {
                         UIView.performWithoutAnimation { self.containerTableView.reloadSections(IndexSet(0...0), with: .none) }
