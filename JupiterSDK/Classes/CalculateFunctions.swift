@@ -10,7 +10,7 @@ public class CalculateFunctions: NSObject {
     
     public func exponentialMovingAverage(preEMA: Double, curValue: Double, windowSize: Int) -> Double {
         let windowSizeDouble: Double = Double(windowSize)
-        return preEMA * (windowSizeDouble - 1) / windowSizeDouble + curValue / windowSizeDouble
+        return preEMA*((windowSizeDouble - 1)/windowSizeDouble) + (curValue/windowSizeDouble)
     }
     
     public func callAttEMA(preAttEMA: Attitude, curAtt: Attitude, windowSize: Int) -> Attitude{

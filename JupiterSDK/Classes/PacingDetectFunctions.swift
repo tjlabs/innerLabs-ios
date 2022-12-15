@@ -32,13 +32,17 @@ public class PacingDetectFunctions: NSObject {
     }
     
     public func calVariance(buffer: [Double], bufferMean: Double) -> Double {
-        var bufferSum: Double = 0
-        
-        for i in 0..<buffer.count {
-            bufferSum += pow((Double(buffer[i]) - bufferMean), 2)
+        if (buffer.count == 1) {
+            return buffer[0]
+        } else {
+            var bufferSum: Double = 0
+            
+            for i in 0..<buffer.count {
+                bufferSum += pow((Double(buffer[i]) - bufferMean), 2)
+            }
+            
+            return bufferSum / Double(buffer.count - 1)
         }
-        
-        return bufferSum / Double(buffer.count - 1)
     }
     
     public func updateNormalStepCheckCount(accPeakQueue: LinkedList<TimestampDouble>, accValleyQueue: LinkedList<TimestampDouble>, normalStepCheckCount: Int) -> Int {
