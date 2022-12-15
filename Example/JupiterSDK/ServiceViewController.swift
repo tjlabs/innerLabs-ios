@@ -713,22 +713,6 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
             scatterChart.leftAxis.axisMinimum = yMin
             scatterChart.leftAxis.axisMaximum = yMax
         } else {
-//            print("-- Scale Setting --")
-//            scatterChart.xAxis.axisMinimum = xMin - 66
-//            scatterChart.xAxis.axisMaximum = xMax + 23
-//            scatterChart.leftAxis.axisMinimum = yMin - 1
-//            scatterChart.leftAxis.axisMaximum = yMax + 38
-            
-//            scatterChart.xAxis.axisMinimum = xMin - 48
-//            scatterChart.xAxis.axisMaximum = xMax + 30
-//            scatterChart.leftAxis.axisMinimum = yMin - 4
-//            scatterChart.leftAxis.axisMaximum = yMax + 40
-            
-//            scatterChart.xAxis.axisMinimum = -35
-//            scatterChart.xAxis.axisMaximum = 316
-//            scatterChart.leftAxis.axisMinimum = 9
-//            scatterChart.leftAxis.axisMaximum = 509
-            
             scatterChart.xAxis.axisMinimum = limits[0]
             scatterChart.xAxis.axisMaximum = limits[1]
             scatterChart.leftAxis.axisMinimum = limits[2]
