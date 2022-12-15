@@ -1330,7 +1330,13 @@ public class ServiceManager: Observation {
                                                             
                                                             resultForMu.x = resultCorrected.xyh[0] + dx
                                                             resultForMu.y = resultCorrected.xyh[1] + dy
-                                                            resultForMu.absolute_heading = resultCorrected.xyh[2] + dh
+                                                            if (self.isNeedHeadingCorrection) {
+                                                                resultForMu.absolute_heading = resultCorrected.xyh[2] + dh
+                                                            } else {
+                                                                resultForMu.absolute_heading = resultForMu.absolute_heading + dh
+                                                                resultForMu.absolute_heading = self.compensateHeading(heading: resultForMu.absolute_heading, mode: self.mode)
+                                                            }
+                                                            
                                                         }
                                                         let trackingTime = getCurrentTimeInMilliseconds()
                                                         
@@ -2019,23 +2025,25 @@ public class ServiceManager: Observation {
         serverOutputHatCopy.absolute_heading = compensateHeading(heading: serverOutputHatCopy.absolute_heading, mode: self.mode)
         
         // ServerOutputHat을 맵매칭
-        let correctedOutput = self.correct(building: serverOutputHatCopy.building_name, level: serverOutputHatCopy.level_name, x: serverOutputHatCopy.x, y: serverOutputHatCopy.y, heading: serverOutputHatCopy.absolute_heading, tuXY: [0, 0], isMu: false, mode: self.mode, isPast: false, HEADING_RANGE: self.HEADING_RANGE)
+        let serverOutputHatCopyMm = self.correct(building: serverOutputHatCopy.building_name, level: serverOutputHatCopy.level_name, x: serverOutputHatCopy.x, y: serverOutputHatCopy.y, heading: serverOutputHatCopy.absolute_heading, tuXY: [0, 0], isMu: false, mode: self.mode, isPast: false, HEADING_RANGE: self.HEADING_RANGE)
         
         var serverOutputHatMm: FineLocationTrackingFromServer = serverOutputHatCopy
-        
         var timeUpdateHeadingCopy = compensateHeading(heading: timeUpdatePosition.heading, mode: self.mode)
         
-        if (correctedOutput.isSuccess) {
-            serverOutputHatMm.x = correctedOutput.xyh[0]
-            serverOutputHatMm.y = correctedOutput.xyh[1]
-            serverOutputHatMm.absolute_heading = correctedOutput.xyh[2]
-            
-            if (self.mode == "dr") {
-                if (timeUpdateHeadingCopy >= 270 && (serverOutputHatMm.absolute_heading >= 0 && serverOutputHatMm.absolute_heading < 90)) {
-                    serverOutputHatMm.absolute_heading = serverOutputHatMm.absolute_heading + 360
-                } else if (serverOutputHatMm.absolute_heading >= 270 && (timeUpdateHeadingCopy >= 0 && timeUpdateHeadingCopy < 90)) {
-                    timeUpdateHeadingCopy = timeUpdateHeadingCopy + 360
+        if (serverOutputHatCopyMm.isSuccess) {
+            serverOutputHatMm.x = serverOutputHatCopyMm.xyh[0]
+            serverOutputHatMm.y = serverOutputHatCopyMm.xyh[1]
+            if (isNeedHeadingCorrection) {
+                serverOutputHatMm.absolute_heading = serverOutputHatCopyMm.xyh[2]
+                if (self.mode == "dr") {
+                    if (timeUpdateHeadingCopy >= 270 && (serverOutputHatMm.absolute_heading >= 0 && serverOutputHatMm.absolute_heading < 90)) {
+                        serverOutputHatMm.absolute_heading = serverOutputHatMm.absolute_heading + 360
+                    } else if (serverOutputHatMm.absolute_heading >= 270 && (timeUpdateHeadingCopy >= 0 && timeUpdateHeadingCopy < 90)) {
+                        timeUpdateHeadingCopy = timeUpdateHeadingCopy + 360
+                    }
                 }
+            } else {
+                serverOutputHatMm.absolute_heading = serverOutputHatCopy.absolute_heading
             }
         } else {
             serverOutputHatMm.absolute_heading = originalResult[2]
@@ -2048,11 +2056,12 @@ public class ServiceManager: Observation {
 
         measurementPosition.x = timeUpdatePosition.x + kalmanK * (Double(serverOutputHatMm.x) - timeUpdatePosition.x)
         measurementPosition.y = timeUpdatePosition.y + kalmanK * (Double(serverOutputHatMm.y) - timeUpdatePosition.y)
-        if (isNeedHeadingCorrection) {
-            updateHeading = timeUpdateHeadingCopy + headingKalmanK * (serverOutputHatMm.absolute_heading - timeUpdateHeadingCopy)
-        } else {
-            updateHeading = timeUpdateHeadingCopy
-        }
+        updateHeading = timeUpdateHeadingCopy + headingKalmanK * (serverOutputHatMm.absolute_heading - timeUpdateHeadingCopy)
+//        if (isNeedHeadingCorrection) {
+//            updateHeading = timeUpdateHeadingCopy + headingKalmanK * (serverOutputHatMm.absolute_heading - timeUpdateHeadingCopy)
+//        } else {
+//            updateHeading = timeUpdateHeadingCopy
+//        }
 
         measurementOutput.x = measurementPosition.x
         measurementOutput.y = measurementPosition.y
@@ -2080,12 +2089,17 @@ public class ServiceManager: Observation {
             } else {
                 self.timeUpdatePosition.x = measurementOutputCorrected.xyh[0]
                 self.timeUpdatePosition.y = measurementOutputCorrected.xyh[1]
-                self.timeUpdatePosition.heading = measurementOutputCorrected.xyh[2]
                 
                 measurementOutput.x = measurementOutputCorrected.xyh[0]
                 measurementOutput.y = measurementOutputCorrected.xyh[1]
-                updateHeading = measurementOutputCorrected.xyh[2]
                 
+                if (isNeedHeadingCorrection) {
+                    self.timeUpdatePosition.heading = measurementOutputCorrected.xyh[2]
+                    updateHeading = measurementOutputCorrected.xyh[2]
+                } else {
+                    self.timeUpdatePosition.heading = timeUpdateHeadingCopy
+                    updateHeading = timeUpdateHeadingCopy
+                }
                 saveKalmanParam()
             }
         } else {
