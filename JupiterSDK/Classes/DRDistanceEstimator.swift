@@ -129,13 +129,15 @@ public class DRDistanceEstimator: NSObject {
         }
         preMagVarFeature = magVarFeature
 
-        var velocity = log10(magVarFeature+1)/log10(1.1)
+        if (magVarFeature > 2) {
+            magVarFeature = magVarFeature*1.4
+        } else if (magVarFeature > 5) {
+            magVarFeature = magVarFeature*0.8
+        }
+        var velocity = log10(magVarFeature+1)/log10(1.3)
+        print("Raw Velocity = \(velocity) km/h // MagFeature = \(magVarFeature)")
         updateVelocityQueue(data: velocity)
-//        if velocity < 4 {
-//            velocity = 0
-//        } else if velocity > 20 {
-//            velocity = 20
-//        }
+
         var velocitySmoothing: Double = 0
         if (velocityQueue.count == 1) {
             velocitySmoothing = velocity
@@ -145,6 +147,10 @@ public class DRDistanceEstimator: NSObject {
             velocitySmoothing = CF.exponentialMovingAverage(preEMA: preVelocitySmoothing, curValue: velocity, windowSize: Int(SAMPLE_HZ))
         }
         preVelocitySmoothing = velocitySmoothing
+        var turnScale = exp(-navGyroZSmoothing/1.6)
+        if (turnScale > 0.87) {
+            turnScale = 1.0
+        }
         
         var velocityInput = velocitySmoothing
         if velocityInput < 4 {
@@ -152,9 +158,9 @@ public class DRDistanceEstimator: NSObject {
         } else if velocityInput > 20 {
             velocityInput = 20
         }
-        let velocityMps = (velocityInput/3.6)
+        let velocityMps = (velocityInput/3.6)*turnScale
 
-//        print("Velocity = \(velocityMps*3.6) km/h")
+//        print("Velocity = \(velocityMps*3.6) km/h // MagFeature = \(magVarFeature)")
         finalUnitResult.isIndexChanged = false
         finalUnitResult.velocity = velocityMps
         distance += (velocityMps*(1/SAMPLE_HZ))

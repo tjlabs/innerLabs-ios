@@ -1141,13 +1141,13 @@ public class ServiceManager: Observation {
                         self.timeRequest = 0
                         
                         let input = FineLocationTracking(user_id: self.user_id, mobile_time: currentTime, sector_id: self.sector_id, building_name: self.currentBuilding, level_name: self.currentLevel, spot_id: self.currentSpot, phase: self.phase)
-//                        print("(Jupiter) Phase 2 Input : \(input)")
+                        print("(Jupiter) Phase 2 Input : \(input)")
                         
                         NetworkManager.shared.postFLT(url: FLT_URL, input: input, completion: { [self] statusCode, returnedString in
                             if (statusCode == 200) {
                                 let result = jsonToResult(json: returnedString)
                                 if (result.mobile_time > self.preOutputMobileTime) {
-//                                    print("(Jupiter) Phase 2 Result : \(result)")
+                                    print("(Jupiter) Phase 2 Result : \(result)")
                                     displayOutput.indexRx = result.index
                                     
                                     self.phase = result.phase
@@ -1459,8 +1459,6 @@ public class ServiceManager: Observation {
         }
         
         // Up or Down Direction
-//        let isUnderCurrentLevel = checkUnderground(levelName: self.currentLevel)
-//        let isUnderDestinationLevel = checkUnderground(levelName: levelDestination)
         let currentLevelNum: Int = getLevelNumber(levelName: self.currentLevel)
         let destinationLevelNum: Int = getLevelNumber(levelName: levelDestination)
         let levelDirection: String = checkLevelDirection(currentLevel: currentLevelNum, destinationLevel: destinationLevelNum)
@@ -1502,40 +1500,6 @@ public class ServiceManager: Observation {
             levelToReturn = levelName.replacingOccurrences(of: "_D", with: "")
         }
         return levelToReturn
-    }
-    
-    
-    func checkUnderground(levelName: String) -> Bool {
-        if (levelName[levelName.startIndex] == "B") {
-            return true
-        } else {
-            return false
-        }
-    }
-    
-    func checkUpDirection(currentLevel: String, isUnderCurrentLevel: Bool, levelDestination: String, isUnderDestinationLevel: Bool) -> Bool {
-        var isUpDirection: Bool = false
-        
-        if (!isUnderCurrentLevel && !isUnderDestinationLevel) {
-            // 둘다 지상인 경우
-            let currentLevelNum = Int(String(currentLevel[currentLevel.startIndex])) ?? 0
-            let destinationLevelNum = Int(String(levelDestination[levelDestination.startIndex])) ?? 0
-        } else if (isUnderCurrentLevel && isUnderDestinationLevel){
-            // 둘다 지하인 경우
-            let currentLevelNum = Int(String(currentLevel[currentLevel.endIndex])) ?? 0
-            let destinationLevelNum = Int(String(levelDestination[levelDestination.endIndex])) ?? 0
-        } else{
-            // 둘 중 하나만 지상 혹은 지하인 경우
-            if (isUnderCurrentLevel) {
-                // 현재 층이 지하 -> 목적지는 지상
-                isUpDirection = true
-            } else {
-                // 현재 층이 지상 -> 목적지는 지하
-                isUpDirection = false
-            }
-        }
-        
-        return isUpDirection
     }
     
     func checkBuildingLevelChange(currentBuillding: String, currentLevel: String, pastBuilding: String, pastLevel: String) -> Bool {
