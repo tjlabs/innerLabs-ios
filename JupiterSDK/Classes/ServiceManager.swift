@@ -292,9 +292,8 @@ public class ServiceManager: Observation {
     
     var lastTrackingTime: Int = 0
     var lastResult = FineLocationTrackingResult()
-    let SQUARE_RANGE: Double = 10
+    var SQUARE_RANGE: Double = 10
     let HEADING_RANGE: Double = 50
-    let HEADING_RANGE_TU : Double = 40
     var pastMatchingResult: [Double] = [0, 0, 0, 0]
     var matchingFailCount: Int = 0
     
@@ -307,8 +306,7 @@ public class ServiceManager: Observation {
     var currentTuResult = FineLocationTrackingResult()
     var pastTuResult = FineLocationTrackingResult()
     var headingBuffer = [Double]()
-    var headingBufferMu = [Double]()
-    var isMuHeadingCorrection: Bool = false
+    var isNeedHeadingCorrection: Bool = false
     let HEADING_BUFFER_SIZE: Int = 10
     
     public var serverResult: [Double] = [0, 0, 0]
@@ -1011,9 +1009,7 @@ public class ServiceManager: Observation {
                 self.errorLogs.append(log)
             }
             self.headingBuffer.append(unitDRInfo.heading)
-            self.headingBufferMu.append(unitDRInfo.heading)
-            let isNeedHeadingCorrection: Bool = self.checkHeadingCorrection(buffer: self.headingBuffer)
-            self.isMuHeadingCorrection = self.checkHeadingCorrection(buffer: self.headingBufferMu)
+            self.isNeedHeadingCorrection = self.checkHeadingCorrection(buffer: self.headingBuffer)
             
             self.wakeUpFromSleepMode()
             self.timeActiveUV = 0
@@ -1178,6 +1174,7 @@ public class ServiceManager: Observation {
                     self.timeRequest += RQ_INTERVAL
                     if (self.timeRequest >= 1.9) {
                         if (self.isActiveKf) {
+                            self.SQUARE_RANGE = 15
                             self.kalmanR = 0.01
                             self.headingKalmanR = 0.01
                             self.isPhaseBreak = true
@@ -1288,6 +1285,7 @@ public class ServiceManager: Observation {
                                             if (self.isActiveKf && result.phase == 4) {
                                                 if (!(result.x == 0 && result.y == 0)) {
                                                     if (self.isPhaseBreak) {
+                                                        self.SQUARE_RANGE = 10
                                                         self.kalmanR = 6
                                                         self.headingKalmanR = 1
                                                         self.isPhaseBreak = false
@@ -1312,18 +1310,20 @@ public class ServiceManager: Observation {
 
                                                         // Measurement Update 하기전에 현재 Time Update 위치를 고려
                                                         var resultForMu = result
-                                                        self.serverResult[0] = result.x
-                                                        self.serverResult[1] = result.y
-                                                        self.serverResult[2] = result.absolute_heading
+//                                                        self.serverResult[0] = result.x
+//                                                        self.serverResult[1] = result.y
+//                                                        self.serverResult[2] = result.absolute_heading
                                                         
                                                         resultForMu.absolute_heading = compensateHeading(heading: resultForMu.absolute_heading, mode: self.mode)
                                                         var resultCorrected = self.correct(building: resultForMu.building_name, level: resultForMu.level_name, x: resultForMu.x, y: resultForMu.y, heading: resultForMu.absolute_heading, tuXY: [self.pastTuResult.x, self.pastTuResult.y], isMu: true, mode: self.mode, isPast: false, HEADING_RANGE: self.HEADING_RANGE)
+                                                        self.serverResult[0] = resultCorrected.xyh[0]
+                                                        self.serverResult[1] = resultCorrected.xyh[1]
+                                                        self.serverResult[2] = resultCorrected.xyh[2]
                                                         
                                                         if (self.currentTuResult.mobile_time != 0 && self.pastTuResult.mobile_time != 0) {
                                                             let dx = self.currentTuResult.x - self.pastTuResult.x
                                                             let dy = self.currentTuResult.y - self.pastTuResult.y
                                                             self.currentTuResult.absolute_heading = compensateHeading(heading: self.currentTuResult.absolute_heading, mode: self.mode)
-                         
                                                             self.pastTuResult.absolute_heading = compensateHeading(heading: self.pastTuResult.absolute_heading, mode: self.mode)
                                                             
                                                             let dh = self.currentTuResult.absolute_heading - self.pastTuResult.absolute_heading
@@ -1331,13 +1331,10 @@ public class ServiceManager: Observation {
                                                             resultForMu.x = resultCorrected.xyh[0] + dx
                                                             resultForMu.y = resultCorrected.xyh[1] + dy
                                                             resultForMu.absolute_heading = resultCorrected.xyh[2] + dh
-                                                            
-                                                            let localTime = getLocalTimeString()
-//                                                            print(localTime + " (Jupiter) // indexRx : \(resultForMu.index) // dx : \(dx) // dy : \(dy) // dh : \(dh)")
                                                         }
                                                         let trackingTime = getCurrentTimeInMilliseconds()
                                                         
-                                                        let muOutput = measurementUpdate(timeUpdatePosition: timeUpdatePosition, serverOutput: resultForMu, originalResult: resultCorrected.xyh, isNeedHeadingCorrection: self.isMuHeadingCorrection)
+                                                        let muOutput = measurementUpdate(timeUpdatePosition: timeUpdatePosition, serverOutputHat: resultForMu, originalResult: resultCorrected.xyh, isNeedHeadingCorrection: self.isNeedHeadingCorrection)
                                                         var muResult = fromServerToResult(fromServer: muOutput, velocity: displayOutput.velocity)
                                                         
                                                         // 비교 : Server (After MM) vs Server + dxdy (After MM)
@@ -1808,23 +1805,27 @@ public class ServiceManager: Observation {
                             var minData: [Double] = sortedIdh[0]
                             index = Int(minData[0])
                             
-                            var minDistance: Double = 40
+                            var minDistance: Double = 100
                             for idx in 0..<sortedIdh.count {
-                                let cand: [Double] = sortedIdh[idx]
-                                let idxCand = Int(cand[0])
+                                let candData: [Double] = sortedIdh[idx]
+                                let idxCand = Int(candData[0])
                                 let xyCand = [roadX[idxCand], roadY[idxCand]]
+                                let diffX = tuXY[0] - xyCand[0]
+                                let diffY = tuXY[1] - xyCand[1]
+                                let diffXY = sqrt(diffX*diffX + diffY*diffY)
                                 
-                                let diffXY = sqrt((tuXY[0] - xyCand[0])*(tuXY[0] - xyCand[0]) + (tuXY[1] - xyCand[1])*(tuXY[1] - xyCand[1]))
                                 if (diffXY < minDistance) {
-                                    index = idxCand
-                                    correctedHeading = cand[2]
-                                    
+                                    minData = sortedIdh[idx]
                                     minDistance = diffXY
                                 }
                             }
+                            index = Int(minData[0])
+                            print("(Jupiter) Map Matching : tuXY = \(tuXY)")
+                            print("(Jupiter) Map Matching : candidate = \(sortedIdh)")
                             
                             if (mode == "dr") {
                                 correctedHeading = minData[2]
+                                print("(Jupiter) Map Matching : minData = \(minData)")
                             } else {
                                 correctedHeading = heading
                             }
@@ -2005,7 +2006,7 @@ public class ServiceManager: Observation {
 
         timeUpdateOutput.x = timeUpdatePosition.x
         timeUpdateOutput.y = timeUpdatePosition.y
-        timeUpdateOutput.absolute_heading = updateHeading
+        timeUpdateOutput.absolute_heading = timeUpdatePosition.heading
         timeUpdateOutput.mobile_time = mobileTime
 
         measurementUpdateFlag = true
@@ -2013,45 +2014,45 @@ public class ServiceManager: Observation {
         return timeUpdateOutput
     }
 
-    func measurementUpdate(timeUpdatePosition: KalmanOutput, serverOutput: FineLocationTrackingFromServer, originalResult: [Double], isNeedHeadingCorrection: Bool) -> FineLocationTrackingFromServer {
-        var serverOutputCopy = serverOutput
-        serverOutputCopy.absolute_heading = compensateHeading(heading: serverOutputCopy.absolute_heading, mode: self.mode)
+    func measurementUpdate(timeUpdatePosition: KalmanOutput, serverOutputHat: FineLocationTrackingFromServer, originalResult: [Double], isNeedHeadingCorrection: Bool) -> FineLocationTrackingFromServer {
+        var serverOutputHatCopy = serverOutputHat
+        serverOutputHatCopy.absolute_heading = compensateHeading(heading: serverOutputHatCopy.absolute_heading, mode: self.mode)
         
         // ServerOutputHat을 맵매칭
-        let correctedOutput = self.correct(building: serverOutputCopy.building_name, level: serverOutputCopy.level_name, x: serverOutputCopy.x, y: serverOutputCopy.y, heading: serverOutputCopy.absolute_heading, tuXY: [0, 0], isMu: false, mode: self.mode, isPast: false, HEADING_RANGE: self.HEADING_RANGE)
+        let correctedOutput = self.correct(building: serverOutputHatCopy.building_name, level: serverOutputHatCopy.level_name, x: serverOutputHatCopy.x, y: serverOutputHatCopy.y, heading: serverOutputHatCopy.absolute_heading, tuXY: [0, 0], isMu: false, mode: self.mode, isPast: false, HEADING_RANGE: self.HEADING_RANGE)
         
-        var correctedServerOutput: FineLocationTrackingFromServer = serverOutputCopy
+        var serverOutputHatMm: FineLocationTrackingFromServer = serverOutputHatCopy
         
-        var timeUpdateHeadingCopy = timeUpdatePosition.heading
-        timeUpdateHeadingCopy = compensateHeading(heading: timeUpdateHeadingCopy, mode: self.mode)
+        var timeUpdateHeadingCopy = compensateHeading(heading: timeUpdatePosition.heading, mode: self.mode)
         
         if (correctedOutput.isSuccess) {
-            correctedServerOutput.x = correctedOutput.xyh[0]
-            correctedServerOutput.y = correctedOutput.xyh[1]
-            correctedServerOutput.absolute_heading = correctedOutput.xyh[2]
+            serverOutputHatMm.x = correctedOutput.xyh[0]
+            serverOutputHatMm.y = correctedOutput.xyh[1]
+            serverOutputHatMm.absolute_heading = correctedOutput.xyh[2]
             
             if (self.mode == "dr") {
-                if (timeUpdateHeadingCopy >= 270 && correctedServerOutput.absolute_heading == 0) {
-                    correctedServerOutput.absolute_heading = 360
+                if (timeUpdateHeadingCopy >= 270 && (serverOutputHatMm.absolute_heading >= 0 && serverOutputHatMm.absolute_heading < 90)) {
+                    serverOutputHatMm.absolute_heading = serverOutputHatMm.absolute_heading + 360
+                } else if (serverOutputHatMm.absolute_heading >= 270 && (timeUpdateHeadingCopy >= 0 && timeUpdateHeadingCopy < 90)) {
+                    timeUpdateHeadingCopy = timeUpdateHeadingCopy + 360
                 }
             }
         } else {
-            correctedServerOutput.absolute_heading = originalResult[2]
+            serverOutputHatMm.absolute_heading = originalResult[2]
         }
         
-        measurementOutput = correctedServerOutput
+        measurementOutput = serverOutputHatMm
 
         kalmanK = kalmanP / (kalmanP + kalmanR)
         headingKalmanK = headingKalmanP / (headingKalmanP + headingKalmanR)
 
-        measurementPosition.x = timeUpdatePosition.x + kalmanK * (Double(correctedServerOutput.x) - timeUpdatePosition.x)
-        measurementPosition.y = timeUpdatePosition.y + kalmanK * (Double(correctedServerOutput.y) - timeUpdatePosition.y)
+        measurementPosition.x = timeUpdatePosition.x + kalmanK * (Double(serverOutputHatMm.x) - timeUpdatePosition.x)
+        measurementPosition.y = timeUpdatePosition.y + kalmanK * (Double(serverOutputHatMm.y) - timeUpdatePosition.y)
         if (isNeedHeadingCorrection) {
-            updateHeading = timeUpdateHeadingCopy + headingKalmanK * (correctedServerOutput.absolute_heading - timeUpdateHeadingCopy)
+            updateHeading = timeUpdateHeadingCopy + headingKalmanK * (serverOutputHatMm.absolute_heading - timeUpdateHeadingCopy)
         } else {
             updateHeading = timeUpdateHeadingCopy
         }
-        
 
         measurementOutput.x = measurementPosition.x
         measurementOutput.y = measurementPosition.y
