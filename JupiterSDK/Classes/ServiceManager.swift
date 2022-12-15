@@ -16,7 +16,7 @@ public class ServiceManager: Observation {
                 
                 // Map Matching
                 if (self.isMapMatching) {
-                    let correctResult = correct(building: result.building_name, level: result.level_name, x: result.x, y: result.y, heading: result.absolute_heading, mode: self.mode, isPast: isPast, HEADING_RANGE: self.HEADING_RANGE)
+                    let correctResult = correct(building: result.building_name, level: result.level_name, x: result.x, y: result.y, heading: result.absolute_heading, tuXY: [0,0], isMu: false, mode: self.mode, isPast: isPast, HEADING_RANGE: self.HEADING_RANGE)
 
                     if (correctResult.isSuccess) {
                         result.x = correctResult.xyh[0]
@@ -58,7 +58,8 @@ public class ServiceManager: Observation {
                 updatedResult.velocity = result.velocity
                 
                 displayOutput.building = updatedResult.building_name
-                displayOutput.level = updatedResult.level_name
+                displayOutput.level = self.removeLevelDirectionString(levelName: updatedResult.level_name)
+//                displayOutput.level = updatedResult.level_name
                 
                 displayOutput.scc = updatedResult.scc
                 displayOutput.phase = String(updatedResult.phase)
@@ -1159,7 +1160,7 @@ public class ServiceManager: Observation {
                                     self.currentLevel = result.level_name
                                     self.preOutputMobileTime = result.mobile_time
                                     
-                                    var resultCorrected = self.correct(building: result.building_name, level: result.level_name, x: result.x, y: result.y, heading: result.absolute_heading, mode: self.mode, isPast: false, HEADING_RANGE: self.HEADING_RANGE)
+                                    var resultCorrected = self.correct(building: result.building_name, level: result.level_name, x: result.x, y: result.y, heading: result.absolute_heading, tuXY: [0,0], isMu: false, mode: self.mode, isPast: false, HEADING_RANGE: self.HEADING_RANGE)
                                     resultCorrected.xyh[2] = compensateHeading(heading: resultCorrected.xyh[2], mode: self.mode)
                                     
                                     self.serverResult[0] = result.x
@@ -1196,7 +1197,7 @@ public class ServiceManager: Observation {
                                     self.currentLevel = result.level_name
                                     self.preOutputMobileTime = result.mobile_time
                                     
-                                    var resultCorrected = self.correct(building: result.building_name, level: result.level_name, x: result.x, y: result.y, heading: result.absolute_heading, mode: self.mode, isPast: false, HEADING_RANGE: self.HEADING_RANGE)
+                                    var resultCorrected = self.correct(building: result.building_name, level: result.level_name, x: result.x, y: result.y, heading: result.absolute_heading, tuXY: [0,0], isMu: false, mode: self.mode, isPast: false, HEADING_RANGE: self.HEADING_RANGE)
                                     resultCorrected.xyh[2] = compensateHeading(heading: resultCorrected.xyh[2], mode: self.mode)
                                     
                                     self.serverResult[0] = result.x
@@ -1316,7 +1317,7 @@ public class ServiceManager: Observation {
                                                         self.serverResult[2] = result.absolute_heading
                                                         
                                                         resultForMu.absolute_heading = compensateHeading(heading: resultForMu.absolute_heading, mode: self.mode)
-                                                        var resultCorrected = self.correct(building: resultForMu.building_name, level: resultForMu.level_name, x: resultForMu.x, y: resultForMu.y, heading: resultForMu.absolute_heading, mode: self.mode, isPast: false, HEADING_RANGE: self.HEADING_RANGE)
+                                                        var resultCorrected = self.correct(building: resultForMu.building_name, level: resultForMu.level_name, x: resultForMu.x, y: resultForMu.y, heading: resultForMu.absolute_heading, tuXY: [self.pastTuResult.x, self.pastTuResult.y], isMu: true, mode: self.mode, isPast: false, HEADING_RANGE: self.HEADING_RANGE)
                                                         
                                                         if (self.currentTuResult.mobile_time != 0 && self.pastTuResult.mobile_time != 0) {
                                                             let dx = self.currentTuResult.x - self.pastTuResult.x
@@ -1442,11 +1443,52 @@ public class ServiceManager: Observation {
             }
         }
         
-        // Up <-> Down Direction
-        
+        // Up or Down Direction
+//        let isUnderCurrentLevel = checkUnderground(levelName: self.currentLevel)
+//        let isUnderDestinationLevel = checkUnderground(levelName: levelDestination)
+        let currentLevelNum: Int = getLevelNumber(levelName: self.currentLevel)
+        let destinationLevelNum: Int = getLevelNumber(levelName: levelDestination)
+        let levelDirection: String = checkLevelDirection(currentLevel: currentLevelNum, destinationLevel: destinationLevelNum)
         
         return (isOn, levelDestination)
     }
+    
+    func getLevelNumber(levelName: String) -> Int {
+        if (levelName[levelName.startIndex] == "B") {
+            // 지하
+            var levelNameCopy: String = levelName
+            var currentLevelTemp = String(levelNameCopy.removeFirst())
+            var currentLevelNum = Int(currentLevelTemp) ?? 0
+            currentLevelNum = (-1*currentLevelNum)-1
+            return currentLevelNum
+        } else {
+            // 지상
+            var levelNameCopy: String = levelName
+            var currentLevelTemp = String(levelNameCopy.removeLast())
+            var currentLevelNum = Int(currentLevelTemp) ?? 0
+            currentLevelNum = currentLevelNum+1
+            return currentLevelNum
+        }
+    }
+    
+    func checkLevelDirection(currentLevel: Int, destinationLevel: Int) -> String {
+        var levelDirection: String = ""
+        var diffLevel: Int = destinationLevel - currentLevel
+        if (diffLevel > 0) {
+            levelDirection = "_D"
+        }
+        
+        return levelDirection
+    }
+    
+    func removeLevelDirectionString(levelName: String) -> String {
+        var levelToReturn: String = levelName
+        if (levelToReturn.contains("_D")) {
+            levelToReturn = levelName.replacingOccurrences(of: "_D", with: "")
+        }
+        return levelToReturn
+    }
+    
     
     func checkUnderground(levelName: String) -> Bool {
         if (levelName[levelName.startIndex] == "B") {
@@ -1454,6 +1496,31 @@ public class ServiceManager: Observation {
         } else {
             return false
         }
+    }
+    
+    func checkUpDirection(currentLevel: String, isUnderCurrentLevel: Bool, levelDestination: String, isUnderDestinationLevel: Bool) -> Bool {
+        var isUpDirection: Bool = false
+        
+        if (!isUnderCurrentLevel && !isUnderDestinationLevel) {
+            // 둘다 지상인 경우
+            let currentLevelNum = Int(String(currentLevel[currentLevel.startIndex])) ?? 0
+            let destinationLevelNum = Int(String(levelDestination[levelDestination.startIndex])) ?? 0
+        } else if (isUnderCurrentLevel && isUnderDestinationLevel){
+            // 둘다 지하인 경우
+            let currentLevelNum = Int(String(currentLevel[currentLevel.endIndex])) ?? 0
+            let destinationLevelNum = Int(String(levelDestination[levelDestination.endIndex])) ?? 0
+        } else{
+            // 둘 중 하나만 지상 혹은 지하인 경우
+            if (isUnderCurrentLevel) {
+                // 현재 층이 지하 -> 목적지는 지상
+                isUpDirection = true
+            } else {
+                // 현재 층이 지상 -> 목적지는 지하
+                isUpDirection = false
+            }
+        }
+        
+        return isUpDirection
     }
     
     func checkBuildingLevelChange(currentBuillding: String, currentLevel: String, pastBuilding: String, pastLevel: String) -> Bool {
@@ -1623,7 +1690,7 @@ public class ServiceManager: Observation {
         return (road, roadHeading)
     }
     
-    private func correct(building: String, level: String, x: Double, y: Double, heading: Double, mode: String, isPast: Bool, HEADING_RANGE: Double) -> (isSuccess: Bool, xyh: [Double]) {
+    private func correct(building: String, level: String, x: Double, y: Double, heading: Double, tuXY: [Double], isMu: Bool, mode: String, isPast: Bool, HEADING_RANGE: Double) -> (isSuccess: Bool, xyh: [Double]) {
         var isSuccess: Bool = false
         var xyh: [Double] = [x, y, heading]
         let key: String = "\(building)_\(level)"
@@ -1721,7 +1788,7 @@ public class ServiceManager: Observation {
                     let sortedIdh = idhArray.sorted(by: {$0[1] < $1[1] })
                     var index: Int = 0
                     var correctedHeading: Double = heading
-                    
+                    // Original
                     if (!sortedIdh.isEmpty) {
                         let minData: [Double] = sortedIdh[0]
                         index = Int(minData[0])
@@ -1731,6 +1798,46 @@ public class ServiceManager: Observation {
                             correctedHeading = heading
                         }
                     }
+                    
+                    if (!sortedIdh.isEmpty) {
+                        if (isMu) {
+                            // In Measurement Update
+                            var minData: [Double] = sortedIdh[0]
+                            index = Int(minData[0])
+                            
+                            var minDistance: Double = 40
+                            for idx in 0..<sortedIdh.count {
+                                let cand: [Double] = sortedIdh[idx]
+                                let idxCand = Int(cand[0])
+                                let xyCand = [roadX[idxCand], roadY[idxCand]]
+                                
+                                let diffXY = sqrt((tuXY[0] - xyCand[0])*(tuXY[0] - xyCand[0]) + (tuXY[1] - xyCand[1])*(tuXY[1] - xyCand[1]))
+                                if (diffXY < minDistance) {
+                                    index = idxCand
+                                    correctedHeading = cand[2]
+                                    
+                                    minDistance = diffXY
+                                }
+                            }
+                            
+                            if (mode == "dr") {
+                                correctedHeading = minData[2]
+                            } else {
+                                correctedHeading = heading
+                            }
+                            
+                        } else {
+                            // Other Case
+                            let minData: [Double] = sortedIdh[0]
+                            index = Int(minData[0])
+                            if (mode == "dr") {
+                                correctedHeading = minData[2]
+                            } else {
+                                correctedHeading = heading
+                            }
+                        }
+                    }
+                    
                     isSuccess = true
                     xyh = [roadX[index], roadY[index], correctedHeading]
                 }
@@ -1880,7 +1987,7 @@ public class ServiceManager: Observation {
         timeUpdatePosition.heading = updateHeading
         
         var timeUpdateCopy = timeUpdatePosition
-        let correctedTuCopy = self.correct(building: timeUpdateOutput.building_name, level: timeUpdateOutput.level_name, x: timeUpdatePosition.x, y: timeUpdatePosition.y, heading: timeUpdatePosition.heading, mode: self.mode, isPast: false, HEADING_RANGE: self.HEADING_RANGE)
+        let correctedTuCopy = self.correct(building: timeUpdateOutput.building_name, level: timeUpdateOutput.level_name, x: timeUpdatePosition.x, y: timeUpdatePosition.y, heading: timeUpdatePosition.heading, tuXY: [0,0], isMu: false, mode: self.mode, isPast: false, HEADING_RANGE: self.HEADING_RANGE)
         if (correctedTuCopy.isSuccess && self.mode == "dr") {
             timeUpdateCopy.x = correctedTuCopy.xyh[0]
             timeUpdateCopy.y = correctedTuCopy.xyh[1]
@@ -1907,7 +2014,8 @@ public class ServiceManager: Observation {
         var serverOutputCopy = serverOutput
         serverOutputCopy.absolute_heading = compensateHeading(heading: serverOutputCopy.absolute_heading, mode: self.mode)
         
-        let correctedOutput = self.correct(building: serverOutputCopy.building_name, level: serverOutputCopy.level_name, x: serverOutputCopy.x, y: serverOutputCopy.y, heading: serverOutputCopy.absolute_heading, mode: self.mode, isPast: false, HEADING_RANGE: self.HEADING_RANGE)
+        // ServerOutputHat을 맵매칭
+        let correctedOutput = self.correct(building: serverOutputCopy.building_name, level: serverOutputCopy.level_name, x: serverOutputCopy.x, y: serverOutputCopy.y, heading: serverOutputCopy.absolute_heading, tuXY: [0, 0], isMu: false, mode: self.mode, isPast: false, HEADING_RANGE: self.HEADING_RANGE)
         
         var correctedServerOutput: FineLocationTrackingFromServer = serverOutputCopy
         
@@ -1947,7 +2055,7 @@ public class ServiceManager: Observation {
         kalmanP -= kalmanK * kalmanP
         headingKalmanP -= headingKalmanK * headingKalmanP
         
-        let measurementOutputCorrected = self.correct(building: measurementOutput.building_name, level: measurementOutput.level_name, x: measurementOutput.x, y: measurementOutput.y, heading: updateHeading, mode: self.mode, isPast: false, HEADING_RANGE: self.HEADING_RANGE)
+        let measurementOutputCorrected = self.correct(building: measurementOutput.building_name, level: measurementOutput.level_name, x: measurementOutput.x, y: measurementOutput.y, heading: updateHeading, tuXY: [0,0], isMu: false, mode: self.mode, isPast: false, HEADING_RANGE: self.HEADING_RANGE)
         
         if (measurementOutputCorrected.isSuccess) {
             let diffX = timeUpdatePosition.x - measurementOutputCorrected.xyh[0]
