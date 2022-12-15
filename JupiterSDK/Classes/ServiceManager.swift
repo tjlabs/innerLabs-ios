@@ -1449,6 +1449,8 @@ public class ServiceManager: Observation {
         let currentLevelNum: Int = getLevelNumber(levelName: self.currentLevel)
         let destinationLevelNum: Int = getLevelNumber(levelName: levelDestination)
         let levelDirection: String = checkLevelDirection(currentLevel: currentLevelNum, destinationLevel: destinationLevelNum)
+        levelDestination = levelDestination + levelDirection
+        print("(Jupiter) Use Level Map : \(levelDestination)")
         
         return (isOn, levelDestination)
     }
@@ -1693,7 +1695,8 @@ public class ServiceManager: Observation {
     private func correct(building: String, level: String, x: Double, y: Double, heading: Double, tuXY: [Double], isMu: Bool, mode: String, isPast: Bool, HEADING_RANGE: Double) -> (isSuccess: Bool, xyh: [Double]) {
         var isSuccess: Bool = false
         var xyh: [Double] = [x, y, heading]
-        let key: String = "\(building)_\(level)"
+        var levelCopy: String = self.removeLevelDirectionString(levelName: level)
+        let key: String = "\(building)_\(levelCopy)"
         
         if (isPast) {
             isSuccess = true

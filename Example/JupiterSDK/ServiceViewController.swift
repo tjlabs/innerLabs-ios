@@ -708,15 +708,10 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
             scatterChart.leftAxis.axisMinimum = yMin-7.5
             scatterChart.leftAxis.axisMaximum = yMax+7.5
         } else if ( limits[0] == 0 && limits[1] == 0 && limits[2] == 0 && limits[3] == 0 ) {
-//            scatterChart.xAxis.axisMinimum = xMin
-//            scatterChart.xAxis.axisMaximum = xMax
-//            scatterChart.leftAxis.axisMinimum = yMin
-//            scatterChart.leftAxis.axisMaximum = yMax
-            
-            scatterChart.xAxis.axisMinimum = -35
-            scatterChart.xAxis.axisMaximum = 316
-            scatterChart.leftAxis.axisMinimum = 9
-            scatterChart.leftAxis.axisMaximum = 509
+            scatterChart.xAxis.axisMinimum = xMin
+            scatterChart.xAxis.axisMaximum = xMax
+            scatterChart.leftAxis.axisMinimum = yMin
+            scatterChart.leftAxis.axisMaximum = yMax
         } else {
 //            print("-- Scale Setting --")
 //            scatterChart.xAxis.axisMinimum = xMin - 66
@@ -796,15 +791,15 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
 //        print("\(currentBuilding) \(currentLevel) Limits : \(limits[0]) , \(limits[1]), \(limits[2]), \(limits[3])")
         
         // Configure Chart
-        scatterChart.xAxis.axisMinimum = limits[0]
-        scatterChart.xAxis.axisMaximum = limits[1]
-        scatterChart.leftAxis.axisMinimum = limits[2]
-        scatterChart.leftAxis.axisMaximum = limits[3]
+//        scatterChart.xAxis.axisMinimum = limits[0]
+//        scatterChart.xAxis.axisMaximum = limits[1]
+//        scatterChart.leftAxis.axisMinimum = limits[2]
+//        scatterChart.leftAxis.axisMaximum = limits[3]
         
-//        scatterChart.xAxis.axisMinimum = -33
-//        scatterChart.xAxis.axisMaximum = 314.2
-//        scatterChart.leftAxis.axisMinimum = -207
-//        scatterChart.leftAxis.axisMaximum = 297
+        scatterChart.xAxis.axisMinimum = -33.5
+        scatterChart.xAxis.axisMaximum = 306
+        scatterChart.leftAxis.axisMinimum = 9.5
+        scatterChart.leftAxis.axisMaximum = 507
         
         scatterChart.xAxis.drawGridLinesEnabled = chartFlag
         scatterChart.leftAxis.drawGridLinesEnabled = chartFlag
@@ -914,10 +909,15 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
         
 //        print("\(currentBuilding) \(currentLevel) Limits : \(limits[0]) , \(limits[1]), \(limits[2]), \(limits[3])")
         // Configure Chart
-        scatterChart.xAxis.axisMinimum = limits[0]
-        scatterChart.xAxis.axisMaximum = limits[1]
-        scatterChart.leftAxis.axisMinimum = limits[2]
-        scatterChart.leftAxis.axisMaximum = limits[3]
+//        scatterChart.xAxis.axisMinimum = limits[0]
+//        scatterChart.xAxis.axisMaximum = limits[1]
+//        scatterChart.leftAxis.axisMinimum = limits[2]
+//        scatterChart.leftAxis.axisMaximum = limits[3]
+        
+        scatterChart.xAxis.axisMinimum = -33.5
+        scatterChart.xAxis.axisMaximum = 306
+        scatterChart.leftAxis.axisMinimum = 9.5
+        scatterChart.leftAxis.axisMaximum = 507
         
         scatterChart.xAxis.drawGridLinesEnabled = chartFlag
         scatterChart.leftAxis.drawGridLinesEnabled = chartFlag

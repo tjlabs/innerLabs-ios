@@ -98,9 +98,9 @@
 		B3FD74E9286989A600CD4D74 /* CustomSwitchButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3FD74E8286989A600CD4D74 /* CustomSwitchButton.swift */; };
 		B3FD74EC2869A38800CD4D74 /* Gallery_4F.csv in Resources */ = {isa = PBXBuildFile; fileRef = B3FD74EA2869A38800CD4D74 /* Gallery_4F.csv */; };
 		B3FD74ED2869A38800CD4D74 /* Gallery_3F.csv in Resources */ = {isa = PBXBuildFile; fileRef = B3FD74EB2869A38800CD4D74 /* Gallery_3F.csv */; };
-		B3FF2012294AAACA003B06AB /* COEX_B3.csv in Resources */ = {isa = PBXBuildFile; fileRef = B3FF200F294AAACA003B06AB /* COEX_B3.csv */; };
-		B3FF2013294AAACA003B06AB /* COEX_B2.csv in Resources */ = {isa = PBXBuildFile; fileRef = B3FF2010294AAACA003B06AB /* COEX_B2.csv */; };
-		B3FF2014294AAACA003B06AB /* COEX_B4.csv in Resources */ = {isa = PBXBuildFile; fileRef = B3FF2011294AAACA003B06AB /* COEX_B4.csv */; };
+		B3FF201A294AF4C3003B06AB /* COEX_B4.csv in Resources */ = {isa = PBXBuildFile; fileRef = B3FF2017294AF4C3003B06AB /* COEX_B4.csv */; };
+		B3FF201B294AF4C3003B06AB /* COEX_B2.csv in Resources */ = {isa = PBXBuildFile; fileRef = B3FF2018294AF4C3003B06AB /* COEX_B2.csv */; };
+		B3FF201C294AF4C3003B06AB /* COEX_B3.csv in Resources */ = {isa = PBXBuildFile; fileRef = B3FF2019294AF4C3003B06AB /* COEX_B3.csv */; };
 		B3FF2B5A293DF498009082FF /* L3_1F.csv in Resources */ = {isa = PBXBuildFile; fileRef = B3FF2B59293DF498009082FF /* L3_1F.csv */; };
 		B3FF6A9028E5585000CFA824 /* COEX_B1.csv in Resources */ = {isa = PBXBuildFile; fileRef = B3FF6A8F28E5585000CFA824 /* COEX_B1.csv */; };
 /* End PBXBuildFile section */
@@ -216,9 +216,9 @@
 		B3FD74E8286989A600CD4D74 /* CustomSwitchButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomSwitchButton.swift; sourceTree = "<group>"; };
 		B3FD74EA2869A38800CD4D74 /* Gallery_4F.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Gallery_4F.csv; sourceTree = "<group>"; };
 		B3FD74EB2869A38800CD4D74 /* Gallery_3F.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Gallery_3F.csv; sourceTree = "<group>"; };
-		B3FF200F294AAACA003B06AB /* COEX_B3.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = COEX_B3.csv; sourceTree = "<group>"; };
-		B3FF2010294AAACA003B06AB /* COEX_B2.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = COEX_B2.csv; sourceTree = "<group>"; };
-		B3FF2011294AAACA003B06AB /* COEX_B4.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = COEX_B4.csv; sourceTree = "<group>"; };
+		B3FF2017294AF4C3003B06AB /* COEX_B4.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = COEX_B4.csv; sourceTree = "<group>"; };
+		B3FF2018294AF4C3003B06AB /* COEX_B2.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = COEX_B2.csv; sourceTree = "<group>"; };
+		B3FF2019294AF4C3003B06AB /* COEX_B3.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = COEX_B3.csv; sourceTree = "<group>"; };
 		B3FF2B59293DF498009082FF /* L3_1F.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = L3_1F.csv; sourceTree = "<group>"; };
 		B3FF6A8F28E5585000CFA824 /* COEX_B1.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = COEX_B1.csv; sourceTree = "<group>"; };
 		D004876B84847F9E6841D160 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
@@ -311,13 +311,13 @@
 				B3E094ED28AE270400D3BC59 /* S3_7F.csv */,
 				B3E094EB28ADCD3100D3BC59 /* S3_7F_Road.csv */,
 				B3FF6A8F28E5585000CFA824 /* COEX_B1.csv */,
+				B3FF2018294AF4C3003B06AB /* COEX_B2.csv */,
+				B3FF2019294AF4C3003B06AB /* COEX_B3.csv */,
+				B3FF2017294AF4C3003B06AB /* COEX_B4.csv */,
 				B3B9F4E4286C2EA300FEE914 /* Gallery_4F_Road.csv */,
 				B30F06D428EBC93400633CC9 /* Museum_1F.csv */,
 				B3FD74EA2869A38800CD4D74 /* Gallery_4F.csv */,
 				B364B35428BCD8C5001A8950 /* LUPIUM_3F.csv */,
-				B3FF2010294AAACA003B06AB /* COEX_B2.csv */,
-				B3FF200F294AAACA003B06AB /* COEX_B3.csv */,
-				B3FF2011294AAACA003B06AB /* COEX_B4.csv */,
 				B364B35228BCD8C5001A8950 /* LUPIUM_5F.csv */,
 				B364B35328BCD8C5001A8950 /* LUPIUM_7F.csv */,
 				B36928AD28C5D290005FD4A9 /* L8_B1.csv */,
@@ -579,6 +579,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B3FF201A294AF4C3003B06AB /* COEX_B4.csv in Resources */,
 				B360D89228090D6A0084FB22 /* NotoSansKR-Medium.otf in Resources */,
 				B36928AE28C5D290005FD4A9 /* L8_B1.csv in Resources */,
 				B3B3610928295E1400B8E876 /* Autoway_B3.csv in Resources */,
@@ -589,14 +590,12 @@
 				B3F370D4281B9B85003A427F /* OutputView.xib in Resources */,
 				B364B35828BCD8C5001A8950 /* LUPIUM_3F.csv in Resources */,
 				B360D89128090D6A0084FB22 /* NotoSansKR-Black.otf in Resources */,
+				B3FF201B294AF4C3003B06AB /* COEX_B2.csv in Resources */,
 				B3FF6A9028E5585000CFA824 /* COEX_B1.csv in Resources */,
-				B3FF2013294AAACA003B06AB /* COEX_B2.csv in Resources */,
 				B364B35728BCD8C5001A8950 /* LUPIUM_7F.csv in Resources */,
 				B364B35628BCD8C5001A8950 /* LUPIUM_5F.csv in Resources */,
 				607FACDB1AFB9204008FA782 /* Main.storyboard in Resources */,
 				B360D88E28090D6A0084FB22 /* NotoSansKR-Bold.otf in Resources */,
-				B3FF2012294AAACA003B06AB /* COEX_B3.csv in Resources */,
-				B3FF2014294AAACA003B06AB /* COEX_B4.csv in Resources */,
 				B3D194DD282E2726004E6F9A /* JupiterGuideTableViewCell.xib in Resources */,
 				B3D194E3282E2B2B004E6F9A /* LocationTableViewCell.xib in Resources */,
 				B3B4F85B28114EEB009F9E6C /* ShowCardCollectionViewCell.xib in Resources */,
@@ -618,6 +617,7 @@
 				B38807F2283390280029B174 /* L1_1F.csv in Resources */,
 				B3BD69B027E9A78000A32A7A /* SectorContainerTableViewCell.xib in Resources */,
 				B3D488F6289B8B4900A8154C /* GoogleService-Info.plist in Resources */,
+				B3FF201C294AF4C3003B06AB /* COEX_B3.csv in Resources */,
 				B3FD74EC2869A38800CD4D74 /* Gallery_4F.csv in Resources */,
 				B38807F3283390280029B174 /* L1_3F.csv in Resources */,
 				B3E094EC28ADCD3100D3BC59 /* S3_7F_Road.csv in Resources */,
