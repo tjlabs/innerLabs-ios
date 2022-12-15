@@ -220,6 +220,7 @@ public class ServiceManager: Observation {
     
     var lastOsrId: Int = 0
     var lastOsrTime: Int = 0
+    var runOsrTime: Int = 0
     var travelingOsrDistance: Double = 0
     var isPhase2: Bool = false
     // --------------------------------- //
@@ -1141,13 +1142,13 @@ public class ServiceManager: Observation {
                         self.timeRequest = 0
                         
                         let input = FineLocationTracking(user_id: self.user_id, mobile_time: currentTime, sector_id: self.sector_id, building_name: self.currentBuilding, level_name: self.currentLevel, spot_id: self.currentSpot, phase: self.phase)
-                        print("(Jupiter) Phase 2 Input : \(input)")
+//                        print("(Jupiter) Phase 2 Input : \(input)")
                         
                         NetworkManager.shared.postFLT(url: FLT_URL, input: input, completion: { [self] statusCode, returnedString in
                             if (statusCode == 200) {
                                 let result = jsonToResult(json: returnedString)
                                 if (result.mobile_time > self.preOutputMobileTime) {
-                                    print("(Jupiter) Phase 2 Result : \(result)")
+//                                    print("(Jupiter) Phase 2 Result : \(result)")
                                     displayOutput.indexRx = result.index
                                     
                                     self.phase = result.phase
@@ -1196,10 +1197,12 @@ public class ServiceManager: Observation {
                                 if (result.mobile_time > self.preOutputMobileTime) {
                                     displayOutput.indexRx = result.index
                                     
+//                                    self.preOutputMobileTime = result.mobile_time
+//                                    if (result.mobile_time > self.runOsrTime) {
+//                                        self.currentBuilding = result.building_name
+//                                        self.currentLevel = result.level_name
+//                                    }
                                     self.phase = result.phase
-                                    self.currentBuilding = result.building_name
-                                    self.currentLevel = result.level_name
-                                    self.preOutputMobileTime = result.mobile_time
                                     
                                     var resultCorrected = self.correct(building: result.building_name, level: result.level_name, x: result.x, y: result.y, heading: result.absolute_heading, tuXY: [0,0], isMu: false, mode: self.mode, isPast: false, HEADING_RANGE: self.HEADING_RANGE)
                                     resultCorrected.xyh[2] = compensateHeading(heading: resultCorrected.xyh[2], mode: self.mode)
@@ -1213,21 +1216,30 @@ public class ServiceManager: Observation {
                                         var finalResult = fromServerToResult(fromServer: result, velocity: displayOutput.velocity)
                                         finalResult.mobile_time = trackingTime
                                         
+                                        self.currentBuilding = finalResult.building_name
+                                        self.currentLevel = finalResult.level_name
                                         self.outputResult = finalResult
                                         self.flagPast = false
                                     } else {
-//                                        // Check Building Level Change
-//                                        let isBuildingLevelChanged = self.checkBuildingLevelChange(currentBuillding: result.building_name, currentLevel: result.level_name, pastBuilding: self.pastBuildingLevel[0], pastLevel: self.pastBuildingLevel[0])
-//                                        if (isBuildingLevelChanged) {
-//
-//                                        }
+//                                        print("(Jupiter) Phase 1 ~ 3 Input : \(input)")
+//                                        print("(Jupiter) Phase 1 ~ 3 Result : \(result)")
+//                                        print("(Jupiter) Phase 1 ~ 3 Check : mobileTime = \(result.mobile_time) , osrTime = \(self.runOsrTime)")
+//                                        print("(Jupiter) Phase 1 ~ 3 BL : result = \(result.level_name) , past = \(self.pastBuildingLevel[1]) , current = \(self.currentLevel)")
                                         if (result.building_name != self.pastBuildingLevel[0] || result.level_name != self.pastBuildingLevel[1]) {
                                             if (!self.pastResult.isEmpty) {
                                                 // FinalResult -> Result from Server when Building Level Changed
                                                 var timUpdateOutputCopy = self.timeUpdateOutput
                                                 timUpdateOutputCopy.phase = result.phase
-                                                timUpdateOutputCopy.building_name = result.building_name
-                                                timUpdateOutputCopy.level_name = result.level_name
+                                                if ((result.mobile_time - self.runOsrTime) > 20000) {
+                                                    timUpdateOutputCopy.building_name = result.building_name
+                                                    timUpdateOutputCopy.level_name = result.level_name
+//                                                    print("(Jupiter) Phase 1 ~ 3 Over 20000 : \(timUpdateOutputCopy.level_name)")
+                                                } else {
+                                                    timUpdateOutputCopy.building_name = self.currentBuilding
+                                                    timUpdateOutputCopy.level_name = self.currentLevel
+//                                                    print("(Jupiter) Phase 1 ~ 3 else : \(timUpdateOutputCopy.level_name)")
+                                                }
+                                                
                                                 timUpdateOutputCopy.mobile_time = result.mobile_time
 
                                                 var updatedResult = fromServerToResult(fromServer: timUpdateOutputCopy, velocity: displayOutput.velocity)
@@ -1243,8 +1255,13 @@ public class ServiceManager: Observation {
                                         } else {
                                             var timUpdateOutputCopy = self.timeUpdateOutput
                                             timUpdateOutputCopy.phase = result.phase
-                                            timUpdateOutputCopy.building_name = result.building_name
-                                            timUpdateOutputCopy.level_name = result.level_name
+                                            if (result.mobile_time > self.runOsrTime) {
+                                                timUpdateOutputCopy.building_name = result.building_name
+                                                timUpdateOutputCopy.level_name = result.level_name
+                                            } else {
+                                                timUpdateOutputCopy.building_name = self.currentBuilding
+                                                timUpdateOutputCopy.level_name = self.currentLevel
+                                            }
                                             timUpdateOutputCopy.mobile_time = result.mobile_time
 
                                             var updatedResult = fromServerToResult(fromServer: timUpdateOutputCopy, velocity: displayOutput.velocity)
@@ -1281,6 +1298,8 @@ public class ServiceManager: Observation {
                                             if (!self.isActiveKf && result.phase == 4) {
                                                 self.isActiveKf = true
                                             }
+//                                            print("(Jupiter) Phase 4 Input : \(input)")
+//                                            print("(Jupiter) Phase 4 Result : \(result)")
                                             
                                             self.phase = result.phase
                                             self.currentBuilding = result.building_name
@@ -1360,8 +1379,14 @@ public class ServiceManager: Observation {
 //                                                        self.serverResult[1] = muResult.y
 //                                                        self.serverResult[2] = muResult.absolute_heading
                                                         muResult.mobile_time = trackingTime
+                                                        if (result.mobile_time > self.runOsrTime) {
+                                                            self.currentBuilding = result.building_name
+                                                            self.currentLevel = result.level_name
+                                                            self.outputResult = muResult
+                                                        } else {
+                                                            self.outputResult.level_name = self.currentLevel
+                                                        }
                                                         
-                                                        self.outputResult = muResult
                                                         self.flagPast = false
 //                                                        print("(Jupiter) outputResult (mu) : \(self.outputResult.level_name)")
                                                     }
@@ -1396,41 +1421,47 @@ public class ServiceManager: Observation {
                     // Level Changed Check
                     // true : Go to Phase 2
                     if (isOnSpot.isOn) {
-                        print("(Jupiter) Spot On : \(isOnSpot) // currentLevel : \(self.currentLevel)")
+//                        print("(Jupiter) Spot On : \(isOnSpot) // currentLevel : \(self.currentLevel)")
                         let levelDestination = isOnSpot.levelDestination + isOnSpot.levelDirection
                         if (result.spot_id != self.lastOsrId) {
                             // Different Spot Detected
                             self.isPhase2 = true
                             self.phase = 2
                             self.currentLevel = levelDestination
+                            self.timeUpdateOutput.level_name = levelDestination
+                            self.measurementOutput.level_name = levelDestination
                             self.outputResult.level_name = levelDestination
                             self.currentSpot = result.spot_id
 
                             self.lastOsrId = result.spot_id
                             self.lastOsrTime = result.mobile_time
+                            self.runOsrTime = getCurrentTimeInMilliseconds()
 
                             self.travelingOsrDistance = 0
-                            print("(Jupiter) Spot Different : \(isOnSpot) , \(self.phase) , \(self.isPhase2)")
-                            print("(Jupiter) Spot On : destinationLevel : \(levelDestination)")
-                            print("----------------- Level Changed -------------------")
+//                            print("(Jupiter) Spot Different : \(isOnSpot) , \(self.phase) , \(self.isPhase2)")
+//                            print("(Jupiter) Spot On : destinationLevel : \(levelDestination)")
+//                            print("----------------- Spot Level Changed -------------------")
                         } else {
                             // Same Spot Detected
-                            if (self.travelingOsrDistance >= 50) {
+                            if (self.travelingOsrDistance >= 60) {
                                 self.isPhase2 = true
                                 self.phase = 2
                                 self.currentLevel = levelDestination
+                                self.timeUpdateOutput.level_name = levelDestination
+                                self.measurementOutput.level_name = levelDestination
                                 self.outputResult.level_name = levelDestination
                                 self.currentSpot = result.spot_id
 
                                 self.lastOsrId = result.spot_id
                                 self.lastOsrTime = result.mobile_time
+                                self.runOsrTime = getCurrentTimeInMilliseconds()
 
                                 self.travelingOsrDistance = 0
-                                print("(Jupiter) Spot Same -> but changed : \(isOnSpot) , \(self.phase) , \(self.isPhase2)")
-                                print("(Jupiter) Spot On : destinationLevel : \(levelDestination)")
-                                print("----------------- Level Changed -------------------")
+//                                print("(Jupiter) Spot Same -> but changed : \(isOnSpot) , \(self.phase) , \(self.isPhase2)")
+//                                print("(Jupiter) Spot On : destinationLevel : \(levelDestination)")
+//                                print("----------------- Spot Level Changed -------------------")
                             } else {
-                                print("(Jupiter) Spot Same -> not changed : \(isOnSpot) , \(self.phase) , \(self.isPhase2)")
+//                                print("(Jupiter) Spot Same -> not changed : \(isOnSpot) , \(self.phase) , \(self.isPhase2)")
                             }
                         }
                     }
@@ -1462,7 +1493,7 @@ public class ServiceManager: Observation {
         let currentLevelNum: Int = getLevelNumber(levelName: self.currentLevel)
         let destinationLevelNum: Int = getLevelNumber(levelName: levelDestination)
         let levelDirection: String = checkLevelDirection(currentLevel: currentLevelNum, destinationLevel: destinationLevelNum)
-        print("(Jupiter) Spot On : CL = \(self.currentLevel) // CLN = \(currentLevelNum) // DL = \(levelDestination) // DLN = \(destinationLevelNum)")
+//        print("(Jupiter) Spot On : CL = \(self.currentLevel) // CLN = \(currentLevelNum) // DL = \(levelDestination) // DLN = \(destinationLevelNum)")
         
         return (isOn, levelDestination, levelDirection)
     }

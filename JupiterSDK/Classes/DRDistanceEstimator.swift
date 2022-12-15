@@ -129,13 +129,13 @@ public class DRDistanceEstimator: NSObject {
         }
         preMagVarFeature = magVarFeature
 
-        if (magVarFeature > 2) {
-            magVarFeature = magVarFeature*1.4
-        } else if (magVarFeature > 5) {
-            magVarFeature = magVarFeature*0.8
-        }
-        var velocity = log10(magVarFeature+1)/log10(1.3)
-        print("Raw Velocity = \(velocity) km/h // MagFeature = \(magVarFeature)")
+//        if (magVarFeature < 2) {
+//            magVarFeature = magVarFeature*1.4
+//        } else if (magVarFeature > 5) {
+//            magVarFeature = magVarFeature*0.8
+//        }
+        var velocity = log10(magVarFeature+1)/log10(1.1)
+//        print("Raw Velocity = \(velocity) km/h // MagFeature = \(magVarFeature)")
         updateVelocityQueue(data: velocity)
 
         var velocitySmoothing: Double = 0
@@ -155,8 +155,8 @@ public class DRDistanceEstimator: NSObject {
         var velocityInput = velocitySmoothing
         if velocityInput < 4 {
             velocityInput = 0
-        } else if velocityInput > 20 {
-            velocityInput = 20
+        } else if velocityInput > 18 {
+            velocityInput = 18
         }
         let velocityMps = (velocityInput/3.6)*turnScale
 
