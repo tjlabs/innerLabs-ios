@@ -1311,6 +1311,10 @@ public class ServiceManager: Observation {
 
                                                         // Measurement Update 하기전에 현재 Time Update 위치를 고려
                                                         var resultForMu = result
+                                                        self.serverResult[0] = result.x
+                                                        self.serverResult[1] = result.y
+                                                        self.serverResult[2] = result.absolute_heading
+                                                        
                                                         resultForMu.absolute_heading = compensateHeading(heading: resultForMu.absolute_heading, mode: self.mode)
                                                         var resultCorrected = self.correct(building: resultForMu.building_name, level: resultForMu.level_name, x: resultForMu.x, y: resultForMu.y, heading: resultForMu.absolute_heading, mode: self.mode, isPast: false, HEADING_RANGE: self.HEADING_RANGE)
                                                         
@@ -1343,9 +1347,9 @@ public class ServiceManager: Observation {
 //                                                        let localTime = getLocalTimeString()
 //                                                        print(localTime + " (Jupiter) // diffXY : \(diffXY) // diffH : \(diffH)")
                                                         
-                                                        self.serverResult[0] = muResult.x
-                                                        self.serverResult[1] = muResult.y
-                                                        self.serverResult[2] = muResult.absolute_heading
+//                                                        self.serverResult[0] = muResult.x
+//                                                        self.serverResult[1] = muResult.y
+//                                                        self.serverResult[2] = muResult.absolute_heading
                                                         muResult.mobile_time = trackingTime
                                                         
                                                         self.outputResult = muResult
@@ -1397,7 +1401,6 @@ public class ServiceManager: Observation {
                             self.lastOsrTime = result.mobile_time
 
                             self.travelingOsrDistance = 0
-                            
                             print("(Jupiter) isOnSpotRecognition : \(isOnSpot) , \(self.phase) , \(self.isPhase2)")
                         } else {
                             // Same Spot Detected
@@ -1421,7 +1424,7 @@ public class ServiceManager: Observation {
         })
     }
     
-    public func isOnSpotRecognition(result: OnSpotRecognitionResult) -> (isOn: Bool, levelDestination: String) {
+    func isOnSpotRecognition(result: OnSpotRecognitionResult) -> (isOn: Bool, levelDestination: String) {
         var isOn: Bool = false
         
         let mobile_time = result.mobile_time
@@ -1439,7 +1442,18 @@ public class ServiceManager: Observation {
             }
         }
         
+        // Up <-> Down Direction
+        
+        
         return (isOn, levelDestination)
+    }
+    
+    func checkUnderground(levelName: String) -> Bool {
+        if (levelName[levelName.startIndex] == "B") {
+            return true
+        } else {
+            return false
+        }
     }
     
     func checkBuildingLevelChange(currentBuillding: String, currentLevel: String, pastBuilding: String, pastLevel: String) -> Bool {
@@ -1660,8 +1674,10 @@ public class ServiceManager: Observation {
                                 for j in 0..<headingData.count {
                                     if(!headingData[j].isEmpty) {
                                         let mapHeading = Double(headingData[j])!
-                                        if (heading > 270 && mapHeading == 0) {
-                                            diffHeading.append(abs(heading - 360))
+                                        if (heading > 270 && (mapHeading >= 0 && mapHeading < 90)) {
+                                            diffHeading.append(abs(heading - (mapHeading+360)))
+                                        } else if (mapHeading > 270 && (heading >= 0 && heading < 90)) {
+                                            diffHeading.append(abs(mapHeading - (heading+360)))
                                         } else {
                                             diffHeading.append(abs(heading - mapHeading))
                                         }
@@ -1673,8 +1689,12 @@ public class ServiceManager: Observation {
                                     let minHeading = Double(headingData[idxHeading!])!
                                     idh[2] = minHeading
                                     if (mode == "dr") {
-                                        if (heading > 270 && minHeading == 0) {
+                                        if (heading > 270 && (minHeading >= 0 && minHeading < 90)) {
                                             if (abs(heading-360) >= HEADING_RANGE) {
+                                                isValidIdh = false
+                                            }
+                                        } else if (minHeading > 270 && (heading >= 0 && heading < 90)) {
+                                            if (abs(minHeading-360) >= HEADING_RANGE) {
                                                 isValidIdh = false
                                             }
                                         } else {
