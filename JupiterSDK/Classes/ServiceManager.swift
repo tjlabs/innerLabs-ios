@@ -252,7 +252,7 @@ public class ServiceManager: Observation {
     var pastResult = [Double]()
     var pastBuildingLevel: [String] = ["",""]
     var currentBuilding: String = ""
-    var currentLevel: String = ""
+    var currentLevel: String = "0F"
     var currentSpot: Int = 0
     
     var isMapMatching: Bool = false
@@ -626,6 +626,7 @@ public class ServiceManager: Observation {
         
         if motionManager.isMagnetometerAvailable {
             sensorActive += 1
+            // Uncalibrated
             motionManager.magnetometerUpdateInterval = SENSOR_INTERVAL
             motionManager.startMagnetometerUpdates(to: .main) { [self] (data, error) in
                 if let magX = data?.magneticField.x {
@@ -683,6 +684,7 @@ public class ServiceManager: Observation {
                     self.pitch = m.attitude.pitch
                     self.yaw = m.attitude.yaw
                     
+                    // Calibrated Gyro
                     sensorData.gyro[0] = m.rotationRate.x
                     sensorData.gyro[1] = m.rotationRate.y
                     sensorData.gyro[2] = m.rotationRate.z
@@ -946,7 +948,6 @@ public class ServiceManager: Observation {
                             tuResult.mobile_time = trackingTime
                             self.outputResult = tuResult
                             self.flagPast = false
-//                            print("(Jupiter) outputResult (tu) : \(self.outputResult.level_name)")
                         }
                     }
                 }
@@ -1020,26 +1021,66 @@ public class ServiceManager: Observation {
                         NetworkManager.shared.postFLT(url: FLT_URL, input: input, completion: { [self] statusCode, returnedString in
                             if (statusCode == 200) {
                                 let result = jsonToResult(json: returnedString)
-                                if (result.mobile_time > self.preOutputMobileTime) {
-                                    displayOutput.indexRx = result.index
-                                    
-                                    self.phase = result.phase
-                                    self.currentBuilding = result.building_name
-                                    self.currentLevel = result.level_name
-                                    self.timeUpdateOutput.level_name = result.level_name
-                                    self.measurementOutput.level_name = result.level_name
-                                    self.preOutputMobileTime = result.mobile_time
-                                    
-                                    var finalResult = fromServerToResult(fromServer: result, velocity: displayOutput.velocity)
-                                    self.outputResult = finalResult
-                                    
-                                    self.serverResult[0] = result.x
-                                    self.serverResult[1] = result.y
-                                    self.serverResult[2] = result.absolute_heading
-                                    
-                                    self.pastBuildingLevel = [result.building_name, result.level_name]
-                                    
-                                    self.isPhase2 = false
+                                if (result.x != 0 && result.y != 0) {
+                                    if (result.mobile_time > self.preOutputMobileTime) {
+//                                        print("(Jupiter) Phase Input (2) : \(input)")
+//                                        print("(Jupiter) Phase Result (2) : \(result)")
+                                        displayOutput.indexRx = result.index
+                                        
+                                        self.phase = result.phase
+                                        self.currentBuilding = result.building_name
+                                        self.currentLevel = result.level_name
+                                        self.timeUpdateOutput.level_name = result.level_name
+                                        self.measurementOutput.level_name = result.level_name
+                                        self.preOutputMobileTime = result.mobile_time
+                                        
+                                        let finalResult = fromServerToResult(fromServer: result, velocity: displayOutput.velocity)
+                                        self.outputResult = finalResult
+                                        
+                                        self.serverResult[0] = result.x
+                                        self.serverResult[1] = result.y
+                                        self.serverResult[2] = result.absolute_heading
+                                        
+                                        self.pastBuildingLevel = [result.building_name, result.level_name]
+                                        
+                                        self.isPhase2 = false
+//                                        let isGoingOut: Bool = checkGoingOutside(levelName: result.level_name)
+//                                        if (isGoingOut) {
+//                                            let finalResult = fromServerToResult(fromServer: result, velocity: displayOutput.velocity)
+//                                            self.outputResult = finalResult
+//
+//                                            self.serverResult[0] = result.x
+//                                            self.serverResult[1] = result.y
+//                                            self.serverResult[2] = result.absolute_heading
+//
+//                                            self.pastBuildingLevel = [result.building_name, result.level_name]
+//
+//                                            self.isPhase2 = false
+//
+//                                            self.isActiveKf = false
+//                                            self.kalmanInit()
+//                                        } else {
+//                                            displayOutput.indexRx = result.index
+//
+//                                            self.phase = result.phase
+//                                            self.currentBuilding = result.building_name
+//                                            self.currentLevel = result.level_name
+//                                            self.timeUpdateOutput.level_name = result.level_name
+//                                            self.measurementOutput.level_name = result.level_name
+//                                            self.preOutputMobileTime = result.mobile_time
+//
+//                                            let finalResult = fromServerToResult(fromServer: result, velocity: displayOutput.velocity)
+//                                            self.outputResult = finalResult
+//
+//                                            self.serverResult[0] = result.x
+//                                            self.serverResult[1] = result.y
+//                                            self.serverResult[2] = result.absolute_heading
+//
+//                                            self.pastBuildingLevel = [result.building_name, result.level_name]
+//
+//                                            self.isPhase2 = false
+//                                        }
+                                    }
                                 }
                             }
                         })
@@ -1063,52 +1104,64 @@ public class ServiceManager: Observation {
                         NetworkManager.shared.postFLT(url: FLT_URL, input: input, completion: { [self] statusCode, returnedString in
                             if (statusCode == 200) {
                                 let result = jsonToResult(json: returnedString)
-                                if (result.mobile_time > self.preOutputMobileTime) {
-                                    displayOutput.indexRx = result.index
-                                    
-//                                    self.preOutputMobileTime = result.mobile_time
-//                                    if (result.mobile_time > self.runOsrTime) {
-//                                        self.currentBuilding = result.building_name
-//                                        self.currentLevel = result.level_name
-//                                    }
-                                    self.phase = result.phase
-                                    
-                                    var resultCorrected = self.correct(building: result.building_name, level: result.level_name, x: result.x, y: result.y, heading: result.absolute_heading, tuXY: [0,0], isMu: false, mode: self.mode, isPast: false, HEADING_RANGE: self.HEADING_RANGE)
-                                    resultCorrected.xyh[2] = compensateHeading(heading: resultCorrected.xyh[2], mode: self.mode)
-                                    
-                                    self.serverResult[0] = result.x
-                                    self.serverResult[1] = result.y
-                                    self.serverResult[2] = result.absolute_heading
-                                    
-                                    if (!self.isActiveKf) {
-                                        let trackingTime = getCurrentTimeInMilliseconds()
-                                        var finalResult = fromServerToResult(fromServer: result, velocity: displayOutput.velocity)
-                                        finalResult.mobile_time = trackingTime
+                                if (result.x != 0 && result.y != 0) {
+                                    if (result.mobile_time > self.preOutputMobileTime) {
+//                                        print("(Jupiter) Phase Input (3) : \(input)")
+//                                        print("(Jupiter) Phase Result (3) : \(result)")
+                                        displayOutput.indexRx = result.index
+                                        self.phase = result.phase
                                         
-                                        self.currentBuilding = finalResult.building_name
-                                        self.currentLevel = finalResult.level_name
-                                        self.outputResult = finalResult
-                                        self.flagPast = false
-                                    } else {
-//                                        print("(Jupiter) Phase 1 ~ 3 Input : \(input)")
-//                                        print("(Jupiter) Phase 1 ~ 3 Result : \(result)")
-//                                        print("(Jupiter) Phase 1 ~ 3 Check : mobileTime = \(result.mobile_time) , osrTime = \(self.runOsrTime)")
-//                                        print("(Jupiter) Phase 1 ~ 3 BL : result = \(result.level_name) , past = \(self.pastBuildingLevel[1]) , current = \(self.currentLevel)")
-                                        if (result.building_name != self.pastBuildingLevel[0] || result.level_name != self.pastBuildingLevel[1]) {
-                                            if (!self.pastResult.isEmpty) {
-                                                // FinalResult -> Result from Server when Building Level Changed
+                                        var resultCorrected = self.correct(building: result.building_name, level: result.level_name, x: result.x, y: result.y, heading: result.absolute_heading, tuXY: [0,0], isMu: false, mode: self.mode, isPast: false, HEADING_RANGE: self.HEADING_RANGE)
+                                        resultCorrected.xyh[2] = compensateHeading(heading: resultCorrected.xyh[2], mode: self.mode)
+                                        
+                                        self.serverResult[0] = result.x
+                                        self.serverResult[1] = result.y
+                                        self.serverResult[2] = result.absolute_heading
+                                        
+                                        if (!self.isActiveKf) {
+                                            let trackingTime = getCurrentTimeInMilliseconds()
+                                            var finalResult = fromServerToResult(fromServer: result, velocity: displayOutput.velocity)
+                                            finalResult.mobile_time = trackingTime
+                                            
+                                            self.currentBuilding = finalResult.building_name
+                                            self.currentLevel = finalResult.level_name
+                                            self.outputResult = finalResult
+                                            self.flagPast = false
+                                        } else {
+                                            if (result.building_name != self.pastBuildingLevel[0] || result.level_name != self.pastBuildingLevel[1]) {
+                                                if (!self.pastResult.isEmpty) {
+                                                    // FinalResult -> Result from Server when Building Level Changed
+                                                    var timUpdateOutputCopy = self.timeUpdateOutput
+                                                    timUpdateOutputCopy.phase = result.phase
+                                                    if ((result.mobile_time - self.runOsrTime) > 10000) {
+                                                        timUpdateOutputCopy.building_name = result.building_name
+                                                        timUpdateOutputCopy.level_name = result.level_name
+                                                    } else {
+                                                        timUpdateOutputCopy.building_name = self.currentBuilding
+                                                        timUpdateOutputCopy.level_name = self.currentLevel
+                                                    }
+                                                    
+                                                    timUpdateOutputCopy.mobile_time = result.mobile_time
+
+                                                    var updatedResult = fromServerToResult(fromServer: timUpdateOutputCopy, velocity: displayOutput.velocity)
+                                                    self.timeUpdateOutput = timUpdateOutputCopy
+
+                                                    let trackingTime = getCurrentTimeInMilliseconds()
+                                                    updatedResult.mobile_time = trackingTime
+                                                    
+                                                    self.outputResult = updatedResult
+                                                    self.flagPast = false
+                                                }
+                                            } else {
                                                 var timUpdateOutputCopy = self.timeUpdateOutput
                                                 timUpdateOutputCopy.phase = result.phase
-                                                if ((result.mobile_time - self.runOsrTime) > 10000) {
+                                                if (result.mobile_time > self.runOsrTime) {
                                                     timUpdateOutputCopy.building_name = result.building_name
                                                     timUpdateOutputCopy.level_name = result.level_name
-//                                                    print("(Jupiter) Phase 1 ~ 3 Over 20000 : \(timUpdateOutputCopy.level_name)")
                                                 } else {
                                                     timUpdateOutputCopy.building_name = self.currentBuilding
                                                     timUpdateOutputCopy.level_name = self.currentLevel
-//                                                    print("(Jupiter) Phase 1 ~ 3 else : \(timUpdateOutputCopy.level_name)")
                                                 }
-                                                
                                                 timUpdateOutputCopy.mobile_time = result.mobile_time
 
                                                 var updatedResult = fromServerToResult(fromServer: timUpdateOutputCopy, velocity: displayOutput.velocity)
@@ -1116,34 +1169,13 @@ public class ServiceManager: Observation {
 
                                                 let trackingTime = getCurrentTimeInMilliseconds()
                                                 updatedResult.mobile_time = trackingTime
-
+                                                
                                                 self.outputResult = updatedResult
                                                 self.flagPast = false
-//                                                print("(Jupiter) outputResult (Phase 1 ~ 3 Yes KF if) : \(self.outputResult.level_name)")
                                             }
-                                        } else {
-                                            var timUpdateOutputCopy = self.timeUpdateOutput
-                                            timUpdateOutputCopy.phase = result.phase
-                                            if (result.mobile_time > self.runOsrTime) {
-                                                timUpdateOutputCopy.building_name = result.building_name
-                                                timUpdateOutputCopy.level_name = result.level_name
-                                            } else {
-                                                timUpdateOutputCopy.building_name = self.currentBuilding
-                                                timUpdateOutputCopy.level_name = self.currentLevel
-                                            }
-                                            timUpdateOutputCopy.mobile_time = result.mobile_time
-
-                                            var updatedResult = fromServerToResult(fromServer: timUpdateOutputCopy, velocity: displayOutput.velocity)
-                                            self.timeUpdateOutput = timUpdateOutputCopy
-
-                                            let trackingTime = getCurrentTimeInMilliseconds()
-                                            updatedResult.mobile_time = trackingTime
-
-                                            self.outputResult = updatedResult
-                                            self.flagPast = false
                                         }
+                                        self.pastBuildingLevel = [result.building_name, result.level_name]
                                     }
-                                    self.pastBuildingLevel = [result.building_name, result.level_name]
                                 }
                             }
                         })
@@ -1159,10 +1191,8 @@ public class ServiceManager: Observation {
                         NetworkManager.shared.postFLT(url: FLT_URL, input: input, completion: { [self] statusCode, returnedString in
                             if (statusCode == 200) {
                                 let result = jsonToResult(json: returnedString)
-                                
                                 if ((self.nowTime - result.mobile_time) <= RECENT_THRESHOLD) {
                                     if ((result.index - self.indexPast) < INDEX_THRESHOLD) {
-                                        
                                         if (result.mobile_time > self.preOutputMobileTime) {
                                             if (!self.isActiveKf && result.phase == 4) {
                                                 self.isActiveKf = true
@@ -1303,7 +1333,7 @@ public class ServiceManager: Observation {
 //                            print("----------------- Spot Level Changed -------------------")
                         } else {
                             // Same Spot Detected
-                            if (self.travelingOsrDistance >= 60) {
+                            if (self.travelingOsrDistance >= 70) {
                                 self.isPhase2 = true
                                 self.phase = 2
                                 self.currentLevel = levelDestination
@@ -1356,19 +1386,19 @@ public class ServiceManager: Observation {
     }
     
     func getLevelNumber(levelName: String) -> Int {
-        var levelNameCorrected: String = removeLevelDirectionString(levelName: levelName)
+        let levelNameCorrected: String = removeLevelDirectionString(levelName: levelName)
         if (levelNameCorrected[levelNameCorrected.startIndex] == "B") {
             // 지하
-            let currentLevelTemp = levelNameCorrected.substring(from: 1, to: levelNameCorrected.count-1)
-            var currentLevelNum = Int(currentLevelTemp) ?? 0
-            currentLevelNum = (-1*currentLevelNum)-1
-            return currentLevelNum
+            let levelTemp = levelNameCorrected.substring(from: 1, to: levelNameCorrected.count-1)
+            var levelNum = Int(levelTemp) ?? 0
+            levelNum = (-1*levelNum)-1
+            return levelNum
         } else {
             // 지상
-            let currentLevelTemp = levelNameCorrected.substring(from: 0, to: levelNameCorrected.count-2)
-            var currentLevelNum = Int(currentLevelTemp) ?? 0
-            currentLevelNum = currentLevelNum+1
-            return currentLevelNum
+            let levelTemp = levelNameCorrected.substring(from: 0, to: levelNameCorrected.count-2)
+            var levelNum = Int(levelTemp) ?? 0
+            levelNum = levelNum+1
+            return levelNum
         }
     }
     
@@ -1388,6 +1418,14 @@ public class ServiceManager: Observation {
             levelToReturn = levelName.replacingOccurrences(of: "_D", with: "")
         }
         return levelToReturn
+    }
+    
+    func checkGoingOutside(levelName: String) -> Bool{
+        if (levelName == "0F_D") {
+            return true
+        } else {
+            return false
+        }
     }
     
     func checkBuildingLevelChange(currentBuillding: String, currentLevel: String, pastBuilding: String, pastLevel: String) -> Bool {
@@ -1549,7 +1587,7 @@ public class ServiceManager: Observation {
     private func correct(building: String, level: String, x: Double, y: Double, heading: Double, tuXY: [Double], isMu: Bool, mode: String, isPast: Bool, HEADING_RANGE: Double) -> (isSuccess: Bool, xyh: [Double]) {
         var isSuccess: Bool = false
         var xyh: [Double] = [x, y, heading]
-        var levelCopy: String = self.removeLevelDirectionString(levelName: level)
+        let levelCopy: String = self.removeLevelDirectionString(levelName: level)
         let key: String = "\(building)_\(levelCopy)"
         
         if (isPast) {

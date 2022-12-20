@@ -262,8 +262,7 @@ class CollectViewController: UIViewController {
     }
     
     func saveData() {
-        let header = ["time","accX","accY","accZ","gyroX","gyroY","gyroZ","magX","magY","magZ","roll","pitch","yaw","qx","qy","qz","qw","pressure","ble"]
-        let a = ["time", "index", "length", "heading", "pressure", "ble"]
+        let header = ["time", "accX", "accY", "accZ", "gyroX", "gyroY", "gyroZ", "magX", "magY", "magZ", "roll", "pitch", "yaw", "qx", "qy", "qz", "qw", "pressure", "ble"]
         
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd-HH-mm"
