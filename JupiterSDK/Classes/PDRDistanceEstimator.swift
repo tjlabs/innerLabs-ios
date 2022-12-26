@@ -23,6 +23,19 @@ public class PDRDistanceEstimator: NSObject {
     public var normalStepLossCheckQueue = LinkedList<Int>()
     public var normalStepCheckCount = -1
     
+    public var normalStepCountSetting: Int = 2
+    public var normalStepCountFlag: Bool = false
+    public var autoMode: Bool = false
+    
+    public func normalStepCountSet(normalStepCountSet: Int) {
+        self.normalStepCountSetting = normalStepCountSet
+    }
+
+    public func isAutoMode(autoMode: Bool) {
+        self.autoMode = autoMode
+    }
+    
+    
     public func estimateDistanceInfo(time: Double, sensorData: SensorData) -> UnitDistance {
         let accNorm = CF.l2Normalize(originalVector: sensorData.acc)
         
@@ -45,10 +58,20 @@ public class PDRDistanceEstimator: NSObject {
         finalUnitResult.isIndexChanged = false
         
         if (foundAccPV.type == Type.PEAK) {
-            normalStepCheckCount = PDF.updateNormalStepCheckCount(accPeakQueue: accPeakQueue, accValleyQueue: accValleyQueue, normalStepCheckCount: normalStepCheckCount)
-            let isLossStep = checkIsLossStep(normalStepCount: normalStepCheckCount)
+//            normalStepCheckCount = PDF.updateNormalStepCheckCount(accPeakQueue: accPeakQueue, accValleyQueue: accValleyQueue, normalStepCheckCount: normalStepCheckCount)
+//            let isLossStep = checkIsLossStep(normalStepCount: normalStepCheckCount)
             
-            if (PDF.isNormalStep(normalStepCount: normalStepCheckCount) || finalUnitResult.index <= 2) {
+            normalStepCheckCount = PDF.updateNormalStepCheckCount(accPeakQueue: accPeakQueue, accValleyQueue: accValleyQueue, normalStepCheckCount: normalStepCheckCount)
+            var isLossStep = false
+            if (!self.autoMode) {
+                isLossStep = checkIsLossStep(normalStepCount: normalStepCheckCount)
+            } else {
+                isLossStep = checkAutoModeIsLossStep(normalStepCount: normalStepCheckCount)
+            }
+            
+            normalStepCountFlag = PDF.isNormalStep(normalStepCount: normalStepCheckCount, normalStepCountSet: normalStepCountSetting)
+            
+            if ( normalStepCountFlag || finalUnitResult.index <= 2) {
                 finalUnitResult.index += 1
                 finalUnitResult.isIndexChanged = true
                 
@@ -61,8 +84,18 @@ public class PDRDistanceEstimator: NSObject {
                 
                 updateStepLengthQueue(stepLengthWithTimeStamp: StepLengthWithTimestamp(timestamp: foundAccPV.timestamp, stepLength: finalUnitResult.length))
                 
-                if (isLossStep && finalUnitResult.index > 3) {
-                    finalUnitResult.length = 1.8
+//                if (isLossStep && finalUnitResult.index > 3) {
+//                    finalUnitResult.length = 1.8
+//                }
+                
+                if (!self.autoMode) {
+                    if (isLossStep && finalUnitResult.index > 3) {
+                        finalUnitResult.length = 1.8
+                    }
+                } else {
+                    if (isLossStep && finalUnitResult.index > 10) {
+                        finalUnitResult.length = 6
+                    }
                 }
             }
         }
@@ -107,5 +140,14 @@ public class PDRDistanceEstimator: NSObject {
         normalStepLossCheckQueue.append(normalStepCount)
         
         return PacingDetectFunctions().checkLossStep(normalStepCountBuffer: normalStepLossCheckQueue)
+    }
+    
+    public func checkAutoModeIsLossStep(normalStepCount: Int) -> Bool {
+        if (normalStepLossCheckQueue.count >= AUTO_MODE_NORMAL_STEP_LOSS_CHECK_SIZE) {
+            normalStepLossCheckQueue.pop()
+        }
+        normalStepLossCheckQueue.append(normalStepCount)
+
+        return PacingDetectFunctions().checkAutoModeLossStep(normalStepCountBuffer: normalStepLossCheckQueue)
     }
 }

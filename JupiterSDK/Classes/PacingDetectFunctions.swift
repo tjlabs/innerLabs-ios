@@ -63,8 +63,16 @@ public class PacingDetectFunctions: NSObject {
         return 0
     }
     
-    public func isNormalStep(normalStepCount: Int) -> Bool {
-        return normalStepCount >= 2
+//    public func isNormalStep(normalStepCount: Int) -> Bool {
+//        return normalStepCount >= 2
+//    }
+    
+    public func isNormalStep(normalStepCount: Int, normalStepCountSet: Int) -> Bool {
+        if (normalStepCount >= normalStepCountSet) {
+            return true
+        } else {
+            return false
+        }
     }
     
     public func checkLossStep(normalStepCountBuffer: LinkedList<Int>) -> Bool {
@@ -76,6 +84,24 @@ public class PacingDetectFunctions: NSObject {
             return true
         } else {
             return false
+        }
+    }
+    
+    public func checkAutoModeLossStep(normalStepCountBuffer: LinkedList<Int>) -> Bool {
+        if (normalStepCountBuffer.count < AUTO_MODE_NORMAL_STEP_LOSS_CHECK_SIZE) {
+            return false
+        } else {
+            var count: Int = 0
+            for i in 0..<normalStepCountBuffer.count {
+                if (normalStepCountBuffer.node(at: i)!.value == i) {
+                    count += 1
+                }
+            }
+            if count == (AUTO_MODE_NORMAL_STEP_LOSS_CHECK_SIZE-1) {
+                return true
+            } else {
+                return false
+            }
         }
     }
 }

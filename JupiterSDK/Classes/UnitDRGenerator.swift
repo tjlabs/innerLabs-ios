@@ -8,7 +8,6 @@ public class UnitDRGenerator: NSObject {
     
     let STEP_TO_MODE_CHANGE = 5
     var STEP_VALID_TIME: Double = 1000
-    var validStepCount = 0
     
     public var unitMode = String()
     
@@ -21,6 +20,10 @@ public class UnitDRGenerator: NSObject {
     
     var pdrQueue = LinkedList<DistanceInfo>()
     var drQueue = LinkedList<DistanceInfo>()
+    var autoMode: Int = 0
+    
+    var normalStepTime: Double = 0
+    var unitIndexAuto = 0
     
     var preRoll: Double = 0
     var prePitch: Double = 0
@@ -41,11 +44,14 @@ public class UnitDRGenerator: NSObject {
         
         var unitDistanceDr = UnitDistance()
         var unitDistancePdr = UnitDistance()
-        
+        var unitDistanceAuto = UnitDistance()
         
         switch (unitMode) {
         case MODE_PDR:
+            pdrDistanceEstimator.normalStepCountSet(normalStepCountSet: pdrDistanceEstimator.normalStepCountSetting)
+            pdrDistanceEstimator.isAutoMode(autoMode: false)
             unitDistancePdr = pdrDistanceEstimator.estimateDistanceInfo(time: currentTime, sensorData: sensorData)
+            autoMode = 0
             
             var sensorAtt = sensorData.att
             
@@ -70,68 +76,119 @@ public class UnitDRGenerator: NSObject {
             
             let heading = HF.radian2degree(radian: curAttitudePdr.Yaw)
             
-            return UnitDRInfo(index: unitDistancePdr.index, length: unitDistancePdr.length, heading: heading, velocity: unitDistancePdr.velocity, lookingFlag: unitStatus, isIndexChanged: unitDistancePdr.isIndexChanged)
+            return UnitDRInfo(index: unitDistancePdr.index, length: unitDistancePdr.length, heading: heading, velocity: unitDistancePdr.velocity, lookingFlag: unitStatus, isIndexChanged: unitDistancePdr.isIndexChanged, autoMode: 0)
         case MODE_DR:
             unitDistanceDr = drDistanceEstimator.estimateDistanceInfo(time: currentTime, sensorData: sensorData)
+            autoMode = 1
             curAttitudeDr = unitAttitudeEstimator.estimateAtt(time: currentTime, acc: sensorData.acc, gyro: sensorData.gyro, rotMatrix: sensorData.rotationMatrix)
             
             let heading = HF.radian2degree(radian: curAttitudeDr.Yaw)
             
             let unitStatus = unitStatusEstimator.estimateStatus(Attitude: curAttitudeDr, isIndexChanged: unitDistanceDr.isIndexChanged, unitMode: unitMode)
-            return UnitDRInfo(index: unitDistanceDr.index, length: unitDistanceDr.length, heading: heading, velocity: unitDistanceDr.velocity, lookingFlag: unitStatus, isIndexChanged: unitDistanceDr.isIndexChanged)
+            return UnitDRInfo(index: unitDistanceDr.index, length: unitDistanceDr.length, heading: heading, velocity: unitDistanceDr.velocity, lookingFlag: unitStatus, isIndexChanged: unitDistanceDr.isIndexChanged, autoMode: 0)
         case MODE_AUTO:
-            unitDistanceDr = drDistanceEstimator.estimateDistanceInfo(time: currentTime, sensorData: sensorData)
+            pdrDistanceEstimator.normalStepCountSet(normalStepCountSet: MODE_AUTO_NORMAL_STEP_COUNT_SET)
             unitDistancePdr = pdrDistanceEstimator.estimateDistanceInfo(time: currentTime, sensorData: sensorData)
+            unitDistanceDr = drDistanceEstimator.estimateDistanceInfo(time: currentTime, sensorData: sensorData)
             
-            updateDrQueue(data: DistanceInfo(index: unitDistanceDr.index, length: unitDistanceDr.length, time: currentTime, isIndexChanged: unitDistanceDr.isIndexChanged))
-            updatePdrQueue(data: DistanceInfo(index: unitDistancePdr.index, length: unitDistancePdr.length, time: currentTime, isIndexChanged: unitDistancePdr.isIndexChanged))
+            if (pdrDistanceEstimator.normalStepCountFlag) {
+                if (unitDistancePdr.isIndexChanged) {
+                    unitIndexAuto += 1
+                }
+                unitDistanceAuto = unitDistancePdr
+                self.autoMode = 0
+                normalStepTime = getCurrentTimeInMilliseconds()
+            } else {
+                unitDistanceAuto = unitDistanceDr
+                if (unitDistanceDr.isIndexChanged) {
+                    unitIndexAuto += 1
+                }
+                self.autoMode = 1
+            }
             
-            checkModeChange()
+            if ((getCurrentTimeInMilliseconds() - normalStepTime) >= 5*1000) {
+                unitDistanceAuto = unitDistanceDr
+                self.autoMode = 1
+            }
             
             let sensorAtt = sensorData.att
             curAttitudePdr = Attitude(Roll: sensorAtt[0], Pitch: sensorAtt[1], Yaw: sensorAtt[2])
             curAttitudeDr = unitAttitudeEstimator.estimateAtt(time: currentTime, acc: sensorData.acc, gyro: sensorData.gyro, rotMatrix: sensorData.rotationMatrix)
             
-            let heading = HF.radian2degree(radian: curAttitudeDr.Yaw)
+            let headingPdr = HF.radian2degree(radian: curAttitudePdr.Yaw)
+            let headingDr = HF.radian2degree(radian: curAttitudeDr.Yaw)
             
             let unitStatusPdr = unitStatusEstimator.estimateStatus(Attitude: curAttitudePdr, isIndexChanged: unitDistancePdr.isIndexChanged, unitMode: MODE_PDR)
             let unitStatusDr = unitStatusEstimator.estimateStatus(Attitude: curAttitudeDr, isIndexChanged: unitDistanceDr.isIndexChanged, unitMode: MODE_DR)
             
-            return UnitDRInfo(index: unitDistanceDr.index, length: unitDistanceDr.length, heading: heading, velocity: unitDistanceDr.velocity, lookingFlag: unitStatusDr, isIndexChanged: unitDistanceDr.isIndexChanged)
+            if (self.autoMode == 0) {
+                return UnitDRInfo(index: unitIndexAuto, length: unitDistanceAuto.length, heading: headingPdr, velocity: unitDistanceAuto.velocity, lookingFlag: unitStatusPdr, isIndexChanged: unitDistanceAuto.isIndexChanged, autoMode: self.autoMode)
+            } else {
+                return UnitDRInfo(index: unitIndexAuto, length: unitDistanceAuto.length, heading: headingDr, velocity: unitDistanceAuto.velocity, lookingFlag: unitStatusDr, isIndexChanged: unitDistanceAuto.isIndexChanged, autoMode: self.autoMode)
+            }
+            
         default:
             // (Default : DR Mode)
             unitDistanceDr = drDistanceEstimator.estimateDistanceInfo(time: currentTime, sensorData: sensorData)
+            autoMode = 1
             curAttitudeDr = unitAttitudeEstimator.estimateAtt(time: currentTime, acc: sensorData.acc, gyro: sensorData.gyro, rotMatrix: sensorData.rotationMatrix)
             
             let heading = HF.radian2degree(radian: curAttitudeDr.Yaw)
             
             let unitStatus = unitStatusEstimator.estimateStatus(Attitude: curAttitudeDr, isIndexChanged: unitDistanceDr.isIndexChanged, unitMode: unitMode)
-            return UnitDRInfo(index: unitDistanceDr.index, length: unitDistanceDr.length, heading: heading, velocity: unitDistanceDr.velocity, lookingFlag: unitStatus, isIndexChanged: unitDistanceDr.isIndexChanged)
+            return UnitDRInfo(index: unitDistanceDr.index, length: unitDistanceDr.length, heading: heading, velocity: unitDistanceDr.velocity, lookingFlag: unitStatus, isIndexChanged: unitDistanceDr.isIndexChanged, autoMode: 0)
         }
     }
     
-    func checkModeChange() {
+    func checkModeChange(autoMode: Int, currentTime: Double) -> Int {
         let drQueueLen = drQueue.count
         let pdrQueueLen = pdrQueue.count
         
-        // 최근 N개의 PDR 스텝이 연속적으로 발생하는지 확인
-        if (pdrQueueLen > STEP_TO_MODE_CHANGE) {
-            for i in (pdrQueueLen-STEP_TO_MODE_CHANGE)..<pdrQueueLen {
-                let pdrCurrent = pdrQueue.node(at: i)!.value
-                let pdrBefore = pdrQueue.node(at: i-1)!.value
+        var validStepCount = 0
+        var validStepLength: Double = 0
+        if (pdrQueueLen > 0) {
+            let lastPdrValue: DistanceInfo = pdrQueue.last!.value
+            let lastPdrTime = lastPdrValue.time
+            
+            if (currentTime - lastPdrTime) < 1500 {
+                // 마지막 Step 발생한지 1.5초 이내
                 
-                let timeDiff = pdrCurrent.time - pdrBefore.time
-                
-                if timeDiff < STEP_VALID_TIME {
-                    self.validStepCount += 1
+                // 최근 5개의 PDR 스텝이 연속적으로 발생하는지 확인
+                if (pdrQueueLen > STEP_TO_MODE_CHANGE) {
+                    for i in (pdrQueueLen-STEP_TO_MODE_CHANGE)..<pdrQueueLen {
+                        let pdrBefore = pdrQueue.node(at: i-1)!.value
+                        let pdrCurrent = pdrQueue.node(at: i)!.value
+
+                        let timeDiff = pdrCurrent.time - pdrBefore.time
+
+                        if timeDiff < STEP_VALID_TIME {
+                            validStepCount += 1
+                            validStepLength += pdrCurrent.length
+                        }
+                    }
                 }
+                
+                if (validStepCount == 5 && validStepLength < 3.6) {
+                    // Mode = PDR
+                    return 0
+                } else {
+                    return 1
+                }
+            } else {
+                // 마지막 Step 발생한지 1.5초 이상
+                print("After 1.5s last Step")
+                return 1
             }
+        } else {
+            return 0
         }
         
-        if (self.validStepCount > STEP_TO_MODE_CHANGE) {
-            // 현재 모드는 PDR
-            self.validStepCount = 0
-        }
+        
+//
+//        if (self.validStepCount > STEP_TO_MODE_CHANGE) {
+//            // 현재 모드는 PDR
+//            self.validStepCount = 0
+//        }
         
         // DR 상황에서는 스텝이 연속적으로 발생하지 않음
         
