@@ -77,7 +77,7 @@ public class ServiceManager: Observation {
     }
     
     // 0 : Release  //  1 : Test
-    var serverType: Int = 0
+    var serverType: Int = 1
     // 0 : Android  //  1 : iOS
     var osType: Int = 1
     
@@ -333,7 +333,7 @@ public class ServiceManager: Observation {
             } else if (mode == "dr") {
                 self.runMode = "dr"
             }
-            setModeParam(mode: self.runMode)
+            setModeParam(mode: self.runMode, phase: self.phase)
             
             onStartFlag = true
         }
@@ -933,10 +933,9 @@ public class ServiceManager: Observation {
                 } else {
                     self.runMode = "dr"
                 }
-                setModeParam(mode: self.runMode)
+                setModeParam(mode: self.runMode, phase: self.phase)
             }
             
-            print("DR Info : \(unitDRInfo)")
             let data = UserVelocity(user_id: self.user_id, mobile_time: currentTime, index: unitDRInfo.index, length: unitDRInfo.length, heading: unitDRInfo.heading, looking: unitDRInfo.lookingFlag)
             timeUpdateOutput.index = unitDRInfo.index
             
@@ -1013,13 +1012,7 @@ public class ServiceManager: Observation {
         let currentTime = getCurrentTimeInMilliseconds()
         
         // UV Control
-        if (self.phase == 4) {
-            setModeParam(mode: self.runMode)
-            INDEX_THRESHOLD = 11
-        } else {
-            setModeParam(mode: self.runMode)
-            INDEX_THRESHOLD = 6
-        }
+        setModeParam(mode: self.runMode, phase: self.phase)
         
         if (self.isActiveService) {
             if (self.isStop && isActiveKf) {
@@ -1183,6 +1176,7 @@ public class ServiceManager: Observation {
                                                 self.flagPast = false
                                             }
                                         }
+                                        self.indexPast = result.index
                                         self.pastBuildingLevel = [result.building_name, result.level_name]
                                     }
                                 }
@@ -1836,17 +1830,33 @@ public class ServiceManager: Observation {
         return result
     }
     
-    func setModeParam(mode: String) {
+    func setModeParam(mode: String, phase: Int) {
         if (mode == "pdr") {
             self.INIT_INPUT_NUM = 2
             self.VAR_INPUT_NUM = 5
             self.SQUARE_RANGE = self.SQUARE_RANGE_PDR
+            
+            if (phase == 4) {
+                self.UV_INPUT_NUM = self.VAR_INPUT_NUM
+                self.INDEX_THRESHOLD = 11
+            } else {
+                self.UV_INPUT_NUM = self.INIT_INPUT_NUM
+                self.INDEX_THRESHOLD = 6
+            }
+            
         } else if (mode == "dr") {
             self.INIT_INPUT_NUM = 5
             self.VAR_INPUT_NUM = 10
             self.SQUARE_RANGE = self.SQUARE_RANGE_PDR
+            
+            if (phase == 4) {
+                self.UV_INPUT_NUM = self.VAR_INPUT_NUM
+                self.INDEX_THRESHOLD = 11
+            } else {
+                self.UV_INPUT_NUM = self.INIT_INPUT_NUM
+                self.INDEX_THRESHOLD = 6
+            }
         }
-        self.UV_INPUT_NUM = self.INIT_INPUT_NUM
     }
     
     // Kalman Filter
