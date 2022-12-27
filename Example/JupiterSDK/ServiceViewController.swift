@@ -1296,7 +1296,6 @@ extension ServiceViewController: CustomSwitchButtonDelegate {
             serviceManager.addObserver(self)
             serviceManager.startService(id: uuid, sector_id: cardData!.sector_id, service: serviceName, mode: cardData!.mode)
 //            serviceManager.startService(id: uuid, sector_id: cardData!.sector_id, service: serviceName, mode: "auto")
-
             self.startTimer()
         } else {
             self.hideDropDown(flag: false)
