@@ -77,7 +77,7 @@ public class ServiceManager: Observation {
     }
     
     // 0 : Release  //  1 : Test
-    var serverType: Int = 1
+    var serverType: Int = 0
     // 0 : Android  //  1 : iOS
     var osType: Int = 1
     
@@ -930,8 +930,10 @@ public class ServiceManager: Observation {
                 let autoMode = unitDRInfo.autoMode
                 if (autoMode == 0) {
                     self.runMode = "pdr"
+                    self.kalmanR = 0.5
                 } else {
                     self.runMode = "dr"
+                    self.kalmanR = 6
                 }
                 setModeParam(mode: self.runMode, phase: self.phase)
             }
@@ -1211,11 +1213,12 @@ public class ServiceManager: Observation {
                                                     if (self.isPhaseBreak) {
                                                         if (self.runMode == "pdr") {
                                                             self.SQUARE_RANGE = self.SQUARE_RANGE_PDR
+                                                            self.kalmanR = 0.5
                                                         } else {
                                                             self.SQUARE_RANGE = self.SQUARE_RANGE_DR
+                                                            self.kalmanR = 6
                                                         }
                                                         
-                                                        self.kalmanR = 6
                                                         self.headingKalmanR = 1
                                                         self.isPhaseBreak = false
                                                     }
@@ -1860,7 +1863,7 @@ public class ServiceManager: Observation {
     }
     
     // Kalman Filter
-    func kalmanInit() {
+    func kalmanInit(mode: String) {
         kalmanP = 1
         kalmanQ = 0.3
         kalmanR = 6

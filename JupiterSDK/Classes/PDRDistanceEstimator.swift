@@ -84,10 +84,6 @@ public class PDRDistanceEstimator: NSObject {
                 
                 updateStepLengthQueue(stepLengthWithTimeStamp: StepLengthWithTimestamp(timestamp: foundAccPV.timestamp, stepLength: finalUnitResult.length))
                 
-//                if (isLossStep && finalUnitResult.index > 3) {
-//                    finalUnitResult.length = 1.8
-//                }
-                
                 if (!self.autoMode) {
                     if (isLossStep && finalUnitResult.index > 3) {
                         finalUnitResult.length = 1.8

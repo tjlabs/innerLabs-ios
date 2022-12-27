@@ -56,16 +56,16 @@ public class PacingDetectFunctions: NSObject {
         guard let condition3 = accPeakQueue.last?.value.valuestamp else { return 0 }
         guard let condition4 = accPeakQueue.node(at: accPeakQueue.count-2)?.value.valuestamp else { return 0 }
         
-        if (condition1 - condition2 < 2000 && abs(condition3 - condition4) < 1) {
+//        if (condition1 - condition2 < 2000 && abs(condition3 - condition4) < 1) {
+//            return normalStepCheckCount + 1
+//        }
+        
+        if (condition1 - condition2 < 2000) {
             return normalStepCheckCount + 1
         }
         
         return 0
     }
-    
-//    public func isNormalStep(normalStepCount: Int) -> Bool {
-//        return normalStepCount >= 2
-//    }
     
     public func isNormalStep(normalStepCount: Int, normalStepCountSet: Int) -> Bool {
         if (normalStepCount >= normalStepCountSet) {
