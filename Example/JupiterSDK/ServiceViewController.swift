@@ -581,7 +581,8 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
                     // 빌딩 -> 층 이미지가 있는 경우
                     self.imageLevel.isHidden = false
                     self.noImageLabel.isHidden = true
-
+                    
+//                    self.imageLevel.image = UIImage(named: "eMagic")
                     self.imageLevel.image = data
                 } else {
                     // 빌딩 -> 층 이미지가 없는 경우
