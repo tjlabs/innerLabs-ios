@@ -99,6 +99,7 @@
 		B3FD74E9286989A600CD4D74 /* CustomSwitchButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3FD74E8286989A600CD4D74 /* CustomSwitchButton.swift */; };
 		B3FD74EC2869A38800CD4D74 /* Gallery_4F.csv in Resources */ = {isa = PBXBuildFile; fileRef = B3FD74EA2869A38800CD4D74 /* Gallery_4F.csv */; };
 		B3FD74ED2869A38800CD4D74 /* Gallery_3F.csv in Resources */ = {isa = PBXBuildFile; fileRef = B3FD74EB2869A38800CD4D74 /* Gallery_3F.csv */; };
+		B3FE481D2967965600EDAE94 /* Eureka_KIST.csv in Resources */ = {isa = PBXBuildFile; fileRef = B3FE481C2967965600EDAE94 /* Eureka_KIST.csv */; };
 		B3FF2026294B922C003B06AB /* COEX_B4.csv in Resources */ = {isa = PBXBuildFile; fileRef = B3FF2023294B922C003B06AB /* COEX_B4.csv */; };
 		B3FF2027294B922C003B06AB /* COEX_B3.csv in Resources */ = {isa = PBXBuildFile; fileRef = B3FF2024294B922C003B06AB /* COEX_B3.csv */; };
 		B3FF2B5A293DF498009082FF /* L3_1F.csv in Resources */ = {isa = PBXBuildFile; fileRef = B3FF2B59293DF498009082FF /* L3_1F.csv */; };
@@ -217,6 +218,7 @@
 		B3FD74E8286989A600CD4D74 /* CustomSwitchButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomSwitchButton.swift; sourceTree = "<group>"; };
 		B3FD74EA2869A38800CD4D74 /* Gallery_4F.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Gallery_4F.csv; sourceTree = "<group>"; };
 		B3FD74EB2869A38800CD4D74 /* Gallery_3F.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Gallery_3F.csv; sourceTree = "<group>"; };
+		B3FE481C2967965600EDAE94 /* Eureka_KIST.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Eureka_KIST.csv; sourceTree = "<group>"; };
 		B3FF2023294B922C003B06AB /* COEX_B4.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = COEX_B4.csv; sourceTree = "<group>"; };
 		B3FF2024294B922C003B06AB /* COEX_B3.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = COEX_B3.csv; sourceTree = "<group>"; };
 		B3FF2B59293DF498009082FF /* L3_1F.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = L3_1F.csv; sourceTree = "<group>"; };
@@ -319,6 +321,7 @@
 				B3021F0E29541D7C000CE9AD /* Museum_1F.csv */,
 				B364B35428BCD8C5001A8950 /* LUPIUM_3F.csv */,
 				B364B35228BCD8C5001A8950 /* LUPIUM_5F.csv */,
+				B3FE481C2967965600EDAE94 /* Eureka_KIST.csv */,
 				B364B35328BCD8C5001A8950 /* LUPIUM_7F.csv */,
 				B36928AD28C5D290005FD4A9 /* L8_B1.csv */,
 				B38807EF283390280029B174 /* L1_1F.csv */,
@@ -609,6 +612,7 @@
 				B3455284282AB7B400F0DD3E /* ServiceInfoTableViewCell.xib in Resources */,
 				B35272B2281F8DC300321CC6 /* SplashScreen.storyboard in Resources */,
 				607FACE01AFB9204008FA782 /* LaunchScreen.xib in Resources */,
+				B3FE481D2967965600EDAE94 /* Eureka_KIST.csv in Resources */,
 				607FACDD1AFB9204008FA782 /* Images.xcassets in Resources */,
 				B3E094EE28AE270400D3BC59 /* S3_7F.csv in Resources */,
 				B360D88F28090D6A0084FB22 /* NotoSansKR-Light.otf in Resources */,
@@ -954,7 +958,7 @@
 			baseConfigurationReference = 6C664AF60D59718EECD6DBBC /* Pods-JupiterSDK_Example.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CURRENT_PROJECT_VERSION = 5;
+				CURRENT_PROJECT_VERSION = 6;
 				DEVELOPMENT_TEAM = G75UAV755N;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				INFOPLIST_FILE = JupiterSDK/Info.plist;
@@ -974,7 +978,7 @@
 			baseConfigurationReference = 8B538B887A8FED7CB659550A /* Pods-JupiterSDK_Example.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CURRENT_PROJECT_VERSION = 5;
+				CURRENT_PROJECT_VERSION = 6;
 				DEVELOPMENT_TEAM = G75UAV755N;
 				EXCLUDED_ARCHS = "";
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;

@@ -1,8 +1,16 @@
 import Foundation
 
-let USER_URL = "https://where-run-user-skrgq3jc5a-du.a.run.app/user"
-let CARD_URL = "https://where-run-user-skrgq3jc5a-du.a.run.app/card"
-let SCALE_URL = "https://where-run-user-skrgq3jc5a-du.a.run.app/scale"
+var COMMON_URL = "https://where-run-user"
+var REGION_URL = "-skrgq3jc5a-du.a.run.app"
+
+var USER_URL = COMMON_URL + REGION_URL + "/user"
+var CARD_URL = COMMON_URL + REGION_URL + "/card"
+var SCALE_URL = COMMON_URL + REGION_URL + "/scale"
+var IMAGE_URL = "jupiter_image"
+
+//var USER_URL = "https://where-run-user-skrgq3jc5a-du.a.run.app/user"
+//var CARD_URL = "https://where-run-user-skrgq3jc5a-du.a.run.app/card"
+//var SCALE_URL = "https://where-run-user-skrgq3jc5a-du.a.run.app/scale"
 
 struct CardItemData: Codable {
     public var sector_id: Int
@@ -111,4 +119,28 @@ struct CoordToDisplay {
     var heading: Double = 0
     var building: String = ""
     var level: String = ""
+}
+
+public func setRegion(regionName: String) {
+    switch (regionName) {
+    case "Korea":
+        REGION_URL = "-skrgq3jc5a-du.a.run.app"
+        IMAGE_URL = "jupiter_image"
+    case "Canada":
+        REGION_URL = "-mewcfgikga-pd.a.run.app"
+        IMAGE_URL = "jupiter_image_can"
+    default:
+        REGION_URL = "-skrgq3jc5a-du.a.run.app"
+        IMAGE_URL = "jupiter_image"
+    }
+    
+    USER_URL = COMMON_URL + REGION_URL + "/user"
+    CARD_URL = COMMON_URL + REGION_URL + "/card"
+    SCALE_URL = COMMON_URL + REGION_URL + "/scale"
+    
+//    print("(innerLabs) Region : \(regionName)")
+//    print("(innerLabs) USER_URL Changed : \(USER_URL)")
+//    print("(innerLabs) CARD_URL Changed : \(CARD_URL)")
+//    print("(innerLabs) SCALE_URL Changed : \(SCALE_URL)")
+//    print("(innerLabs) IMAGE_URL Changed : \(IMAGE_URL)")
 }

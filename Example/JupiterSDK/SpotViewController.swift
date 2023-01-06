@@ -33,8 +33,9 @@ class SpotViewController: UIViewController {
     
     var delegate : ServiceViewPageDelegate?
     var cardData: CardItemData?
-    var page: Int = 0
+    var region: String = ""
     var userId: String = ""
+    var page: Int = 0
     
     var sector_id: Int = 0
     var buildings = [String]()
@@ -67,6 +68,7 @@ class SpotViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         scatterChart.isHidden = true
+        serviceManager.changeRegion(regionName: self.region)
         serviceManager.startService(id: userId, sector_id: cardData!.sector_id, service: cardData!.service, mode: cardData!.mode)
         
         let tapRecognizer = UITapGestureRecognizer()

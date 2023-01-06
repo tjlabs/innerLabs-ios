@@ -244,7 +244,7 @@ extension ShowCardViewController: UICollectionViewDataSource {
         } else if (sectorID == 10) {
             cell.sectorShowImage.image = sectorShowImages[indexPath.item]
         } else {
-            let urlSectorShow = URL(string: "https://storage.googleapis.com/jupiter_image/card/\(sectorID)/edit_image.png")
+            let urlSectorShow = URL(string: "https://storage.googleapis.com/\(IMAGE_URL)/card/\(sectorID)/edit_image.png")
             let resourceSectorShow = ImageResource(downloadURL: urlSectorShow!, cacheKey: "\(sectorID)Show")
             cell.sectorShowImage.kf.setImage(with: resourceSectorShow, placeholder: nil, options: [.transition(.fade(1.2))], completionHandler: nil)
         }

@@ -27,8 +27,9 @@ class NeptuneViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
     
     var delegate : ServiceViewPageDelegate?
     var cardData: CardItemData?
-    var page: Int = 0
+    var region: String = ""
     var userId: String = ""
+    var page: Int = 0
     
     var RP = [String: [[Double]]]()
     
@@ -96,6 +97,7 @@ class NeptuneViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
     override func viewDidLoad() {
         super.viewDidLoad()
         scatterChart.isHidden = true
+        serviceManager.changeRegion(regionName: self.region)
         serviceManager.startService(id: userId, sector_id: cardData!.sector_id, service: cardData!.service, mode: cardData!.mode)
         
         let tapRecognizer = UITapGestureRecognizer()
@@ -265,7 +267,7 @@ class NeptuneViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
         print("Fetch Level : \(building)_\(level)")
         
         // 빌딩 -> 층 이미지 보이기
-        if let urlLevel = URL(string: "https://storage.googleapis.com/jupiter_image/map/\(sectorId)/\(building)_\(level).png") {
+        if let urlLevel = URL(string: "https://storage.googleapis.com/\(IMAGE_URL)/map/\(sectorId)/\(building)_\(level).png") {
             let data = try? Data(contentsOf: urlLevel)
             
             if (data != nil) {

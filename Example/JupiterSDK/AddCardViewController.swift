@@ -94,8 +94,8 @@ class AddCardViewController: UIViewController, UITextFieldDelegate {
                 
                 if (id != 10) {
                     // KingFisher Image Download
-                    let urlSector = URL(string: "https://storage.googleapis.com/jupiter_image/card/\(id)/main_image.png")
-                    let urlSectorShow = URL(string: "https://storage.googleapis.com/jupiter_image/card/\(id)/edit_image.png")
+                    let urlSector = URL(string: "https://storage.googleapis.com/\(IMAGE_URL)/card/\(id)/main_image.png")
+                    let urlSectorShow = URL(string: "https://storage.googleapis.com/\(IMAGE_URL)/card/\(id)/edit_image.png")
                     
                     let resourceSector = ImageResource(downloadURL: urlSector!, cacheKey: "\(id)Main")
                     let resourceSectorShow = ImageResource(downloadURL: urlSectorShow!, cacheKey: "\(id)Show")

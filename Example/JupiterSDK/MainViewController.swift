@@ -2,6 +2,7 @@ import UIKit
 import SwiftUI
 import Alamofire
 import Kingfisher
+import DropDown
 import JupiterSDK
 
 struct AppFontName {
@@ -27,6 +28,16 @@ class MainViewController: UIViewController, UITextFieldDelegate {
     
     let networkManager = Network()
     
+    @IBOutlet weak var dropView: UIView!
+    @IBOutlet weak var dropImage: UIImageView!
+    @IBOutlet weak var dropText: UITextField!
+    @IBOutlet weak var dropButton: UIButton!
+    
+    var regions: [String] = ["Korea", "Canada"]
+    var currentRegion: String = "Korea"
+    
+    let dropDown = DropDown()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -38,10 +49,16 @@ class MainViewController: UIViewController, UITextFieldDelegate {
         
         codeTextField.delegate = self
         
+        initDropDown()
+        setDropDown()
+        
         deviceModel = UIDevice.modelName
         os = UIDevice.current.systemVersion
         let arr = os.components(separatedBy: ".")
         osVersion = Int(arr[0]) ?? 0
+        
+//        let locale = Locale.current
+//        print("(InnerLabs) Locale Code : \(locale.identifier)")
     }
     
     override func didReceiveMemoryWarning() {
@@ -133,8 +150,6 @@ class MainViewController: UIViewController, UITextFieldDelegate {
                         print("최초 사용자가 아닙니다")
                         cardDatas.append(CardItemData(sector_id: 0, sector_name: "JUPITER", description: "카드를 터치해주세요", cardColor: "purple", mode: "pdr", service: "NONE", infoBuilding: ["S3"], infoLevel: ["S3":["7F"]]))
                         
-                        print("Sector List :", myCard)
-                        
                         KingfisherManager.shared.cache.clearMemoryCache()
                         KingfisherManager.shared.cache.clearDiskCache { print("Clear Cache Done !") }
                         
@@ -174,21 +189,21 @@ class MainViewController: UIViewController, UITextFieldDelegate {
                             
                             if (id != 10) { 
                                 // KingFisher Image Download
-                                let urlSector = URL(string: "https://storage.googleapis.com/jupiter_image/card/\(id)/main_image.png")
-                                let urlSectorShow = URL(string: "https://storage.googleapis.com/jupiter_image/card/\(id)/edit_image.png")
+                                let urlSector = URL(string: "https://storage.googleapis.com/" + IMAGE_URL + "/card/\(id)/main_image.png")
+                                let urlSectorShow = URL(string: "https://storage.googleapis.com/" + IMAGE_URL + "/card/\(id)/edit_image.png")
                                 
                                 let resourceSector = ImageResource(downloadURL: urlSector!, cacheKey: "\(id)Main")
                                 let resourceSectorShow = ImageResource(downloadURL: urlSectorShow!, cacheKey: "\(id)Show")
                                 
-//                                KingfisherManager.shared.retrieveImage(with: resourceSector, completionHandler: nil)
-//                                KingfisherManager.shared.retrieveImage(with: resourceSectorShow, completionHandler: nil)
+                                KingfisherManager.shared.retrieveImage(with: resourceSector, completionHandler: nil)
+                                KingfisherManager.shared.retrieveImage(with: resourceSectorShow, completionHandler: nil)
                             }
                             
                             cardDatas.append(CardItemData(sector_id: id, sector_name: name, description: description, cardColor: cardColor, mode: mode, service: service, infoBuilding: infoBuilding, infoLevel: infoLevel))
                         }
                     }
                     
-                    goToCardVC(cardDatas: cardDatas)
+                    goToCardVC(cardDatas: cardDatas, region: self.currentRegion)
                 }
                 catch (let err){
                     print("")
@@ -204,14 +219,16 @@ class MainViewController: UIViewController, UITextFieldDelegate {
         }
     }
     
-    func goToCardVC(cardDatas: [CardItemData]) {
+    func goToCardVC(cardDatas: [CardItemData], region: String) {
         guard let cardVC = self.storyboard?.instantiateViewController(withIdentifier: "CardViewController") as? CardViewController else { return }
+        cardVC.region = region
         cardVC.uuid = uuid
         cardVC.cardItemData = cardDatas
         
         self.navigationController?.pushViewController(cardVC, animated: true)
         guideLabel.isHidden = true
     }
+    
     func jsonToCardList(json: String) -> CardList {
         let result = CardList(sectors: [])
 
@@ -227,21 +244,61 @@ class MainViewController: UIViewController, UITextFieldDelegate {
         return result
     }
     
-    @objc func loginTapped() {
-        self.uuid = codeTextField.text ?? ""
+    // DropDown
+    private func initDropDown() {
+        dropView.layer.cornerRadius = 6
+//        dropView.borderColor = .darkgrey4
+        dropView.borderColor = .clear
+        dropView.layer.shadowOpacity = 0.5
+        dropView.layer.shadowOffset = CGSize(width: 1, height: 1)
+        dropView.layer.shadowRadius = 1
         
-        if (uuid == "") {
-            guideLabel.isHidden = false
+        DropDown.appearance().textColor = UIColor.black // 아이템 텍스트 색상
+        DropDown.appearance().selectedTextColor = UIColor.red // 선택된 아이템 텍스트 색상
+        DropDown.appearance().backgroundColor = UIColor.white // 아이템 팝업 배경 색상
+        DropDown.appearance().selectionBackgroundColor = UIColor.lightGray // 선택한 아이템 배경 색상
+        DropDown.appearance().setupCornerRadius(6)
+        
+        dropText.borderStyle = .none
+        if (currentRegion == "") {
+            dropText.text = "Region"
         } else {
-            if (isSaveUuid) {
-                defaults.set(self.uuid, forKey: "uuid")
-            } else {
-                defaults.set(nil, forKey: "uuid")
-            }
-            defaults.synchronize()
+            dropText.text = self.currentRegion
+        }
+
+        dropText.textColor = .darkgrey4
+        
+        dropDown.dismissMode = .automatic // 팝업을 닫을 모드 설정
+    }
+    
+    private func setDropDown() {
+        dropDown.dataSource = self.regions
+        
+        // anchorView를 통해 UI와 연결
+        dropDown.anchorView = self.dropView
             
-            let login = Login(user_id: uuid, device_model: deviceModel, os_version: osVersion)
-            postLogin(url: USER_URL, input: login)
+        // View를 갖리지 않고 View아래에 Item 팝업이 붙도록 설정
+        dropDown.bottomOffset = CGPoint(x: 0, y: dropView.bounds.height)
+            
+        // Item 선택 시 처리
+        dropDown.selectionAction = { [weak self] (index, item) in
+            //선택한 Item을 TextField에 넣어준다.
+            self!.dropText.text = item
+            self!.currentRegion = item
+            setRegion(regionName: self!.currentRegion)
+            self!.dropImage.image = UIImage.init(named: "showInfoToggle")
+        }
+            
+        // 취소 시 처리
+        dropDown.cancelAction = { [weak self] in
+            //빈 화면 터치 시 DropDown이 사라지고 아이콘을 원래대로 변경
+            self!.dropImage.image = UIImage.init(named: "showInfoToggle")
         }
     }
+    
+    @IBAction func dropButtonClicked(_ sender: UIButton) {
+        dropDown.show()
+        self.dropImage.image = UIImage.init(named: "closeInfoToggle")
+    }
+    
 }

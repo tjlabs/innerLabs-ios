@@ -1,5 +1,28 @@
 import Foundation
 
+// ---------- Network ----------  //
+var REGION = "-skrgq3jc5a-du.a.run.app"
+var IMAGE_URL = "jupiter_image"
+
+var USER_URL = "https://where-run-user" + REGION + "/user"
+var RF_URL = "https://where-run-record" + REGION + "/recordRF"
+var UV_URL = "https://where-run-record" + REGION + "/recordUV"
+
+var RELEASE_URL_i = "https://where-run-ios" + REGION + "/"
+var TEST_URL_i = "https://where-run-ios-t" + REGION + "/"
+
+var RELEASE_URL_A = "https://where-run-aos" + REGION + "/"
+var TEST_URL_A = "https://where-run-aos-t" + REGION + "/"
+
+var BASE_URL = RELEASE_URL_i
+var CLD_URL = BASE_URL + "CLD"
+var CLE_URL = BASE_URL + "CLE"
+var FLT_URL = BASE_URL + "FLT"
+var CLC_URL = BASE_URL + "CLC"
+var OSA_URL = BASE_URL + "OSA"
+var OSR_URL = BASE_URL + "OSR"
+// ---------- Network ----------  //
+
 let R2D: Double = 180 / Double.pi
 let D2R: Double = Double.pi / 180
 
@@ -42,3 +65,42 @@ let MODE_PDR = "pdr"
 let MODE_DR = "dr"
 let MODE_AUTO = "auto"
 let MODE_AUTO_NORMAL_STEP_COUNT_SET = 9
+
+
+public func setRegion(regionName: String) {
+    switch(regionName) {
+    case "Korea":
+        REGION = "-skrgq3jc5a-du.a.run.app"
+        IMAGE_URL = "jupiter_image"
+    case "Canada":
+        REGION = "-mewcfgikga-pd.a.run.app"
+        IMAGE_URL = "jupiter_image_can"
+    default:
+        REGION = "-skrgq3jc5a-du.a.run.app"
+        IMAGE_URL = "jupiter_image"
+    }
+    USER_URL = "https://where-run-user" + REGION + "/user"
+    
+    RF_URL = "https://where-run-record" + REGION + "/recordRF"
+    UV_URL = "https://where-run-record" + REGION + "/recordUV"
+
+    RELEASE_URL_i = "https://where-run-ios" + REGION + "/"
+    TEST_URL_i = "https://where-run-ios-t" + REGION + "/"
+
+    RELEASE_URL_A = "https://where-run-aos" + REGION + "/"
+    TEST_URL_A = "https://where-run-aos-t" + REGION + "/"
+
+    BASE_URL = RELEASE_URL_i
+    CLD_URL = BASE_URL + "CLD"
+    CLE_URL = BASE_URL + "CLE"
+    FLT_URL = BASE_URL + "FLT"
+    CLC_URL = BASE_URL + "CLC"
+    OSA_URL = BASE_URL + "OSA"
+    OSR_URL = BASE_URL + "OSR"
+    
+//    print("(Jupiter) Region : \(regionName)")
+//    print("(Jupiter) USER_URL Changed : \(USER_URL)")
+//    print("(Jupiter) RF_URL Changed : \(RF_URL)")
+//    print("(Jupiter) UV_URL Changed : \(UV_URL)")
+//    print("(Jupiter) BASE_URL Changed : \(BASE_URL)")
+}

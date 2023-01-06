@@ -72,6 +72,7 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
     
     var serviceManager = ServiceManager()
     var serviceName = "FLT"
+    var region: String = ""
     var uuid: String = ""
     var sectorID: Int = 0
     
@@ -544,7 +545,7 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
     }
     
     private func loadLevel(building: String, level: String, flag: Bool, completion: @escaping (UIImage?, Error?) -> Void) {
-        let urlString: String = "https://storage.googleapis.com/jupiter_image/map/\(self.sectorID)/\(building)_\(level).png"
+        let urlString: String = "https://storage.googleapis.com/\(IMAGE_URL)/map/\(self.sectorID)/\(building)_\(level).png"
         if let urlLevel = URL(string: urlString) {
             let cacheKey = NSString(string: urlString)
             
@@ -608,7 +609,7 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
         
         DispatchQueue.main.async  {
             // 빌딩 -> 층 이미지 보이기
-            if let urlLevel = URL(string: "https://storage.googleapis.com/jupiter_image/map/\(self.sectorID)/\(building)_\(level).png") {
+            if let urlLevel = URL(string: "https://storage.googleapis.com/\(IMAGE_URL)/map/\(self.sectorID)/\(building)_\(level).png") {
                 let data = try? Data(contentsOf: urlLevel)
 //                let data = try await URLSession.shared.data(from: urlLevel)
                 
@@ -1294,6 +1295,7 @@ extension ServiceViewController: CustomSwitchButtonDelegate {
             self.hideDropDown(flag: true)
             
             serviceManager = ServiceManager()
+            serviceManager.changeRegion(regionName: self.region)
             serviceManager.addObserver(self)
             serviceManager.startService(id: uuid, sector_id: cardData!.sector_id, service: serviceName, mode: cardData!.mode)
 //            serviceManager.startService(id: uuid, sector_id: cardData!.sector_id, service: serviceName, mode: "auto")

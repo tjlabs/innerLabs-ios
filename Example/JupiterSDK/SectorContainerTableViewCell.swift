@@ -131,7 +131,7 @@ class SectorContainerTableViewCell: UITableViewCell {
         noImageLabel.text = "해당 \(level) 이미지가 없습니다"
         
         // 빌딩 -> 층 이미지 보이기
-        if let urlLevel = URL(string: "https://storage.googleapis.com/jupiter_image/map/\(sectorID)/\(building)_\(level).png") {
+        if let urlLevel = URL(string: "https://storage.googleapis.com/\(IMAGE_URL)/map/\(sectorID)/\(building)_\(level).png") {
             let data = try? Data(contentsOf: urlLevel)
             if (data != nil) {
                 // 빌딩 -> 층 이미지가 있는 경우

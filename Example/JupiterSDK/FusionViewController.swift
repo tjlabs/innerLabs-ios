@@ -15,6 +15,7 @@ class FusionViewController: UIViewController, Observer {
     
     func update(result: FineLocationTrackingResult) {
         DispatchQueue.main.async {
+//            print("Result : \(result)")
             let building = result.building_name
             let level = result.level_name
             
@@ -69,6 +70,7 @@ class FusionViewController: UIViewController, Observer {
     
     var serviceManager = ServiceManager()
     var serviceName = "FLT"
+    var region: String = ""
     var uuid: String = ""
     var sectorID: Int = 0
     
@@ -469,7 +471,7 @@ class FusionViewController: UIViewController, Observer {
     }
     
     private func loadLevel(building: String, level: String, flag: Bool, completion: @escaping (UIImage?, Error?) -> Void) {
-        let urlString: String = "https://storage.googleapis.com/jupiter_image/map/\(self.sectorID)/\(building)_\(level).png"
+        let urlString: String = "https://storage.googleapis.com/\(IMAGE_URL)/map/\(self.sectorID)/\(building)_\(level).png"
         if let urlLevel = URL(string: urlString) {
             let cacheKey = NSString(string: urlString)
             
@@ -680,14 +682,14 @@ class FusionViewController: UIViewController, Observer {
         let yMin = yAxisValue.min()!
         let yMax = yAxisValue.max()!
         
-//        print("\(currentBuilding) \(currentLevel) MinMax : \(xMin) , \(xMax), \(yMin), \(yMax)")
-        print("\(currentBuilding) \(currentLevel) Limits : \(limits[0]) , \(limits[1]), \(limits[2]), \(limits[3])")
+        print("\(currentBuilding) \(currentLevel) MinMax : \(xMin) , \(xMax), \(yMin), \(yMax)")
+//        print("\(currentBuilding) \(currentLevel) Limits : \(limits[0]) , \(limits[1]), \(limits[2]), \(limits[3])")
         
         if ( limits[0] == 0 && limits[1] == 0 && limits[2] == 0 && limits[3] == 0 ) {
-            scatterChart.xAxis.axisMinimum = xMin - 7
-            scatterChart.xAxis.axisMaximum = xMax + 3.5
-            scatterChart.leftAxis.axisMinimum = yMin - 22.5
-            scatterChart.leftAxis.axisMaximum = yMax + 23
+            scatterChart.xAxis.axisMinimum = xMin - 4.5
+            scatterChart.xAxis.axisMaximum = xMax + 4.5
+            scatterChart.leftAxis.axisMinimum = yMin - 7
+            scatterChart.leftAxis.axisMaximum = yMax + 7
         } else {
             scatterChart.xAxis.axisMinimum = limits[0]
             scatterChart.xAxis.axisMaximum = limits[1]
@@ -1098,6 +1100,7 @@ extension FusionViewController: CustomSwitchButtonDelegate {
             self.hideDropDown(flag: true)
             
             serviceManager = ServiceManager()
+            serviceManager.changeRegion(regionName: self.region)
             serviceManager.addObserver(self)
             serviceManager.startService(id: uuid, sector_id: cardData!.sector_id, service: serviceName, mode: cardData!.mode)
             

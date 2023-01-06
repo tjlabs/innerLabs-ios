@@ -19,7 +19,8 @@ public class ServiceManager: Observation {
                         result.y = correctResult.xyh[1]
                         result.absolute_heading = correctResult.xyh[2]
                     } else if (isActiveKf) {
-                        result = self.lastResult
+                        print("\(getLocalTimeString()) + Map Matching Fail")
+//                        result = self.lastResult
                     }
                 }
                 
@@ -80,6 +81,7 @@ public class ServiceManager: Observation {
     var serverType: Int = 0
     // 0 : Android  //  1 : iOS
     var osType: Int = 1
+    var region: String = "Korea"
     
     let G: Double = 9.81
     
@@ -172,7 +174,6 @@ public class ServiceManager: Observation {
     
     
     // ----- Network ----- //
-    let USER_URL = "https://where-run-user-skrgq3jc5a-du.a.run.app/user"
     var inputReceivedForce: [ReceivedForce] = [ReceivedForce(user_id: "", mobile_time: 0, ble: [:], pressure: 0)]
     var inputUserVelocity: [UserVelocity] = [UserVelocity(user_id: "", mobile_time: 0, index: 0, length: 0, heading: 0, looking: true)]
     var isStartOSA: Bool = false
@@ -338,6 +339,10 @@ public class ServiceManager: Observation {
             onStartFlag = true
         }
     }
+    
+    public func changeRegion(regionName: String) {
+        setRegion(regionName: regionName)
+    }
 
     public func startService(id: String, sector_id: Int, service: String, mode: String) {
         self.user_id = id
@@ -405,6 +410,7 @@ public class ServiceManager: Observation {
                 if (statusCode == 200) {
                     let list = jsonToCardList(json: returnedString)
                     let myCard = list.sectors
+                    print(myCard)
 
                     for card in 0..<myCard.count {
                         let cardInfo: CardInfo = myCard[card]
@@ -444,7 +450,7 @@ public class ServiceManager: Observation {
                                     let levelName = levelList![j]
                                     let key: String = "\(buildingName)_\(levelName)"
 
-                                    let url = "https://storage.googleapis.com/jupiter_image/pp/\(self.sector_id)/\(key).csv"
+                                    let url = "https://storage.googleapis.com/\(IMAGE_URL)/pp/\(self.sector_id)/\(key).csv"
                                     let urlComponents = URLComponents(string: url)
                                     let requestURL = URLRequest(url: (urlComponents?.url)!)
                                     let dataTask = URLSession.shared.dataTask(with: requestURL, completionHandler: { (data, response, error) in
@@ -1236,16 +1242,16 @@ public class ServiceManager: Observation {
 
                                                         // Measurement Update 하기전에 현재 Time Update 위치를 고려
                                                         var resultForMu = result
-                                                        self.serverResult[0] = result.x
-                                                        self.serverResult[1] = result.y
-                                                        self.serverResult[2] = result.absolute_heading
+//                                                        self.serverResult[0] = result.x
+//                                                        self.serverResult[1] = result.y
+//                                                        self.serverResult[2] = result.absolute_heading
                                                         
                                                         resultForMu.absolute_heading = compensateHeading(heading: resultForMu.absolute_heading, mode: self.runMode)
                                                         // isMu : True
                                                         var resultCorrected = self.correct(building: resultForMu.building_name, level: resultForMu.level_name, x: resultForMu.x, y: resultForMu.y, heading: resultForMu.absolute_heading, tuXY: [self.pastTuResult.x, self.pastTuResult.y], isMu: false, mode: self.runMode, isPast: false, HEADING_RANGE: self.HEADING_RANGE)
-//                                                        self.serverResult[0] = resultCorrected.xyh[0]
-//                                                        self.serverResult[1] = resultCorrected.xyh[1]
-//                                                        self.serverResult[2] = resultCorrected.xyh[2]
+                                                        self.serverResult[0] = resultCorrected.xyh[0]
+                                                        self.serverResult[1] = resultCorrected.xyh[1]
+                                                        self.serverResult[2] = resultCorrected.xyh[2]
                                                         
                                                         if (self.currentTuResult.mobile_time != 0 && self.pastTuResult.mobile_time != 0) {
                                                             let dx = self.currentTuResult.x - self.pastTuResult.x
@@ -1603,7 +1609,6 @@ public class ServiceManager: Observation {
         var xyh: [Double] = [x, y, heading]
         let levelCopy: String = self.removeLevelDirectionString(levelName: level)
         let key: String = "\(building)_\(levelCopy)"
-        
         if (isPast) {
             isSuccess = true
             return (isSuccess, xyh)
