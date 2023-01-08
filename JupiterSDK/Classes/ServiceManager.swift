@@ -19,8 +19,7 @@ public class ServiceManager: Observation {
                         result.y = correctResult.xyh[1]
                         result.absolute_heading = correctResult.xyh[2]
                     } else if (isActiveKf) {
-                        print("\(getLocalTimeString()) + Map Matching Fail")
-//                        result = self.lastResult
+                        result = self.lastResult
                     }
                 }
                 

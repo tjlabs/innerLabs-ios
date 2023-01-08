@@ -566,11 +566,6 @@ class FusionViewController: UIViewController, Observer {
         scatterChart.leftAxis.axisMinimum = limits[2]
         scatterChart.leftAxis.axisMaximum = limits[3]
         
-//        scatterChart.xAxis.axisMinimum = -33
-//        scatterChart.xAxis.axisMaximum = 314.2
-//        scatterChart.leftAxis.axisMinimum = -207
-//        scatterChart.leftAxis.axisMaximum = 297
-        
         scatterChart.xAxis.drawGridLinesEnabled = chartFlag
         scatterChart.leftAxis.drawGridLinesEnabled = chartFlag
         scatterChart.rightAxis.drawGridLinesEnabled = chartFlag
@@ -682,7 +677,7 @@ class FusionViewController: UIViewController, Observer {
         let yMin = yAxisValue.min()!
         let yMax = yAxisValue.max()!
         
-        print("\(currentBuilding) \(currentLevel) MinMax : \(xMin) , \(xMax), \(yMin), \(yMax)")
+//        print("\(currentBuilding) \(currentLevel) MinMax : \(xMin) , \(xMax), \(yMin), \(yMax)")
 //        print("\(currentBuilding) \(currentLevel) Limits : \(limits[0]) , \(limits[1]), \(limits[2]), \(limits[3])")
         
         if ( limits[0] == 0 && limits[1] == 0 && limits[2] == 0 && limits[3] == 0 ) {
@@ -695,6 +690,11 @@ class FusionViewController: UIViewController, Observer {
             scatterChart.xAxis.axisMaximum = limits[1]
             scatterChart.leftAxis.axisMinimum = limits[2]
             scatterChart.leftAxis.axisMaximum = limits[3]
+            
+//            scatterChart.xAxis.axisMinimum = 11.2
+//            scatterChart.xAxis.axisMaximum = 24.8
+//            scatterChart.leftAxis.axisMinimum = 11
+//            scatterChart.leftAxis.axisMaximum = 31
         }
         
         // Configure Chart
@@ -989,7 +989,7 @@ class FusionViewController: UIViewController, Observer {
             }
         }
         self.spotContentsView.alpha = 0.0
-        self.mainImage.image = UIImage(named: "KIST_Total")
+        self.mainImage.image = UIImage(named: "TJLABS_Total")
     }
     
     func showSpotContents(data: Spot) {
