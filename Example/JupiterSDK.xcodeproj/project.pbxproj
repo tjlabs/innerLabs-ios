@@ -38,6 +38,7 @@
 		B369287E28C5BCAC005FD4A9 /* LUPIUM_B1.csv in Resources */ = {isa = PBXBuildFile; fileRef = B369287D28C5BCAC005FD4A9 /* LUPIUM_B1.csv */; };
 		B36928AE28C5D290005FD4A9 /* L8_B1.csv in Resources */ = {isa = PBXBuildFile; fileRef = B36928AD28C5D290005FD4A9 /* L8_B1.csv */; };
 		B36B964E289A024900951457 /* L1_2F.csv in Resources */ = {isa = PBXBuildFile; fileRef = B36B964D289A024900951457 /* L1_2F.csv */; };
+		B37BFEC3297139EF005BED74 /* morguard_6F.csv in Resources */ = {isa = PBXBuildFile; fileRef = B37BFEC2297139EF005BED74 /* morguard_6F.csv */; };
 		B3844E8E28099EE3007A5215 /* CardCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3844E8C28099EE3007A5215 /* CardCollectionViewCell.swift */; };
 		B3844E8F28099EE3007A5215 /* CardCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B3844E8D28099EE3007A5215 /* CardCollectionViewCell.xib */; };
 		B3858622295AC84500827E66 /* COEX_B2.csv in Resources */ = {isa = PBXBuildFile; fileRef = B3858621295AC84500827E66 /* COEX_B2.csv */; };
@@ -157,6 +158,7 @@
 		B369287D28C5BCAC005FD4A9 /* LUPIUM_B1.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LUPIUM_B1.csv; sourceTree = "<group>"; };
 		B36928AD28C5D290005FD4A9 /* L8_B1.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = L8_B1.csv; sourceTree = "<group>"; };
 		B36B964D289A024900951457 /* L1_2F.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = L1_2F.csv; sourceTree = "<group>"; };
+		B37BFEC2297139EF005BED74 /* morguard_6F.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = morguard_6F.csv; sourceTree = "<group>"; };
 		B3844E8C28099EE3007A5215 /* CardCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardCollectionViewCell.swift; sourceTree = "<group>"; };
 		B3844E8D28099EE3007A5215 /* CardCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CardCollectionViewCell.xib; sourceTree = "<group>"; };
 		B3858621295AC84500827E66 /* COEX_B2.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = COEX_B2.csv; sourceTree = "<group>"; };
@@ -313,6 +315,7 @@
 				B3E094ED28AE270400D3BC59 /* S3_7F.csv */,
 				B3E094EB28ADCD3100D3BC59 /* S3_7F_Road.csv */,
 				B3FF6A8F28E5585000CFA824 /* COEX_B1.csv */,
+				B37BFEC2297139EF005BED74 /* morguard_6F.csv */,
 				B3B9F4E4286C2EA300FEE914 /* Gallery_4F_Road.csv */,
 				B3FD74EA2869A38800CD4D74 /* Gallery_4F.csv */,
 				B3858621295AC84500827E66 /* COEX_B2.csv */,
@@ -625,6 +628,7 @@
 				B3FD74EC2869A38800CD4D74 /* Gallery_4F.csv in Resources */,
 				B38807F3283390280029B174 /* L1_3F.csv in Resources */,
 				B3E094EC28ADCD3100D3BC59 /* S3_7F_Road.csv in Resources */,
+				B37BFEC3297139EF005BED74 /* morguard_6F.csv in Resources */,
 				B36B964E289A024900951457 /* L1_2F.csv in Resources */,
 				B3844E8F28099EE3007A5215 /* CardCollectionViewCell.xib in Resources */,
 				B3037A92281C06D50058D025 /* OverlayCustomView.xib in Resources */,
@@ -958,13 +962,13 @@
 			baseConfigurationReference = 6C664AF60D59718EECD6DBBC /* Pods-JupiterSDK_Example.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CURRENT_PROJECT_VERSION = 6;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_TEAM = G75UAV755N;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				INFOPLIST_FILE = JupiterSDK/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 1.8.6;
+				MARKETING_VERSION = 1.8.7;
 				MODULE_NAME = ExampleApp;
 				PRODUCT_BUNDLE_IDENTIFIER = com.tjlabscorp.ios.innerLabs;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -978,14 +982,14 @@
 			baseConfigurationReference = 8B538B887A8FED7CB659550A /* Pods-JupiterSDK_Example.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CURRENT_PROJECT_VERSION = 6;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_TEAM = G75UAV755N;
 				EXCLUDED_ARCHS = "";
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				INFOPLIST_FILE = JupiterSDK/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 1.8.6;
+				MARKETING_VERSION = 1.8.7;
 				MODULE_NAME = ExampleApp;
 				PRODUCT_BUNDLE_IDENTIFIER = com.tjlabscorp.ios.innerLabs;
 				PRODUCT_NAME = "$(TARGET_NAME)";

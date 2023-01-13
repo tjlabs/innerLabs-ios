@@ -15,7 +15,6 @@ class FusionViewController: UIViewController, Observer {
     
     func update(result: FineLocationTrackingResult) {
         DispatchQueue.main.async {
-//            print("Result : \(result)")
             let building = result.building_name
             let level = result.level_name
             
@@ -508,7 +507,7 @@ class FusionViewController: UIViewController, Observer {
                     self.imageLevel.isHidden = false
                     self.noImageLabel.isHidden = true
                     
-                    self.imageLevel.image = UIImage(named: "L3_Map")
+//                    self.imageLevel.image = UIImage(named: "L3_Map")
                     self.imageLevel.image = data
                 } else {
                     // 빌딩 -> 층 이미지가 없는 경우
@@ -681,10 +680,10 @@ class FusionViewController: UIViewController, Observer {
 //        print("\(currentBuilding) \(currentLevel) Limits : \(limits[0]) , \(limits[1]), \(limits[2]), \(limits[3])")
         
         if ( limits[0] == 0 && limits[1] == 0 && limits[2] == 0 && limits[3] == 0 ) {
-            scatterChart.xAxis.axisMinimum = xMin - 4.5
-            scatterChart.xAxis.axisMaximum = xMax + 4.5
-            scatterChart.leftAxis.axisMinimum = yMin - 7
-            scatterChart.leftAxis.axisMaximum = yMax + 7
+            scatterChart.xAxis.axisMinimum = xMin - 9.8
+            scatterChart.xAxis.axisMaximum = xMax + 9.8
+            scatterChart.leftAxis.axisMinimum = yMin - 5.28
+            scatterChart.leftAxis.axisMaximum = yMax + 4.05
         } else {
             scatterChart.xAxis.axisMinimum = limits[0]
             scatterChart.xAxis.axisMaximum = limits[1]
