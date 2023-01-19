@@ -1962,7 +1962,7 @@
                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <nil key="highlightedColor"/>
                                     </label>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="j92-DU-7qk">
+                                    <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="j92-DU-7qk">
                                         <rect key="frame" x="320" y="61.666666666666657" width="50" height="22"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="50" id="OJd-8c-ybB"/>
@@ -1996,7 +1996,7 @@
                                 <constraints>
                                     <constraint firstAttribute="height" constant="40" id="Idq-ad-zQl"/>
                                 </constraints>
-                                <fontDescription key="fontDescription" name="ChalkboardSE-Bold" family="Chalkboard SE" pointSize="20"/>
+                                <fontDescription key="fontDescription" name="NotoSansKR-Bold" family="Noto Sans KR" pointSize="20"/>
                                 <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                                 <state key="normal" title="Start">
                                     <color key="titleColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -2087,8 +2087,8 @@
                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="MJv-L5-2Zv">
                                                 <rect key="frame" x="0.0" y="0.0" width="370" height="81.666666666666671"/>
                                                 <subviews>
-                                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="badge.plus.radiowaves.right" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="74b-gA-Bqm">
-                                                        <rect key="frame" x="5" y="6" width="71.666666666666671" height="69.666666666666671"/>
+                                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="wardIcon" translatesAutoresizingMaskIntoConstraints="NO" id="74b-gA-Bqm">
+                                                        <rect key="frame" x="5" y="5" width="71.666666666666671" height="71.666666666666671"/>
                                                         <constraints>
                                                             <constraint firstAttribute="width" secondItem="74b-gA-Bqm" secondAttribute="height" multiplier="1:1" id="r3H-g2-FRF"/>
                                                         </constraints>
@@ -2187,8 +2187,8 @@
                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="IdW-aw-3lM">
                                                 <rect key="frame" x="0.0" y="91.666666666666657" width="370" height="81.666666666666657"/>
                                                 <subviews>
-                                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="badge.plus.radiowaves.right" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="1TE-F9-jHw">
-                                                        <rect key="frame" x="5" y="6" width="71.666666666666671" height="69.666666666666671"/>
+                                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="wardIcon" translatesAutoresizingMaskIntoConstraints="NO" id="1TE-F9-jHw">
+                                                        <rect key="frame" x="5" y="5" width="71.666666666666671" height="71.666666666666671"/>
                                                     </imageView>
                                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillEqually" alignment="center" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="ENr-ko-i6P">
                                                         <rect key="frame" x="86.666666666666686" y="5" width="220" height="71.666666666666671"/>
@@ -2285,8 +2285,8 @@
                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Qn7-rq-uqz">
                                                 <rect key="frame" x="0.0" y="183.33333333333331" width="370" height="81.666666666666686"/>
                                                 <subviews>
-                                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="badge.plus.radiowaves.right" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="26a-3v-PS3">
-                                                        <rect key="frame" x="5" y="6" width="71.666666666666671" height="69.666666666666671"/>
+                                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="wardIcon" translatesAutoresizingMaskIntoConstraints="NO" id="26a-3v-PS3">
+                                                        <rect key="frame" x="5" y="5" width="71.666666666666671" height="71.666666666666671"/>
                                                         <constraints>
                                                             <constraint firstAttribute="width" secondItem="26a-3v-PS3" secondAttribute="height" multiplier="1:1" id="4Zz-KU-4Qw"/>
                                                         </constraints>
@@ -2651,7 +2651,6 @@
         <image name="addCard" width="77.333335876464844" height="22"/>
         <image name="backButton" width="29" height="29"/>
         <image name="backButtonWhite" width="13.333333015441895" height="25"/>
-        <image name="badge.plus.radiowaves.right" catalog="system" width="128" height="102"/>
         <image name="checkedBox" width="24.666666030883789" height="25.333333969116211"/>
         <image name="closeInfoButton" width="42" height="15.666666984558105"/>
         <image name="confirmButton" width="31.333333969116211" height="25"/>
@@ -2672,6 +2671,7 @@
         <image name="tipsTown" width="203.33332824707031" height="151.66667175292969"/>
         <image name="toCard" width="78" height="22"/>
         <image name="unCheckedBox" width="24.666666030883789" height="25.333333969116211"/>
+        <image name="wardIcon" width="116.66666412353516" height="116.66666412353516"/>
         <image name="yellowCardTop" width="390" height="95"/>
         <namedColor name="blue1">
             <color red="0.16099999845027924" green="0.38400000333786011" blue="0.9649999737739563" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>

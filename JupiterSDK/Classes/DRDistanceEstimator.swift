@@ -15,8 +15,10 @@ public class DRDistanceEstimator: NSObject {
     public var finalUnitResult = UnitDistance()
     public var output: [Float] = [0,0]
     
+    public var accQueue = LinkedList<SensorAxisValue>()
     public var magQueue = LinkedList<SensorAxisValue>()
     public var navGyroZQueue = [Double]()
+    public var accNormQueue = [Double]()
     public var magNormQueue = [Double]()
     public var magNormSmoothingQueue = [Double]()
     public var magNormVarQueue = [Double]()
@@ -73,9 +75,17 @@ public class DRDistanceEstimator: NSObject {
         
         let accAttitude = Attitude(Roll: accRoll, Pitch: accPitch, Yaw: 0)
         let gyroNavZ = abs(CF.transBody2Nav(att: accAttitude, data: gyro)[2])
+        
+        let accNorm = CF.l2Normalize(originalVector: sensorData.acc)
         let magNorm = CF.l2Normalize(originalVector: sensorData.mag)
         
-        // ---------------------- Add ---------------------- //
+        // ----- Acc ----- //
+        let accData: SensorAxisValue = SensorAxisValue(x: acc[0],y: acc[1], z: acc[2], norm: accNorm)
+        updateAccQueue(data: accData)
+        updateAccNormQueue(data: accNorm)
+        // --------------- //
+        
+        // ----- Gyro ----- //
         updateNavGyroZQueue(data: gyroNavZ)
         var navGyroZSmoothing: Double = 0
         if (magNormVarQueue.count == 0) {
@@ -86,7 +96,9 @@ public class DRDistanceEstimator: NSObject {
             navGyroZSmoothing = CF.exponentialMovingAverage(preEMA: preNavGyroZSmoothing, curValue: gyroNavZ, windowSize: Int(FEATURE_EXTRACTION_SIZE))
         }
         preNavGyroZSmoothing = navGyroZSmoothing
+        // --------------- //
         
+        // ----- Mag ------ //
         updateMagNormQueue(data: magNorm)
         var magNormSmooting: Double = 0
         if (featureExtractionCount == 0) {
@@ -115,7 +127,9 @@ public class DRDistanceEstimator: NSObject {
             magVarFeature = CF.exponentialMovingAverage(preEMA: preMagVarFeature, curValue: magNormVar, windowSize: Int(SAMPLE_HZ*2))
         }
         preMagVarFeature = magVarFeature
-
+        // --------------- //
+        
+        
 //        if (magVarFeature < 2) {
 //            magVarFeature = magVarFeature*1.4
 //        } else if (magVarFeature > 5) {
@@ -162,9 +176,15 @@ public class DRDistanceEstimator: NSObject {
         }
 
         featureExtractionCount += 1
-        // ---------------------- Add ---------------------- //
         
         return finalUnitResult
+    }
+    
+    public func updateAccQueue(data: SensorAxisValue) {
+        if (accQueue.count >= Int(FEATURE_EXTRACTION_SIZE)) {
+            accQueue.pop()
+        }
+        accQueue.append(data)
     }
     
     public func updateMagQueue(data: SensorAxisValue) {
@@ -181,6 +201,12 @@ public class DRDistanceEstimator: NSObject {
         navGyroZQueue.append(data)
     }
     
+    public func updateAccNormQueue(data: Double) {
+        if (accNormQueue.count >= 5) {
+            accNormQueue.remove(at: 0)
+        }
+        accNormQueue.append(data)
+    }
     
     public func updateMagNormQueue(data: Double) {
         if (magNormQueue.count >= 5) {

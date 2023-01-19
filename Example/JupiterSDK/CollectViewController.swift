@@ -67,7 +67,7 @@ class CollectViewController: UIViewController {
     var timer: Timer?
     let TIMER_INTERVAL: TimeInterval = 1/40
     
-    let data:NSMutableArray  = NSMutableArray()
+    let data: NSMutableArray  = NSMutableArray()
     
     var saveFlag: Bool = false
     var isWriting: Bool = false
@@ -86,6 +86,7 @@ class CollectViewController: UIViewController {
     @IBOutlet weak var lengthLabel: UILabel!
     
     @IBOutlet weak var scatterChart: ScatterChartView!
+    
     var x: Double = 0
     var y: Double = 0
     var heading: Double = 0
