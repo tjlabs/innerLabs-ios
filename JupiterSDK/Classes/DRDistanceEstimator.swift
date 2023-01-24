@@ -27,6 +27,7 @@ public class DRDistanceEstimator: NSObject {
     public var mlpEpochCount: Double = 0
     public var featureExtractionCount: Double = 0
     
+    public var preAccNormSmoothing: Double = 0
     public var preNavGyroZSmoothing: Double = 0
     public var preMagNormSmoothing: Double = 0
     public var preMagVarFeature: Double = 0
@@ -80,9 +81,18 @@ public class DRDistanceEstimator: NSObject {
         let magNorm = CF.l2Normalize(originalVector: sensorData.mag)
         
         // ----- Acc ----- //
-        let accData: SensorAxisValue = SensorAxisValue(x: acc[0],y: acc[1], z: acc[2], norm: accNorm)
-        updateAccQueue(data: accData)
-        updateAccNormQueue(data: accNorm)
+        var accNormSmoothing: Double = 0
+        if (accNormQueue.count == 0) {
+            accNormSmoothing = accNorm
+        } else if (featureExtractionCount < 5) {
+            accNormSmoothing = CF.exponentialMovingAverage(preEMA: preAccNormSmoothing, curValue: accNorm, windowSize: accNormQueue.count)
+        } else {
+            accNormSmoothing = CF.exponentialMovingAverage(preEMA: preAccNormSmoothing, curValue: accNorm, windowSize: 5)
+        }
+        preAccNormSmoothing = accNormSmoothing
+        updateAccNormQueue(data: accNormSmoothing)
+        
+        let accNormVar = PDF.calVariance(buffer: accNormQueue, bufferMean: accNormQueue.average)
         // --------------- //
         
         // ----- Gyro ----- //
@@ -129,14 +139,16 @@ public class DRDistanceEstimator: NSObject {
         preMagVarFeature = magVarFeature
         // --------------- //
         
-        
-//        if (magVarFeature < 2) {
-//            magVarFeature = magVarFeature*1.4
-//        } else if (magVarFeature > 5) {
-//            magVarFeature = magVarFeature*0.8
-//        }
         var velocity = log10(magVarFeature+1)/log10(1.1)
-//        print("Raw Velocity = \(velocity) km/h // MagFeature = \(magVarFeature)")
+//        if (velocity < 6) {
+//            print("Raw Velocity < 6 km/h")
+//            if (accNormVar > 0.001) {
+//                print("Acc Norm > 0.1 : Go State")
+//                velocity = 9
+//            } else {
+//                print("Acc Norm < 0.1 : Really Slow")
+//            }
+//        }
         updateVelocityQueue(data: velocity)
 
         var velocitySmoothing: Double = 0
@@ -154,10 +166,10 @@ public class DRDistanceEstimator: NSObject {
         }
         
         var velocityInput = velocitySmoothing
-        if velocityInput < 4 {
+        if velocityInput < VELOCITY_MIN {
             velocityInput = 0
-        } else if velocityInput > 18 {
-            velocityInput = 18
+        } else if velocityInput > VELOCITY_MAX {
+            velocityInput = VELOCITY_MAX
         }
         let velocityMps = (velocityInput/3.6)*turnScale
 
@@ -202,7 +214,7 @@ public class DRDistanceEstimator: NSObject {
     }
     
     public func updateAccNormQueue(data: Double) {
-        if (accNormQueue.count >= 5) {
+        if (accNormQueue.count >= Int(SAMPLE_HZ)) {
             accNormQueue.remove(at: 0)
         }
         accNormQueue.append(data)
