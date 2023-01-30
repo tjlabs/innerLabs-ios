@@ -44,7 +44,6 @@ public class ServiceManager: Observation {
                 updatedResult.building_name = result.building_name
                 updatedResult.level_name = removeLevelDirectionString(levelName: result.level_name)
                 updatedResult.scc = result.scc
-                updatedResult.scr = result.scr
                 updatedResult.x = result.x
                 updatedResult.y = result.y
                 updatedResult.absolute_heading = result.absolute_heading
@@ -75,6 +74,12 @@ public class ServiceManager: Observation {
             }
         }
     }
+    
+//    func trackingErrors(errors: Int) {
+//        for observer in observers {
+//            observer.reportErrors(errors: errors)
+//        }
+//    }
     
     // 0 : Release  //  1 : Test
     var serverType: Int = 0
@@ -206,6 +211,20 @@ public class ServiceManager: Observation {
     var isPhase2: Bool = false
     
     var serviceStartTime: Int = 0
+    
+    var rssiBiasCand: [Int] = [0, 3, 6, 9, 12]
+//    var rssiBiasArray: [Int] = [0, 3, 6]
+    var rssiBiasArray: [Int] = [9, 6, 12]
+    var rssiBias: Int = 0
+    let SCC_THRESHOLD: Double = 0.75
+    let SCC_MAX: Double = 0.8
+    var sccGoodCount: Int = 0
+    var sccGoodBiasArray = [Int]()
+    var isConverge: Bool = false
+    var biasRequestTime: Int = 0
+    var isBiasRequested: Bool = false
+    let MINIMUN_INDEX_FOR_BIAS: Int = 30
+    let GOOD_BIAS_ARRAY_SIZE: Int = 15
     // --------------------------------- //
     
     
@@ -315,9 +334,30 @@ public class ServiceManager: Observation {
         print("OS : \(osVersion)")
     }
     
-    public func initService() {
-        initialzeSensors()
-        startBLE()
+    public func initService() -> (Bool, String) {
+        let localTime = getLocalTimeString()
+        let log: String = localTime + " , (Jupiter) Success : Service Initalization"
+        
+        var isSuccess: Bool = true
+        var message: String = log
+        
+        // Init Sensors
+        let initSensors = initialzeSensors()
+        if (!initSensors.0) {
+            isSuccess = initSensors.0
+            message = initSensors.1
+            
+            return (isSuccess, message)
+        }
+        
+        // Init Bluetooth
+        let initBle = startBLE()
+        if (!initBle.0) {
+            isSuccess = initBle.0
+            message = initBle.1
+            
+            return (isSuccess, message)
+        }
         
         isFirstStart = true
         onStartFlag = false
@@ -332,18 +372,30 @@ public class ServiceManager: Observation {
                 self.runMode = "pdr"
             } else if (mode == "dr") {
                 self.runMode = "dr"
+            } else {
+                isSuccess = false
+                message = localTime + " , (Jupiter) Error : Invalid Service Mode"
+                return (isSuccess, message)
             }
             setModeParam(mode: self.runMode, phase: self.phase)
-            
-            onStartFlag = true
         }
+        onStartFlag = true
+        
+        return (isSuccess, message)
     }
     
     public func changeRegion(regionName: String) {
         setRegion(regionName: regionName)
+        settingURL(server: self.serverType, os: self.osType)
     }
 
-    public func startService(id: String, sector_id: Int, service: String, mode: String) {
+    public func startService(id: String, sector_id: Int, service: String, mode: String) -> (Bool, String) {
+        let localTime = getLocalTimeString()
+        let log: String = localTime + " , (Jupiter) Success : Service Initalization"
+        
+        var isSuccess: Bool = true
+        var message: String = log
+        
         self.user_id = id
         self.sector_id = sector_id
         self.service = service
@@ -375,31 +427,49 @@ public class ServiceManager: Observation {
             numInput = 3
             interval = 1/2
         default:
-            let localTime: String = getLocalTimeString()
-            let log: String = localTime + " , (Jupiter) Error : Fail to initialize the service\n"
-            print(log)
+            let log: String = localTime + " , (Jupiter) Error : Invalid Service Name"
+            message = log
+            
+            return (isSuccess, message)
         }
         
         self.SPATIAL_INPUT_NUM = numInput
         self.RF_INTERVAL = interval
         
-        self.initService()
+        if (onStartFlag) {
+            isSuccess = false
+            message = localTime + " , (Jupiter) Error : Please stop another service"
+            
+            return (isSuccess, message)
+        } else {
+            let initService = self.initService()
+            if (!initService.0) {
+                isSuccess = initService.0
+                message = initService.1
+                
+                return (isSuccess, message)
+            }
+        }
         
         if (self.user_id.isEmpty || self.user_id.contains(" ")) {
-            let localTime: String = getLocalTimeString()
-            let log: String = localTime + " , (Jupiter) Error : User ID cannot be empty or contain space\n"
-            print(log)
+            isSuccess = false
+            
+            let log: String = localTime + " , (Jupiter) Error : User ID cannot be empty or contain space"
+            message = log
+            
+            return (isSuccess, message)
         } else {
             // Login Success
             let userInfo = UserInfo(user_id: self.user_id, device_model: deviceModel, os_version: osVersion)
             postUser(url: USER_URL, input: userInfo, completion: { [self] statusCode, returnedString in
                 if (statusCode == 200) {
-                    print("(Jupiter) Succes : User Login")
+                    let log: String = localTime + " , (Jupiter) Success : User Login"
+                    print(log)
+                    
                     settingURL(server: self.serverType, os: self.osType)
                     startTimer()
                 } else {
-                    let localTime: String = getLocalTimeString()
-                    let log: String = localTime + " , (Jupiter) Error : Load OS Type Error\n"
+                    let log: String = localTime + " , (Jupiter) Error : User Login"
                     print(log)
                 }
             })
@@ -409,7 +479,6 @@ public class ServiceManager: Observation {
                 if (statusCode == 200) {
                     let list = jsonToCardList(json: returnedString)
                     let myCard = list.sectors
-                    print(myCard)
 
                     for card in 0..<myCard.count {
                         let cardInfo: CardInfo = myCard[card]
@@ -470,9 +539,11 @@ public class ServiceManager: Observation {
                     }
                 }
             })
-            print("(Jupiter) Start Service")
+            self.serviceStartTime = getCurrentTimeInMilliseconds()
+            loadRssiBias(sector_id: self.sector_id)
+            
+            return (isSuccess, message)
         }
-        self.serviceStartTime = getCurrentTimeInMilliseconds()
     }
     
     func settingURL(server: Int, os: Int) {
@@ -481,20 +552,16 @@ public class ServiceManager: Observation {
         
         if (server == 0 && os == 0) {
             BASE_URL = RELEASE_URL_A
-            print("(Jupiter) Release-A")
         } else if (server == 0 && os == 1) {
             BASE_URL = RELEASE_URL_i
-            print("(Jupiter) Release-i")
         } else if (server == 1 && os == 0) {
             BASE_URL = TEST_URL_A
-            print("(Jupiter) Test-A")
         } else if (server == 1 && os == 1) {
             BASE_URL = TEST_URL_i
-            print("(Jupiter) Test-i")
         } else {
             BASE_URL = RELEASE_URL_i
-            print("(Jupiter) Release-i")
         }
+        setBaseURL(url: BASE_URL)
     }
     
     public func stopService() {
@@ -504,6 +571,7 @@ public class ServiceManager: Observation {
         if (self.service == "FLT") {
             unitDRInfo = UnitDRInfo()
             onStartFlag = false
+            saveRssiBias(bias: self.rssiBias, isConverge: self.isConverge, sector_id: self.sector_id)
         }
         
         print("(Jupiter) Stop Service")
@@ -585,7 +653,10 @@ public class ServiceManager: Observation {
         }
     }
     
-    internal func initialzeSensors() {
+    internal func initialzeSensors() -> (Bool, String) {
+        var isSuccess: Bool = false
+        var message: String = ""
+        
         var sensorActive: Int = 0
         if motionManager.isAccelerometerAvailable {
             sensorActive += 1
@@ -609,7 +680,7 @@ public class ServiceManager: Observation {
             }
         } else {
             let localTime: String = getLocalTimeString()
-            let log: String = localTime + " , (Jupiter) Error : Fail to initialize accelerometer\n"
+            let log: String = localTime + " , (Jupiter) Error : Fail to initialize accelerometer"
             print(log)
         }
         
@@ -629,7 +700,7 @@ public class ServiceManager: Observation {
             }
         } else {
             let localTime: String = getLocalTimeString()
-            let log: String = localTime + " , (Jupiter) Error : Fail to initialize gyroscope\n"
+            let log: String = localTime + " , (Jupiter) Error : Fail to initialize gyroscope"
             print(log)
         }
         
@@ -672,7 +743,7 @@ public class ServiceManager: Observation {
             }
         } else {
             let localTime: String = getLocalTimeString()
-            let log: String = localTime + " , (Jupiter) Error : Fail to initialize pressure sensor\n"
+            let log: String = localTime + " , (Jupiter) Error : Fail to initialize pressure sensor"
             print(log)
         }
         
@@ -750,20 +821,36 @@ public class ServiceManager: Observation {
             }
         } else {
             let localTime: String = getLocalTimeString()
-            let log: String = localTime + " , (Jupiter) Error : Fail to initialize motion sensor\n"
+            let log: String = localTime + " , (Jupiter) Error : Fail to initialize motion sensor"
             print(log)
         }
         
+        let localTime: String = getLocalTimeString()
         if (sensorActive >= 5) {
-            let localTime: String = getLocalTimeString()
-            let log: String = localTime + " , (Jupiter) Success : initialize sensors\n"
-            print(log)
+            let log: String = localTime + " , (Jupiter) Success : Sensor Initialization"
+            
+            isSuccess = true
+            message = log
+        } else {
+            let log: String = localTime + " , (Jupiter) Error : Sensor is not available"
+            
+            isSuccess = false
+            message = log
         }
+        
+        return (isSuccess, message)
     }
     
-    func startBLE() {
+    func startBLE() -> (Bool, String) {
+        let localTime: String = getLocalTimeString()
+        
+        let isSuccess: Bool = true
+        let message: String = localTime + " , (Jupiter) Success : Bluetooth Initialization"
+        
         bleManager.setValidTime(mode: self.runMode)
         bleManager.startScan(option: .Foreground)
+        
+        return (isSuccess, message)
     }
 
     func stopBLE() {
@@ -822,6 +909,9 @@ public class ServiceManager: Observation {
     }
     
     func enterSleepMode() {
+        let localTime: String = getLocalTimeString()
+        print(localTime + " , (Jupiter) Enter Sleep Mode")
+        
         if (self.updateTimer != nil) {
             self.updateTimer!.invalidate()
             self.updateTimer = nil
@@ -855,10 +945,12 @@ public class ServiceManager: Observation {
         let currentTime = getCurrentTimeInMilliseconds() - (Int(bleManager.BLE_VALID_TIME)/2)
         bleManager.trimBleData()
         
-        var bleDictionary = bleManager.bleAvg
-        if (deviceModel == "iPhone 12 Mini" || deviceModel == "iPhone X") {
-            bleDictionary.keys.forEach { bleDictionary[$0] = bleDictionary[$0]! + 7 }
-        }
+        
+        let bleDictionary = bleManager.bleAvg
+//        bleDictionary.keys.forEach { bleDictionary[$0] = bleDictionary[$0]! + 7 }
+//        if (deviceModel == "iPhone 12 Mini" || deviceModel == "iPhone X") {
+//            bleDictionary.keys.forEach { bleDictionary[$0] = bleDictionary[$0]! + 7 }
+//        }
         
         let bleCheckTime = Double(currentTime)
         let discoveredTime = bleManager.bleDiscoveredTime
@@ -876,12 +968,12 @@ public class ServiceManager: Observation {
                 let data = ReceivedForce(user_id: self.user_id, mobile_time: currentTime, ble: bleDictionary, pressure: self.pressure)
                 
                 inputReceivedForce.append(data)
-                if ((inputReceivedForce.count-1) == SPATIAL_INPUT_NUM) {
+                if ((inputReceivedForce.count-1) >= SPATIAL_INPUT_NUM) {
                     inputReceivedForce.remove(at: 0)
                     NetworkManager.shared.putReceivedForce(url: RF_URL, input: inputReceivedForce, completion: { [self] statusCode, returnedStrig in
                         if (statusCode != 200) {
                             let localTime = getLocalTimeString()
-                            let log: String = localTime + " , (Jupiter) Error : Fail to send BLE\n"
+                            let log: String = localTime + " , (Jupiter) Error : Fail to send bluetooth data"
                             print(log)
                         }
                     })
@@ -897,7 +989,6 @@ public class ServiceManager: Observation {
             
             self.timeSleepRF += RF_INTERVAL
             if (self.timeSleepRF >= SLEEP_THRESHOLD) {
-                print("(Jupiter) Enter Sleep Mode")
                 self.isActiveService = false
                 self.timeSleepRF = 0
                 
@@ -984,7 +1075,7 @@ public class ServiceManager: Observation {
                             floorUpdateRequestTimeStack = 0
                             
                             self.pastTuResult = self.currentTuResult
-                            indexSend = Int(returnedString) ?? 0
+                            self.indexSend = Int(returnedString) ?? 0
                             isAnswered = true
                         } else {
                             let localTime: String = getLocalTimeString()
@@ -1006,7 +1097,6 @@ public class ServiceManager: Observation {
             
             self.timeSleepUV += UV_INTERVAL
             if (self.timeSleepUV >= SLEEP_THRESHOLD) {
-                print("(Jupiter) Enter Sleep Mode")
                 self.isActiveService = false
                 self.timeSleepUV = 0
                 
@@ -1017,6 +1107,7 @@ public class ServiceManager: Observation {
     
     @objc func requestTimerUpdate() {
         let currentTime = getCurrentTimeInMilliseconds()
+        let localTime = getLocalTimeString()
         
         // UV Control
         setModeParam(mode: self.runMode, phase: self.phase)
@@ -1032,14 +1123,13 @@ public class ServiceManager: Observation {
                     if (self.timeRequest >= 1.9) {
                         self.timeRequest = 0
                         
-                        let input = FineLocationTracking(user_id: self.user_id, mobile_time: currentTime, sector_id: self.sector_id, building_name: self.currentBuilding, level_name: self.currentLevel, spot_id: self.currentSpot, phase: self.phase)
+//                        let input = FineLocationTracking(user_id: self.user_id, mobile_time: currentTime, sector_id: self.sector_id, building_name: self.currentBuilding, level_name: self.currentLevel, spot_id: self.currentSpot, phase: self.phase)
+                        let input = FineLocationTracking(user_id: self.user_id, mobile_time: currentTime, sector_id: self.sector_id, building_name: self.currentBuilding, level_name: self.currentLevel, spot_id: self.currentSpot, phase: self.phase, rss_compensation_list: [self.rssiBias])
                         NetworkManager.shared.postFLT(url: FLT_URL, input: input, completion: { [self] statusCode, returnedString in
                             if (statusCode == 200) {
                                 let result = jsonToResult(json: returnedString)
                                 if (result.x != 0 && result.y != 0) {
                                     if (result.mobile_time > self.preOutputMobileTime) {
-//                                        print("(Jupiter) Phase Input (2) : \(input)")
-//                                        print("(Jupiter) Phase Result (2) : \(result)")
                                         displayOutput.indexRx = result.index
                                         
                                         self.phase = result.phase
@@ -1061,6 +1151,9 @@ public class ServiceManager: Observation {
                                         self.isPhase2 = false
                                     }
                                 }
+                            } else {
+                                let log: String = localTime + " , (Jupiter) Error : Fail to request indoor position in Phase 2"
+                                print(log)
                             }
                         })
                     }
@@ -1084,14 +1177,59 @@ public class ServiceManager: Observation {
                         self.currentSpot = 0
                         self.timeRequest = 0
                         
-                        let input = FineLocationTracking(user_id: self.user_id, mobile_time: currentTime, sector_id: self.sector_id, building_name: self.currentBuilding, level_name: self.currentLevel, spot_id: self.currentSpot, phase: self.phase)
+                        var requestBiasArray: [Int] = [self.rssiBias]
+                        if (self.indexSend >= MINIMUN_INDEX_FOR_BIAS) {
+                            if (self.isConverge) {
+                                requestBiasArray = [self.rssiBias]
+                            } else if (self.isBiasRequested) {
+                                requestBiasArray = [self.rssiBias]
+                            } else {
+                                requestBiasArray = self.rssiBiasArray
+                                self.biasRequestTime = currentTime
+                                self.isBiasRequested = true
+                            }
+                        }
+                        
+//                        let input = FineLocationTracking(user_id: self.user_id, mobile_time: currentTime, sector_id: self.sector_id, building_name: self.currentBuilding, level_name: self.currentLevel, spot_id: self.currentSpot, phase: self.phase)
+                        let input = FineLocationTracking(user_id: self.user_id, mobile_time: currentTime, sector_id: self.sector_id, building_name: self.currentBuilding, level_name: self.currentLevel, spot_id: self.currentSpot, phase: self.phase, rss_compensation_list: requestBiasArray)
+//                        print("(Jupiter) Request Bias : \(requestBiasArray) // Phase = \(self.phase)")
                         NetworkManager.shared.postFLT(url: FLT_URL, input: input, completion: { [self] statusCode, returnedString in
                             if (statusCode == 200) {
                                 let result = jsonToResult(json: returnedString)
                                 if (result.x != 0 && result.y != 0) {
+                                    if (!self.isConverge && self.isBiasRequested) {
+                                        let biasCheckTime = abs(result.mobile_time - self.biasRequestTime)
+                                        if (biasCheckTime < 100) {
+                                            let resultEstRssiBias = estimateRssiBias(sccResult: result.scc, biasResult: result.rss_compensation, biasArray: self.rssiBiasArray)
+                                            self.rssiBias = result.rss_compensation
+                                            let newBiasArray: [Int] = resultEstRssiBias.1
+                                            self.rssiBiasArray = newBiasArray
+                                            
+                                            if (resultEstRssiBias.0) {
+                                                self.sccGoodBiasArray.append(result.rss_compensation)
+//                                                print("(Estimate Bias) Append to BiasArray : \(self.sccGoodBiasArray) // scc = \(result.scc) // Phase = \(result.phase)")
+                                                
+                                                if (self.sccGoodBiasArray.count >= GOOD_BIAS_ARRAY_SIZE) {
+                                                    let biasAvg: Int = averageBiasArray(biasArray: self.sccGoodBiasArray)
+                                                    
+                                                    self.rssiBias = biasAvg
+                                                    
+                                                    self.isConverge = true
+                                                    saveRssiBias(bias: self.rssiBias, isConverge: self.isConverge, sector_id: self.sector_id)
+//                                                    print("(Estimate Bias) Converged Bias = \(self.rssiBias) // BiasArray = \(self.sccGoodBiasArray)")
+                                                }
+                                            }
+                                            self.isBiasRequested = false
+                                        } else if (biasCheckTime > 5000) {
+                                            self.isBiasRequested = false
+                                        }
+                                    }
+                                    
                                     if (result.mobile_time > self.preOutputMobileTime) {
 //                                        print("(Jupiter) Phase Input (3) : \(input)")
 //                                        print("(Jupiter) Phase Result (3) : \(result)")
+                                        
+                                        self.preOutputMobileTime = result.mobile_time
                                         displayOutput.indexRx = result.index
                                         self.phase = result.phase
                                         
@@ -1187,6 +1325,9 @@ public class ServiceManager: Observation {
                                         self.pastBuildingLevel = [result.building_name, result.level_name]
                                     }
                                 }
+                            } else {
+                                let log: String = localTime + " , (Jupiter) Error : Fail to request indoor position in Phase 3"
+                                print(log)
                             }
                         })
                     }
@@ -1197,10 +1338,52 @@ public class ServiceManager: Observation {
                         
                         self.nowTime = currentTime
                         
-                        let input = FineLocationTracking(user_id: self.user_id, mobile_time: currentTime, sector_id: self.sector_id, building_name: self.currentBuilding, level_name: self.currentLevel, spot_id: self.currentSpot, phase: self.phase)
+                        var requestBiasArray: [Int] = [self.rssiBias]
+                        if (self.indexSend >= MINIMUN_INDEX_FOR_BIAS) {
+                            if (self.isConverge) {
+                                requestBiasArray = [self.rssiBias]
+                            } else if (self.isBiasRequested) {
+                                requestBiasArray = [self.rssiBias]
+                            } else {
+                                requestBiasArray = self.rssiBiasArray
+                                self.biasRequestTime = currentTime
+                                self.isBiasRequested = true
+                            }
+                        }
+                        
+//                        print("(Jupiter) Request Bias : \(requestBiasArray) // Phase = 4")
+//                        let input = FineLocationTracking(user_id: self.user_id, mobile_time: currentTime, sector_id: self.sector_id, building_name: self.currentBuilding, level_name: self.currentLevel, spot_id: self.currentSpot, phase: self.phase)
+                        let input = FineLocationTracking(user_id: self.user_id, mobile_time: currentTime, sector_id: self.sector_id, building_name: self.currentBuilding, level_name: self.currentLevel, spot_id: self.currentSpot, phase: self.phase, rss_compensation_list: requestBiasArray)
                         NetworkManager.shared.postFLT(url: FLT_URL, input: input, completion: { [self] statusCode, returnedString in
                             if (statusCode == 200) {
                                 let result = jsonToResult(json: returnedString)
+                                
+                                if (!self.isConverge && self.isBiasRequested) {
+                                    let biasCheckTime = abs(result.mobile_time - self.biasRequestTime)
+                                    if (biasCheckTime < 100) {
+                                        let resultEstRssiBias = estimateRssiBias(sccResult: result.scc, biasResult: result.rss_compensation, biasArray: self.rssiBiasArray)
+                                        
+                                        self.rssiBias = result.rss_compensation
+                                        let newBiasArray: [Int] = resultEstRssiBias.1
+                                        self.rssiBiasArray = newBiasArray
+                                        if (resultEstRssiBias.0) {
+                                            self.sccGoodBiasArray.append(result.rss_compensation)
+//                                            print("(Estimate Bias) Append to BiasArray : \(self.sccGoodBiasArray) // scc = \(result.scc) // Phase = 4")
+                                            
+                                            if (self.sccGoodBiasArray.count >= GOOD_BIAS_ARRAY_SIZE) {
+                                                let biasAvg: Int = averageBiasArray(biasArray: self.sccGoodBiasArray)
+                                                
+                                                self.rssiBias = biasAvg
+                                                
+                                                self.isConverge = true
+                                                saveRssiBias(bias: self.rssiBias, isConverge: self.isConverge, sector_id: self.sector_id)
+//                                                print("(Estimate Bias) Converged Bias = \(self.rssiBias) // BiasArray = \(self.sccGoodBiasArray)")
+                                            }
+                                        }
+                                        self.isBiasRequested = false
+                                    }
+                                }
+                                
                                 if ((self.nowTime - result.mobile_time) <= RECENT_THRESHOLD) {
                                     if ((result.index - self.indexPast) < INDEX_THRESHOLD) {
                                         if (result.mobile_time > self.preOutputMobileTime) {
@@ -1229,7 +1412,7 @@ public class ServiceManager: Observation {
                                                     }
                                                     
                                                     // Measurment Update
-                                                    let diffIndex = abs(indexSend - result.index)
+                                                    let diffIndex = abs(self.indexSend - result.index)
                                                     if (measurementUpdateFlag && (diffIndex<1)) {
                                                         displayOutput.indexRx = result.index
                                                         
@@ -1246,6 +1429,7 @@ public class ServiceManager: Observation {
 //                                                        self.serverResult[2] = result.absolute_heading
                                                         
                                                         resultForMu.absolute_heading = compensateHeading(heading: resultForMu.absolute_heading, mode: self.runMode)
+                                                        
                                                         // isMu : True
                                                         var resultCorrected = self.correct(building: resultForMu.building_name, level: resultForMu.level_name, x: resultForMu.x, y: resultForMu.y, heading: resultForMu.absolute_heading, tuXY: [self.pastTuResult.x, self.pastTuResult.y], isMu: false, mode: self.runMode, isPast: false, HEADING_RANGE: self.HEADING_RANGE)
                                                         self.serverResult[0] = resultCorrected.xyh[0]
@@ -1303,6 +1487,9 @@ public class ServiceManager: Observation {
                                     self.indexPast = result.index
                                     self.pastBuildingLevel = [result.building_name, result.level_name]
                                 }
+                            } else {
+                                let log: String = localTime + " , (Jupiter) Error : Fail to request indoor position in Phase 4"
+                                print(log)
                             }
                         })
                     } else {
@@ -1318,7 +1505,7 @@ public class ServiceManager: Observation {
     @objc func osrTimerUpdate() {
         if (self.runMode == "dr") {
             let currentTime = getCurrentTimeInMilliseconds()
-            let input = OnSpotRecognition(user_id: self.user_id, mobile_time: currentTime)
+            let input = OnSpotRecognition(user_id: self.user_id, mobile_time: currentTime, rss_compensation: self.rssiBias)
             NetworkManager.shared.postOSR(url: OSR_URL, input: input, completion: { [self] statusCode, returnedString in
                 if (statusCode == 200) {
                     let result = decodeOSR(json: returnedString)
@@ -1492,6 +1679,199 @@ public class ServiceManager: Observation {
         }
     }
     
+    func saveRssiBias(bias: Int, isConverge: Bool, sector_id: Int) {
+        do {
+            let key: String = "JupiterBiasConverge_\(sector_id)"
+            UserDefaults.standard.set(isConverge, forKey: key)
+        } catch {
+            print("(Jupiter) Error : Fail to save Hasbias")
+        }
+        
+        do {
+            let key: String = "JupiterRssiBias_\(sector_id)"
+            UserDefaults.standard.set(bias, forKey: key)
+            print("(Jupiter) Bias is Saved")
+        } catch {
+            print("(Jupiter) Error : Fail to save RssiBias")
+        }
+    }
+    
+    func loadRssiBias(sector_id: Int) {
+        let localTime = getLocalTimeString()
+        let key: String = "JupiterBiasConverge_\(sector_id)"
+        if let biasConverge: Bool = UserDefaults.standard.object(forKey: key) as? Bool {
+            if (biasConverge) {
+                self.isConverge = true
+                print(localTime + " , (Jupiter) Bias is converged")
+            } else {
+                self.isConverge = false
+                print(localTime + " , (Jupiter) Bias is not converged")
+            }
+        } else {
+            self.isConverge = false
+            print(localTime + " , (Jupiter) Bias is not converged")
+        }
+        
+        let keyBias: String = "JupiterRssiBias_\(sector_id)"
+        if let loadedRssiBias: Int = UserDefaults.standard.object(forKey: keyBias) as? Int {
+            self.rssiBias = loadedRssiBias
+//            self.rssiBiasArray = [loadedRssiBias, loadedRssiBias + 3, loadedRssiBias + 6]
+            
+            let biasRange: Int = 3
+            var biasArray: [Int] = [loadedRssiBias, loadedRssiBias-biasRange, loadedRssiBias+biasRange]
+            if (biasArray[1] < -12) {
+                biasArray[1] = -12
+                biasArray[0] = -12 + biasRange
+                biasArray[2] = -12 + (2*biasRange)
+            } else if (biasArray[2] > 12) {
+                biasArray[2] = 12
+                biasArray[0] = 12 - biasRange
+                biasArray[1] = 12 - (2*biasRange)
+            }
+            
+            self.rssiBiasArray = biasArray
+            
+            // [0, 3, 6, 9, 12]
+//            let idx: Int = self.rssiBiasCand.firstIndex(of: loadedRssiBias) ?? 0
+//            if (idx < 2) {
+//                self.rssiBiasArray = [self.rssiBiasCand[0], self.rssiBiasCand[1], self.rssiBiasCand[2]]
+//            } else if (idx > 3) {
+//                self.rssiBiasArray = [self.rssiBiasCand[2], self.rssiBiasCand[3], self.rssiBiasCand[4]]
+//            } else {
+//                self.rssiBiasArray = [self.rssiBiasCand[idx-1], self.rssiBiasCand[idx], self.rssiBiasCand[idx+1]]
+//            }
+            
+//            print(localTime + " , (Jupiter) Complete to load Rssi Bias = \(self.rssiBias)")
+        }
+    }
+    
+    
+    func estimateRssiBias(sccResult: Double, biasResult: Int, biasArray: [Int]) -> (Bool, [Int]) {
+        var isSccHigh: Bool = false
+        var newBiasArray: [Int] = biasArray
+//        var newBiasArray = [Int]()
+        
+//        let idx: Int = self.rssiBiasCand.firstIndex(of: biasResult) ?? 0
+//
+//        if (idx < 2) {
+//            newBiasArray = [self.rssiBiasCand[0], self.rssiBiasCand[1], self.rssiBiasCand[2]]
+//        } else if (idx > 3) {
+//            newBiasArray = [self.rssiBiasCand[2], self.rssiBiasCand[3], self.rssiBiasCand[4]]
+//        } else {
+//            newBiasArray = [self.rssiBiasCand[idx-1], self.rssiBiasCand[idx], self.rssiBiasCand[idx+1]]
+//        }
+//
+//        if (sccResult > SCC_THRESHOLD) {
+//            isSccHigh = true
+//        }
+        
+//        if (sccResult < SCC_THRESHOLD) {
+//            let diffScc: Double = SCC_MAX - sccResult
+//
+//            newBiasArray.append(biasResult)
+//
+//            var biasRange: Int = Int(round(diffScc*10))
+//            if (biasRange < 1) {
+//                biasRange = 1
+//            }
+//
+//            var biasMinus: Int = biasResult - biasRange
+//            var biasPlus: Int = biasResult + biasRange
+//
+//            if (biasResult == 0) {
+//                newBiasArray.append(biasPlus)
+//            } else {
+//                if (biasMinus < 0) {
+//                    biasMinus = 0
+//                }
+//                newBiasArray.append(biasMinus)
+//                newBiasArray.append(biasPlus)
+//            }
+//        } else {
+//            isSccHigh = true
+//            newBiasArray.append(biasResult)
+//
+//            var biasMinus: Int = biasResult - 1
+//            var biasPlus: Int = biasResult + 1
+//
+//            if (biasResult == 0) {
+//                newBiasArray.append(biasPlus)
+//            } else {
+//                if (biasMinus < 0) {
+//                    biasMinus = 0
+//                }
+//                newBiasArray.append(biasMinus)
+//                newBiasArray.append(biasPlus)
+//            }
+//        }
+        
+        let biasStandard = biasResult
+        let diffScc: Double = SCC_MAX - sccResult
+
+        newBiasArray[0] = biasStandard
+
+        var biasRange: Int = Int(round(diffScc*10))
+        if (biasRange < 1) {
+            biasRange = 1
+        }
+        
+        if (sccResult < SCC_THRESHOLD) {
+            let biasMinus: Int = biasStandard - biasRange
+            let biasPlus: Int = biasStandard + biasRange
+            
+            newBiasArray[1] = biasMinus
+            newBiasArray[2] = biasPlus
+        } else {
+            isSccHigh = true
+
+            let biasMinus: Int = biasStandard - 1
+            let biasPlus: Int = biasStandard + 1
+            
+            newBiasArray[1] = biasMinus
+            newBiasArray[2] = biasPlus
+        }
+        
+        if (newBiasArray[1] < -12) {
+            newBiasArray[1] = -12
+            newBiasArray[0] = -12 + biasRange
+            newBiasArray[2] = -12 + (2*biasRange)
+        } else if (newBiasArray[2] > 12) {
+            newBiasArray[2] = 12
+            newBiasArray[0] = 12 - biasRange
+            newBiasArray[1] = 12 - (2*biasRange)
+        }
+        
+//        print("(Estimate Bias) sccResult = \(sccResult) // biasResult = \(biasResult) // isSccHigh = \(isSccHigh) // biasArray = \(newBiasArray)")
+        return (isSccHigh, newBiasArray)
+    }
+    
+    func averageBiasArray(biasArray: [Int]) -> Int {
+        var result: Int = 0
+        let array: [Double] = convertToDoubleArray(intArray: biasArray)
+        
+        let mean = array.reduce(0, +) / Double(array.count)
+        let variance = array.map { pow($0 - mean, 2) }.reduce(0, +) / Double(array.count)
+        let stdev = sqrt(variance)
+        let validValues = array.filter { abs($0 - mean) <= 1.5 * stdev }
+        
+        if (validValues.count < 7) {
+            let avgDouble: Double = biasArray.average
+            
+            result = Int(round(avgDouble))
+            return result
+        } else {
+            let sum = validValues.reduce(0, +)
+            let avgDouble: Double = Double(sum) / Double(validValues.count)
+            
+            result = Int(round(avgDouble))
+            return result
+        }
+    }
+    
+    func convertToDoubleArray(intArray: [Int]) -> [Double] {
+        return intArray.map { Double($0) }
+    }
+    
     @objc func collectTimerUpdate() {
         let currentTime = getCurrentTimeInMilliseconds()
         
@@ -1559,7 +1939,6 @@ public class ServiceManager: Observation {
         result.building_name = fromServer.building_name
         result.level_name = fromServer.level_name
         result.scc = fromServer.scc
-        result.scr = fromServer.scr
         result.x = fromServer.x
         result.y = fromServer.y
         result.absolute_heading = fromServer.absolute_heading

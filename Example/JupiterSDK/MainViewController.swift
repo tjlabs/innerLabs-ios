@@ -68,7 +68,7 @@ class MainViewController: UIViewController, UITextFieldDelegate {
     @IBAction func tapLoginButton(_ sender: UIButton) {
         self.uuid = codeTextField.text ?? ""
         
-        if (uuid == "") {
+        if (uuid == "" || uuid.contains(" ")) {
             guideLabel.isHidden = false
         } else {
             if (isSaveUuid) {

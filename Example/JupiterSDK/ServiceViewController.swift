@@ -53,6 +53,10 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
         }
     }
     
+    func reportErrors(errors: Int) {
+        print("(Jupiter) Error Code : \(errors)")
+    }
+    
     @IBOutlet var ServiceView: UIView!
     
     @IBOutlet weak var displayView: UIView!
@@ -1297,9 +1301,13 @@ extension ServiceViewController: CustomSwitchButtonDelegate {
             serviceManager = ServiceManager()
             serviceManager.changeRegion(regionName: self.region)
             serviceManager.addObserver(self)
-            serviceManager.startService(id: uuid, sector_id: cardData!.sector_id, service: serviceName, mode: cardData!.mode)
+            let initService = serviceManager.startService(id: uuid, sector_id: cardData!.sector_id, service: serviceName, mode: cardData!.mode)
+            if (initService.0) {
+                self.startTimer()
+            }
+            print(initService.1)
 //            serviceManager.startService(id: uuid, sector_id: cardData!.sector_id, service: serviceName, mode: "auto")
-            self.startTimer()
+            
         } else {
             self.hideDropDown(flag: false)
             

@@ -36,6 +36,10 @@ class FusionViewController: UIViewController, Observer {
         }
     }
     
+//    func reportErrors(errors: Int) {
+//        print("(Jupiter )Error Code : \(errors)")
+//    }
+    
     @IBOutlet var FusionView: UIView!
     @IBOutlet weak var cardTopImage: UIImageView!
     @IBOutlet weak var sectorNameLabel: UILabel!

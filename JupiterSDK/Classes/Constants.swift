@@ -8,10 +8,10 @@ var USER_URL = "https://where-run-user" + REGION + "/user"
 var RF_URL = "https://where-run-record" + REGION + "/recordRF"
 var UV_URL = "https://where-run-record" + REGION + "/recordUV"
 
-var RELEASE_URL_i = "https://where-run-ios" + REGION + "/"
+var RELEASE_URL_i = "https://where-run-ios-2" + REGION + "/"
 var TEST_URL_i = "https://where-run-ios-t" + REGION + "/"
 
-var RELEASE_URL_A = "https://where-run-aos" + REGION + "/"
+var RELEASE_URL_A = "https://where-run-aos-2" + REGION + "/"
 var TEST_URL_A = "https://where-run-aos-t" + REGION + "/"
 
 var BASE_URL = RELEASE_URL_i
@@ -80,18 +80,46 @@ public func setRegion(regionName: String) {
         REGION = "-skrgq3jc5a-du.a.run.app"
         IMAGE_URL = "jupiter_image"
     }
+//    USER_URL = "https://where-run-user" + REGION + "/user"
+//
+//    RF_URL = "https://where-run-record" + REGION + "/recordRF"
+//    UV_URL = "https://where-run-record" + REGION + "/recordUV"
+//
+//    RELEASE_URL_i = "https://where-run-ios" + REGION + "/"
+//    TEST_URL_i = "https://where-run-ios-t" + REGION + "/"
+//
+//    RELEASE_URL_A = "https://where-run-aos" + REGION + "/"
+//    TEST_URL_A = "https://where-run-aos-t" + REGION + "/"
+//
+//    BASE_URL = RELEASE_URL_i
+//    CLD_URL = BASE_URL + "CLD"
+//    CLE_URL = BASE_URL + "CLE"
+//    FLT_URL = BASE_URL + "FLT"
+//    CLC_URL = BASE_URL + "CLC"
+//    OSA_URL = BASE_URL + "OSA"
+//    OSR_URL = BASE_URL + "OSR"
+    
+//    print("(Jupiter) Region : \(regionName)")
+//    print("(Jupiter) USER_URL Changed : \(USER_URL)")
+//    print("(Jupiter) RF_URL Changed : \(RF_URL)")
+//    print("(Jupiter) UV_URL Changed : \(UV_URL)")
+//    print("(Jupiter) BASE_URL Changed : \(BASE_URL)")
+}
+
+public func setBaseURL(url: String) {
+    BASE_URL = url
+    
     USER_URL = "https://where-run-user" + REGION + "/user"
     
     RF_URL = "https://where-run-record" + REGION + "/recordRF"
     UV_URL = "https://where-run-record" + REGION + "/recordUV"
 
-    RELEASE_URL_i = "https://where-run-ios" + REGION + "/"
+    RELEASE_URL_i = "https://where-run-ios-2" + REGION + "/"
     TEST_URL_i = "https://where-run-ios-t" + REGION + "/"
 
-    RELEASE_URL_A = "https://where-run-aos" + REGION + "/"
+    RELEASE_URL_A = "https://where-run-aos-2" + REGION + "/"
     TEST_URL_A = "https://where-run-aos-t" + REGION + "/"
 
-    BASE_URL = RELEASE_URL_i
     CLD_URL = BASE_URL + "CLD"
     CLE_URL = BASE_URL + "CLE"
     FLT_URL = BASE_URL + "FLT"
@@ -99,9 +127,16 @@ public func setRegion(regionName: String) {
     OSA_URL = BASE_URL + "OSA"
     OSR_URL = BASE_URL + "OSR"
     
-//    print("(Jupiter) Region : \(regionName)")
 //    print("(Jupiter) USER_URL Changed : \(USER_URL)")
 //    print("(Jupiter) RF_URL Changed : \(RF_URL)")
 //    print("(Jupiter) UV_URL Changed : \(UV_URL)")
 //    print("(Jupiter) BASE_URL Changed : \(BASE_URL)")
+//    print("(Jupiter) FLT_URL Changed : \(FLT_URL)")
+    
+//    CLD_URL = url + "CLD"
+//    CLE_URL = url + "CLE"
+//    FLT_URL = url + "FLT"
+//    CLC_URL = url + "CLC"
+//    OSA_URL = url + "OSA"
+//    OSR_URL = url + "OSR"
 }

@@ -378,7 +378,7 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
         }
     }
     
-    func startScan(option: BLEScanOption) -> Void {
+    func startScan(option: BLEScanOption) {
         if centralManager.isScanning {
             stopScan()
         }
@@ -386,12 +386,12 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
         if bluetoothReady {
             self.centralManager.scanForPeripherals(withServices: [oneServiceUUID], options: [CBCentralManagerScanOptionAllowDuplicatesKey : NSNumber(value: true as Bool)])
             self.isScanning = true
-            
+
             NotificationCenter.default.post(name: .startScan, object: nil)
         }
     }
     
-    func stopScan() -> Void {
+    func stopScan() {
         self.centralManager.stopScan()
         
         self.isScanning = false
