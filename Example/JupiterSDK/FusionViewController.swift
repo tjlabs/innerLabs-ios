@@ -679,22 +679,29 @@ class FusionViewController: UIViewController, Observer {
         print("\(currentBuilding) \(currentLevel) MinMax : \(xMin) , \(xMax), \(yMin), \(yMax)")
         print("\(currentBuilding) \(currentLevel) Limits : \(limits[0]) , \(limits[1]), \(limits[2]), \(limits[3])")
         
-        if ( limits[0] == 0 && limits[1] == 0 && limits[2] == 0 && limits[3] == 0 ) {
-            scatterChart.xAxis.axisMinimum = xMin - 9.8
-            scatterChart.xAxis.axisMaximum = xMax + 9.8
-            scatterChart.leftAxis.axisMinimum = yMin - 5.28
-            scatterChart.leftAxis.axisMaximum = yMax + 4.05
-        } else {
-            scatterChart.xAxis.axisMinimum = limits[0]
-            scatterChart.xAxis.axisMaximum = limits[1]
-            scatterChart.leftAxis.axisMinimum = limits[2]
-            scatterChart.leftAxis.axisMaximum = limits[3]
-            
-//            scatterChart.xAxis.axisMinimum = 11.2
-//            scatterChart.xAxis.axisMaximum = 24.8
-//            scatterChart.leftAxis.axisMinimum = 11
-//            scatterChart.leftAxis.axisMaximum = 31
+        if (currentLevel == "6F") {
+            scatterChart.xAxis.axisMinimum = xMin - 10.5
+            scatterChart.xAxis.axisMaximum = xMax + 10.5
+            scatterChart.leftAxis.axisMinimum = yMin - 3.0
+            scatterChart.leftAxis.axisMaximum = yMax + 4.2
+        } else if (currentLevel == "7F") {
+            scatterChart.xAxis.axisMinimum = xMin - 7
+            scatterChart.xAxis.axisMaximum = xMax + 25.5
+            scatterChart.leftAxis.axisMinimum = yMin - 30
+            scatterChart.leftAxis.axisMaximum = yMax + 3.5
         }
+        
+//        if ( limits[0] == 0 && limits[1] == 0 && limits[2] == 0 && limits[3] == 0 ) {
+//            scatterChart.xAxis.axisMinimum = xMin - 9.8
+//            scatterChart.xAxis.axisMaximum = xMax + 9.8
+//            scatterChart.leftAxis.axisMinimum = yMin - 5.28
+//            scatterChart.leftAxis.axisMaximum = yMax + 4.05
+//        } else {
+//            scatterChart.xAxis.axisMinimum = limits[0]
+//            scatterChart.xAxis.axisMaximum = limits[1]
+//            scatterChart.leftAxis.axisMinimum = limits[2]
+//            scatterChart.leftAxis.axisMaximum = limits[3]
+//        }
         
         // Configure Chart
         scatterChart.xAxis.drawGridLinesEnabled = chartFlag

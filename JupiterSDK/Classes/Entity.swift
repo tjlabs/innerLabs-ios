@@ -103,6 +103,7 @@ public struct ServiceResult {
     public var heading: Double = 0
     public var scc: Double = 0
     public var phase: String = ""
+    public var bias: Int = 0
     
     public var level: String = ""
     public var building: String = ""

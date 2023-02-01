@@ -65,6 +65,8 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
     @IBOutlet weak var imageLevel: UIImageView!
     @IBOutlet weak var scatterChart: ScatterChartView!
     @IBOutlet weak var noImageLabel: UILabel!
+    @IBOutlet weak var biasLabel: UILabel!
+    
     
     @IBOutlet weak var containerTableView: ExpyTableView!
     @IBOutlet weak var containerViewHeight: NSLayoutConstraint!
@@ -515,6 +517,7 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
         
         // Info
         if (serviceManager.displayOutput.isIndexChanged) {
+            biasLabel.text = String(serviceManager.displayOutput.bias)
             resultToDisplay.level = serviceManager.displayOutput.level
             
             displayLevelInfo(infoLevel: levels[currentBuilding] ?? [])

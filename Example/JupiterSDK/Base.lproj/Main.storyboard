@@ -488,7 +488,19 @@
                                     </imageView>
                                     <view hidden="YES" userInteractionEnabled="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="kDG-1Q-o2X" customClass="ScatterChartView" customModule="Charts">
                                         <rect key="frame" x="0.0" y="10" width="390" height="335"/>
+                                        <subviews>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="0" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hfU-bF-xuT">
+                                                <rect key="frame" x="20" y="10" width="13" height="24"/>
+                                                <fontDescription key="fontDescription" type="system" weight="medium" pointSize="20"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                        </subviews>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <constraints>
+                                            <constraint firstItem="hfU-bF-xuT" firstAttribute="leading" secondItem="kDG-1Q-o2X" secondAttribute="leading" constant="20" id="JrE-Iz-6Hl"/>
+                                            <constraint firstItem="hfU-bF-xuT" firstAttribute="top" secondItem="kDG-1Q-o2X" secondAttribute="top" constant="10" id="oZo-2C-oNs"/>
+                                        </constraints>
                                     </view>
                                     <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="해당 층 이미지가 없습니다" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="nV5-dP-qBZ">
                                         <rect key="frame" x="102.00000000000001" y="165.33333333333331" width="186.33333333333337" height="24.666666666666657"/>
@@ -622,6 +634,7 @@
                     </view>
                     <connections>
                         <outlet property="ServiceView" destination="sN5-rv-fuL" id="Z3l-L4-WE9"/>
+                        <outlet property="biasLabel" destination="hfU-bF-xuT" id="31T-MN-AIA"/>
                         <outlet property="cardTopImage" destination="dMH-0F-2Pr" id="iaV-zb-qgA"/>
                         <outlet property="containerTableView" destination="I1t-vY-NpJ" id="sCR-wM-4cc"/>
                         <outlet property="containerViewHeight" destination="oIA-KX-3vG" id="qNu-5y-egH"/>

@@ -326,12 +326,19 @@ public class ServiceManager: Observation {
     var flagPast: Bool = false
     
     public override init() {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd-HH-mm-ss"
+        dateFormatter.locale = Locale(identifier:"ko_KR")
+        let nowDate = Date()
+        let localTime = dateFormatter.string(from: nowDate)
+        
         deviceModel = UIDevice.modelName
         os = UIDevice.current.systemVersion
         let arr = os.components(separatedBy: ".")
-        print("Device Model : \(deviceModel)")
         osVersion = Int(arr[0]) ?? 0
-        print("OS : \(osVersion)")
+        
+        print(localTime + " , (Jupiter) Device Model : \(deviceModel)")
+        print(localTime + " , (Jupiter) OS : \(osVersion)")
     }
     
     public func initService() -> (Bool, String) {
@@ -485,7 +492,6 @@ public class ServiceManager: Observation {
                         let id: Int = cardInfo.sector_id
 
                         if (id == self.sector_id) {
-                            self.isMapMatching = true
                             let buildings_n_levels: [[String]] = cardInfo.building_level
 
                             var infoBuilding = [String]()
@@ -528,6 +534,10 @@ public class ServiceManager: Observation {
                                             if let responseData = data {
                                                 if let utf8Text = String(data: responseData, encoding: .utf8) {
                                                     ( self.Road[key], self.RoadHeading[key] ) = self.parseRoad(data: utf8Text)
+                                                    self.isMapMatching = true
+                                                    
+                                                    let log: String = localTime + " , (Jupiter) Success : Load \(buildingName) \(levelName) Path-Point"
+                                                    print(log)
                                                 }
                                             }
                                         }
@@ -565,6 +575,8 @@ public class ServiceManager: Observation {
     }
     
     public func stopService() {
+        let localTime: String = getLocalTimeString()
+        
         stopTimer()
         stopBLE()
         
@@ -574,8 +586,11 @@ public class ServiceManager: Observation {
             saveRssiBias(bias: self.rssiBias, isConverge: self.isConverge, sector_id: self.sector_id)
         }
         
-        print("(Jupiter) Stop Service")
+        isMapMatching = false
         isFirstStart = true
+        
+        let log: String = localTime + " , (Jupiter) Stop Service"
+        print(log)
     }
     
     public func initCollect() {
@@ -1208,18 +1223,21 @@ public class ServiceManager: Observation {
                                             if (resultEstRssiBias.0) {
                                                 self.sccGoodBiasArray.append(result.rss_compensation)
 //                                                print("(Estimate Bias) Append to BiasArray : \(self.sccGoodBiasArray) // scc = \(result.scc) // Phase = \(result.phase)")
-                                                
+
                                                 if (self.sccGoodBiasArray.count >= GOOD_BIAS_ARRAY_SIZE) {
                                                     let biasAvg: Int = averageBiasArray(biasArray: self.sccGoodBiasArray)
-                                                    
+
                                                     self.rssiBias = biasAvg
-                                                    
+
                                                     self.isConverge = true
                                                     saveRssiBias(bias: self.rssiBias, isConverge: self.isConverge, sector_id: self.sector_id)
 //                                                    print("(Estimate Bias) Converged Bias = \(self.rssiBias) // BiasArray = \(self.sccGoodBiasArray)")
                                                 }
                                             }
+                                            
                                             self.isBiasRequested = false
+//                                            print("(Bias) bias = \(self.rssiBias) // Phase < 4")
+                                            displayOutput.bias = self.rssiBias
                                         } else if (biasCheckTime > 5000) {
                                             self.isBiasRequested = false
                                         }
@@ -1369,18 +1387,20 @@ public class ServiceManager: Observation {
                                         if (resultEstRssiBias.0) {
                                             self.sccGoodBiasArray.append(result.rss_compensation)
 //                                            print("(Estimate Bias) Append to BiasArray : \(self.sccGoodBiasArray) // scc = \(result.scc) // Phase = 4")
-                                            
+
                                             if (self.sccGoodBiasArray.count >= GOOD_BIAS_ARRAY_SIZE) {
                                                 let biasAvg: Int = averageBiasArray(biasArray: self.sccGoodBiasArray)
-                                                
+
                                                 self.rssiBias = biasAvg
-                                                
+
                                                 self.isConverge = true
                                                 saveRssiBias(bias: self.rssiBias, isConverge: self.isConverge, sector_id: self.sector_id)
 //                                                print("(Estimate Bias) Converged Bias = \(self.rssiBias) // BiasArray = \(self.sccGoodBiasArray)")
                                             }
                                         }
                                         self.isBiasRequested = false
+//                                        print("(Bias) bias = \(self.rssiBias) // Phase = 4")
+                                        displayOutput.bias = self.rssiBias
                                     }
                                 }
                                 
