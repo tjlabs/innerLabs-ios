@@ -19,7 +19,6 @@
 		B3037A92281C06D50058D025 /* OverlayCustomView.xib in Resources */ = {isa = PBXBuildFile; fileRef = B3037A91281C06D50058D025 /* OverlayCustomView.xib */; };
 		B3037A94281C07060058D025 /* OverlayCustomView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3037A93281C07060058D025 /* OverlayCustomView.swift */; };
 		B30D4F89298A0BF000BFC124 /* morguard_6F.csv in Resources */ = {isa = PBXBuildFile; fileRef = B30D4F87298A0BF000BFC124 /* morguard_6F.csv */; };
-		B30D4F8A298A0BF000BFC124 /* morguard_7F.csv in Resources */ = {isa = PBXBuildFile; fileRef = B30D4F88298A0BF000BFC124 /* morguard_7F.csv */; };
 		B30EED7C28936CB5009A3EDA /* TipsTownViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B30EED7B28936CB5009A3EDA /* TipsTownViewController.swift */; };
 		B30EED872893B64C009A3EDA /* CollectViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B30EED862893B64C009A3EDA /* CollectViewController.swift */; };
 		B31EC7D92876C03A00799659 /* ServiceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B31EC7D82876C03A00799659 /* ServiceViewController.swift */; };
@@ -98,6 +97,7 @@
 		B3F370DA281BA1DD003A427F /* RobotView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3F370D9281BA1DD003A427F /* RobotView.swift */; };
 		B3F5C77E282A5408009BEDB9 /* Network.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3F5C77D282A5408009BEDB9 /* Network.swift */; };
 		B3F5C780282A5519009BEDB9 /* Protocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3F5C77F282A5519009BEDB9 /* Protocol.swift */; };
+		B3F9F31E298B701500BA5833 /* morguard_7F.csv in Resources */ = {isa = PBXBuildFile; fileRef = B3F9F31D298B701500BA5833 /* morguard_7F.csv */; };
 		B3FD74E9286989A600CD4D74 /* CustomSwitchButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3FD74E8286989A600CD4D74 /* CustomSwitchButton.swift */; };
 		B3FD74EC2869A38800CD4D74 /* Gallery_4F.csv in Resources */ = {isa = PBXBuildFile; fileRef = B3FD74EA2869A38800CD4D74 /* Gallery_4F.csv */; };
 		B3FD74ED2869A38800CD4D74 /* Gallery_3F.csv in Resources */ = {isa = PBXBuildFile; fileRef = B3FD74EB2869A38800CD4D74 /* Gallery_3F.csv */; };
@@ -139,7 +139,6 @@
 		B3037A91281C06D50058D025 /* OverlayCustomView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = OverlayCustomView.xib; sourceTree = "<group>"; };
 		B3037A93281C07060058D025 /* OverlayCustomView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverlayCustomView.swift; sourceTree = "<group>"; };
 		B30D4F87298A0BF000BFC124 /* morguard_6F.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = morguard_6F.csv; sourceTree = "<group>"; };
-		B30D4F88298A0BF000BFC124 /* morguard_7F.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = morguard_7F.csv; sourceTree = "<group>"; };
 		B30EED7B28936CB5009A3EDA /* TipsTownViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TipsTownViewController.swift; sourceTree = "<group>"; };
 		B30EED862893B64C009A3EDA /* CollectViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectViewController.swift; sourceTree = "<group>"; };
 		B31EC7D82876C03A00799659 /* ServiceViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceViewController.swift; sourceTree = "<group>"; };
@@ -219,6 +218,7 @@
 		B3F370D9281BA1DD003A427F /* RobotView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RobotView.swift; sourceTree = "<group>"; };
 		B3F5C77D282A5408009BEDB9 /* Network.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Network.swift; sourceTree = "<group>"; };
 		B3F5C77F282A5519009BEDB9 /* Protocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Protocol.swift; sourceTree = "<group>"; };
+		B3F9F31D298B701500BA5833 /* morguard_7F.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = morguard_7F.csv; sourceTree = "<group>"; };
 		B3FD74E8286989A600CD4D74 /* CustomSwitchButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomSwitchButton.swift; sourceTree = "<group>"; };
 		B3FD74EA2869A38800CD4D74 /* Gallery_4F.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Gallery_4F.csv; sourceTree = "<group>"; };
 		B3FD74EB2869A38800CD4D74 /* Gallery_3F.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Gallery_3F.csv; sourceTree = "<group>"; };
@@ -325,7 +325,7 @@
 				B3021F0E29541D7C000CE9AD /* Museum_1F.csv */,
 				B364B35428BCD8C5001A8950 /* LUPIUM_3F.csv */,
 				B30D4F87298A0BF000BFC124 /* morguard_6F.csv */,
-				B30D4F88298A0BF000BFC124 /* morguard_7F.csv */,
+				B3F9F31D298B701500BA5833 /* morguard_7F.csv */,
 				B364B35228BCD8C5001A8950 /* LUPIUM_5F.csv */,
 				B3FE481C2967965600EDAE94 /* Eureka_KIST.csv */,
 				B364B35328BCD8C5001A8950 /* LUPIUM_7F.csv */,
@@ -610,7 +610,7 @@
 				B3B4F85B28114EEB009F9E6C /* ShowCardCollectionViewCell.xib in Resources */,
 				B3B3610B28295E1D00B8E876 /* Autoway_B4.csv in Resources */,
 				B3FF2027294B922C003B06AB /* COEX_B3.csv in Resources */,
-				B30D4F8A298A0BF000BFC124 /* morguard_7F.csv in Resources */,
+				B3F9F31E298B701500BA5833 /* morguard_7F.csv in Resources */,
 				B3D19DED29079CE000A5F7D4 /* SpotTableViewCell.xib in Resources */,
 				B369287E28C5BCAC005FD4A9 /* LUPIUM_B1.csv in Resources */,
 				B3FD74ED2869A38800CD4D74 /* Gallery_3F.csv in Resources */,
