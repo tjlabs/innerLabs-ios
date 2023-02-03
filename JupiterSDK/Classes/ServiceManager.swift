@@ -13,13 +13,20 @@ public class ServiceManager: Observation {
                 // Map Matching
                 if (self.isMapMatching) {
                     let correctResult = correct(building: result.building_name, level: result.level_name, x: result.x, y: result.y, heading: result.absolute_heading, tuXY: [0,0], isMu: false, mode: self.runMode, isPast: isPast, HEADING_RANGE: self.HEADING_RANGE)
-
+                    
                     if (correctResult.isSuccess) {
                         result.x = correctResult.xyh[0]
                         result.y = correctResult.xyh[1]
                         result.absolute_heading = correctResult.xyh[2]
-                    } else if (isActiveKf) {
-                        result = self.lastResult
+                    } else {
+                        if (isActiveKf) {
+                            result = self.lastResult
+                        } else {
+                            let correctResult = correct(building: result.building_name, level: result.level_name, x: result.x, y: result.y, heading: result.absolute_heading, tuXY: [0,0], isMu: false, mode: "pdr", isPast: isPast, HEADING_RANGE: self.HEADING_RANGE)
+                            result.x = correctResult.xyh[0]
+                            result.y = correctResult.xyh[1]
+                            result.absolute_heading = correctResult.xyh[2]
+                        }
                     }
                 }
                 
@@ -74,12 +81,6 @@ public class ServiceManager: Observation {
             }
         }
     }
-    
-//    func trackingErrors(errors: Int) {
-//        for observer in observers {
-//            observer.reportErrors(errors: errors)
-//        }
-//    }
     
     // 0 : Release  //  1 : Test
     var serverType: Int = 0
