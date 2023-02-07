@@ -213,6 +213,10 @@ public class ServiceManager: Observation {
     
     var serviceStartTime: Int = 0
     
+    var isGetFirstResponse: Bool = false
+    var indexAfterResponse: Int = 0
+    var isPossibleEstBias: Bool = false
+    
     var rssiBiasCand: [Int] = [0, 3, 6, 9, 12]
 //    var rssiBiasArray: [Int] = [0, 3, 6]
     var rssiBiasArray: [Int] = [9, 6, 12]
@@ -225,7 +229,7 @@ public class ServiceManager: Observation {
     var biasRequestTime: Int = 0
     var isBiasRequested: Bool = false
     let MINIMUN_INDEX_FOR_BIAS: Int = 30
-    let GOOD_BIAS_ARRAY_SIZE: Int = 15
+    let GOOD_BIAS_ARRAY_SIZE: Int = 30
     // --------------------------------- //
     
     
@@ -311,6 +315,9 @@ public class ServiceManager: Observation {
     var muY: Double = 0
     var muHeading: Double = 0
     
+    let UVD_BUFFER_SIZE = 10
+    var uvdIndexBuffer = [Int]()
+    var tuResultBuffer = [[Double]]()
     var currentTuResult = FineLocationTrackingResult()
     var pastTuResult = FineLocationTrackingResult()
     var headingBuffer = [Double]()
@@ -551,7 +558,7 @@ public class ServiceManager: Observation {
                 }
             })
             self.serviceStartTime = getCurrentTimeInMilliseconds()
-            loadRssiBias(sector_id: self.sector_id)
+//            loadRssiBias(sector_id: self.sector_id)
             
             return (isSuccess, message)
         }
@@ -961,7 +968,6 @@ public class ServiceManager: Observation {
         let currentTime = getCurrentTimeInMilliseconds() - (Int(bleManager.BLE_VALID_TIME)/2)
         bleManager.trimBleData()
         
-        
         let bleDictionary = bleManager.bleAvg
 //        bleDictionary.keys.forEach { bleDictionary[$0] = bleDictionary[$0]! + 7 }
 //        if (deviceModel == "iPhone 12 Mini" || deviceModel == "iPhone X") {
@@ -1058,6 +1064,12 @@ public class ServiceManager: Observation {
             let curUnitDRLength = unitDRInfo.length
             
             if (self.isActiveService) {
+                if (self.isGetFirstResponse && !self.isPossibleEstBias) {
+                    self.indexAfterResponse += 1
+                    if (self.indexAfterResponse >= MINIMUN_INDEX_FOR_BIAS) {
+                        self.isPossibleEstBias = true
+                    }
+                }
                 inputUserVelocity.append(data)
                 
                 // Time Update
@@ -1069,6 +1081,14 @@ public class ServiceManager: Observation {
                         self.timeUpdateResult[0] = tuResult.x
                         self.timeUpdateResult[1] = tuResult.y
                         self.timeUpdateResult[2] = tuResult.absolute_heading
+                        
+                        self.uvdIndexBuffer.append(unitDRInfo.index)
+                        self.tuResultBuffer.append([tuResult.x, tuResult.y, tuResult.absolute_heading])
+                        
+                        if (self.uvdIndexBuffer.count > UVD_BUFFER_SIZE) {
+                            self.uvdIndexBuffer.remove(at: 0)
+                            self.tuResultBuffer.remove(at: 0)
+                        }
                         
                         self.currentTuResult = tuResult
                         if (bleManager.bluetoothReady) {
@@ -1145,6 +1165,7 @@ public class ServiceManager: Observation {
                             if (statusCode == 200) {
                                 let result = jsonToResult(json: returnedString)
                                 if (result.x != 0 && result.y != 0) {
+                                    self.isGetFirstResponse = true
                                     if (result.mobile_time > self.preOutputMobileTime) {
                                         displayOutput.indexRx = result.index
                                         
@@ -1194,7 +1215,7 @@ public class ServiceManager: Observation {
                         self.timeRequest = 0
                         
                         var requestBiasArray: [Int] = [self.rssiBias]
-                        if (self.indexSend >= MINIMUN_INDEX_FOR_BIAS) {
+                        if (self.isPossibleEstBias) {
                             if (self.isConverge) {
                                 requestBiasArray = [self.rssiBias]
                             } else if (self.isBiasRequested) {
@@ -1213,6 +1234,8 @@ public class ServiceManager: Observation {
                             if (statusCode == 200) {
                                 let result = jsonToResult(json: returnedString)
                                 if (result.x != 0 && result.y != 0) {
+                                    self.isGetFirstResponse = true
+                                    
                                     if (!self.isConverge && self.isBiasRequested) {
                                         let biasCheckTime = abs(result.mobile_time - self.biasRequestTime)
                                         if (biasCheckTime < 100) {
@@ -1230,7 +1253,7 @@ public class ServiceManager: Observation {
 
                                                     self.rssiBias = biasAvg
 
-                                                    self.isConverge = true
+//                                                    self.isConverge = true
                                                     saveRssiBias(bias: self.rssiBias, isConverge: self.isConverge, sector_id: self.sector_id)
 //                                                    print("(Estimate Bias) Converged Bias = \(self.rssiBias) // BiasArray = \(self.sccGoodBiasArray)")
                                                 }
@@ -1358,7 +1381,7 @@ public class ServiceManager: Observation {
                         self.nowTime = currentTime
                         
                         var requestBiasArray: [Int] = [self.rssiBias]
-                        if (self.indexSend >= MINIMUN_INDEX_FOR_BIAS) {
+                        if (self.isPossibleEstBias) {
                             if (self.isConverge) {
                                 requestBiasArray = [self.rssiBias]
                             } else if (self.isBiasRequested) {
@@ -1394,7 +1417,7 @@ public class ServiceManager: Observation {
 
                                                 self.rssiBias = biasAvg
 
-                                                self.isConverge = true
+//                                                self.isConverge = true
                                                 saveRssiBias(bias: self.rssiBias, isConverge: self.isConverge, sector_id: self.sector_id)
 //                                                print("(Estimate Bias) Converged Bias = \(self.rssiBias) // BiasArray = \(self.sccGoodBiasArray)")
                                             }
@@ -1434,7 +1457,7 @@ public class ServiceManager: Observation {
                                                     
                                                     // Measurment Update
                                                     let diffIndex = abs(self.indexSend - result.index)
-                                                    if (measurementUpdateFlag && (diffIndex<1)) {
+                                                    if (measurementUpdateFlag && (diffIndex<10)) {
                                                         displayOutput.indexRx = result.index
                                                         
                                                         muTime = result.mobile_time
@@ -1457,13 +1480,34 @@ public class ServiceManager: Observation {
                                                         self.serverResult[1] = resultCorrected.xyh[1]
                                                         self.serverResult[2] = resultCorrected.xyh[2]
                                                         
-                                                        if (self.currentTuResult.mobile_time != 0 && self.pastTuResult.mobile_time != 0) {
-                                                            let dx = self.currentTuResult.x - self.pastTuResult.x
-                                                            let dy = self.currentTuResult.y - self.pastTuResult.y
-                                                            self.currentTuResult.absolute_heading = compensateHeading(heading: self.currentTuResult.absolute_heading, mode: self.runMode)
-                                                            self.pastTuResult.absolute_heading = compensateHeading(heading: self.pastTuResult.absolute_heading, mode: self.runMode)
+                                                        let indexBuffer: [Int] = self.uvdIndexBuffer
+                                                        let tuBuffer: [[Double]] = self.tuResultBuffer
+                                                        
+                                                        var currentTuResult = self.currentTuResult
+                                                        var pastTuResult = self.pastTuResult
+                                                        if (currentTuResult.mobile_time != 0 && pastTuResult.mobile_time != 0) {
+//                                                            print("UVD Index Buffer = \(self.uvdIndexBuffer) , \(self.uvdIndexBuffer.count)")
+//                                                            print("TU Position Buffer = \(self.tuPositionBuffer) , \(self.tuPositionBuffer.count)")
+                                                            var dx: Double = 0
+                                                            var dy: Double = 0
+                                                            var dh: Double = 0
                                                             
-                                                            let dh = self.currentTuResult.absolute_heading - self.pastTuResult.absolute_heading
+                                                            if let idx = indexBuffer.firstIndex(of: result.index) {
+                                                                dx = currentTuResult.x - tuBuffer[idx][0]
+                                                                dy = currentTuResult.y - tuBuffer[idx][1]
+                                                                currentTuResult.absolute_heading = compensateHeading(heading: currentTuResult.absolute_heading, mode: self.runMode)
+                                                                let tuBufferHeading = compensateHeading(heading: tuBuffer[idx][2], mode: self.runMode)
+                                                                
+                                                                dh = currentTuResult.absolute_heading - tuBufferHeading
+                                                                print("Propagation : indexCurrent = \(currentTuResult.index) , indexResult = \(result.index) , dx = \(dx) , dy = \(dy) , dh = \(dh)")
+                                                            } else {
+                                                                dx = currentTuResult.x - pastTuResult.x
+                                                                dy = currentTuResult.y - pastTuResult.y
+                                                                currentTuResult.absolute_heading = compensateHeading(heading: currentTuResult.absolute_heading, mode: self.runMode)
+                                                                pastTuResult.absolute_heading = compensateHeading(heading: pastTuResult.absolute_heading, mode: self.runMode)
+                                                                
+                                                                dh = currentTuResult.absolute_heading - pastTuResult.absolute_heading
+                                                            }
                                                             
                                                             resultForMu.x = resultCorrected.xyh[0] + dx
                                                             resultForMu.y = resultCorrected.xyh[1] + dy
@@ -1736,7 +1780,6 @@ public class ServiceManager: Observation {
         let keyBias: String = "JupiterRssiBias_\(sector_id)"
         if let loadedRssiBias: Int = UserDefaults.standard.object(forKey: keyBias) as? Int {
             self.rssiBias = loadedRssiBias
-//            self.rssiBiasArray = [loadedRssiBias, loadedRssiBias + 3, loadedRssiBias + 6]
             
             let biasRange: Int = 3
             var biasArray: [Int] = [loadedRssiBias, loadedRssiBias-biasRange, loadedRssiBias+biasRange]
@@ -1770,61 +1813,6 @@ public class ServiceManager: Observation {
     func estimateRssiBias(sccResult: Double, biasResult: Int, biasArray: [Int]) -> (Bool, [Int]) {
         var isSccHigh: Bool = false
         var newBiasArray: [Int] = biasArray
-//        var newBiasArray = [Int]()
-        
-//        let idx: Int = self.rssiBiasCand.firstIndex(of: biasResult) ?? 0
-//
-//        if (idx < 2) {
-//            newBiasArray = [self.rssiBiasCand[0], self.rssiBiasCand[1], self.rssiBiasCand[2]]
-//        } else if (idx > 3) {
-//            newBiasArray = [self.rssiBiasCand[2], self.rssiBiasCand[3], self.rssiBiasCand[4]]
-//        } else {
-//            newBiasArray = [self.rssiBiasCand[idx-1], self.rssiBiasCand[idx], self.rssiBiasCand[idx+1]]
-//        }
-//
-//        if (sccResult > SCC_THRESHOLD) {
-//            isSccHigh = true
-//        }
-        
-//        if (sccResult < SCC_THRESHOLD) {
-//            let diffScc: Double = SCC_MAX - sccResult
-//
-//            newBiasArray.append(biasResult)
-//
-//            var biasRange: Int = Int(round(diffScc*10))
-//            if (biasRange < 1) {
-//                biasRange = 1
-//            }
-//
-//            var biasMinus: Int = biasResult - biasRange
-//            var biasPlus: Int = biasResult + biasRange
-//
-//            if (biasResult == 0) {
-//                newBiasArray.append(biasPlus)
-//            } else {
-//                if (biasMinus < 0) {
-//                    biasMinus = 0
-//                }
-//                newBiasArray.append(biasMinus)
-//                newBiasArray.append(biasPlus)
-//            }
-//        } else {
-//            isSccHigh = true
-//            newBiasArray.append(biasResult)
-//
-//            var biasMinus: Int = biasResult - 1
-//            var biasPlus: Int = biasResult + 1
-//
-//            if (biasResult == 0) {
-//                newBiasArray.append(biasPlus)
-//            } else {
-//                if (biasMinus < 0) {
-//                    biasMinus = 0
-//                }
-//                newBiasArray.append(biasMinus)
-//                newBiasArray.append(biasPlus)
-//            }
-//        }
         
         let biasStandard = biasResult
         let diffScc: Double = SCC_MAX - sccResult
@@ -1852,17 +1840,20 @@ public class ServiceManager: Observation {
             newBiasArray[2] = biasPlus
         }
         
-        if (newBiasArray[1] < -12) {
-            newBiasArray[1] = -12
-            newBiasArray[0] = -12 + biasRange
-            newBiasArray[2] = -12 + (2*biasRange)
-        } else if (newBiasArray[2] > 12) {
+        if (newBiasArray[1] <= -3) {
+            newBiasArray[1] = -3
+            newBiasArray[0] = -3 + biasRange
+            newBiasArray[2] = -3 + (2*biasRange)
+            if (newBiasArray[2] > 12) {
+                newBiasArray[2] = 12
+            }
+        } else if (newBiasArray[2] >= 12) {
             newBiasArray[2] = 12
             newBiasArray[0] = 12 - biasRange
             newBiasArray[1] = 12 - (2*biasRange)
         }
         
-//        print("(Estimate Bias) sccResult = \(sccResult) // biasResult = \(biasResult) // isSccHigh = \(isSccHigh) // biasArray = \(newBiasArray)")
+        print("(Estimate Bias) sccResult = \(sccResult) // biasResult = \(biasResult) // isSccHigh = \(isSccHigh) // biasArray = \(newBiasArray)")
         return (isSccHigh, newBiasArray)
     }
     
@@ -1875,7 +1866,7 @@ public class ServiceManager: Observation {
         let stdev = sqrt(variance)
         let validValues = array.filter { abs($0 - mean) <= 1.5 * stdev }
         
-        if (validValues.count < 7) {
+        if (validValues.count < 17) {
             let avgDouble: Double = biasArray.average
             
             result = Int(round(avgDouble))

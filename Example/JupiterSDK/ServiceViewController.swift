@@ -517,7 +517,6 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
         
         // Info
         if (serviceManager.displayOutput.isIndexChanged) {
-            biasLabel.text = String(serviceManager.displayOutput.bias)
             resultToDisplay.level = serviceManager.displayOutput.level
             
             displayLevelInfo(infoLevel: levels[currentBuilding] ?? [])
@@ -531,6 +530,8 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
             resultToDisplay.unitLength = serviceManager.displayOutput.length
             resultToDisplay.scc = serviceManager.displayOutput.scc
             resultToDisplay.phase = serviceManager.displayOutput.phase
+
+            self.biasLabel.text = String(serviceManager.displayOutput.bias)
             
             if (isOpen) {
                 UIView.performWithoutAnimation { self.containerTableView.reloadSections(IndexSet(0...0), with: .none) }
@@ -900,17 +901,26 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
         let chartFlag: Bool = false
         scatterChart.isHidden = false
         
-//        print("\(currentBuilding) \(currentLevel) Limits : \(limits[0]) , \(limits[1]), \(limits[2]), \(limits[3])")
-        // Configure Chart
-        scatterChart.xAxis.axisMinimum = limits[0]
-        scatterChart.xAxis.axisMaximum = limits[1]
-        scatterChart.leftAxis.axisMinimum = limits[2]
-        scatterChart.leftAxis.axisMaximum = limits[3]
+        let xMin = xAxisValue.min()!
+        let xMax = xAxisValue.max()!
+        let yMin = yAxisValue.min()!
+        let yMax = yAxisValue.max()!
         
-//        scatterChart.xAxis.axisMinimum = -33.5
-//        scatterChart.xAxis.axisMaximum = 306
-//        scatterChart.leftAxis.axisMinimum = 9.5
-//        scatterChart.leftAxis.axisMaximum = 507
+//        print("\(currentBuilding) \(currentLevel) MinMax : \(xMin) , \(xMax), \(yMin), \(yMax)")
+//        print("\(currentBuilding) \(currentLevel) Limits : \(limits[0]) , \(limits[1]), \(limits[2]), \(limits[3])")
+        
+        // Configure Chart
+        if ( limits[0] == 0 && limits[1] == 0 && limits[2] == 0 && limits[3] == 0 ) {
+            scatterChart.xAxis.axisMinimum = xMin - 5
+            scatterChart.xAxis.axisMaximum = xMax + 5
+            scatterChart.leftAxis.axisMinimum = yMin - 5
+            scatterChart.leftAxis.axisMaximum = yMax + 5
+        } else {
+            scatterChart.xAxis.axisMinimum = limits[0]
+            scatterChart.xAxis.axisMaximum = limits[1]
+            scatterChart.leftAxis.axisMinimum = limits[2]
+            scatterChart.leftAxis.axisMaximum = limits[3]
+        }
         
         scatterChart.xAxis.drawGridLinesEnabled = chartFlag
         scatterChart.leftAxis.drawGridLinesEnabled = chartFlag
@@ -1309,7 +1319,6 @@ extension ServiceViewController: CustomSwitchButtonDelegate {
                 self.startTimer()
             }
             print(initService.1)
-//            serviceManager.startService(id: uuid, sector_id: cardData!.sector_id, service: serviceName, mode: "auto")
             
         } else {
             self.hideDropDown(flag: false)
