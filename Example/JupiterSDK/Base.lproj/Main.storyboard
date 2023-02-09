@@ -412,12 +412,6 @@
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="kJ9-Zf-no4">
                                 <rect key="frame" x="0.0" y="100" width="390" height="400"/>
                                 <subviews>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="0" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hfU-bF-xuT">
-                                        <rect key="frame" x="30" y="30" width="13" height="24"/>
-                                        <fontDescription key="fontDescription" type="system" weight="medium" pointSize="20"/>
-                                        <nil key="textColor"/>
-                                        <nil key="highlightedColor"/>
-                                    </label>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="5n9-jJ-E1d" customClass="CustomSwitchButton" customModule="JupiterSDK_Example" customModuleProvider="target">
                                         <rect key="frame" x="10" y="315" width="46" height="30"/>
                                         <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
@@ -508,9 +502,7 @@
                                     <constraint firstItem="kDG-1Q-o2X" firstAttribute="top" secondItem="kJ9-Zf-no4" secondAttribute="top" constant="10" id="1T3-fc-OQk"/>
                                     <constraint firstItem="nV5-dP-qBZ" firstAttribute="centerX" secondItem="JBg-cF-UzO" secondAttribute="centerX" id="70e-Xa-ixb"/>
                                     <constraint firstItem="47X-rs-DuW" firstAttribute="leading" secondItem="7fZ-dU-vCi" secondAttribute="trailing" id="8Wd-a6-okD"/>
-                                    <constraint firstItem="hfU-bF-xuT" firstAttribute="leading" secondItem="kJ9-Zf-no4" secondAttribute="leading" constant="30" id="Dvb-jU-Taj"/>
                                     <constraint firstItem="JBg-cF-UzO" firstAttribute="top" secondItem="kJ9-Zf-no4" secondAttribute="top" id="EiB-dz-8Ou"/>
-                                    <constraint firstItem="hfU-bF-xuT" firstAttribute="top" secondItem="kJ9-Zf-no4" secondAttribute="top" constant="30" id="Gge-er-pNA"/>
                                     <constraint firstAttribute="trailing" secondItem="JBg-cF-UzO" secondAttribute="trailing" id="H4n-uT-3j0"/>
                                     <constraint firstItem="nV5-dP-qBZ" firstAttribute="centerY" secondItem="JBg-cF-UzO" secondAttribute="centerY" id="M9q-Gs-wuR"/>
                                     <constraint firstItem="7fZ-dU-vCi" firstAttribute="leading" secondItem="kJ9-Zf-no4" secondAttribute="leading" constant="10" id="WMm-vc-nYj"/>
@@ -564,6 +556,12 @@
                                             <action selector="tapShowButton:" destination="LqI-KL-YbA" eventType="touchUpInside" id="dSx-PH-05j"/>
                                         </connections>
                                     </button>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="0" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Bw8-XC-7QL">
+                                        <rect key="frame" x="100" y="60.666666666666657" width="13" height="24"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
                                 </subviews>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <constraints>
@@ -572,7 +570,9 @@
                                     <constraint firstAttribute="trailing" secondItem="1ZL-rE-6mK" secondAttribute="trailing" id="32k-bc-egn"/>
                                     <constraint firstAttribute="bottom" secondItem="dMH-0F-2Pr" secondAttribute="bottom" id="AX3-Mh-5gb"/>
                                     <constraint firstAttribute="bottom" secondItem="WrS-xQ-mlg" secondAttribute="bottom" constant="15" id="BGB-QZ-zKn"/>
+                                    <constraint firstItem="Bw8-XC-7QL" firstAttribute="centerY" secondItem="WrS-xQ-mlg" secondAttribute="centerY" id="BT0-iz-BSG"/>
                                     <constraint firstItem="1ZL-rE-6mK" firstAttribute="centerY" secondItem="Gyz-ns-ttr" secondAttribute="centerY" id="HQ2-iJ-l4s"/>
+                                    <constraint firstItem="Bw8-XC-7QL" firstAttribute="leading" secondItem="WrS-xQ-mlg" secondAttribute="trailing" constant="30" id="Ink-Ab-Qgl"/>
                                     <constraint firstItem="dMH-0F-2Pr" firstAttribute="leading" secondItem="jqI-TW-uug" secondAttribute="leading" constant="-2" id="Q58-AA-lAA"/>
                                     <constraint firstItem="dMH-0F-2Pr" firstAttribute="top" secondItem="jqI-TW-uug" secondAttribute="top" constant="-2" id="Xx0-sZ-HQt"/>
                                     <constraint firstAttribute="height" constant="100" id="Y17-h7-ku3"/>
@@ -630,7 +630,7 @@
                     </view>
                     <connections>
                         <outlet property="ServiceView" destination="sN5-rv-fuL" id="Z3l-L4-WE9"/>
-                        <outlet property="biasLabel" destination="hfU-bF-xuT" id="31T-MN-AIA"/>
+                        <outlet property="biasLabel" destination="Bw8-XC-7QL" id="HeJ-bV-9mf"/>
                         <outlet property="cardTopImage" destination="dMH-0F-2Pr" id="iaV-zb-qgA"/>
                         <outlet property="containerTableView" destination="I1t-vY-NpJ" id="sCR-wM-4cc"/>
                         <outlet property="containerViewHeight" destination="oIA-KX-3vG" id="qNu-5y-egH"/>

@@ -65,7 +65,6 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
     @IBOutlet weak var imageLevel: UIImageView!
     @IBOutlet weak var scatterChart: ScatterChartView!
     @IBOutlet weak var noImageLabel: UILabel!
-    @IBOutlet weak var biasLabel: UILabel!
     
     
     @IBOutlet weak var containerTableView: ExpyTableView!
@@ -75,6 +74,9 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
     
     @IBOutlet weak var sectorNameLabel: UILabel!
     @IBOutlet weak var cardTopImage: UIImageView!
+    
+    @IBOutlet weak var biasLabel: UILabel!
+    
     
     var serviceManager = ServiceManager()
     var serviceName = "FLT"

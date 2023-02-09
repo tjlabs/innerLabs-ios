@@ -969,10 +969,6 @@ public class ServiceManager: Observation {
         bleManager.trimBleData()
         
         let bleDictionary = bleManager.bleAvg
-//        bleDictionary.keys.forEach { bleDictionary[$0] = bleDictionary[$0]! + 7 }
-//        if (deviceModel == "iPhone 12 Mini" || deviceModel == "iPhone X") {
-//            bleDictionary.keys.forEach { bleDictionary[$0] = bleDictionary[$0]! + 7 }
-//        }
         
         let bleCheckTime = Double(currentTime)
         let discoveredTime = bleManager.bleDiscoveredTime
@@ -1221,9 +1217,17 @@ public class ServiceManager: Observation {
                             } else if (self.isBiasRequested) {
                                 requestBiasArray = [self.rssiBias]
                             } else {
-                                requestBiasArray = self.rssiBiasArray
-                                self.biasRequestTime = currentTime
-                                self.isBiasRequested = true
+                                if (!isActiveKf) {
+                                    requestBiasArray = self.rssiBiasArray
+                                    self.biasRequestTime = currentTime
+                                    self.isBiasRequested = true
+                                } else if (self.phase > 2) {
+                                    requestBiasArray = self.rssiBiasArray
+                                    self.biasRequestTime = currentTime
+                                    self.isBiasRequested = true
+                                } else {
+                                    requestBiasArray = [self.rssiBias]
+                                }
                             }
                         }
                         
@@ -1250,7 +1254,6 @@ public class ServiceManager: Observation {
 
                                                 if (self.sccGoodBiasArray.count >= GOOD_BIAS_ARRAY_SIZE) {
                                                     let biasAvg: Int = averageBiasArray(biasArray: self.sccGoodBiasArray)
-
                                                     self.rssiBias = biasAvg
 
 //                                                    self.isConverge = true
@@ -1262,7 +1265,7 @@ public class ServiceManager: Observation {
                                             self.isBiasRequested = false
 //                                            print("(Bias) bias = \(self.rssiBias) // Phase < 4")
                                             displayOutput.bias = self.rssiBias
-                                        } else if (biasCheckTime > 5000) {
+                                        } else if (biasCheckTime > 3000) {
                                             self.isBiasRequested = false
                                         }
                                     }
@@ -1317,7 +1320,6 @@ public class ServiceManager: Observation {
                                                         timUpdateOutputCopy.building_name = self.currentBuilding
                                                         timUpdateOutputCopy.level_name = self.currentLevel
                                                     }
-                                                    
                                                     timUpdateOutputCopy.mobile_time = result.mobile_time
 
                                                     var updatedResult = fromServerToResult(fromServer: timUpdateOutputCopy, velocity: displayOutput.velocity)
@@ -1414,7 +1416,6 @@ public class ServiceManager: Observation {
 
                                             if (self.sccGoodBiasArray.count >= GOOD_BIAS_ARRAY_SIZE) {
                                                 let biasAvg: Int = averageBiasArray(biasArray: self.sccGoodBiasArray)
-
                                                 self.rssiBias = biasAvg
 
 //                                                self.isConverge = true
@@ -1425,6 +1426,8 @@ public class ServiceManager: Observation {
                                         self.isBiasRequested = false
 //                                        print("(Bias) bias = \(self.rssiBias) // Phase = 4")
                                         displayOutput.bias = self.rssiBias
+                                    } else if (biasCheckTime > 3000) {
+                                        self.isBiasRequested = false
                                     }
                                 }
                                 
@@ -1499,8 +1502,9 @@ public class ServiceManager: Observation {
                                                                 let tuBufferHeading = compensateHeading(heading: tuBuffer[idx][2], mode: self.runMode)
                                                                 
                                                                 dh = currentTuResult.absolute_heading - tuBufferHeading
-                                                                print("Propagation : indexCurrent = \(currentTuResult.index) , indexResult = \(result.index) , dx = \(dx) , dy = \(dy) , dh = \(dh)")
+//                                                                print("Propagation : indexCurrent = \(currentTuResult.index) , indexResult = \(result.index) , dx = \(dx) , dy = \(dy) , dh = \(dh)")
                                                             } else {
+//                                                                print("Propagation : Cannot find index")
                                                                 dx = currentTuResult.x - pastTuResult.x
                                                                 dy = currentTuResult.y - pastTuResult.y
                                                                 currentTuResult.absolute_heading = compensateHeading(heading: currentTuResult.absolute_heading, mode: self.runMode)
@@ -1522,13 +1526,6 @@ public class ServiceManager: Observation {
                                                         
                                                         let muOutput = measurementUpdate(timeUpdatePosition: timeUpdatePosition, serverOutputHat: resultForMu, originalResult: resultCorrected.xyh, isNeedHeadingCorrection: self.isNeedHeadingCorrection, mode: self.runMode)
                                                         var muResult = fromServerToResult(fromServer: muOutput, velocity: displayOutput.velocity)
-                                                        // 비교 : Server (After MM) vs Server + dxdy (After MM)
-//                                                        let diffX = resultCorrected.xyh[0] - muResult.x
-//                                                        let diffY = resultCorrected.xyh[1] - muResult.y
-//                                                        let diffH = resultCorrected.xyh[2] - muResult.absolute_heading
-//                                                        let diffXY: Double = sqrt(diffX*diffX + diffY*diffY)
-//                                                        let localTime = getLocalTimeString()
-//                                                        print(localTime + " (Jupiter) // diffXY : \(diffXY) // diffH : \(diffH)")
                                                         
 //                                                        self.serverResult[0] = muResult.x
 //                                                        self.serverResult[1] = muResult.y
@@ -1691,14 +1688,6 @@ public class ServiceManager: Observation {
         return levelToReturn
     }
     
-    func checkGoingOutside(levelName: String) -> Bool{
-        if (levelName == "0F_D") {
-            return true
-        } else {
-            return false
-        }
-    }
-    
     func checkBuildingLevelChange(currentBuillding: String, currentLevel: String, pastBuilding: String, pastLevel: String) -> Bool {
         if (currentBuillding == pastBuilding) && (currentLevel == pastLevel) {
             return false
@@ -1729,7 +1718,7 @@ public class ServiceManager: Observation {
                             var updatedResult = result
                             updatedResult.mobile_time = currentTime
                             updatedResult.index = 0
-                            updatedResult.phase = 0
+                            updatedResult.phase = 1
                             
                             let trackingTime = currentTime
                             updatedResult.mobile_time = trackingTime
@@ -1783,29 +1772,21 @@ public class ServiceManager: Observation {
             
             let biasRange: Int = 3
             var biasArray: [Int] = [loadedRssiBias, loadedRssiBias-biasRange, loadedRssiBias+biasRange]
-            if (biasArray[1] < -12) {
-                biasArray[1] = -12
-                biasArray[0] = -12 + biasRange
-                biasArray[2] = -12 + (2*biasRange)
-            } else if (biasArray[2] > 12) {
+            if (biasArray[1] <= -3) {
+                biasArray[1] = -3
+                biasArray[0] = -3 + biasRange
+                biasArray[2] = -3 + (2*biasRange)
+                if (biasArray[2] > 12) {
+                    biasArray[2] = 12
+                }
+                
+            } else if (biasArray[2] >= 12) {
                 biasArray[2] = 12
                 biasArray[0] = 12 - biasRange
                 biasArray[1] = 12 - (2*biasRange)
             }
             
             self.rssiBiasArray = biasArray
-            
-            // [0, 3, 6, 9, 12]
-//            let idx: Int = self.rssiBiasCand.firstIndex(of: loadedRssiBias) ?? 0
-//            if (idx < 2) {
-//                self.rssiBiasArray = [self.rssiBiasCand[0], self.rssiBiasCand[1], self.rssiBiasCand[2]]
-//            } else if (idx > 3) {
-//                self.rssiBiasArray = [self.rssiBiasCand[2], self.rssiBiasCand[3], self.rssiBiasCand[4]]
-//            } else {
-//                self.rssiBiasArray = [self.rssiBiasCand[idx-1], self.rssiBiasCand[idx], self.rssiBiasCand[idx+1]]
-//            }
-            
-//            print(localTime + " , (Jupiter) Complete to load Rssi Bias = \(self.rssiBias)")
         }
     }
     
@@ -1853,7 +1834,7 @@ public class ServiceManager: Observation {
             newBiasArray[1] = 12 - (2*biasRange)
         }
         
-        print("(Estimate Bias) sccResult = \(sccResult) // biasResult = \(biasResult) // isSccHigh = \(isSccHigh) // biasArray = \(newBiasArray)")
+//        print("(Estimate Bias) sccResult = \(sccResult) // biasResult = \(biasResult) // isSccHigh = \(isSccHigh) // biasArray = \(newBiasArray)")
         return (isSccHigh, newBiasArray)
     }
     
@@ -2236,10 +2217,12 @@ public class ServiceManager: Observation {
             
             if (phase == 4) {
                 self.UV_INPUT_NUM = self.VAR_INPUT_NUM
-                self.INDEX_THRESHOLD = 11
+//                self.INDEX_THRESHOLD = 11
+                self.INDEX_THRESHOLD = 21
             } else {
                 self.UV_INPUT_NUM = self.INIT_INPUT_NUM
-                self.INDEX_THRESHOLD = 6
+//                self.INDEX_THRESHOLD = 6
+                self.INDEX_THRESHOLD = 11
             }
             
         } else if (mode == "dr") {
@@ -2249,10 +2232,12 @@ public class ServiceManager: Observation {
             
             if (phase == 4) {
                 self.UV_INPUT_NUM = self.VAR_INPUT_NUM
-                self.INDEX_THRESHOLD = 11
+//                self.INDEX_THRESHOLD = 11
+                self.INDEX_THRESHOLD = 21
             } else {
                 self.UV_INPUT_NUM = self.INIT_INPUT_NUM
-                self.INDEX_THRESHOLD = 6
+//                self.INDEX_THRESHOLD = 6
+                self.INDEX_THRESHOLD = 11
             }
         }
     }

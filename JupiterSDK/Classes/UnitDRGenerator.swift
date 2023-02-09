@@ -181,22 +181,6 @@ public class UnitDRGenerator: NSObject {
         } else {
             return 0
         }
-        
-        
-//
-//        if (self.validStepCount > STEP_TO_MODE_CHANGE) {
-//            // 현재 모드는 PDR
-//            self.validStepCount = 0
-//        }
-        
-        // DR 상황에서는 스텝이 연속적으로 발생하지 않음
-        
-        // PDR 스텝이 연속적으로 발생하면
-        
-        // PDR 스텝이 아주 가끔
-        
-//        print(getLocalTimeString() + " (Jupiter) DR Queue: \(drQueue)")
-//        print(getLocalTimeString() + " (Jupiter) PDR Queue: \(pdrQueue)")
     }
     
     public func updateDrQueue(data: DistanceInfo) {

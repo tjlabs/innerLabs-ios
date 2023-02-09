@@ -140,15 +140,6 @@ public class DRDistanceEstimator: NSObject {
         // --------------- //
         
         var velocity = log10(magVarFeature+1)/log10(1.1)
-//        if (velocity < 6) {
-//            print("Raw Velocity < 6 km/h")
-//            if (accNormVar > 0.001) {
-//                print("Acc Norm > 0.1 : Go State")
-//                velocity = 9
-//            } else {
-//                print("Acc Norm < 0.1 : Really Slow")
-//            }
-//        }
         updateVelocityQueue(data: velocity)
 
         var velocitySmoothing: Double = 0
@@ -173,7 +164,6 @@ public class DRDistanceEstimator: NSObject {
         }
         let velocityMps = (velocityInput/3.6)*turnScale
 
-//        print("Velocity = \(velocityMps*3.6) km/h // MagFeature = \(magVarFeature)")
         finalUnitResult.isIndexChanged = false
         finalUnitResult.velocity = velocityMps
         distance += (velocityMps*(1/SAMPLE_HZ))
