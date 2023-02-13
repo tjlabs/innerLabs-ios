@@ -10,6 +10,8 @@ public class ServiceManager: Observation {
             if (result.x != 0 && result.y != 0) {
                 result.absolute_heading = compensateHeading(heading: result.absolute_heading, mode: self.runMode)
                 
+//                let localTime = getLocalTimeString()
+//                print(localTime + " , (Jupiter) Tracking : Input = \(input) , isPast = \(isPast)")
                 // Map Matching
                 if (self.isMapMatching) {
                     let correctResult = correct(building: result.building_name, level: result.level_name, x: result.x, y: result.y, heading: result.absolute_heading, tuXY: [0,0], isMu: false, mode: self.runMode, isPast: isPast, HEADING_RANGE: self.HEADING_RANGE)
@@ -120,6 +122,7 @@ public class ServiceManager: Observation {
     var magZ: Double = 0
     var pressure: Double = 0
     
+//    var SPATIAL_INPUT_NUM: Int = 7
     var SPATIAL_INPUT_NUM: Int = 7
     // --------------------- //
 
@@ -219,7 +222,7 @@ public class ServiceManager: Observation {
     
     var rssiBiasCand: [Int] = [0, 3, 6, 9, 12]
 //    var rssiBiasArray: [Int] = [0, 3, 6]
-    var rssiBiasArray: [Int] = [9, 6, 12]
+    var rssiBiasArray: [Int] = [4, 2, 6]
     var rssiBias: Int = 0
     let SCC_THRESHOLD: Double = 0.75
     let SCC_MAX: Double = 0.8
@@ -417,7 +420,7 @@ public class ServiceManager: Observation {
         self.mode = mode
         
         var interval: Double = 1/2
-        var numInput = 7
+        var numInput = 6
         
         switch(service) {
         case "SD":
@@ -433,7 +436,7 @@ public class ServiceManager: Observation {
             numInput = 3
             interval = 1/2
         case "CLE":
-            numInput = 7
+            numInput = 6
             interval = 1/2
         case "FLT":
             numInput = 6
@@ -1479,9 +1482,12 @@ public class ServiceManager: Observation {
                                                         
                                                         // isMu : True
                                                         var resultCorrected = self.correct(building: resultForMu.building_name, level: resultForMu.level_name, x: resultForMu.x, y: resultForMu.y, heading: resultForMu.absolute_heading, tuXY: [self.pastTuResult.x, self.pastTuResult.y], isMu: false, mode: self.runMode, isPast: false, HEADING_RANGE: self.HEADING_RANGE)
-                                                        self.serverResult[0] = resultCorrected.xyh[0]
-                                                        self.serverResult[1] = resultCorrected.xyh[1]
-                                                        self.serverResult[2] = resultCorrected.xyh[2]
+                                                        if (resultCorrected.isSuccess) {
+                                                            print(localTime + "(Jupiter) Success : Server Result MM in Phase 4")
+                                                        }
+//                                                        self.serverResult[0] = resultCorrected.xyh[0]
+//                                                        self.serverResult[1] = resultCorrected.xyh[1]
+//                                                        self.serverResult[2] = resultCorrected.xyh[2]
                                                         
                                                         let indexBuffer: [Int] = self.uvdIndexBuffer
                                                         let tuBuffer: [[Double]] = self.tuResultBuffer
@@ -1489,8 +1495,6 @@ public class ServiceManager: Observation {
                                                         var currentTuResult = self.currentTuResult
                                                         var pastTuResult = self.pastTuResult
                                                         if (currentTuResult.mobile_time != 0 && pastTuResult.mobile_time != 0) {
-//                                                            print("UVD Index Buffer = \(self.uvdIndexBuffer) , \(self.uvdIndexBuffer.count)")
-//                                                            print("TU Position Buffer = \(self.tuPositionBuffer) , \(self.tuPositionBuffer.count)")
                                                             var dx: Double = 0
                                                             var dy: Double = 0
                                                             var dh: Double = 0
@@ -1502,7 +1506,7 @@ public class ServiceManager: Observation {
                                                                 let tuBufferHeading = compensateHeading(heading: tuBuffer[idx][2], mode: self.runMode)
                                                                 
                                                                 dh = currentTuResult.absolute_heading - tuBufferHeading
-//                                                                print("Propagation : indexCurrent = \(currentTuResult.index) , indexResult = \(result.index) , dx = \(dx) , dy = \(dy) , dh = \(dh)")
+                                                                print("Propagation : indexCurrent = \(currentTuResult.index) , indexResult = \(result.index) , dx = \(dx) , dy = \(dy) , dh = \(dh)")
                                                             } else {
 //                                                                print("Propagation : Cannot find index")
                                                                 dx = currentTuResult.x - pastTuResult.x
@@ -1524,12 +1528,16 @@ public class ServiceManager: Observation {
                                                         }
                                                         let trackingTime = getCurrentTimeInMilliseconds()
                                                         
+                                                        self.serverResult[0] = resultForMu.x
+                                                        self.serverResult[1] = resultForMu.y
+                                                        self.serverResult[2] = resultForMu.absolute_heading
                                                         let muOutput = measurementUpdate(timeUpdatePosition: timeUpdatePosition, serverOutputHat: resultForMu, originalResult: resultCorrected.xyh, isNeedHeadingCorrection: self.isNeedHeadingCorrection, mode: self.runMode)
                                                         var muResult = fromServerToResult(fromServer: muOutput, velocity: displayOutput.velocity)
                                                         
 //                                                        self.serverResult[0] = muResult.x
 //                                                        self.serverResult[1] = muResult.y
 //                                                        self.serverResult[2] = muResult.absolute_heading
+                                                        
                                                         muResult.mobile_time = trackingTime
                                                         if (result.mobile_time > self.runOsrTime) {
                                                             self.currentBuilding = result.building_name
@@ -1538,7 +1546,6 @@ public class ServiceManager: Observation {
                                                         } else {
                                                             self.outputResult.level_name = self.currentLevel
                                                         }
-                                                        
                                                         self.flagPast = false
                                                     }
                                                     timeUpdatePositionInit(serverOutput: result)
@@ -1568,15 +1575,17 @@ public class ServiceManager: Observation {
         if (self.runMode == "dr") {
             let currentTime = getCurrentTimeInMilliseconds()
             let input = OnSpotRecognition(user_id: self.user_id, mobile_time: currentTime, rss_compensation: self.rssiBias)
+//            print("(Jupiter) Spot Input : \(input)")
             NetworkManager.shared.postOSR(url: OSR_URL, input: input, completion: { [self] statusCode, returnedString in
                 if (statusCode == 200) {
+                    let localTime = getLocalTimeString()
                     let result = decodeOSR(json: returnedString)
                     if (result.building_name != "" && result.level_name != "") {
                         let isOnSpot = isOnSpotRecognition(result: result)
                         // Level Changed Check
                         // true : Go to Phase 2
                         if (isOnSpot.isOn) {
-    //                        print("(Jupiter) Spot On : \(isOnSpot) // currentLevel : \(self.currentLevel)")
+//                            print(localTime + " , (Jupiter) Spot On : \(isOnSpot) // currentLevel : \(self.currentLevel) // time : \(result.mobile_time)")
                             let levelDestination = isOnSpot.levelDestination + isOnSpot.levelDirection
                             if (result.spot_id != self.lastOsrId) {
                                 // Different Spot Detected
@@ -1593,9 +1602,9 @@ public class ServiceManager: Observation {
                                 self.runOsrTime = getCurrentTimeInMilliseconds()
 
                                 self.travelingOsrDistance = 0
-    //                            print("(Jupiter) Spot Different : \(isOnSpot) , \(self.phase) , \(self.isPhase2)")
-    //                            print("(Jupiter) Spot On : destinationLevel : \(levelDestination)")
-    //                            print("----------------- Spot Level Changed -------------------")
+//                                print(localTime + " , (Jupiter) Spot Different : \(isOnSpot) , \(self.phase) , \(self.isPhase2)")
+//                                print(localTime + " , (Jupiter) Spot On : destinationLevel : \(levelDestination)")
+//                                print("----------------- Spot Level Changed (Same Spot) -------------------")
                             } else {
                                 // Same Spot Detected
                                 if (self.travelingOsrDistance >= 70) {
@@ -1612,9 +1621,9 @@ public class ServiceManager: Observation {
                                     self.runOsrTime = getCurrentTimeInMilliseconds()
 
                                     self.travelingOsrDistance = 0
-    //                                print("(Jupiter) Spot Same -> but changed : \(isOnSpot) , \(self.phase) , \(self.isPhase2)")
-    //                                print("(Jupiter) Spot On : destinationLevel : \(levelDestination)")
-    //                                print("----------------- Spot Level Changed -------------------")
+//                                    print(localTime + " , (Jupiter) Spot Same -> but changed : \(isOnSpot) , \(self.phase) , \(self.isPhase2)")
+//                                    print(localTime + " , (Jupiter) Spot On : destinationLevel : \(levelDestination)")
+//                                    print("----------------- Spot Level Changed (Same Spot) -------------------")
                                 }
                             }
                         }
@@ -2323,6 +2332,7 @@ public class ServiceManager: Observation {
     }
 
     func measurementUpdate(timeUpdatePosition: KalmanOutput, serverOutputHat: FineLocationTrackingFromServer, originalResult: [Double], isNeedHeadingCorrection: Bool, mode: String) -> FineLocationTrackingFromServer {
+        let localTime = getLocalTimeString()
         var serverOutputHatCopy = serverOutputHat
         serverOutputHatCopy.absolute_heading = compensateHeading(heading: serverOutputHatCopy.absolute_heading, mode: self.runMode)
         
@@ -2346,6 +2356,7 @@ public class ServiceManager: Observation {
                 serverOutputHatMm.absolute_heading = serverOutputHatCopy.absolute_heading
             }
         } else {
+            print(localTime + " , (Jupiter) Measurement Update: ServerOutputHatMm Fail")
             serverOutputHatMm.absolute_heading = originalResult[2]
         }
         
@@ -2403,6 +2414,7 @@ public class ServiceManager: Observation {
                 saveKalmanParam()
             }
         } else {
+            print(localTime + " , (Jupiter) Measurement Update: measurementOutputCorrected Fail")
             // Use Server Result
             self.timeUpdatePosition.x = originalResult[0]
             self.timeUpdatePosition.y = originalResult[1]
