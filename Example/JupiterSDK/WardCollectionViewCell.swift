@@ -19,8 +19,6 @@ class WardCollectionViewCell: UICollectionViewCell {
         // Initialization code
     }
     
-    public func updateWardInfo() {
-        
-    }
+    
 
 }

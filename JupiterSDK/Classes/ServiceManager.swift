@@ -953,12 +953,14 @@ public class ServiceManager: Observation {
     func wakeUpFromSleepMode() {
         if (self.updateTimer == nil && self.service == "FLT") {
             self.updateTimer = Timer.scheduledTimer(timeInterval: UPDATE_INTERVAL, target: self, selector: #selector(self.outputTimerUpdate), userInfo: nil, repeats: true)
+            RunLoop.current.add(updateTimer!, forMode: .commonModes)
         }
     }
     
     func startCollectTimer() {
         if (collectTimer == nil) {
             collectTimer = Timer.scheduledTimer(timeInterval: UV_INTERVAL, target: self, selector: #selector(self.collectTimerUpdate), userInfo: nil, repeats: true)
+            RunLoop.current.add(collectTimer!, forMode: .commonModes)
         }
     }
     
@@ -1490,10 +1492,12 @@ public class ServiceManager: Observation {
                                                         var resultCorrected = self.correct(building: resultForMu.building_name, level: resultForMu.level_name, x: resultForMu.x, y: resultForMu.y, heading: resultForMu.absolute_heading, tuXY: [self.pastTuResult.x, self.pastTuResult.y], isMu: false, mode: self.runMode, isPast: false, HEADING_RANGE: self.HEADING_RANGE)
                                                         if (resultCorrected.isSuccess) {
                                                             print(localTime + "(Jupiter) Success : Server Result MM in Phase 4")
+                                                        } else {
+                                                            print(localTime + "(Jupiter) Fail : Server Result MM in Phase 4")
                                                         }
-//                                                        self.serverResult[0] = resultCorrected.xyh[0]
-//                                                        self.serverResult[1] = resultCorrected.xyh[1]
-//                                                        self.serverResult[2] = resultCorrected.xyh[2]
+                                                        self.serverResult[0] = resultCorrected.xyh[0]
+                                                        self.serverResult[1] = resultCorrected.xyh[1]
+                                                        self.serverResult[2] = resultCorrected.xyh[2]
                                                         
                                                         let indexBuffer: [Int] = self.uvdIndexBuffer
                                                         let tuBuffer: [[Double]] = self.tuResultBuffer

@@ -153,7 +153,6 @@ class ShowCardViewController: UIViewController, AddCardDelegate {
     
     
     @IBAction func tapAddCardButton(_ sender: UIButton) {
-        
         // 바로 AddCard로 이동 //
         guard let addCardVC = self.storyboard?.instantiateViewController(withIdentifier: "AddCardViewController") as? AddCardViewController else { return }
         addCardVC.modalPresentationStyle = .currentContext

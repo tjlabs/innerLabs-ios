@@ -51,11 +51,6 @@ class CollectViewController: UIViewController {
     let D2R: Double = Double.pi / 180
     
     @IBOutlet var collectView: UIView!
-    @IBOutlet weak var bleView: UIView!
-    
-    @IBOutlet weak var wardView1: UIView!
-    @IBOutlet weak var wardView2: UIView!
-    @IBOutlet weak var wardView3: UIView!
     
     var serviceManager = ServiceManager()
     
@@ -73,18 +68,10 @@ class CollectViewController: UIViewController {
     var isWriting: Bool = false
     
     // Ward Info
-    @IBOutlet weak var bleName1: UILabel!
-    @IBOutlet weak var bleRssi1: UILabel!
-    
-    @IBOutlet weak var bleName2: UILabel!
-    @IBOutlet weak var bleRssi2: UILabel!
-    
-    @IBOutlet weak var bleName3: UILabel!
-    @IBOutlet weak var bleRssi3: UILabel!
-    
     @IBOutlet weak var indexLabel: UILabel!
     @IBOutlet weak var lengthLabel: UILabel!
     
+    @IBOutlet weak var wardCollectionView: UICollectionView!
     @IBOutlet weak var scatterChart: ScatterChartView!
     
     var x: Double = 0
@@ -95,6 +82,8 @@ class CollectViewController: UIViewController {
     
     var headingImage = UIImage(named: "heading")
     
+    var wardData = [String: Double]()
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(false)
         
@@ -102,19 +91,30 @@ class CollectViewController: UIViewController {
         let height = collectView.frame.size.height
         
         headingImage = headingImage?.resize(newWidth: 40)
-        
-        wardView1.alpha = 0.0
-        wardView2.alpha = 0.0
-        wardView3.alpha = 0.0
     }
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
         serviceManager.initCollect()
-        
         startTimer()
+        
+        setupCollectionView()
     }
+    
+    
+    public func setupCollectionView() {
+        view.addSubview(wardCollectionView)
+        
+        wardCollectionView.register(UINib(nibName: "WardCollectionViewCell", bundle: .main), forCellWithReuseIdentifier: "WardCollectionViewCell")
+        
+        wardCollectionView.dataSource = self
+        wardCollectionView.delegate = self
+        
+        self.wardCollectionView.reloadData()
+        wardCollectionView.decelerationRate = UIScrollView.DecelerationRate.fast
+    }
+    
     
     @IBAction func tapBackButton(_ sender: UIButton) {
         goToBack()
@@ -142,6 +142,12 @@ class CollectViewController: UIViewController {
             goToBack()
         }
     }
+    
+    @IBAction func tapFileButton(_ sender: UIButton) {
+        guard let fileVC = self.storyboard?.instantiateViewController(withIdentifier: "FileViewController") as? FileViewController else { return }
+        self.navigationController?.pushViewController(fileVC, animated: true)
+    }
+    
     
     func goToBack() {
         self.saveData()
@@ -337,59 +343,25 @@ class CollectViewController: UIViewController {
 
     @objc func timerUpdate() {
         let bleAvg: [String: Double] = serviceManager.collectData.bleAvg
-        let sprtedBleAvg = bleAvg.sorted { $0.1 > $1.1 }
+        let sortedBleAvg = bleAvg.sorted { $0.1 > $1.1 }
+        
+        self.wardData = bleAvg
+        self.wardCollectionView.reloadData()
         
         var top3ID = [String]()
         var top3Rssi = [Double]()
         var top3AvgRssi = [Double]()
         
-        for i in 0..<sprtedBleAvg.count {
-            let idFull: String = sprtedBleAvg[i].key
+        for i in 0..<sortedBleAvg.count {
+            let idFull: String = sortedBleAvg[i].key
             let id = idFull.components(separatedBy: "-")
             top3ID.append(id[2])
             
-            top3AvgRssi.append(sprtedBleAvg[i].value)
-        }
-        
-        if (bleAvg.count > 2) {
-            wardView1.alpha = 1.0
-            wardView2.alpha = 1.0
-            wardView3.alpha = 1.0
-            
-            bleName1.text = top3ID[0]
-            bleRssi1.text = String(format: "%.1f", top3AvgRssi[0])
-            
-            bleName2.text = top3ID[1]
-            bleRssi2.text = String(format: "%.1f", top3AvgRssi[1])
-            
-            bleName3.text = top3ID[2]
-            bleRssi3.text = String(format: "%.1f", top3AvgRssi[2])
-        } else if (bleAvg.count == 2) {
-            wardView1.alpha = 1.0
-            wardView2.alpha = 1.0
-            wardView3.alpha = 0.0
-            
-            bleName1.text = top3ID[0]
-            bleRssi1.text = String(format: "%.1f", top3AvgRssi[0])
-            
-            bleName2.text = top3ID[1]
-            bleRssi2.text = String(format: "%.1f", top3AvgRssi[1])
-        } else if (bleAvg.count == 1) {
-            wardView1.alpha = 1.0
-            wardView2.alpha = 0.0
-            wardView3.alpha = 0.0
-            
-            bleName1.text = top3ID[0]
-            bleRssi1.text = String(format: "%.1f", top3AvgRssi[0])
-        } else {
-            wardView1.alpha = 0.0
-            wardView2.alpha = 0.0
-            wardView3.alpha = 0.0
+            top3AvgRssi.append(sortedBleAvg[i].value)
         }
         
         if (saveFlag) {
             writeData(collectData: serviceManager.collectData)
-//            print("Writing : \(serviceManager.collectData)")
             if (serviceManager.collectData.isIndexChanged) {
 //                writeTrajectoryData(collectData: serviceManager.collectData)
                 let index = serviceManager.collectData.index
@@ -467,5 +439,48 @@ class CollectViewController: UIViewController {
         scatterChart.rightAxis.drawLabelsEnabled = chartFlag
         
         scatterChart.legend.enabled = chartFlag
+    }
+}
+
+extension CollectViewController: UICollectionViewDelegateFlowLayout {
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        return CGSize(width: collectionView.bounds.width-10, height: 80)
+    }
+}
+
+extension CollectViewController: UICollectionViewDataSource {
+    func numberOfSections(in collectionView: UICollectionView) -> Int {
+        return 1
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        if (self.wardData.isEmpty) {
+            return 0
+        } else {
+            let wards = self.wardData.sorted { $0.1 > $1.1 }
+            
+            return wards.count
+        }
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "WardCollectionViewCell", for: indexPath) as! WardCollectionViewCell
+        
+        let wards = self.wardData
+        
+        if (!wards.isEmpty) {
+            let sortedWards = wards.sorted { $0.1 > $1.1 }
+            let idFull: String = sortedWards[indexPath.item].key
+            let id = idFull.components(separatedBy: "-")[2]
+                
+            cell.wardIdLabel.text = id
+            cell.wardRssiLabel.text = String(format: "%.1f", sortedWards[indexPath.item].value)
+        }
+        
+        return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        //        print("Want to delete : \(indexPath.item)")
     }
 }

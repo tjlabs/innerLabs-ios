@@ -90,6 +90,7 @@
 		B3DE146F280E7556006DA43C /* UIApplicationExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3DE146E280E7556006DA43C /* UIApplicationExtension.swift */; };
 		B3DE961C2999F65500352F40 /* WardCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3DE961A2999F65500352F40 /* WardCollectionViewCell.swift */; };
 		B3DE961D2999F65500352F40 /* WardCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B3DE961B2999F65500352F40 /* WardCollectionViewCell.xib */; };
+		B3DE961F299A111B00352F40 /* FileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3DE961E299A111B00352F40 /* FileViewController.swift */; };
 		B3E094EC28ADCD3100D3BC59 /* S3_7F_Road.csv in Resources */ = {isa = PBXBuildFile; fileRef = B3E094EB28ADCD3100D3BC59 /* S3_7F_Road.csv */; };
 		B3E0A4F62887E51700B88E08 /* Environment.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3E0A4F52887E51700B88E08 /* Environment.swift */; };
 		B3E6C0F8292D6B1400D0AC13 /* ImageCacheManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3E6C0F7292D6B1400D0AC13 /* ImageCacheManager.swift */; };
@@ -213,6 +214,7 @@
 		B3DE146E280E7556006DA43C /* UIApplicationExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIApplicationExtension.swift; sourceTree = "<group>"; };
 		B3DE961A2999F65500352F40 /* WardCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WardCollectionViewCell.swift; sourceTree = "<group>"; };
 		B3DE961B2999F65500352F40 /* WardCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = WardCollectionViewCell.xib; sourceTree = "<group>"; };
+		B3DE961E299A111B00352F40 /* FileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileViewController.swift; sourceTree = "<group>"; };
 		B3E094EB28ADCD3100D3BC59 /* S3_7F_Road.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = S3_7F_Road.csv; sourceTree = "<group>"; };
 		B3E0A4F52887E51700B88E08 /* Environment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Environment.swift; sourceTree = "<group>"; };
 		B3E6C0F7292D6B1400D0AC13 /* ImageCacheManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageCacheManager.swift; sourceTree = "<group>"; };
@@ -403,6 +405,7 @@
 				B3D397A628F5A64700B5DBED /* SpotViewController.swift */,
 				B38C7F4B28FE6AC200DEEF32 /* NeptuneViewController.swift */,
 				B349730F293847DC0078C872 /* FusionViewController.swift */,
+				B3DE961E299A111B00352F40 /* FileViewController.swift */,
 			);
 			name = ViewController;
 			sourceTree = "<group>";
@@ -813,6 +816,7 @@
 				B388AC31282BF6A3001C3D71 /* RobotTableViewCell.swift in Sources */,
 				B3D48909289B96F900A8154C /* RemoteConfigManager.swift in Sources */,
 				B3BD69B427E9A8AD00A32A7A /* LevelCollectionViewCell.swift in Sources */,
+				B3DE961F299A111B00352F40 /* FileViewController.swift in Sources */,
 				607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */,
 				B30EED7C28936CB5009A3EDA /* TipsTownViewController.swift in Sources */,
 				B3BD69A627E9A55400A32A7A /* UIViewExtension.swift in Sources */,
