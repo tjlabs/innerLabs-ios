@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21507" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21505"/>
+        <capability name="Named colors" minToolsVersion="9.0"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="gTV-IL-0wX" customClass="WardCollectionViewCell" customModule="JupiterSDK_Example" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="440" height="120"/>
+            <autoresizingMask key="autoresizingMask"/>
+            <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                <rect key="frame" x="0.0" y="0.0" width="440" height="120"/>
+                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                <subviews>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="KLy-pa-ULW">
+                        <rect key="frame" x="0.0" y="0.0" width="440" height="120"/>
+                        <subviews>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="wardIcon" translatesAutoresizingMaskIntoConstraints="NO" id="VTU-0A-I5N">
+                                <rect key="frame" x="10" y="10" width="100" height="100"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" secondItem="VTU-0A-I5N" secondAttribute="height" multiplier="1:1" id="6WA-Ke-kpk"/>
+                                </constraints>
+                            </imageView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="ID : " textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="sOp-5A-pih">
+                                <rect key="frame" x="147" y="21.666666666666671" width="34" height="23"/>
+                                <fontDescription key="fontDescription" name="Futura-Medium" family="Futura" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="RSSI : " textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="cnj-Xf-NsK">
+                                <rect key="frame" x="130" y="75.666666666666671" width="51" height="23"/>
+                                <fontDescription key="fontDescription" name="Futura-Medium" family="Futura" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="--------------------------" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dc3-Sp-cWO">
+                                <rect key="frame" x="130" y="49.666666666666664" width="197.33333333333337" height="20.999999999999993"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Unknown" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="yBc-X3-FuS">
+                                <rect key="frame" x="201" y="21.666666666666671" width="72.333333333333314" height="23"/>
+                                <fontDescription key="fontDescription" name="Futura-Medium" family="Futura" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="-200.0" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="R8v-x7-k2h">
+                                <rect key="frame" x="201" y="75.666666666666671" width="51" height="23"/>
+                                <fontDescription key="fontDescription" name="Futura-Medium" family="Futura" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                        <color key="backgroundColor" systemColor="systemGray6Color"/>
+                        <constraints>
+                            <constraint firstItem="cnj-Xf-NsK" firstAttribute="top" secondItem="dc3-Sp-cWO" secondAttribute="bottom" constant="5" id="7Le-ip-9WP"/>
+                            <constraint firstAttribute="height" constant="120" id="9Z4-Et-10x"/>
+                            <constraint firstItem="R8v-x7-k2h" firstAttribute="centerY" secondItem="cnj-Xf-NsK" secondAttribute="centerY" id="HYP-Ku-yth"/>
+                            <constraint firstItem="VTU-0A-I5N" firstAttribute="leading" secondItem="KLy-pa-ULW" secondAttribute="leading" constant="10" id="QpA-uY-CC6"/>
+                            <constraint firstItem="yBc-X3-FuS" firstAttribute="leading" secondItem="sOp-5A-pih" secondAttribute="trailing" constant="20" id="URf-z4-KLB"/>
+                            <constraint firstItem="dc3-Sp-cWO" firstAttribute="centerY" secondItem="VTU-0A-I5N" secondAttribute="centerY" id="Vce-Rv-5E5"/>
+                            <constraint firstItem="dc3-Sp-cWO" firstAttribute="top" secondItem="sOp-5A-pih" secondAttribute="bottom" constant="5" id="ZM4-xM-TJ8"/>
+                            <constraint firstItem="R8v-x7-k2h" firstAttribute="leading" secondItem="cnj-Xf-NsK" secondAttribute="trailing" constant="20" id="bhR-xZ-aeV"/>
+                            <constraint firstItem="cnj-Xf-NsK" firstAttribute="leading" secondItem="dc3-Sp-cWO" secondAttribute="leading" id="e2e-sd-ANh"/>
+                            <constraint firstItem="yBc-X3-FuS" firstAttribute="centerY" secondItem="sOp-5A-pih" secondAttribute="centerY" id="fwy-GL-jd9"/>
+                            <constraint firstAttribute="bottom" secondItem="VTU-0A-I5N" secondAttribute="bottom" constant="10" id="jqQ-oo-lKZ"/>
+                            <constraint firstItem="sOp-5A-pih" firstAttribute="trailing" secondItem="cnj-Xf-NsK" secondAttribute="trailing" id="lbw-ep-eEc"/>
+                            <constraint firstItem="VTU-0A-I5N" firstAttribute="top" secondItem="KLy-pa-ULW" secondAttribute="top" constant="10" id="pbB-gm-t8m"/>
+                            <constraint firstItem="dc3-Sp-cWO" firstAttribute="leading" secondItem="VTU-0A-I5N" secondAttribute="trailing" constant="20" id="uk2-ov-05o"/>
+                        </constraints>
+                        <userDefinedRuntimeAttributes>
+                            <userDefinedRuntimeAttribute type="number" keyPath="borderWidth">
+                                <real key="value" value="2"/>
+                            </userDefinedRuntimeAttribute>
+                            <userDefinedRuntimeAttribute type="color" keyPath="borderColor">
+                                <color key="value" name="darkgrey4"/>
+                            </userDefinedRuntimeAttribute>
+                            <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                                <real key="value" value="8"/>
+                            </userDefinedRuntimeAttribute>
+                        </userDefinedRuntimeAttributes>
+                    </view>
+                </subviews>
+            </view>
+            <viewLayoutGuide key="safeArea" id="ZTg-uK-7eu"/>
+            <constraints>
+                <constraint firstAttribute="trailing" secondItem="KLy-pa-ULW" secondAttribute="trailing" id="9Nh-K2-I1O"/>
+                <constraint firstAttribute="bottom" secondItem="KLy-pa-ULW" secondAttribute="bottom" id="BUD-SS-h3p"/>
+                <constraint firstItem="KLy-pa-ULW" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" id="LHT-Q4-JRC"/>
+                <constraint firstItem="KLy-pa-ULW" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" id="ase-7a-Tog"/>
+            </constraints>
+            <connections>
+                <outlet property="wardIdLabel" destination="yBc-X3-FuS" id="oBJ-sZ-qvH"/>
+                <outlet property="wardRssiLabel" destination="R8v-x7-k2h" id="K4F-QH-a7r"/>
+                <outlet property="wardView" destination="KLy-pa-ULW" id="T31-1u-SmP"/>
+            </connections>
+            <point key="canvasLocation" x="131" y="-11"/>
+        </collectionViewCell>
+    </objects>
+    <resources>
+        <image name="wardIcon" width="116.66666412353516" height="116.66666412353516"/>
+        <namedColor name="darkgrey4">
+            <color red="0.31000000238418579" green="0.31000000238418579" blue="0.31000000238418579" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+        <systemColor name="systemGray6Color">
+            <color red="0.94901960784313721" green="0.94901960784313721" blue="0.96862745098039216" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
+    </resources>
+</document>

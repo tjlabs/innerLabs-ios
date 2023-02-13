@@ -88,6 +88,8 @@
 		B3D48909289B96F900A8154C /* RemoteConfigManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3D48908289B96F900A8154C /* RemoteConfigManager.swift */; };
 		B3DE146D280E7146006DA43C /* AddCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3DE146C280E7146006DA43C /* AddCardViewController.swift */; };
 		B3DE146F280E7556006DA43C /* UIApplicationExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3DE146E280E7556006DA43C /* UIApplicationExtension.swift */; };
+		B3DE961C2999F65500352F40 /* WardCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3DE961A2999F65500352F40 /* WardCollectionViewCell.swift */; };
+		B3DE961D2999F65500352F40 /* WardCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B3DE961B2999F65500352F40 /* WardCollectionViewCell.xib */; };
 		B3E094EC28ADCD3100D3BC59 /* S3_7F_Road.csv in Resources */ = {isa = PBXBuildFile; fileRef = B3E094EB28ADCD3100D3BC59 /* S3_7F_Road.csv */; };
 		B3E0A4F62887E51700B88E08 /* Environment.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3E0A4F52887E51700B88E08 /* Environment.swift */; };
 		B3E6C0F8292D6B1400D0AC13 /* ImageCacheManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3E6C0F7292D6B1400D0AC13 /* ImageCacheManager.swift */; };
@@ -209,6 +211,8 @@
 		B3D48908289B96F900A8154C /* RemoteConfigManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteConfigManager.swift; sourceTree = "<group>"; };
 		B3DE146C280E7146006DA43C /* AddCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddCardViewController.swift; sourceTree = "<group>"; };
 		B3DE146E280E7556006DA43C /* UIApplicationExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIApplicationExtension.swift; sourceTree = "<group>"; };
+		B3DE961A2999F65500352F40 /* WardCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WardCollectionViewCell.swift; sourceTree = "<group>"; };
+		B3DE961B2999F65500352F40 /* WardCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = WardCollectionViewCell.xib; sourceTree = "<group>"; };
 		B3E094EB28ADCD3100D3BC59 /* S3_7F_Road.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = S3_7F_Road.csv; sourceTree = "<group>"; };
 		B3E0A4F52887E51700B88E08 /* Environment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Environment.swift; sourceTree = "<group>"; };
 		B3E6C0F7292D6B1400D0AC13 /* ImageCacheManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageCacheManager.swift; sourceTree = "<group>"; };
@@ -301,6 +305,8 @@
 				B3844E8D28099EE3007A5215 /* CardCollectionViewCell.xib */,
 				B3B4F85828114EEB009F9E6C /* ShowCardCollectionViewCell.swift */,
 				B3B4F85928114EEB009F9E6C /* ShowCardCollectionViewCell.xib */,
+				B3DE961A2999F65500352F40 /* WardCollectionViewCell.swift */,
+				B3DE961B2999F65500352F40 /* WardCollectionViewCell.xib */,
 				B3E0A4F52887E51700B88E08 /* Environment.swift */,
 				607FACD91AFB9204008FA782 /* Main.storyboard */,
 				B35272B1281F8DC300321CC6 /* SplashScreen.storyboard */,
@@ -632,6 +638,7 @@
 				B3FD74EC2869A38800CD4D74 /* Gallery_4F.csv in Resources */,
 				B38807F3283390280029B174 /* L1_3F.csv in Resources */,
 				B3E094EC28ADCD3100D3BC59 /* S3_7F_Road.csv in Resources */,
+				B3DE961D2999F65500352F40 /* WardCollectionViewCell.xib in Resources */,
 				B30D4F89298A0BF000BFC124 /* morguard_6F.csv in Resources */,
 				B36B964E289A024900951457 /* L1_2F.csv in Resources */,
 				B3844E8F28099EE3007A5215 /* CardCollectionViewCell.xib in Resources */,
@@ -773,6 +780,7 @@
 				B3D397A728F5A64700B5DBED /* SpotViewController.swift in Sources */,
 				B3D194DF282E2782004E6F9A /* GuideViewController.swift in Sources */,
 				B3C6F99E289CCF78003FB402 /* NSObjectExtension.swift in Sources */,
+				B3DE961C2999F65500352F40 /* WardCollectionViewCell.swift in Sources */,
 				B3B156DE282397AF0058B538 /* ImageOverlay.swift in Sources */,
 				B3BD69AF27E9A78000A32A7A /* SectorContainerTableViewCell.swift in Sources */,
 				B3BD69A127E9A52500A32A7A /* applyShadow.swift in Sources */,
