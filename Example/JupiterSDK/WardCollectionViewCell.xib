@@ -22,14 +22,20 @@
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="KLy-pa-ULW">
                         <rect key="frame" x="0.0" y="0.0" width="440" height="200"/>
                         <subviews>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="ID : " textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="sOp-5A-pih">
-                                <rect key="frame" x="117" y="69" width="34" height="23"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="ID    : " lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="sOp-5A-pih">
+                                <rect key="frame" x="100" y="71" width="50" height="23"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="50" id="PxJ-6i-d2p"/>
+                                </constraints>
                                 <fontDescription key="fontDescription" name="Futura-Medium" family="Futura" pointSize="17"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="RSSI : " textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="cnj-Xf-NsK">
-                                <rect key="frame" x="100" y="108" width="51" height="23"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="RSSI : " lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="cnj-Xf-NsK">
+                                <rect key="frame" x="100" y="106" width="50" height="23"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="50" id="Yfl-uG-uik"/>
+                                </constraints>
                                 <fontDescription key="fontDescription" name="Futura-Medium" family="Futura" pointSize="17"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
@@ -41,13 +47,13 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Unknown" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="yBc-X3-FuS">
-                                <rect key="frame" x="171" y="69" width="72.333333333333314" height="23"/>
+                                <rect key="frame" x="170" y="71" width="72.333333333333314" height="23"/>
                                 <fontDescription key="fontDescription" name="Futura-Medium" family="Futura" pointSize="17"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="-200.0" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="R8v-x7-k2h">
-                                <rect key="frame" x="171" y="108" width="51" height="23"/>
+                                <rect key="frame" x="170" y="106" width="51" height="23"/>
                                 <fontDescription key="fontDescription" name="Futura-Medium" family="Futura" pointSize="17"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
@@ -64,12 +70,12 @@
                         <color key="backgroundColor" systemColor="systemGray6Color"/>
                         <constraints>
                             <constraint firstItem="VTU-0A-I5N" firstAttribute="leading" secondItem="KLy-pa-ULW" secondAttribute="leading" constant="20" id="1rE-61-ZKk"/>
-                            <constraint firstItem="cnj-Xf-NsK" firstAttribute="top" secondItem="dc3-Sp-cWO" secondAttribute="bottom" constant="2" id="7Le-ip-9WP"/>
+                            <constraint firstItem="cnj-Xf-NsK" firstAttribute="top" secondItem="dc3-Sp-cWO" secondAttribute="bottom" id="7Le-ip-9WP"/>
                             <constraint firstItem="R8v-x7-k2h" firstAttribute="centerY" secondItem="cnj-Xf-NsK" secondAttribute="centerY" id="HYP-Ku-yth"/>
                             <constraint firstItem="yBc-X3-FuS" firstAttribute="leading" secondItem="sOp-5A-pih" secondAttribute="trailing" constant="20" id="URf-z4-KLB"/>
                             <constraint firstItem="VTU-0A-I5N" firstAttribute="centerY" secondItem="KLy-pa-ULW" secondAttribute="centerY" id="VUR-JY-WNC"/>
                             <constraint firstItem="dc3-Sp-cWO" firstAttribute="centerY" secondItem="VTU-0A-I5N" secondAttribute="centerY" id="Vce-Rv-5E5"/>
-                            <constraint firstItem="dc3-Sp-cWO" firstAttribute="top" secondItem="sOp-5A-pih" secondAttribute="bottom" constant="2" id="ZM4-xM-TJ8"/>
+                            <constraint firstItem="dc3-Sp-cWO" firstAttribute="top" secondItem="sOp-5A-pih" secondAttribute="bottom" id="ZM4-xM-TJ8"/>
                             <constraint firstItem="R8v-x7-k2h" firstAttribute="leading" secondItem="cnj-Xf-NsK" secondAttribute="trailing" constant="20" id="bhR-xZ-aeV"/>
                             <constraint firstItem="cnj-Xf-NsK" firstAttribute="leading" secondItem="dc3-Sp-cWO" secondAttribute="leading" id="e2e-sd-ANh"/>
                             <constraint firstItem="yBc-X3-FuS" firstAttribute="centerY" secondItem="sOp-5A-pih" secondAttribute="centerY" id="fwy-GL-jd9"/>

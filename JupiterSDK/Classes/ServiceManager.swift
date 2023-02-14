@@ -6,12 +6,8 @@ public class ServiceManager: Observation {
     func tracking(input: FineLocationTrackingResult, isPast: Bool) {
         for observer in observers {
             var result = input
-            
             if (result.x != 0 && result.y != 0) {
                 result.absolute_heading = compensateHeading(heading: result.absolute_heading, mode: self.runMode)
-                
-//                let localTime = getLocalTimeString()
-//                print(localTime + " , (Jupiter) Tracking : Input = \(input) , isPast = \(isPast)")
                 // Map Matching
                 if (self.isMapMatching) {
                     let correctResult = correct(building: result.building_name, level: result.level_name, x: result.x, y: result.y, heading: result.absolute_heading, tuXY: [0,0], isMu: false, mode: self.runMode, isPast: isPast, HEADING_RANGE: self.HEADING_RANGE)
@@ -85,7 +81,7 @@ public class ServiceManager: Observation {
     }
     
     // 0 : Release  //  1 : Test
-    var serverType: Int = 0
+    var serverType: Int = 1
     // 0 : Android  //  1 : iOS
     var osType: Int = 1
     var region: String = "Korea"
@@ -305,7 +301,7 @@ public class ServiceManager: Observation {
     var lastResult = FineLocationTrackingResult()
     
     var SQUARE_RANGE: Double = 10
-    let SQUARE_RANGE_PDR: Double = 5
+    let SQUARE_RANGE_PDR: Double = 7
     let SQUARE_RANGE_DR: Double = 10
     
     let HEADING_RANGE: Double = 50
@@ -1292,11 +1288,20 @@ public class ServiceManager: Observation {
                                         var resultCorrected = self.correct(building: result.building_name, level: result.level_name, x: result.x, y: result.y, heading: result.absolute_heading, tuXY: [0,0], isMu: false, mode: self.runMode, isPast: false, HEADING_RANGE: self.HEADING_RANGE)
                                         resultCorrected.xyh[2] = compensateHeading(heading: resultCorrected.xyh[2], mode: self.runMode)
                                         
-                                        self.serverResult[0] = result.x
-                                        self.serverResult[1] = result.y
-                                        self.serverResult[2] = result.absolute_heading
+                                        self.serverResult[0] = resultCorrected.xyh[0]
+                                        self.serverResult[1] = resultCorrected.xyh[1]
+                                        self.serverResult[2] = resultCorrected.xyh[2]
                                         
                                         if (!self.isActiveKf) {
+                                            if (result.phase == 4) {
+                                                self.timeUpdatePosition.x = resultCorrected.xyh[0]
+                                                self.timeUpdatePosition.y = resultCorrected.xyh[1]
+                                                self.timeUpdatePosition.heading = resultCorrected.xyh[2]
+                                                
+                                                self.timeUpdateOutput.x = resultCorrected.xyh[0]
+                                                self.timeUpdateOutput.y = resultCorrected.xyh[1]
+                                                self.timeUpdateOutput.absolute_heading = resultCorrected.xyh[2]
+                                            }
                                             let trackingTime = getCurrentTimeInMilliseconds()
                                             var finalResult = fromServerToResult(fromServer: result, velocity: displayOutput.velocity)
                                             finalResult.mobile_time = trackingTime
@@ -1423,7 +1428,6 @@ public class ServiceManager: Observation {
                                         self.rssiBiasArray = newBiasArray
                                         if (resultEstRssiBias.0) {
                                             self.sccGoodBiasArray.append(result.rss_compensation)
-//                                            print("(Estimate Bias) Append to BiasArray : \(self.sccGoodBiasArray) // scc = \(result.scc) // Phase = 4")
 
                                             if (self.sccGoodBiasArray.count >= GOOD_BIAS_ARRAY_SIZE) {
                                                 let biasAvg: Int = averageBiasArray(biasArray: self.sccGoodBiasArray)
@@ -1431,11 +1435,9 @@ public class ServiceManager: Observation {
 
 //                                                self.isConverge = true
                                                 saveRssiBias(bias: self.rssiBias, isConverge: self.isConverge, sector_id: self.sector_id)
-//                                                print("(Estimate Bias) Converged Bias = \(self.rssiBias) // BiasArray = \(self.sccGoodBiasArray)")
                                             }
                                         }
                                         self.isBiasRequested = false
-//                                        print("(Bias) bias = \(self.rssiBias) // Phase = 4")
                                         displayOutput.bias = self.rssiBias
                                     } else if (biasCheckTime > 3000) {
                                         self.isBiasRequested = false
@@ -1447,6 +1449,7 @@ public class ServiceManager: Observation {
                                         if (result.mobile_time > self.preOutputMobileTime) {
                                             if (!self.isActiveKf && result.phase == 4) {
                                                 self.isActiveKf = true
+                                                self.timeUpdateFlag = true
                                             }
                                             
                                             self.phase = result.phase
@@ -1489,12 +1492,10 @@ public class ServiceManager: Observation {
                                                         resultForMu.absolute_heading = compensateHeading(heading: resultForMu.absolute_heading, mode: self.runMode)
                                                         
                                                         // isMu : True
+//                                                        print(localTime + " , (Jupiter) Run Path Matching : \(resultForMu)")
+//                                                        var resultCorrected = self.correctCheck(time: localTime, index: resultForMu.index, building: resultForMu.building_name, level: resultForMu.level_name, x: resultForMu.x, y: resultForMu.y, heading: resultForMu.absolute_heading, tuXY: [self.pastTuResult.x, self.pastTuResult.y], isMu: false, mode: self.runMode, isPast: false, HEADING_RANGE: self.HEADING_RANGE)
                                                         var resultCorrected = self.correct(building: resultForMu.building_name, level: resultForMu.level_name, x: resultForMu.x, y: resultForMu.y, heading: resultForMu.absolute_heading, tuXY: [self.pastTuResult.x, self.pastTuResult.y], isMu: false, mode: self.runMode, isPast: false, HEADING_RANGE: self.HEADING_RANGE)
-                                                        if (resultCorrected.isSuccess) {
-                                                            print(localTime + "(Jupiter) Success : Server Result MM in Phase 4")
-                                                        } else {
-                                                            print(localTime + "(Jupiter) Fail : Server Result MM in Phase 4")
-                                                        }
+
                                                         self.serverResult[0] = resultCorrected.xyh[0]
                                                         self.serverResult[1] = resultCorrected.xyh[1]
                                                         self.serverResult[2] = resultCorrected.xyh[2]
@@ -1516,7 +1517,7 @@ public class ServiceManager: Observation {
                                                                 let tuBufferHeading = compensateHeading(heading: tuBuffer[idx][2], mode: self.runMode)
                                                                 
                                                                 dh = currentTuResult.absolute_heading - tuBufferHeading
-                                                                print("Propagation : indexCurrent = \(currentTuResult.index) , indexResult = \(result.index) , dx = \(dx) , dy = \(dy) , dh = \(dh)")
+//                                                                print(localTime + " , Propagation : indexCurrent = \(currentTuResult.index) , indexResult = \(result.index) , dx = \(dx) , dy = \(dy) , dh = \(dh)")
                                                             } else {
 //                                                                print("Propagation : Cannot find index")
                                                                 dx = currentTuResult.x - pastTuResult.x
@@ -1538,17 +1539,16 @@ public class ServiceManager: Observation {
                                                         }
                                                         let trackingTime = getCurrentTimeInMilliseconds()
                                                         
-                                                        self.serverResult[0] = resultForMu.x
-                                                        self.serverResult[1] = resultForMu.y
-                                                        self.serverResult[2] = resultForMu.absolute_heading
+//                                                        self.serverResult[0] = resultForMu.x
+//                                                        self.serverResult[1] = resultForMu.y
+//                                                        self.serverResult[2] = resultForMu.absolute_heading
                                                         let muOutput = measurementUpdate(timeUpdatePosition: timeUpdatePosition, serverOutputHat: resultForMu, originalResult: resultCorrected.xyh, isNeedHeadingCorrection: self.isNeedHeadingCorrection, mode: self.runMode)
                                                         var muResult = fromServerToResult(fromServer: muOutput, velocity: displayOutput.velocity)
-                                                        
 //                                                        self.serverResult[0] = muResult.x
 //                                                        self.serverResult[1] = muResult.y
 //                                                        self.serverResult[2] = muResult.absolute_heading
                                                         
-                                                        muResult.mobile_time = trackingTime
+                                                        muResult.mobile_time = result.mobile_time
                                                         if (result.mobile_time > self.runOsrTime) {
                                                             self.currentBuilding = result.building_name
                                                             self.currentLevel = result.level_name
@@ -1557,8 +1557,8 @@ public class ServiceManager: Observation {
                                                             self.outputResult.level_name = self.currentLevel
                                                         }
                                                         self.flagPast = false
+                                                        timeUpdatePositionInit(serverOutput: muOutput)
                                                     }
-                                                    timeUpdatePositionInit(serverOutput: result)
                                                 }
                                             }
                                         }
@@ -2095,15 +2095,15 @@ public class ServiceManager: Observation {
                     var index: Int = 0
                     var correctedHeading: Double = heading
                     // Original
-                    if (!sortedIdh.isEmpty) {
-                        let minData: [Double] = sortedIdh[0]
-                        index = Int(minData[0])
-                        if (mode == "pdr") {
-                            correctedHeading = heading
-                        } else {
-                            correctedHeading = minData[2]
-                        }
-                    }
+//                    if (!sortedIdh.isEmpty) {
+//                        let minData: [Double] = sortedIdh[0]
+//                        index = Int(minData[0])
+//                        if (mode == "pdr") {
+//                            correctedHeading = heading
+//                        } else {
+//                            correctedHeading = minData[2]
+//                        }
+//                    }
                     
                     if (!sortedIdh.isEmpty) {
                         if (isMu) {
@@ -2142,6 +2142,163 @@ public class ServiceManager: Observation {
                                 correctedHeading = minData[2]
                             }
                         }
+                    }
+                    
+                    isSuccess = true
+                    xyh = [roadX[index], roadY[index], correctedHeading]
+                }
+            }
+        }
+        return (isSuccess, xyh)
+    }
+    
+    private func correctCheck(time: String, index: Int, building: String, level: String, x: Double, y: Double, heading: Double, tuXY: [Double], isMu: Bool, mode: String, isPast: Bool, HEADING_RANGE: Double) -> (isSuccess: Bool, xyh: [Double]) {
+        var isSuccess: Bool = false
+        var xyh: [Double] = [x, y, heading]
+        let levelCopy: String = self.removeLevelDirectionString(levelName: level)
+        let key: String = "\(building)_\(levelCopy)"
+        if (isPast) {
+            isSuccess = true
+            return (isSuccess, xyh)
+        }
+        var checkRange: Bool = false
+        print(time + " , (Jupiter) Path Matching : index = \(index) , building = \(building) , level = \(level) , x = \(x) , y = \(y) , heading = \(heading) , SQUARE_RANGE = \(SQUARE_RANGE) , runMode = \(self.runMode)")
+        if (!(building.isEmpty) && !(level.isEmpty)) {
+            guard let mainRoad: [[Double]] = Road[key] else {
+                return (isSuccess, xyh)
+            }
+            guard let mainHeading: [String] = RoadHeading[key] else {
+                return (isSuccess, xyh)
+            }
+            // Heading 사용
+            var idhArray = [[Double]]()
+            var pathArray = [[Double]]()
+            var failArray = [[Double]]()
+            if (!mainRoad.isEmpty) {
+                let roadX = mainRoad[0]
+                let roadY = mainRoad[1]
+                
+                let xMin = x - SQUARE_RANGE
+                let xMax = x + SQUARE_RANGE
+                let yMin = y - SQUARE_RANGE
+                let yMax = y + SQUARE_RANGE
+                for i in 0..<roadX.count {
+                    let xPath = roadX[i]
+                    let yPath = roadY[i]
+
+                    // XY 범위 안에 있는 값 중에 검사
+                    if (xPath >= xMin && xPath <= xMax) {
+                        if (yPath >= yMin && yPath <= yMax) {
+                            checkRange = true
+                            let index = Double(i)
+                            let distance = sqrt(pow(x-xPath, 2) + pow(y-yPath, 2))
+                            var idh: [Double] = [index, distance, heading]
+                            var path: [Double] = [xPath, yPath, 0, 0]
+                            
+                            let headingArray = mainHeading[i]
+                            var isValidIdh: Bool = true
+                            if (!headingArray.isEmpty) {
+                                let headingData = headingArray.components(separatedBy: ",")
+                                var diffHeading = [Double]()
+                                print(time + " , (Jupiter) Path Matching : xPath = \(xPath) yPath = \(yPath) , headingData = \(headingData)")
+                                for j in 0..<headingData.count {
+                                    if(!headingData[j].isEmpty) {
+                                        let mapHeading = Double(headingData[j])!
+                                        if (heading > 270 && (mapHeading >= 0 && mapHeading < 90)) {
+                                            diffHeading.append(abs(heading - (mapHeading+360)))
+                                        } else if (mapHeading > 270 && (heading >= 0 && heading < 90)) {
+                                            diffHeading.append(abs(mapHeading - (heading+360)))
+                                        } else {
+                                            diffHeading.append(abs(heading - mapHeading))
+                                        }
+                                    }
+                                }
+                                print(time + " , (Jupiter) Path Matching : diffHeading = \(diffHeading)")
+                                if (!diffHeading.isEmpty) {
+                                    let idxHeading = diffHeading.firstIndex(of: diffHeading.min()!)
+                                    let minHeading = Double(headingData[idxHeading!])!
+                                    idh[2] = minHeading
+                                    if (mode == "pdr") {
+                                        
+                                    } else {
+                                        if (heading > 270 && (minHeading >= 0 && minHeading < 90)) {
+                                            if (abs(heading-360) >= HEADING_RANGE) {
+                                                isValidIdh = false
+                                            }
+                                        } else if (minHeading > 270 && (heading >= 0 && heading < 90)) {
+                                            if (abs(minHeading-360) >= HEADING_RANGE) {
+                                                isValidIdh = false
+                                            }
+                                        } else {
+                                            if (abs(heading-minHeading) >= HEADING_RANGE) {
+                                                isValidIdh = false
+                                            }
+                                        }
+                                    }
+                                    path[2] = minHeading
+                                    path[3] = 1
+                                    print(time + " , (Jupiter) Path Matching : minHeading = \(minHeading)")
+                                }
+                                
+                            }
+                            
+                            if (isValidIdh) {
+                                idhArray.append(idh)
+                                pathArray.append(path)
+                            } else {
+                                failArray.append(idh)
+                            }
+                        }
+                    }
+                }
+                print(time + " , (Jupiter) Path Matching : checkRange = \(checkRange) , xMin = \(xMin) , xMax = \(xMax) , yMin = \(yMin) , yMax = \(yMax)")
+                
+                if (!idhArray.isEmpty) {
+                    let sortedIdh = idhArray.sorted(by: {$0[1] < $1[1] })
+                    var index: Int = 0
+                    var correctedHeading: Double = heading
+                    
+                    if (!sortedIdh.isEmpty) {
+                        if (isMu) {
+                            // In Measurement Update
+                            var minData: [Double] = sortedIdh[0]
+                            index = Int(minData[0])
+                            
+                            var minDistance: Double = 100
+                            for idx in 0..<sortedIdh.count {
+                                let candData: [Double] = sortedIdh[idx]
+                                let idxCand = Int(candData[0])
+                                let xyCand = [roadX[idxCand], roadY[idxCand]]
+                                let diffX = tuXY[0] - xyCand[0]
+                                let diffY = tuXY[1] - xyCand[1]
+                                let diffXY = sqrt(diffX*diffX + diffY*diffY)
+                                
+                                if (diffXY < minDistance) {
+                                    minData = sortedIdh[idx]
+                                    minDistance = diffXY
+                                }
+                            }
+                            index = Int(minData[0])
+                            
+                            if (mode == "pdr") {
+                                correctedHeading = heading
+                            } else {
+                                correctedHeading = minData[2]
+                            }
+                        } else {
+                            // Other Case
+                            let minData: [Double] = sortedIdh[0]
+                            index = Int(minData[0])
+                            if (mode == "pdr") {
+                                correctedHeading = heading
+                            } else {
+                                correctedHeading = minData[2]
+                            }
+                            print(time + " , (Jupiter) Path Matching Success : sortedIdh = \(sortedIdh)")
+                            print(time + " , (Jupiter) Path Matching Success : x = \(roadX[index]) , y = \(roadY[index]) , heading = \(correctedHeading)")
+                        }
+                    } else {
+                        print(time + " , (Jupiter) Path Matching Fail : sortedIdh is empty")
                     }
                     
                     isSuccess = true
@@ -2247,7 +2404,7 @@ public class ServiceManager: Observation {
         } else if (mode == "dr") {
             self.INIT_INPUT_NUM = 5
             self.VAR_INPUT_NUM = 10
-            self.SQUARE_RANGE = self.SQUARE_RANGE_PDR
+            self.SQUARE_RANGE = self.SQUARE_RANGE_DR
             
             if (phase == 4) {
                 self.UV_INPUT_NUM = self.VAR_INPUT_NUM

@@ -48,6 +48,8 @@
 		B388AC31282BF6A3001C3D71 /* RobotTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B388AC2F282BF6A3001C3D71 /* RobotTableViewCell.swift */; };
 		B388AC32282BF6A3001C3D71 /* RobotTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B388AC30282BF6A3001C3D71 /* RobotTableViewCell.xib */; };
 		B38C7F4C28FE6AC200DEEF32 /* NeptuneViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B38C7F4B28FE6AC200DEEF32 /* NeptuneViewController.swift */; };
+		B3985D4A299A1F1E008E7F78 /* FileCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3985D48299A1F1E008E7F78 /* FileCollectionViewCell.swift */; };
+		B3985D4B299A1F1E008E7F78 /* FileCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B3985D49299A1F1E008E7F78 /* FileCollectionViewCell.xib */; };
 		B3AA004928313C97007CD284 /* UILabelExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3AA004828313C97007CD284 /* UILabelExtension.swift */; };
 		B3AA004B28313CDF007CD284 /* UITextFieldExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3AA004A28313CDF007CD284 /* UITextFieldExtension.swift */; };
 		B3AA004D28313CEA007CD284 /* UITextViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3AA004C28313CEA007CD284 /* UITextViewExtension.swift */; };
@@ -172,6 +174,8 @@
 		B388AC2F282BF6A3001C3D71 /* RobotTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RobotTableViewCell.swift; sourceTree = "<group>"; };
 		B388AC30282BF6A3001C3D71 /* RobotTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = RobotTableViewCell.xib; sourceTree = "<group>"; };
 		B38C7F4B28FE6AC200DEEF32 /* NeptuneViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NeptuneViewController.swift; sourceTree = "<group>"; };
+		B3985D48299A1F1E008E7F78 /* FileCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileCollectionViewCell.swift; sourceTree = "<group>"; };
+		B3985D49299A1F1E008E7F78 /* FileCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = FileCollectionViewCell.xib; sourceTree = "<group>"; };
 		B3AA004828313C97007CD284 /* UILabelExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UILabelExtension.swift; sourceTree = "<group>"; };
 		B3AA004A28313CDF007CD284 /* UITextFieldExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITextFieldExtension.swift; sourceTree = "<group>"; };
 		B3AA004C28313CEA007CD284 /* UITextViewExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITextViewExtension.swift; sourceTree = "<group>"; };
@@ -309,6 +313,8 @@
 				B3B4F85928114EEB009F9E6C /* ShowCardCollectionViewCell.xib */,
 				B3DE961A2999F65500352F40 /* WardCollectionViewCell.swift */,
 				B3DE961B2999F65500352F40 /* WardCollectionViewCell.xib */,
+				B3985D48299A1F1E008E7F78 /* FileCollectionViewCell.swift */,
+				B3985D49299A1F1E008E7F78 /* FileCollectionViewCell.xib */,
 				B3E0A4F52887E51700B88E08 /* Environment.swift */,
 				607FACD91AFB9204008FA782 /* Main.storyboard */,
 				B35272B1281F8DC300321CC6 /* SplashScreen.storyboard */,
@@ -635,6 +641,7 @@
 				B3021F0F29541D7C000CE9AD /* Museum_1F.csv in Resources */,
 				B3B9F4E5286C2EA300FEE914 /* Gallery_4F_Road.csv in Resources */,
 				B33375012990FAC500F5B030 /* S3_7F.csv in Resources */,
+				B3985D4B299A1F1E008E7F78 /* FileCollectionViewCell.xib in Resources */,
 				B38807F2283390280029B174 /* L1_1F.csv in Resources */,
 				B3BD69B027E9A78000A32A7A /* SectorContainerTableViewCell.xib in Resources */,
 				B3D488F6289B8B4900A8154C /* GoogleService-Info.plist in Resources */,
@@ -799,6 +806,7 @@
 				B3FD74E9286989A600CD4D74 /* CustomSwitchButton.swift in Sources */,
 				B3C09C64280E941B00E6F55F /* ShowCardViewController.swift in Sources */,
 				B3BD69AC27E9A57E00A32A7A /* UICollectionViewRegisterable.swift in Sources */,
+				B3985D4A299A1F1E008E7F78 /* FileCollectionViewCell.swift in Sources */,
 				607FACD81AFB9204008FA782 /* MainViewController.swift in Sources */,
 				B3AA004D28313CEA007CD284 /* UITextViewExtension.swift in Sources */,
 				B3844E8E28099EE3007A5215 /* CardCollectionViewCell.swift in Sources */,
