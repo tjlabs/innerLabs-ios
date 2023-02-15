@@ -81,7 +81,7 @@ public class ServiceManager: Observation {
     }
     
     // 0 : Release  //  1 : Test
-    var serverType: Int = 1
+    var serverType: Int = 0
     // 0 : Android  //  1 : iOS
     var osType: Int = 1
     var region: String = "Korea"
@@ -216,8 +216,6 @@ public class ServiceManager: Observation {
     var indexAfterResponse: Int = 0
     var isPossibleEstBias: Bool = false
     
-    var rssiBiasCand: [Int] = [0, 3, 6, 9, 12]
-//    var rssiBiasArray: [Int] = [0, 3, 6]
     var rssiBiasArray: [Int] = [4, 2, 6]
     var rssiBias: Int = 0
     let SCC_THRESHOLD: Double = 0.75
