@@ -139,6 +139,7 @@ class CollectViewController: UIViewController {
             sender.backgroundColor = .systemGray4
             isWriting = false
             
+            saveFile()
             goToBack()
         }
     }
@@ -148,15 +149,17 @@ class CollectViewController: UIViewController {
         self.navigationController?.pushViewController(fileVC, animated: true)
     }
     
-    
-    func goToBack() {
+    func saveFile() {
         self.saveData()
 //        self.saveTrajData()
         
         serviceManager.stopCollect()
         self.saveFlag = false
         self.stopTimer()
-        
+    }
+    
+    
+    func goToBack() {
         self.delegate?.sendPage(data: page)
         self.navigationController?.popViewController(animated: true)
     }

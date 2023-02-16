@@ -258,7 +258,7 @@
                                 </constraints>
                             </imageView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Roy-K8-fGl">
-                                <rect key="frame" x="332" y="82.666666666666671" width="28" height="22"/>
+                                <rect key="frame" x="332" y="82.666666666666671" width="28" height="21.999999999999986"/>
                                 <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                                 <state key="normal" image="editButton"/>
                                 <state key="selected" image="confirmButton"/>
@@ -2013,7 +2013,7 @@
                                 <constraints>
                                     <constraint firstAttribute="height" constant="40" id="Idq-ad-zQl"/>
                                 </constraints>
-                                <fontDescription key="fontDescription" name="NotoSansKR-Bold" family="Noto Sans KR" pointSize="20"/>
+                                <fontDescription key="fontDescription" name="NotoSansKR-Medium" family="Noto Sans KR" pointSize="20"/>
                                 <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                                 <state key="normal" title="Start">
                                     <color key="titleColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -2204,58 +2204,42 @@
                                 </constraints>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="4Va-sX-Iqu">
-                                <rect key="frame" x="0.0" y="100" width="390" height="80"/>
+                                <rect key="frame" x="0.0" y="100" width="390" height="60"/>
                                 <subviews>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="HRU-Cm-MzR">
-                                        <rect key="frame" x="10" y="15" width="120" height="50"/>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="HRU-Cm-MzR">
+                                        <rect key="frame" x="20" y="5" width="200" height="50"/>
                                         <constraints>
-                                            <constraint firstAttribute="width" constant="120" id="0Bd-8E-5Ut"/>
+                                            <constraint firstAttribute="width" constant="200" id="0Bd-8E-5Ut"/>
                                             <constraint firstAttribute="height" constant="50" id="TC4-t1-fg4"/>
                                         </constraints>
-                                        <fontDescription key="fontDescription" name="Futura-Medium" family="Futura" pointSize="18"/>
+                                        <fontDescription key="fontDescription" name="NotoSansKR-Medium" family="Noto Sans KR" pointSize="18"/>
                                         <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                                         <state key="normal" title="  Select All" image="unCheckedBox">
                                             <color key="titleColor" name="darkgrey4"/>
                                         </state>
-                                    </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="SMe-CK-k8o">
-                                        <rect key="frame" x="180" y="20" width="40" height="40"/>
-                                        <constraints>
-                                            <constraint firstAttribute="height" constant="40" id="R2l-rh-CJT"/>
-                                            <constraint firstAttribute="width" constant="40" id="jnr-ud-yk6"/>
-                                        </constraints>
-                                        <fontDescription key="fontDescription" name="Futura-Medium" family="Futura" pointSize="18"/>
-                                        <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                                        <state key="normal" image="trashIcon">
-                                            <color key="titleColor" name="darkgrey4"/>
-                                        </state>
+                                        <state key="selected" title="  Unselect All" image="checkedBox"/>
                                         <connections>
-                                            <action selector="tapDeleteButton:" destination="g4t-hb-bpT" eventType="touchUpInside" id="13Z-fh-6dr"/>
+                                            <action selector="tapSelectButton:" destination="g4t-hb-bpT" eventType="touchUpInside" id="a6X-4G-CAK"/>
                                         </connections>
                                     </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="OBi-Z1-gf1">
-                                        <rect key="frame" x="270" y="20" width="40" height="40"/>
-                                        <constraints>
-                                            <constraint firstAttribute="height" constant="40" id="37t-CU-YEI"/>
-                                            <constraint firstAttribute="width" constant="40" id="TZx-9K-TC9"/>
-                                        </constraints>
-                                        <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                                        <state key="normal" image="sendIcon"/>
-                                    </button>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Num Files : 0" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="f8z-xG-lfD">
+                                        <rect key="frame" x="277.33333333333331" y="17.666666666666671" width="102.66666666666669" height="24.666666666666671"/>
+                                        <fontDescription key="fontDescription" name="NotoSansKR-Medium" family="Noto Sans KR" pointSize="17"/>
+                                        <color key="textColor" name="darkgrey4"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
                                 </subviews>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="80" id="2PK-ui-d1q"/>
-                                    <constraint firstItem="OBi-Z1-gf1" firstAttribute="leading" secondItem="SMe-CK-k8o" secondAttribute="trailing" constant="50" id="3KI-Ic-XoE"/>
-                                    <constraint firstItem="OBi-Z1-gf1" firstAttribute="centerY" secondItem="SMe-CK-k8o" secondAttribute="centerY" id="8gG-8c-Y9G"/>
+                                    <constraint firstAttribute="height" constant="60" id="2PK-ui-d1q"/>
                                     <constraint firstItem="HRU-Cm-MzR" firstAttribute="centerY" secondItem="4Va-sX-Iqu" secondAttribute="centerY" id="Bq4-sH-Gnr"/>
-                                    <constraint firstItem="SMe-CK-k8o" firstAttribute="centerY" secondItem="HRU-Cm-MzR" secondAttribute="centerY" id="cAx-hM-7Qd"/>
-                                    <constraint firstItem="HRU-Cm-MzR" firstAttribute="leading" secondItem="4Va-sX-Iqu" secondAttribute="leading" constant="10" id="exp-c0-i0N"/>
-                                    <constraint firstItem="SMe-CK-k8o" firstAttribute="leading" secondItem="HRU-Cm-MzR" secondAttribute="trailing" constant="50" id="okT-ED-xmN"/>
+                                    <constraint firstAttribute="trailing" secondItem="f8z-xG-lfD" secondAttribute="trailing" constant="10" id="boA-PH-nfT"/>
+                                    <constraint firstItem="HRU-Cm-MzR" firstAttribute="leading" secondItem="4Va-sX-Iqu" secondAttribute="leading" constant="20" id="exp-c0-i0N"/>
+                                    <constraint firstItem="f8z-xG-lfD" firstAttribute="centerY" secondItem="HRU-Cm-MzR" secondAttribute="centerY" id="fh7-c7-scT"/>
                                 </constraints>
                             </view>
                             <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="q6w-u3-zC1">
-                                <rect key="frame" x="10" y="180" width="370" height="630"/>
+                                <rect key="frame" x="10" y="160" width="370" height="595"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <collectionViewFlowLayout key="collectionViewLayout" automaticEstimatedItemSize="YES" minimumLineSpacing="10" minimumInteritemSpacing="10" id="MmY-oF-NdM">
                                     <size key="itemSize" width="128" height="128"/>
@@ -2274,22 +2258,77 @@
                                     </collectionViewCell>
                                 </cells>
                             </collectionView>
+                            <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="IMU-3u-cAt">
+                                <rect key="frame" x="10" y="765" width="370" height="40"/>
+                                <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="eoF-9b-6Ik">
+                                        <rect key="frame" x="0.0" y="0.0" width="180" height="40"/>
+                                        <color key="backgroundColor" systemColor="systemGray4Color"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="40" id="rsx-95-uIf"/>
+                                        </constraints>
+                                        <fontDescription key="fontDescription" name="NotoSansKR-Medium" family="Noto Sans KR" pointSize="18"/>
+                                        <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                        <state key="normal" title="Send">
+                                            <color key="titleColor" systemColor="labelColor"/>
+                                            <color key="titleShadowColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        </state>
+                                        <userDefinedRuntimeAttributes>
+                                            <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                                                <real key="value" value="5"/>
+                                            </userDefinedRuntimeAttribute>
+                                        </userDefinedRuntimeAttributes>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="b2D-03-ADK">
+                                        <rect key="frame" x="190" y="0.0" width="180" height="40"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="40" id="CZZ-kI-85I"/>
+                                        </constraints>
+                                        <fontDescription key="fontDescription" name="NotoSansKR-Medium" family="Noto Sans KR" pointSize="18"/>
+                                        <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                        <state key="normal" title="Delete">
+                                            <color key="titleColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        </state>
+                                        <userDefinedRuntimeAttributes>
+                                            <userDefinedRuntimeAttribute type="color" keyPath="borderColor">
+                                                <color key="value" systemColor="systemGray4Color"/>
+                                            </userDefinedRuntimeAttribute>
+                                            <userDefinedRuntimeAttribute type="number" keyPath="borderWidth">
+                                                <real key="value" value="2"/>
+                                            </userDefinedRuntimeAttribute>
+                                            <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                                                <real key="value" value="5"/>
+                                            </userDefinedRuntimeAttribute>
+                                        </userDefinedRuntimeAttributes>
+                                        <connections>
+                                            <action selector="tapDeleteButton:" destination="g4t-hb-bpT" eventType="touchUpInside" id="v5f-eM-Xsb"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                            </stackView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="75q-sJ-6a2"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
-                            <constraint firstItem="75q-sJ-6a2" firstAttribute="bottom" secondItem="q6w-u3-zC1" secondAttribute="bottom" id="Cu4-dF-1pp"/>
+                            <constraint firstItem="IMU-3u-cAt" firstAttribute="top" secondItem="q6w-u3-zC1" secondAttribute="bottom" constant="10" id="FXy-VA-6u3"/>
                             <constraint firstItem="75q-sJ-6a2" firstAttribute="trailing" secondItem="q6w-u3-zC1" secondAttribute="trailing" constant="10" id="GBC-5C-O6J"/>
                             <constraint firstItem="q6w-u3-zC1" firstAttribute="top" secondItem="4Va-sX-Iqu" secondAttribute="bottom" id="Prq-rw-zpj"/>
+                            <constraint firstItem="IMU-3u-cAt" firstAttribute="leading" secondItem="75q-sJ-6a2" secondAttribute="leading" constant="10" id="U33-XT-htm"/>
                             <constraint firstItem="75q-sJ-6a2" firstAttribute="trailing" secondItem="4Va-sX-Iqu" secondAttribute="trailing" id="dPf-Rk-8co"/>
                             <constraint firstItem="4Va-sX-Iqu" firstAttribute="top" secondItem="tZa-iD-trU" secondAttribute="bottom" id="fqL-zP-CIG"/>
                             <constraint firstItem="4Va-sX-Iqu" firstAttribute="leading" secondItem="75q-sJ-6a2" secondAttribute="leading" id="gVV-u7-7h6"/>
                             <constraint firstItem="q6w-u3-zC1" firstAttribute="leading" secondItem="75q-sJ-6a2" secondAttribute="leading" constant="10" id="pQ2-cH-3QS"/>
+                            <constraint firstItem="75q-sJ-6a2" firstAttribute="bottom" secondItem="IMU-3u-cAt" secondAttribute="bottom" constant="5" id="pas-NF-84O"/>
+                            <constraint firstItem="75q-sJ-6a2" firstAttribute="trailing" secondItem="IMU-3u-cAt" secondAttribute="trailing" constant="10" id="qIe-sE-dS0"/>
                             <constraint firstItem="tZa-iD-trU" firstAttribute="top" secondItem="jPc-nA-2kK" secondAttribute="top" id="soO-TH-LH6"/>
                             <constraint firstItem="tZa-iD-trU" firstAttribute="leading" secondItem="75q-sJ-6a2" secondAttribute="leading" id="uPX-4C-nut"/>
                             <constraint firstItem="tZa-iD-trU" firstAttribute="trailing" secondItem="75q-sJ-6a2" secondAttribute="trailing" id="yBx-To-yRu"/>
                         </constraints>
                     </view>
+                    <connections>
+                        <outlet property="fileCollectionView" destination="q6w-u3-zC1" id="gls-nv-zOv"/>
+                        <outlet property="numFilesLabel" destination="f8z-xG-lfD" id="wAd-op-uUy"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="QCn-Rl-230" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
@@ -2365,7 +2404,7 @@
                                 </constraints>
                             </progressView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="O9f-hf-76E">
-                                <rect key="frame" x="342" y="79.666666666666671" width="28" height="28"/>
+                                <rect key="frame" x="342" y="79.666666666666671" width="28" height="27.999999999999986"/>
                                 <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                                 <state key="normal" image="showUserInfoButton"/>
                                 <connections>
@@ -2380,7 +2419,7 @@
                                 <rect key="frame" x="290" y="0.0" width="100" height="844"/>
                                 <subviews>
                                     <button opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hcr-0C-B4e">
-                                        <rect key="frame" x="5" y="79.666666666666671" width="90" height="28"/>
+                                        <rect key="frame" x="5" y="79.666666666666671" width="90" height="27.999999999999986"/>
                                         <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                                         <state key="normal" image="showUserInfoButton"/>
                                     </button>
@@ -2527,14 +2566,12 @@
         <image name="myLocation" width="42.666667938232422" height="42.666667938232422"/>
         <image name="onSpot" width="170.66667175292969" height="170.66667175292969"/>
         <image name="purpleCardTop" width="390" height="95"/>
-        <image name="sendIcon" width="75" height="75"/>
         <image name="showCard" width="78" height="22"/>
         <image name="showInfoButton" width="42" height="15.666666984558105"/>
         <image name="showInfoToggle" width="17" height="10.333333015441895"/>
         <image name="showUserInfoButton" width="28" height="28"/>
         <image name="tipsTown" width="203.33332824707031" height="151.66667175292969"/>
         <image name="toCard" width="78" height="22"/>
-        <image name="trashIcon" width="170.66667175292969" height="170.66667175292969"/>
         <image name="unCheckedBox" width="24.666666030883789" height="25.333333969116211"/>
         <image name="yellowCardTop" width="390" height="95"/>
         <namedColor name="blue1">
@@ -2549,6 +2586,9 @@
         <namedColor name="red1">
             <color red="0.85100001096725464" green="0.35699999332427979" blue="0.35699999332427979" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
+        <systemColor name="labelColor">
+            <color red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>

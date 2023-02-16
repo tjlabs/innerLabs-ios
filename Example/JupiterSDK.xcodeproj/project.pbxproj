@@ -48,6 +48,7 @@
 		B388AC31282BF6A3001C3D71 /* RobotTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B388AC2F282BF6A3001C3D71 /* RobotTableViewCell.swift */; };
 		B388AC32282BF6A3001C3D71 /* RobotTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B388AC30282BF6A3001C3D71 /* RobotTableViewCell.xib */; };
 		B38C7F4C28FE6AC200DEEF32 /* NeptuneViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B38C7F4B28FE6AC200DEEF32 /* NeptuneViewController.swift */; };
+		B3967481299CC5EF00C6DC4D /* PopUpWithButtonViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3967480299CC5EF00C6DC4D /* PopUpWithButtonViewController.swift */; };
 		B3985D4A299A1F1E008E7F78 /* FileCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3985D48299A1F1E008E7F78 /* FileCollectionViewCell.swift */; };
 		B3985D4B299A1F1E008E7F78 /* FileCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B3985D49299A1F1E008E7F78 /* FileCollectionViewCell.xib */; };
 		B3AA004928313C97007CD284 /* UILabelExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3AA004828313C97007CD284 /* UILabelExtension.swift */; };
@@ -174,6 +175,7 @@
 		B388AC2F282BF6A3001C3D71 /* RobotTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RobotTableViewCell.swift; sourceTree = "<group>"; };
 		B388AC30282BF6A3001C3D71 /* RobotTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = RobotTableViewCell.xib; sourceTree = "<group>"; };
 		B38C7F4B28FE6AC200DEEF32 /* NeptuneViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NeptuneViewController.swift; sourceTree = "<group>"; };
+		B3967480299CC5EF00C6DC4D /* PopUpWithButtonViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopUpWithButtonViewController.swift; sourceTree = "<group>"; };
 		B3985D48299A1F1E008E7F78 /* FileCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileCollectionViewCell.swift; sourceTree = "<group>"; };
 		B3985D49299A1F1E008E7F78 /* FileCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = FileCollectionViewCell.xib; sourceTree = "<group>"; };
 		B3AA004828313C97007CD284 /* UILabelExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UILabelExtension.swift; sourceTree = "<group>"; };
@@ -404,6 +406,7 @@
 				B3D194DE282E2782004E6F9A /* GuideViewController.swift */,
 				B3CC3C06283231E000D50522 /* PrivacyPolicyViewController.swift */,
 				B3B7FBF42856DA4000E23EDF /* PopUpViewController.swift */,
+				B3967480299CC5EF00C6DC4D /* PopUpWithButtonViewController.swift */,
 				B3B7FBF62856F43200E23EDF /* GalleryViewController.swift */,
 				B31EC7D82876C03A00799659 /* ServiceViewController.swift */,
 				B30EED7B28936CB5009A3EDA /* TipsTownViewController.swift */,
@@ -816,6 +819,7 @@
 				B3D194DC282E2726004E6F9A /* JupiterGuideTableViewCell.swift in Sources */,
 				B3F370D6281B9DC5003A427F /* OutputView.swift in Sources */,
 				B3F5C780282A5519009BEDB9 /* Protocol.swift in Sources */,
+				B3967481299CC5EF00C6DC4D /* PopUpWithButtonViewController.swift in Sources */,
 				B3D19DEC29079CE000A5F7D4 /* SpotTableViewCell.swift in Sources */,
 				B3CC3C07283231E000D50522 /* PrivacyPolicyViewController.swift in Sources */,
 				B3D488F0289B4D5500A8154C /* UIColorExtension.swift in Sources */,

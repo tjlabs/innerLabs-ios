@@ -1,7 +1,7 @@
 import Foundation
 import UIKit
 
-class PopUpViewController: UIViewController {
+class PopUpWithButtonViewController: UIViewController {
     private var titleText: String?
     private var messageText: String?
     private var attributedMessageText: NSAttributedString?
@@ -172,7 +172,7 @@ class PopUpViewController: UIViewController {
         }
         
         // Original
-//        containerStackView.addArrangedSubview(buttonStackView)
+        containerStackView.addArrangedSubview(buttonStackView)
     }
 
     private func makeConstraints() {
@@ -180,7 +180,7 @@ class PopUpViewController: UIViewController {
         containerStackView.translatesAutoresizingMaskIntoConstraints = false
         
         // Original
-//        buttonStackView.translatesAutoresizingMaskIntoConstraints = false
+        buttonStackView.translatesAutoresizingMaskIntoConstraints = false
 
         NSLayoutConstraint.activate([
             containerView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
@@ -195,58 +195,8 @@ class PopUpViewController: UIViewController {
             containerStackView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -24),
 
             // Original
-//            buttonStackView.heightAnchor.constraint(equalToConstant: 48),
-//            buttonStackView.widthAnchor.constraint(equalTo: containerStackView.widthAnchor)
+            buttonStackView.heightAnchor.constraint(equalToConstant: 48),
+            buttonStackView.widthAnchor.constraint(equalTo: containerStackView.widthAnchor)
         ])
     }
-}
-
-// MARK: - Extension
-
-extension UIColor {
-    /// Convert color to image
-    func image(_ size: CGSize = CGSize(width: 1, height: 1)) -> UIImage {
-        return UIGraphicsImageRenderer(size: size).image { rendererContext in
-            self.setFill()
-            rendererContext.fill(CGRect(origin: .zero, size: size))
-        }
-    }
-}
-
-extension UIControl {
-    public typealias UIControlTargetClosure = (UIControl) -> ()
-
-    private class UIControlClosureWrapper: NSObject {
-        let closure: UIControlTargetClosure
-        init(_ closure: @escaping UIControlTargetClosure) {
-            self.closure = closure
-        }
-    }
-
-    private struct AssociatedKeys {
-        static var targetClosure = "targetClosure"
-    }
-
-    private var targetClosure: UIControlTargetClosure? {
-        get {
-            guard let closureWrapper = objc_getAssociatedObject(self, &AssociatedKeys.targetClosure) as? UIControlClosureWrapper else { return nil }
-            return closureWrapper.closure
-
-        } set(newValue) {
-            guard let newValue = newValue else { return }
-            objc_setAssociatedObject(self, &AssociatedKeys.targetClosure, UIControlClosureWrapper(newValue),
-                                     objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN_NONATOMIC)
-        }
-    }
-
-    @objc func closureAction() {
-        guard let targetClosure = targetClosure else { return }
-        targetClosure(self)
-    }
-
-    public func addAction(for event: UIControl.Event, closure: @escaping UIControlTargetClosure) {
-        targetClosure = closure
-        addTarget(self, action: #selector(UIControl.closureAction), for: event)
-    }
-
 }

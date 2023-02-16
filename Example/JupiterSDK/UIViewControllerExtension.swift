@@ -91,6 +91,57 @@ extension UIViewController{
         present(popUpViewController, animated: false, completion: nil)
     }
     
+    // Pop Up With Button
+    func showPopUpWithButton(title: String? = nil,
+                   message: String? = nil,
+                   attributedMessage: NSAttributedString? = nil,
+                   leftActionTitle: String? = "취소",
+                   rightActionTitle: String = "확인",
+                   leftActionCompletion: (() -> Void)? = nil,
+                   rightActionCompletion: (() -> Void)? = nil) {
+        let popUpViewController = PopUpWithButtonViewController(titleText: title,
+                                                      messageText: message,
+                                                      attributedMessageText: attributedMessage)
+        showPopUpWithButton(popUpViewController: popUpViewController,
+                  leftActionTitle: leftActionTitle,
+                  rightActionTitle: rightActionTitle,
+                  leftActionCompletion: leftActionCompletion,
+                  rightActionCompletion: rightActionCompletion)
+    }
+    
+    func showPopUpWithButton(contentView: UIView,
+                   leftActionTitle: String? = "취소",
+                   rightActionTitle: String = "확인",
+                   leftActionCompletion: (() -> Void)? = nil,
+                   rightActionCompletion: (() -> Void)? = nil) {
+        let popUpViewController = PopUpWithButtonViewController(contentView: contentView)
+        
+        showPopUpWithButton(popUpViewController: popUpViewController,
+                  leftActionTitle: leftActionTitle,
+                  rightActionTitle: rightActionTitle,
+                  leftActionCompletion: leftActionCompletion,
+                  rightActionCompletion: rightActionCompletion)
+    }
+    
+    private func showPopUpWithButton(popUpViewController: PopUpWithButtonViewController,
+                           leftActionTitle: String?,
+                           rightActionTitle: String,
+                           leftActionCompletion: (() -> Void)?,
+                           rightActionCompletion: (() -> Void)?) {
+        popUpViewController.addActionToButton(title: leftActionTitle,
+                                              titleColor: .systemGray,
+                                              backgroundColor: .secondarySystemBackground) {
+            popUpViewController.dismiss(animated: false, completion: leftActionCompletion)
+        }
+        
+        popUpViewController.addActionToButton(title: rightActionTitle,
+                                              titleColor: .white,
+                                              backgroundColor: UIColor(red: 64.0/255.0, green: 177.0/255.0, blue: 229.0/225.0, alpha: 1.0)) {
+            popUpViewController.dismiss(animated: false, completion: rightActionCompletion)
+        }
+        present(popUpViewController, animated: false, completion: nil)
+    }
+    
     func add(_ child: UIViewController) {
         addChild(child)
         view.addSubview(child.view)
