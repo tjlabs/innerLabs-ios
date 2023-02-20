@@ -67,6 +67,8 @@ class CollectViewController: UIViewController {
     var saveFlag: Bool = false
     var isWriting: Bool = false
     
+    @IBOutlet weak var fileButton: UIButton!
+    
     // Ward Info
     @IBOutlet weak var indexLabel: UILabel!
     @IBOutlet weak var lengthLabel: UILabel!
@@ -133,12 +135,14 @@ class CollectViewController: UIViewController {
             sender.backgroundColor = .blue3
             isWriting = true
             
+            fileButton.isEnabled = false
             startToSave()
         }
         else {
             sender.backgroundColor = .systemGray4
             isWriting = false
             
+            fileButton.isEnabled = true
             saveFile()
             goToBack()
         }

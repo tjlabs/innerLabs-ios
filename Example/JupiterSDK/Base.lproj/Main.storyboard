@@ -258,7 +258,7 @@
                                 </constraints>
                             </imageView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Roy-K8-fGl">
-                                <rect key="frame" x="332" y="82.666666666666671" width="28" height="21.999999999999986"/>
+                                <rect key="frame" x="332" y="82.666666666666671" width="28" height="22"/>
                                 <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                                 <state key="normal" image="editButton"/>
                                 <state key="selected" image="confirmButton"/>
@@ -2136,6 +2136,7 @@
                     </view>
                     <connections>
                         <outlet property="collectView" destination="aVh-vd-k6Y" id="nNX-rK-i5g"/>
+                        <outlet property="fileButton" destination="lMy-oz-UsM" id="IHv-Ua-9BD"/>
                         <outlet property="indexLabel" destination="rkP-gW-zdD" id="TNO-v5-4zF"/>
                         <outlet property="lengthLabel" destination="UE8-37-kaY" id="tg4-0p-i9W"/>
                         <outlet property="scatterChart" destination="bES-u2-ZAf" id="4DU-Bc-o0d"/>
@@ -2404,7 +2405,7 @@
                                 </constraints>
                             </progressView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="O9f-hf-76E">
-                                <rect key="frame" x="342" y="79.666666666666671" width="28" height="27.999999999999986"/>
+                                <rect key="frame" x="342" y="79.666666666666671" width="28" height="28"/>
                                 <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                                 <state key="normal" image="showUserInfoButton"/>
                                 <connections>
@@ -2419,7 +2420,7 @@
                                 <rect key="frame" x="290" y="0.0" width="100" height="844"/>
                                 <subviews>
                                     <button opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hcr-0C-B4e">
-                                        <rect key="frame" x="5" y="79.666666666666671" width="90" height="27.999999999999986"/>
+                                        <rect key="frame" x="5" y="79.666666666666671" width="90" height="28"/>
                                         <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                                         <state key="normal" image="showUserInfoButton"/>
                                     </button>

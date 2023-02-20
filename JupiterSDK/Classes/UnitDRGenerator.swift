@@ -197,13 +197,8 @@ public class UnitDRGenerator: NSObject {
         pdrQueue.append(data)
     }
     
-    public func setVelocityScaleFactor(isAbnormal: Bool, scaleFactor: Double) {
-        if (isAbnormal) {
-            self.drDistanceEstimator.velocityScaleFactor = scaleFactor
-            print("(Jupiter) Velocity Scale Factor = \(self.drDistanceEstimator.velocityScaleFactor)")
-        } else {
-            self.drDistanceEstimator.velocityScaleFactor = 1.0
-        }
+    public func setVelocityScaleFactor(scaleFactor: Double) {
+        self.drDistanceEstimator.velocityScaleFactor = scaleFactor
     }
     
     func getCurrentTimeInMilliseconds() -> Double

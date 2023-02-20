@@ -141,8 +141,8 @@ public class DRDistanceEstimator: NSObject {
         preMagVarFeature = magVarFeature
         // --------------- //
         
-        var velocityRaw = log10(magVarFeature+1)/log10(1.1)
-        var velocity = velocityRaw*self.velocityScaleFactor
+        let velocityRaw = log10(magVarFeature+1)/log10(1.1)
+        let velocity = velocityRaw*self.velocityScaleFactor
         if (velocityScaleFactor != 1.0) {
             print("(Jupiter) Velocity Raw = \(velocityRaw)")
             print("(Jupiter) Velocity Scale Factor = \(velocity)")

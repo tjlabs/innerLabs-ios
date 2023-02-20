@@ -5,6 +5,7 @@ var REGION = "-skrgq3jc5a-du.a.run.app"
 var IMAGE_URL = "jupiter_image"
 
 var USER_URL = "https://where-run-user" + REGION + "/user"
+var ABNORMAL_AREA_URL = "https://where-run-user" + REGION + "/abnormal"
 var RF_URL = "https://where-run-record" + REGION + "/recordRF"
 var UV_URL = "https://where-run-record" + REGION + "/recordUV"
 
@@ -110,6 +111,7 @@ public func setBaseURL(url: String) {
     BASE_URL = url
     
     USER_URL = "https://where-run-user" + REGION + "/user"
+    ABNORMAL_AREA_URL = "https://where-run-user" + REGION + "/abnormal"
     
     RF_URL = "https://where-run-record" + REGION + "/recordRF"
     UV_URL = "https://where-run-record" + REGION + "/recordUV"

@@ -390,6 +390,12 @@ public struct Spot: Codable {
     }
 }
 
+//public struct Abnormal: Codable {
+//    var sector_id: Int
+//    var building_name: String
+//    var level_name: String
+//}
+
 // Recent
 struct RecentResult: Codable {
     var user_id: String

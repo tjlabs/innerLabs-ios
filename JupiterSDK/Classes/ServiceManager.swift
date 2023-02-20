@@ -553,6 +553,11 @@ public class ServiceManager: Observation {
                                     })
                                     dataTask.resume()
                                 }
+                                
+                                for j in 0..<levelList!.count {
+                                    let levelName = levelList![j]
+                                    let key: String = "\(buildingName)_\(levelName)"
+                                }
                             }
                         }
                     }
@@ -1638,12 +1643,8 @@ public class ServiceManager: Observation {
             })
             
             // Check Abnormal Area
-            let checkAbnormalArea = self.checkInAbnormalArea()
-            if (checkAbnormalArea.0) {
-                unitDRGenerator.setVelocityScaleFactor(isAbnormal: true, scaleFactor: checkAbnormalArea.1)
-            } else {
-                unitDRGenerator.setVelocityScaleFactor(isAbnormal: false, scaleFactor: 1.0)
-            }
+            let scaleFactor = self.checkInAbnormalArea(result: self.lastResult)
+            unitDRGenerator.setVelocityScaleFactor(scaleFactor: scaleFactor)
         } else {
             self.travelingOsrDistance = 0
         }
@@ -1720,19 +1721,18 @@ public class ServiceManager: Observation {
         }
     }
     
-    func checkInAbnormalArea() -> (Bool, Double) {
+    func checkInAbnormalArea(result: FineLocationTrackingResult) -> Double {
         let localTime = getLocalTimeString()
-        var isInAbnormalArea: Bool = false
         var velocityScaleFactor: Double = 1.0
         
-        let lastResult = self.lastResult
+        let lastResult = result
         
         let buildingName = lastResult.building_name
         let levelName = lastResult.level_name
         
         let key = "\(buildingName)_\(levelName)"
         guard let abnormalArea: [[Double]] = AbnormalArea[key] else {
-            return (isInAbnormalArea, velocityScaleFactor)
+            return velocityScaleFactor
         }
         
         for i in 0..<abnormalArea.count {
@@ -1743,16 +1743,15 @@ public class ServiceManager: Observation {
             
             if (lastResult.x >= xMin && lastResult.x <= xMax) {
                 if (lastResult.y >= yMin && lastResult.y <= yMax) {
-                    isInAbnormalArea = true
                     velocityScaleFactor = abnormalArea[i][4]
                     
                     print(localTime + " , (Jupiter) In Abnormal Area : Number = \(i) , Scale = \(velocityScaleFactor)")
-                    return (isInAbnormalArea, velocityScaleFactor)
+                    return velocityScaleFactor
                 }
             }
         }
         
-        return (isInAbnormalArea, velocityScaleFactor)
+        return velocityScaleFactor
     }
     
     func updateLastResult(currentTime: Int) {
