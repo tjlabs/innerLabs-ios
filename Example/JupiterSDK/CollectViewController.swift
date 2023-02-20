@@ -351,18 +351,6 @@ class CollectViewController: UIViewController {
         self.wardData = bleAvg
         self.wardCollectionView.reloadData()
         
-        var top3ID = [String]()
-        var top3Rssi = [Double]()
-        var top3AvgRssi = [Double]()
-        
-        for i in 0..<sortedBleAvg.count {
-            let idFull: String = sortedBleAvg[i].key
-            let id = idFull.components(separatedBy: "-")
-            top3ID.append(id[2])
-            
-            top3AvgRssi.append(sortedBleAvg[i].value)
-        }
-        
         if (saveFlag) {
             writeData(collectData: serviceManager.collectData)
             if (serviceManager.collectData.isIndexChanged) {

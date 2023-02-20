@@ -33,6 +33,8 @@ public class DRDistanceEstimator: NSObject {
     public var preMagVarFeature: Double = 0
     public var preVelocitySmoothing: Double = 0
     
+    public var velocityScaleFactor: Double = 1.0
+    
     public var distance: Double = 0
     var pastTime: Int = 0
     
@@ -139,7 +141,12 @@ public class DRDistanceEstimator: NSObject {
         preMagVarFeature = magVarFeature
         // --------------- //
         
-        var velocity = log10(magVarFeature+1)/log10(1.1)
+        var velocityRaw = log10(magVarFeature+1)/log10(1.1)
+        var velocity = velocityRaw*self.velocityScaleFactor
+        if (velocityScaleFactor != 1.0) {
+            print("(Jupiter) Velocity Raw = \(velocityRaw)")
+            print("(Jupiter) Velocity Scale Factor = \(velocity)")
+        }
         updateVelocityQueue(data: velocity)
 
         var velocitySmoothing: Double = 0
@@ -252,4 +259,5 @@ public class DRDistanceEstimator: NSObject {
     {
         return Int(Date().timeIntervalSince1970 * 1000)
     }
+    
 }

@@ -31,7 +31,7 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
 //            let log: String = localTime + " , (Jupiter) Output // Building : \(result.building_name) , Level : \(result.level_name)"
 //            print(log)
 //            print("(Jupiter) Time Diff : \(result.mobile_time - self.observerTime) \\ Phase : \(result.phase)")
-            
+//            print(localTime + " , (Jupiter) mode = \(result.mode)")
             let building = result.building_name
             let level = result.level_name
             
@@ -185,6 +185,8 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        biasLabel.isHidden = true
+        
         runMode = cardData!.mode
         
         self.hideKeyboardWhenTappedAround()
@@ -318,12 +320,14 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
         
         if (countTap == 5) {
             isShowRP = true
+            biasLabel.isHidden = false
             self.sectorNameLabel.textColor = .yellow
             for view in self.scatterChart.subviews {
                 view.removeFromSuperview()
             }
         } else if (countTap > 9) {
             isShowRP = false
+            biasLabel.isHidden = true
             countTap = 0
             self.sectorNameLabel.textColor = .white
         }

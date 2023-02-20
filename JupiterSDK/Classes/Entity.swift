@@ -255,44 +255,6 @@ public struct CoarseLocationEstimationResult: Codable {
 
 
 // Fine Location Tracking
-//struct FineLocationTracking: Codable {
-//    var user_id: String
-//    var mobile_time: Int
-//    var sector_id: Int
-//    var building_name: String
-//    var level_name: String
-//    var spot_id: Int
-//    var phase: Int
-//}
-
-//public struct FineLocationTrackingFromServer: Codable {
-//    public var mobile_time: Int
-//    public var building_name: String
-//    public var level_name: String
-//    public var scc: Double
-//    public var scr: Double
-//    public var x: Double
-//    public var y: Double
-//    public var absolute_heading: Double
-//    public var phase: Int
-//    public var calculated_time: Double
-//    public var index: Int
-//
-//    public init() {
-//        self.mobile_time = 0
-//        self.building_name = ""
-//        self.level_name = ""
-//        self.scc = 0
-//        self.scr = 0
-//        self.x = 0
-//        self.y = 0
-//        self.absolute_heading = 0
-//        self.phase = 0
-//        self.calculated_time = 0
-//        self.index = 0
-//    }
-//}
-
 struct FineLocationTracking: Codable {
     var user_id: String
     var mobile_time: Int
@@ -344,6 +306,7 @@ public struct FineLocationTrackingResult: Codable {
     public var calculated_time: Double
     public var index: Int
     public var velocity: Double
+    public var mode: String
     
     public init() {
         self.mobile_time = 0
@@ -357,6 +320,7 @@ public struct FineLocationTrackingResult: Codable {
         self.calculated_time = 0
         self.index = 0
         self.velocity = 0
+        self.mode = ""
     }
 }
 
