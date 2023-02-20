@@ -541,7 +541,7 @@ public class ServiceManager: Observation {
                                             if let responseData = data {
                                                 if let utf8Text = String(data: responseData, encoding: .utf8) {
                                                     ( self.Road[key], self.RoadHeading[key] ) = self.parseRoad(data: utf8Text)
-                                                    self.AbnormalArea[key] = self.loadAbnormalArea(buildingName: buildingName, levelName: levelName)
+//                                                    self.AbnormalArea[key] = self.loadAbnormalArea(buildingName: buildingName, levelName: levelName)
                                                     
                                                     self.isMapMatching = true
                                                     
@@ -556,7 +556,15 @@ public class ServiceManager: Observation {
                                 
                                 for j in 0..<levelList!.count {
                                     let levelName = levelList![j]
-                                    let key: String = "\(buildingName)_\(levelName)"
+                                    let input = Geo(sector_id: self.sector_id, building_name: buildingName, level_name: levelName)
+                                    NetworkManager.shared.postGEO(url: GEO_URL, input: input, completion: { [self] statusCode, returnedString, buildingGeo, levelGeo in
+                                        if (statusCode >= 200 && statusCode <= 300) {
+                                            let result = decodeGEO(json: returnedString)
+                                            let key: String = "\(buildingGeo)_\(levelGeo)"
+                                            self.AbnormalArea[key] = result.geofences
+                                            print("Geo Result : \(result.geofences), \(key)")
+                                        }
+                                    })
                                 }
                             }
                         }
@@ -1583,7 +1591,7 @@ public class ServiceManager: Observation {
     }
     
     @objc func osrTimerUpdate() {
-        if (self.runMode == "dr") {
+        if (self.runMode == "dr" && self.isGetFirstResponse) {
             let currentTime = getCurrentTimeInMilliseconds()
             let input = OnSpotRecognition(user_id: self.user_id, mobile_time: currentTime, rss_compensation: self.rssiBias)
 //            print("(Jupiter) Spot Input : \(input)")
@@ -1737,8 +1745,8 @@ public class ServiceManager: Observation {
         
         for i in 0..<abnormalArea.count {
             let xMin = abnormalArea[i][0]
-            let xMax = abnormalArea[i][1]
-            let yMin = abnormalArea[i][2]
+            let yMin = abnormalArea[i][1]
+            let xMax = abnormalArea[i][2]
             let yMax = abnormalArea[i][3]
             
             if (lastResult.x >= xMin && lastResult.x <= xMax) {

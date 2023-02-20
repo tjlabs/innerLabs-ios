@@ -390,11 +390,19 @@ public struct Spot: Codable {
     }
 }
 
-//public struct Abnormal: Codable {
-//    var sector_id: Int
-//    var building_name: String
-//    var level_name: String
-//}
+public struct Geo: Codable {
+    var sector_id: Int
+    var building_name: String
+    var level_name: String
+}
+
+public struct GeoResult: Codable {
+    var geofences: [[Double]]
+    
+    public init() {
+        self.geofences = [[]]
+    }
+}
 
 // Recent
 struct RecentResult: Codable {
@@ -420,6 +428,18 @@ public func decodeOSR(json: String) -> OnSpotRecognitionResult {
     let jsonString = json
 
     if let data = jsonString.data(using: .utf8), let decoded = try? decoder.decode(OnSpotRecognitionResult.self, from: data) {
+        return decoded
+    }
+
+    return result
+}
+
+public func decodeGEO(json: String) -> GeoResult {
+    let result = GeoResult.init()
+    let decoder = JSONDecoder()
+    let jsonString = json
+
+    if let data = jsonString.data(using: .utf8), let decoded = try? decoder.decode(GeoResult.self, from: data) {
         return decoded
     }
 
