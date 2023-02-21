@@ -142,11 +142,7 @@ public class DRDistanceEstimator: NSObject {
         // --------------- //
         
         let velocityRaw = log10(magVarFeature+1)/log10(1.1)
-        let velocity = velocityRaw*self.velocityScaleFactor
-        if (velocityScaleFactor != 1.0) {
-            print("(Jupiter) Velocity Raw = \(velocityRaw)")
-            print("(Jupiter) Velocity Scale Factor = \(velocity)")
-        }
+        let velocity = velocityRaw
         updateVelocityQueue(data: velocity)
 
         var velocitySmoothing: Double = 0
@@ -169,7 +165,20 @@ public class DRDistanceEstimator: NSObject {
         } else if velocityInput > VELOCITY_MAX {
             velocityInput = VELOCITY_MAX
         }
-        let velocityMps = (velocityInput/3.6)*turnScale
+        var velocityInputScale = velocityInput*self.velocityScaleFactor
+        if velocityInputScale < VELOCITY_MIN {
+            velocityInputScale = 0
+        } else if velocityInputScale > VELOCITY_MAX {
+            velocityInputScale = VELOCITY_MAX
+        }
+        
+//        if (velocityScaleFactor != 1.0) {
+//            print("(Jupiter) Velocity Raw = \(velocityInput)")
+//            print("(Jupiter) Velocity Scale Factor = \(velocityInputScale)")
+//        }
+        
+        let velocityMps = (velocityInputScale/3.6)*turnScale
+//        let velocityMps = (velocityInput/3.6)*turnScale
 
         finalUnitResult.isIndexChanged = false
         finalUnitResult.velocity = velocityMps

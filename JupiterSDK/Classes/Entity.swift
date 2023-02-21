@@ -104,6 +104,7 @@ public struct ServiceResult {
     public var scc: Double = 0
     public var phase: String = ""
     public var bias: Int = 0
+    public var mode: String = ""
     
     public var level: String = ""
     public var building: String = ""
@@ -402,6 +403,12 @@ public struct GeoResult: Codable {
     public init() {
         self.geofences = [[]]
     }
+}
+
+public struct ResultIsUvdChanged: Codable {
+    var mobile_time: Int
+    var building_name: String
+    var level_name: String
 }
 
 // Recent

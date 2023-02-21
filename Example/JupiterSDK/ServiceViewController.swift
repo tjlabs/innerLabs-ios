@@ -27,7 +27,7 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
     
     func update(result: FineLocationTrackingResult) {
         DispatchQueue.main.async {
-            let localTime: String = self.getLocalTimeString()
+//            let localTime: String = self.getLocalTimeString()
 //            let log: String = localTime + " , (Jupiter) Output // Building : \(result.building_name) , Level : \(result.level_name)"
 //            print(log)
 //            print("(Jupiter) Time Diff : \(result.mobile_time - self.observerTime) \\ Phase : \(result.phase)")
@@ -537,7 +537,7 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
             resultToDisplay.scc = serviceManager.displayOutput.scc
             resultToDisplay.phase = serviceManager.displayOutput.phase
 
-            self.biasLabel.text = String(serviceManager.displayOutput.bias)
+            self.biasLabel.text = String(serviceManager.displayOutput.bias) + " // " + serviceManager.displayOutput.mode
             
             if (isOpen) {
                 UIView.performWithoutAnimation { self.containerTableView.reloadSections(IndexSet(0...0), with: .none) }
@@ -1320,6 +1320,14 @@ extension ServiceViewController: CustomSwitchButtonDelegate {
             serviceManager = ServiceManager()
             serviceManager.changeRegion(regionName: self.region)
             serviceManager.addObserver(self)
+            
+//            var inputMode: String = "auto"
+//            if (self.sectorID == 6) {
+//                inputMode = "auto"
+//            } else {
+//                inputMode = cardData!.mode
+//            }
+//            let initService = serviceManager.startService(id: uuid, sector_id: cardData!.sector_id, service: serviceName, mode: inputMode)
             let initService = serviceManager.startService(id: uuid, sector_id: cardData!.sector_id, service: serviceName, mode: cardData!.mode)
             if (initService.0) {
                 self.startTimer()
