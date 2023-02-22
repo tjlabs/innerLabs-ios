@@ -172,13 +172,7 @@ public class DRDistanceEstimator: NSObject {
             velocityInputScale = VELOCITY_MAX
         }
         
-//        if (velocityScaleFactor != 1.0) {
-//            print("(Jupiter) Velocity Raw = \(velocityInput)")
-//            print("(Jupiter) Velocity Scale Factor = \(velocityInputScale)")
-//        }
-        
         let velocityMps = (velocityInputScale/3.6)*turnScale
-//        let velocityMps = (velocityInput/3.6)*turnScale
 
         finalUnitResult.isIndexChanged = false
         finalUnitResult.velocity = velocityMps

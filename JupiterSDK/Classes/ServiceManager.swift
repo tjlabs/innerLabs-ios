@@ -566,7 +566,7 @@ public class ServiceManager: Observation {
                                             let result = decodeGEO(json: returnedString)
                                             let key: String = "\(buildingGeo)_\(levelGeo)"
                                             self.AbnormalArea[key] = result.geofences
-                                            print("Geo Result : \(result.geofences), \(key)")
+//                                            print("Geo Result : \(result.geofences), \(key)")
                                         }
                                     })
                                 }
@@ -1234,6 +1234,7 @@ public class ServiceManager: Observation {
                                         self.phase = result.phase
                                         self.isPhase2 = false
                                         
+                                        self.lastOsrId = 0
                                         self.travelingOsrDistance = SAME_SPOT_DISTANCE
                                         
                                         print(localTime + " , (Jupiter) OSR : Going out!! Phase 2 -> Phase 1")
@@ -1438,6 +1439,8 @@ public class ServiceManager: Observation {
                                         self.indexPast = result.index
                                         self.pastBuildingLevel = [result.building_name, result.level_name]
                                     }
+                                } else {
+                                    self.phase = result.phase
                                 }
                             } else {
                                 let log: String = localTime + " , (Jupiter) Error : Fail to request indoor position in Phase 3"
@@ -1503,8 +1506,8 @@ public class ServiceManager: Observation {
                                             }
                                             
                                             self.phase = result.phase
-                                            self.currentBuilding = result.building_name
-                                            self.currentLevel = result.level_name
+//                                            self.currentBuilding = result.building_name
+//                                            self.currentLevel = result.level_name
                                             self.preOutputMobileTime = result.mobile_time
                                             
                                             if (self.isActiveKf && result.phase == 4) {
