@@ -1083,7 +1083,6 @@ public class ServiceManager: Observation {
                     if (lastResult.building_name != "" && lastResult.level_name != "") {
                         let resultBufferData = ResultIsUvdChanged(mobile_time: lastResult.mobile_time, building_name: lastResult.building_name, level_name: lastResult.level_name)
                         self.lastResultBufferUvdChanged.append(resultBufferData)
-//                        print(localTime + " , (Jupiter) lastResultBufferUvdChanged count = \(lastResultBufferUvdChanged.count)")
                         if (self.lastResultBufferUvdChanged.count > 100) {
                             self.lastResultBufferUvdChanged.remove(at: 0)
                         }
@@ -1233,8 +1232,6 @@ public class ServiceManager: Observation {
                                                     // Measurement Update 하기전에 현재 Time Update 위치를 고려
                                                     var resultForMu = result
                                                     resultForMu.absolute_heading = compensateHeading(heading: resultForMu.absolute_heading, mode: self.runMode)
-                                                    
-//                                                        var resultCorrected = self.correctCheck(time: localTime, index: resultForMu.index, building: resultForMu.building_name, level: resultForMu.level_name, x: resultForMu.x, y: resultForMu.y, heading: resultForMu.absolute_heading, tuXY: [self.pastTuResult.x, self.pastTuResult.y], isMu: false, mode: self.runMode, isPast: false, HEADING_RANGE: self.HEADING_RANGE)
                                                     let resultCorrected = self.correct(building: resultForMu.building_name, level: resultForMu.level_name, x: resultForMu.x, y: resultForMu.y, heading: resultForMu.absolute_heading, tuXY: [self.pastTuResult.x, self.pastTuResult.y], mode: self.runMode, isPast: false, HEADING_RANGE: self.HEADING_RANGE)
 
                                                     self.serverResult[0] = resultCorrected.xyh[0]
@@ -1267,8 +1264,6 @@ public class ServiceManager: Observation {
                                                                 
                                                                 dh = currentTuResult.absolute_heading - pastTuResult.absolute_heading
                                                             }
-//                                                            print(localTime + " , (Jupiter) Propagation(if) : dx = \(dx) , dy = \(dy) , currentTuIndex = \(currentTuResult.index) , resutIndex = \(result.index)")
-//                                                            print(localTime + " , (Jupiter) Propagation(if) : X = \(currentTuResult.x) , Y = \(currentTuResult.y) , bufferX = \(tuBuffer[idx][0]) , bufferY = \(tuBuffer[idx][1])")
                                                         } else {
                                                             dx = currentTuResult.x - pastTuResult.x
                                                             dy = currentTuResult.y - pastTuResult.y
@@ -1276,7 +1271,6 @@ public class ServiceManager: Observation {
                                                             pastTuResult.absolute_heading = compensateHeading(heading: pastTuResult.absolute_heading, mode: self.runMode)
                                                             
                                                             dh = currentTuResult.absolute_heading - pastTuResult.absolute_heading
-//                                                            print(localTime + " , (Jupiter) Propagation(else) : dx = \(dx) , dy = \(dy)")
                                                         }
                                                         
                                                         
@@ -1409,7 +1403,7 @@ public class ServiceManager: Observation {
                                     self.currentBuilding = ""
                                     self.currentLevel = ""
                                     
-                                    print(localTime + " , (Jupiter) Not in Service Area")
+//                                    print(localTime + " , (Jupiter) Not in Service Area")
                                 }
                             }
                         } else {
@@ -1475,6 +1469,7 @@ public class ServiceManager: Observation {
                                     if (!self.isGetFirstResponse) {
                                         self.isGetFirstResponse = true
                                         self.isActiveReturn = true
+//                                        print(localTime + " , (Jupiter) Get First Response !!")
                                     }
                                     
                                     self.preOutputMobileTime = result.mobile_time
@@ -1574,6 +1569,7 @@ public class ServiceManager: Observation {
                     let localTime = getLocalTimeString()
                     let result = decodeOSR(json: returnedString)
                     if (result.building_name != "" && result.level_name != "") {
+//                        print(localTime + " , (Jupiter) OSR : Result = \(result)")
                         let isOnSpot = isOnSpotRecognition(result: result, level: self.currentLevel)
                         // Level Changed Check
                         // true : Go to Phase 2
@@ -1629,7 +1625,7 @@ public class ServiceManager: Observation {
                                         self.isPossibleEstBias = false
                                     }
                                     self.preOutputMobileTime = currentTime
-//                                    print(localTime + " , (Jupiter) OSR : Same -> destinationLevel : \(levelDestination)")
+//                                    print(localTime + " , (Jupiter) OSR : Same -> destinationLevel : \(levelDestination) // Dist = \(self.travelingOsrDistance)")
 //                                    print("----------------- Spot Level Changed (Same Spot) -------------------")
                                 }
                             }

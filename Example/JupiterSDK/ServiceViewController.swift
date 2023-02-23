@@ -45,10 +45,6 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
         }
     }
     
-    func reportErrors(errors: Int) {
-        print("(Jupiter) Error Code : \(errors)")
-    }
-    
     @IBOutlet var ServiceView: UIView!
     
     @IBOutlet weak var displayView: UIView!
