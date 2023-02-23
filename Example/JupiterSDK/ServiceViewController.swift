@@ -1,11 +1,3 @@
-//
-//  ServiceViewController.swift
-//  JupiterSDK_Example
-//
-//  Created by 신동현 on 2022/07/07.
-//  Copyright © 2022 CocoaPods. All rights reserved.
-//
-
 import UIKit
 import JupiterSDK
 import Alamofire
@@ -28,7 +20,7 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
     func update(result: FineLocationTrackingResult) {
         DispatchQueue.main.async {
 //            let localTime: String = self.getLocalTimeString()
-//            let log: String = localTime + " , (Jupiter) Output // Building : \(result.building_name) , Level : \(result.level_name)"
+//            let log: String = localTime + " , (Jupiter) Output // Building : \(result.building_name) , Level : \(result.level_name) , Mode : \(result.mode)"
 //            print(log)
 //            print("(Jupiter) Time Diff : \(result.mobile_time - self.observerTime) \\ Phase : \(result.phase)")
 //            print(localTime + " , (Jupiter) mode = \(result.mode)")
@@ -1321,14 +1313,14 @@ extension ServiceViewController: CustomSwitchButtonDelegate {
             serviceManager.changeRegion(regionName: self.region)
             serviceManager.addObserver(self)
             
-//            var inputMode: String = "auto"
-//            if (self.sectorID == 6) {
-//                inputMode = "auto"
-//            } else {
-//                inputMode = cardData!.mode
-//            }
-//            let initService = serviceManager.startService(id: uuid, sector_id: cardData!.sector_id, service: serviceName, mode: inputMode)
-            let initService = serviceManager.startService(id: uuid, sector_id: cardData!.sector_id, service: serviceName, mode: cardData!.mode)
+            var inputMode: String = "auto"
+            if (self.sectorID == 6) {
+                inputMode = "auto"
+            } else {
+                inputMode = cardData!.mode
+            }
+            let initService = serviceManager.startService(id: uuid, sector_id: cardData!.sector_id, service: serviceName, mode: inputMode)
+//            let initService = serviceManager.startService(id: uuid, sector_id: cardData!.sector_id, service: serviceName, mode: cardData!.mode)
             if (initService.0) {
                 self.startTimer()
             }
