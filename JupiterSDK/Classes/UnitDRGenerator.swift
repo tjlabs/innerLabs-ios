@@ -78,7 +78,7 @@ public class UnitDRGenerator: NSObject {
             return UnitDRInfo(index: unitDistancePdr.index, length: unitDistancePdr.length, heading: heading, velocity: unitDistancePdr.velocity, lookingFlag: unitStatus, isIndexChanged: unitDistancePdr.isIndexChanged, autoMode: 0)
         case MODE_DR:
             unitDistanceDr = drDistanceEstimator.estimateDistanceInfo(time: currentTime, sensorData: sensorData)
-            autoMode = 1
+            self.autoMode = 1
             curAttitudeDr = unitAttitudeEstimator.estimateAtt(time: currentTime, acc: sensorData.acc, gyro: sensorData.gyro, rotMatrix: sensorData.rotationMatrix)
             
             let heading = HF.radian2degree(radian: curAttitudeDr.Yaw)

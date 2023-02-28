@@ -73,7 +73,7 @@ public class ServiceManager: Observation {
     }
     
     // 0 : Release  //  1 : Test
-    var serverType: Int = 1
+    var serverType: Int = 0
     // 0 : Android  //  1 : iOS
     var osType: Int = 1
     var region: String = "Korea"
@@ -86,7 +86,6 @@ public class ServiceManager: Observation {
     var service: String = ""
     var mode: String = ""
     var runMode: String = ""
-    var runModeInt: Int = 1
     
     var deviceModel: String = "Unknown"
     var os: String = "Unknown"
@@ -201,8 +200,6 @@ public class ServiceManager: Observation {
     var travelingOsrDistance: Double = 0
     var distanceAfterPhase1: Double = 0
     
-    var serviceStartTime: Int = 0
-    
     var isGetFirstResponse: Bool = false
     var indexAfterResponse: Int = 0
     var isPossibleEstBias: Bool = false
@@ -289,7 +286,6 @@ public class ServiceManager: Observation {
     var timePhaseChange: Double = 0
     var timeSleepRF: Double = 0
     var timeSleepUV: Double = 0
-    var phaseUnstableCount: Double = 0
     let STOP_THRESHOLD: Double = 2
     let SLEEP_THRESHOLD: Double = 600 // 10분
     let SLEEP_THRESHOLD_RF: Double = 8 // 8s
@@ -475,7 +471,6 @@ public class ServiceManager: Observation {
                     let log: String = localTime + " , (Jupiter) Success : User Login"
                     print(log)
                     startTimer()
-                    self.serviceStartTime = getCurrentTimeInMilliseconds()
                 } else {
                     let log: String = localTime + " , (Jupiter) Error : User Login"
                     print(log)
@@ -536,7 +531,6 @@ public class ServiceManager: Observation {
                                                 if let utf8Text = String(data: responseData, encoding: .utf8) {
                                                     ( self.Road[key], self.RoadHeading[key] ) = self.parseRoad(data: utf8Text)
 //                                                    self.AbnormalArea[key] = self.loadAbnormalArea(buildingName: buildingName, levelName: levelName)
-                                                    
                                                     self.isMapMatching = true
                                                     
                                                     let log: String = localTime + " , (Jupiter) Success : Load \(buildingName) \(levelName) Path-Point"
@@ -962,7 +956,7 @@ public class ServiceManager: Observation {
     func startCollectTimer() {
         if (collectTimer == nil) {
             collectTimer = Timer.scheduledTimer(timeInterval: UVD_INTERVAL, target: self, selector: #selector(self.collectTimerUpdate), userInfo: nil, repeats: true)
-            RunLoop.current.add(receivedForceTimer!, forMode: RunLoopMode.commonModes)
+            RunLoop.current.add(collectTimer!, forMode: RunLoopMode.commonModes)
         }
     }
     
@@ -991,7 +985,7 @@ public class ServiceManager: Observation {
         let bleCheckTime = Double(currentTime)
         let discoveredTime = bleManager.bleDiscoveredTime
         let diffBleTime = (bleCheckTime - discoveredTime)*1e-3
-
+//        print(getLocalTimeString() + " , (Jupiter) RFD : \(bleDictionary)")
         if (!bleDictionary.isEmpty) {
             self.timeActiveRF = 0
             self.timeSleepRF = 0
@@ -1025,45 +1019,6 @@ public class ServiceManager: Observation {
                 self.timeActiveRF = 0
             }
             
-            self.timeEmptyRF += RFD_INTERVAL
-            if (self.timeEmptyRF >= 10) {
-                self.isEmptyRF = true
-                self.timeEmptyRF = 0
-                
-                let levelDestination: String = ""
-                self.currentBuilding = ""
-                self.currentLevel = levelDestination
-                
-                self.phase = 1
-                self.timeUpdateOutput.level_name = levelDestination
-                self.measurementOutput.level_name = levelDestination
-                self.outputResult.level_name = levelDestination
-                self.currentSpot = 0
-                self.lastOsrId = 0
-                self.travelingOsrDistance = 0
-                self.isPossibleEstBias = false
-                self.isActiveReturn = true
-                self.buildingLevelChangedTime = 0
-                self.preOutputMobileTime = currentTime
-                
-                self.lastResultBufferUvdChanged = [Any]()
-                
-                self.isActiveKf = false
-                self.timeUpdateFlag = false
-                self.isActiveReturn = false
-                self.isGetFirstResponse = false
-                self.indexAfterResponse = 0
-                self.lastOsrId = 0
-                self.phase4Count = 0
-                
-                displayOutput.phase = String(1)
-                self.outputResult.building_name = ""
-                self.outputResult.level_name = levelDestination
-                
-                self.isEntered = false
-                print(getLocalTimeString() + " , (Jupiter) Not in Service Area (Empty RF)")
-            }
-            
             self.timeSleepRF += RFD_INTERVAL
             if (self.timeSleepRF >= SLEEP_THRESHOLD) {
                 self.isActiveService = false
@@ -1073,6 +1028,20 @@ public class ServiceManager: Observation {
             }
         }
     }
+    
+    func checkStrongRfd(bleDict: [String: Double]) -> Bool {
+        var count = 0
+        for value in bleDict.values {
+            if value >= -85 {
+                count += 1
+                if count >= 2 {
+                    return true
+                }
+            }
+        }
+        return false
+    }
+
     
     @objc func userVelocityTimerUpdate() {
         let currentTime = getCurrentTimeInMilliseconds()
@@ -1107,12 +1076,10 @@ public class ServiceManager: Observation {
                 if (autoMode == 0) {
                     self.runMode = "pdr"
                     self.sector_id = self.sectorIdOrigin - 1
-                    self.runModeInt = autoMode
                     self.kalmanR = 0.5
                 } else {
                     self.runMode = "dr"
                     self.sector_id = self.sectorIdOrigin
-                    self.runModeInt = autoMode
                     self.kalmanR = 6
                 }
                 setModeParam(mode: self.runMode, phase: self.phase)
@@ -1131,9 +1098,11 @@ public class ServiceManager: Observation {
                     if (lastResult.building_name != "" && lastResult.level_name != "") {
                         self.travelingOsrDistance += unitDRInfo.length
                         let resultBufferData = ResultIsUvdChanged(mobile_time: lastResult.mobile_time, building_name: lastResult.building_name, level_name: lastResult.level_name)
-                        self.lastResultBufferUvdChanged.append(resultBufferData)
-                        if (self.lastResultBufferUvdChanged.count > 210) {
-                            self.lastResultBufferUvdChanged.remove(at: 0)
+                        if (self.isActiveReturn) {
+                            self.lastResultBufferUvdChanged.append(resultBufferData)
+                            if (self.lastResultBufferUvdChanged.count > 210) {
+                                self.lastResultBufferUvdChanged.remove(at: 0)
+                            }
                         }
                     }
                 }
@@ -1267,7 +1236,6 @@ public class ServiceManager: Observation {
                         self.serverResult[2] = result.absolute_heading
                         
                         self.indexPast = result.index
-//                        print(localTime + " , (Jupiter) OSR : Phase 2 Result = \(result.phase)")
 //                        print(localTime + " , (Jupiter) OSR : Phase 2 Result = \(result.building_name) , \(result.level_name) // \(self.currentBuilding) , \(self.currentLevel)")
                     }
                 } else {
@@ -1357,8 +1325,13 @@ public class ServiceManager: Observation {
                     if (result.mobile_time > self.preOutputMobileTime) {
                         if (!self.isGetFirstResponse) {
                             self.isGetFirstResponse = true
-                            self.isActiveReturn = true
-                            print(localTime + " , (Jupiter) Get First Response !!")
+                            print(localTime + " , (Jupiter) Info : Get First Response")
+                        }
+                        
+                        if (!self.isActiveReturn) {
+                            let bleData = bleManager.bleAvg
+                            self.isActiveReturn = checkStrongRfd(bleDict: bleData)
+                            
                         }
                         
                         self.preOutputMobileTime = result.mobile_time
@@ -1376,7 +1349,6 @@ public class ServiceManager: Observation {
                             if (result.phase == 4) {
                                 self.phase4Count += 1
                                 if (self.phase4Count > 19) {
-//                                    print(localTime + "(Jupiter) Phase 3 Result : isEntered = true")
                                     self.isEntered = true
                                 }
                                 
@@ -1413,7 +1385,7 @@ public class ServiceManager: Observation {
                                 if (resultCorrected.isSuccess) {
                                     self.updateAllResult(result: resultCorrected.xyh, flag: false)
                                 }
-                            } else if (result.phase == 3 && result.scc >= 0.6 && self.runMode == "dr") {
+                            } else if (result.phase == 3 && self.runMode == "dr") {
                                 if (self.distanceAfterPhase1 >= 30 && resultCorrected.isSuccess) {
                                     self.updateAllResult(result: resultCorrected.xyh, flag: false)
                                 }
@@ -1445,7 +1417,6 @@ public class ServiceManager: Observation {
 
                             self.flagPast = false
                             self.outputResult = updatedResult
-//                            print(localTime + " , (Jupiter) Phase 3 Result -> To Output (In KF): \(updatedResult)")
                         }
                         self.indexPast = result.index
                     }
@@ -1501,7 +1472,6 @@ public class ServiceManager: Observation {
                     }
                 }
 
-//                print(localTime + " , (Jupiter) Phase 4 Result : \(result)")
                 if ((self.nowTime - result.mobile_time) <= RECENT_THRESHOLD) {
                     if ((result.index - self.indexPast) < INDEX_THRESHOLD) {
                         if (result.mobile_time > self.preOutputMobileTime) {
@@ -1519,7 +1489,6 @@ public class ServiceManager: Observation {
                                     self.phase4Count += 1
                                     if (self.phase4Count > 19) {
                                         self.isEntered = true
-//                                        print(localTime + "(Jupiter) Phase 4 Result : isEntered = true")
                                     }
                                     if (self.isPhaseBreak) {
                                         if (self.runMode == "pdr") {
@@ -1694,25 +1663,26 @@ public class ServiceManager: Observation {
                     // Going Out
                     levelDestination = ""
                     isOn = true
-//                    print(localTime + " , (Jupiter) Spot On : Going Out (isEntered is false)")
+//                    print(localTime + " , (Jupiter) Spot On : Out Detected (isEntered is false)")
                 } else {
                     // Going In
                     self.isEntered = true
                     levelDestination = level_name
                     isOn = true
-//                    print(localTime + " , (Jupiter) Spot On : Going In")
+//                    print(localTime + " , (Jupiter) Spot On : In Detected")
                 }
             } else {
                 levelDestination = ""
                 isOn = true
-//                print(localTime + " , (Jupiter) Spot On : Going Out (isEntered is true)")
+//                print(localTime + " , (Jupiter) Spot On : Out Detected (isEntered is true)")
             }
             return (isOn, levelDestination, "")
         } else {
             if (levelArray[0] == levelArray[1]) {
                 isOn = false
                 self.isEntered = true
-//                print("Indoor spot")
+                self.isActiveReturn = true
+//                print(localTime + " , (Jupiter) Spot On : Indoor Spot")
                 return (isOn, "", "")
             }
             // Normal OSR
@@ -1750,15 +1720,15 @@ public class ServiceManager: Observation {
             self.lastOsrId = result.spot_id
             self.travelingOsrDistance = 0
             self.isPossibleEstBias = false
-            self.isActiveReturn = true
             if (levelDestination == "") {
                 self.buildingLevelChangedTime = 0
             } else {
                 self.buildingLevelChangedTime = currentTime
+                self.isActiveReturn = true
             }
             
             self.preOutputMobileTime = currentTime
-            print(localTime + " , (Jupiter) Spot On : Different Spot // levelDestination = \(levelDestination)")
+//            print(localTime + " , (Jupiter) Spot On : Different Spot // levelDestination = \(levelDestination)")
         } else {
             // Same Spot Detected
             if (self.travelingOsrDistance >= SAME_SPOT_DISTANCE) {
@@ -1773,14 +1743,14 @@ public class ServiceManager: Observation {
                 self.lastOsrId = result.spot_id
                 self.travelingOsrDistance = 0
                 self.isPossibleEstBias = false
-                self.isActiveReturn = true
                 if (levelDestination == "") {
                     self.buildingLevelChangedTime = 0
                 } else {
                     self.buildingLevelChangedTime = currentTime
+                    self.isActiveReturn = true
                 }
                 self.preOutputMobileTime = currentTime
-                print(localTime + " , (Jupiter) Spot On : Same Spot // levelDestination = \(levelDestination)")
+//                print(localTime + " , (Jupiter) Spot On : Same Spot // levelDestination = \(levelDestination)")
             }
         }
     }
@@ -1932,7 +1902,6 @@ public class ServiceManager: Observation {
             newBiasArray[1] = BIAS_RANGE_MAX - (2*biasRange)
         }
         
-//        print("(Estimate Bias) sccResult = \(sccResult) // biasResult = \(biasResult) // isSccHigh = \(isSccHigh) // biasArray = \(newBiasArray)")
         return (isSccHigh, newBiasArray)
     }
     
@@ -2452,7 +2421,6 @@ public class ServiceManager: Observation {
                 serverOutputHatMm.absolute_heading = serverOutputHatCopy.absolute_heading
             }
         } else {
-//            print(localTime + " , (Jupiter) Measurement Update: ServerOutputHatMm Fail")
             serverOutputHatMm.absolute_heading = originalResult[2]
         }
         
@@ -2510,7 +2478,6 @@ public class ServiceManager: Observation {
                 saveKalmanParam()
             }
         } else {
-//            print(localTime + " , (Jupiter) Measurement Update: measurementOutputCorrected Fail")
             // Use Server Result
             self.timeUpdatePosition.x = originalResult[0]
             self.timeUpdatePosition.y = originalResult[1]
