@@ -59,7 +59,7 @@ class CollectViewController: UIViewController {
     var page: Int = 0
     var userId: String = ""
     
-    var timer: Timer?
+    var timer: DispatchSourceTimer?
     let TIMER_INTERVAL: TimeInterval = 1/40
     
     let data: NSMutableArray  = NSMutableArray()
@@ -169,14 +169,22 @@ class CollectViewController: UIViewController {
     }
     
     func startTimer() {
+//        if (timer == nil) {
+//            self.timer = Timer.scheduledTimer(timeInterval: TIMER_INTERVAL, target: self, selector: #selector(self.timerUpdate), userInfo: nil, repeats: true)
+//        }
+        
         if (timer == nil) {
-            self.timer = Timer.scheduledTimer(timeInterval: TIMER_INTERVAL, target: self, selector: #selector(self.timerUpdate), userInfo: nil, repeats: true)
+            let queue = DispatchQueue(label: Bundle.main.bundleIdentifier! + ".collectTimer")
+            timer = DispatchSource.makeTimerSource(queue: queue)
+            timer!.schedule(deadline: .now(), repeating: TIMER_INTERVAL)
+            timer!.setEventHandler(handler: self.timerUpdate)
+            timer!.resume()
         }
     }
 
     func stopTimer() {
         if (timer != nil) {
-            self.timer!.invalidate()
+            self.timer!.cancel()
             self.timer = nil
         }
     }
@@ -349,69 +357,72 @@ class CollectViewController: UIViewController {
     }
 
     @objc func timerUpdate() {
-        let bleAvg: [String: Double] = serviceManager.collectData.bleAvg
-        let sortedBleAvg = bleAvg.sorted { $0.1 > $1.1 }
-        
-        self.wardData = bleAvg
-        self.wardCollectionView.reloadData()
-        
-        if (saveFlag) {
-            writeData(collectData: serviceManager.collectData)
-            if (serviceManager.collectData.isIndexChanged) {
-//                writeTrajectoryData(collectData: serviceManager.collectData)
-                let index = serviceManager.collectData.index
-                let length = serviceManager.collectData.length
-                indexLabel.text = String(index)
-                lengthLabel.text = String(format: "%.4f", length)
-                let currentHeading: Double = serviceManager.collectData.heading + 90
-                
-                x = x + (length * cos(currentHeading*D2R))
-                y = y + (length * sin(currentHeading*D2R))
-                
-                xAxisValue.append(x)
-                yAxisValue.append(y)
-                
-                if (xAxisValue.count > 20) {
-                    xAxisValue.removeFirst()
-                    yAxisValue.removeFirst()
-                }
+        DispatchQueue.main.async { [self] in
+            let collectedData = serviceManager.collectData
+            let bleAvg: [String: Double] = collectedData.bleAvg
+            let sortedBleAvg = bleAvg.sorted { $0.1 > $1.1 }
+            
+            self.wardData = bleAvg
+            self.wardCollectionView.reloadData()
+            
+            if (saveFlag) {
+                writeData(collectData: collectedData)
+                if (collectedData.isIndexChanged) {
+    //                writeTrajectoryData(collectData: serviceManager.collectData)
+                    let index = collectedData.index
+                    let length = collectedData.length
+                    indexLabel.text = String(index)
+                    lengthLabel.text = String(format: "%.4f", length)
+                    let currentHeading: Double = collectedData.heading + 90
+                    
+                    x = x + (length * cos(currentHeading*D2R))
+                    y = y + (length * sin(currentHeading*D2R))
+                    
+                    xAxisValue.append(x)
+                    yAxisValue.append(y)
+                    
+                    if (xAxisValue.count > 20) {
+                        xAxisValue.removeFirst()
+                        yAxisValue.removeFirst()
+                    }
 
-                
-                let values1 = (0..<xAxisValue.count).map { (i) -> ChartDataEntry in
-                    return ChartDataEntry(x: xAxisValue[i], y: yAxisValue[i])
+                    
+                    let values1 = (0..<xAxisValue.count).map { (i) -> ChartDataEntry in
+                        return ChartDataEntry(x: xAxisValue[i], y: yAxisValue[i])
+                    }
+                    
+                    // Heading
+                    let point = scatterChart.getPosition(entry: ChartDataEntry(x: xAxisValue[xAxisValue.count-1], y: yAxisValue[yAxisValue.count-1]), axis: .left)
+                    let imageView = UIImageView(image: headingImage!.rotate(degrees: -currentHeading + 90))
+                    imageView.frame = CGRect(x: point.x - 15, y: point.y - 15, width: 30, height: 30)
+                    imageView.contentMode = .center
+                    imageView.tag = 100
+                    if let viewWithTag = scatterChart.viewWithTag(100) {
+                        viewWithTag.removeFromSuperview()
+                    }
+                    scatterChart.addSubview(imageView)
+                    
+                    let set1 = ScatterChartDataSet(entries: values1, label: "Trajectory")
+                    set1.drawValuesEnabled = false
+                    set1.setScatterShape(.circle)
+                    set1.setColor(.blue1)
+                    set1.scatterShapeSize = 12
+                    
+                    let chartData = ScatterChartData(dataSet: set1)
+                    setChartFlag(chartFlag: true)
+                    
+                    let xMin = x - 15
+                    let xMax = x + 15
+                    let yMin = y - 15
+                    let yMax = y + 15
+                    
+                    scatterChart.xAxis.axisMinimum = xMin
+                    scatterChart.xAxis.axisMaximum = xMax
+                    scatterChart.leftAxis.axisMinimum = yMin
+                    scatterChart.leftAxis.axisMaximum = yMax
+                    
+                    scatterChart.data = chartData
                 }
-                
-                // Heading
-                let point = scatterChart.getPosition(entry: ChartDataEntry(x: xAxisValue[xAxisValue.count-1], y: yAxisValue[yAxisValue.count-1]), axis: .left)
-                let imageView = UIImageView(image: headingImage!.rotate(degrees: -currentHeading + 90))
-                imageView.frame = CGRect(x: point.x - 15, y: point.y - 15, width: 30, height: 30)
-                imageView.contentMode = .center
-                imageView.tag = 100
-                if let viewWithTag = scatterChart.viewWithTag(100) {
-                    viewWithTag.removeFromSuperview()
-                }
-                scatterChart.addSubview(imageView)
-                
-                let set1 = ScatterChartDataSet(entries: values1, label: "Trajectory")
-                set1.drawValuesEnabled = false
-                set1.setScatterShape(.circle)
-                set1.setColor(.blue1)
-                set1.scatterShapeSize = 12
-                
-                let chartData = ScatterChartData(dataSet: set1)
-                setChartFlag(chartFlag: true)
-                
-                let xMin = x - 15
-                let xMax = x + 15
-                let yMin = y - 15
-                let yMax = y + 15
-                
-                scatterChart.xAxis.axisMinimum = xMin
-                scatterChart.xAxis.axisMaximum = xMax
-                scatterChart.leftAxis.axisMinimum = yMin
-                scatterChart.leftAxis.axisMaximum = yMax
-                
-                scatterChart.data = chartData
             }
         }
     }
