@@ -7,6 +7,7 @@ public protocol Observable {
 }
 public protocol Observer: class {
     func update(result: FineLocationTrackingResult)
+    func report(isIndoor: Bool)
 }
 
 public class Observation: Observable {

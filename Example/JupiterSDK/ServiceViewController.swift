@@ -16,6 +16,14 @@ protocol ServiceViewPageDelegate {
 }
 
 class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewDataSource, Observer {
+    func report(isIndoor: Bool) {
+        let localTime = getLocalTimeString()
+        if (isIndoor) {
+            print(localTime + " , (Jupiter) Start : Enter the Service Area")
+        } else {
+            print(localTime + " , (Jupiter) Stop : Out of the Service Area")
+        }
+    }
     
     func update(result: FineLocationTrackingResult) {
         DispatchQueue.main.async {
