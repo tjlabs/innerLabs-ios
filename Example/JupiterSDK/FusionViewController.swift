@@ -13,12 +13,16 @@ protocol FusionViewPageDelegate {
 
 class FusionViewController: UIViewController, Observer {
     
-    func report(isIndoor: Bool) {
+    func report(flag: Int) {
         let localTime = getLocalTimeString()
-        if (isIndoor) {
-            print(localTime + " , (Jupiter) Start : Enter the Service Area")
-        } else {
+        
+        switch(flag) {
+        case 0:
             print(localTime + " , (Jupiter) Stop : Out of the Service Area")
+        case 1:
+            print(localTime + " , (Jupiter) Start : Enter the Service Area")
+        default:
+            print(localTime + " , (Jupiter) Default Flag")
         }
     }
     

@@ -73,9 +73,9 @@ public class ServiceManager: Observation {
         }
     }
     
-    func reporting(input: Bool) {
+    func reporting(input: Int) {
         for observer in observers {
-            observer.report(isIndoor: input)
+            observer.report(flag: input)
         }
     }
     
@@ -156,39 +156,24 @@ public class ServiceManager: Observation {
     
     
     // ----- Timer ----- //
-    var receivedForceTimer: DispatchSourceTimer?
+    var receivedForceTimer: Timer?
     var RFD_INTERVAL: TimeInterval = 1/2 // second
-    
-    var userVelocityTimer: DispatchSourceTimer?
+
+    var userVelocityTimer: Timer?
     var UVD_INTERVAL: TimeInterval = 1/40 // second
-    
-    var requestTimer: DispatchSourceTimer?
+
+    var requestTimer: Timer?
     var RQ_INTERVAL: TimeInterval = 2 // second
-    
-    var updateTimer: DispatchSourceTimer?
+
+    var updateTimer: Timer?
     var UPDATE_INTERVAL: TimeInterval = 1/5 // second
-    
-    var osrTimer: DispatchSourceTimer?
+
+    var osrTimer: Timer?
     var OSR_INTERVAL: TimeInterval = 2
-    
-//    var receivedForceTimer: Timer?
-//    var RFD_INTERVAL: TimeInterval = 1/2 // second
-//
-//    var userVelocityTimer: Timer?
-//    var UVD_INTERVAL: TimeInterval = 1/40 // second
-//
-//    var requestTimer: Timer?
-//    var RQ_INTERVAL: TimeInterval = 2 // second
-//
-//    var updateTimer: Timer?
-//    var UPDATE_INTERVAL: TimeInterval = 1/5 // second
-//
-//    var osrTimer: Timer?
-//    var OSR_INTERVAL: TimeInterval = 2
     
     let SENSOR_INTERVAL: TimeInterval = 1/100
     
-    var collectTimer: DispatchSourceTimer?
+    var collectTimer: Timer?
     // ------------------ //
     
     
@@ -310,7 +295,7 @@ public class ServiceManager: Observation {
     var timeSleepUV: Double = 0
     let STOP_THRESHOLD: Double = 2
     let SLEEP_THRESHOLD: Double = 600 // 10분
-    let SLEEP_THRESHOLD_RF: Double = 6 // 8s
+    let SLEEP_THRESHOLD_RF: Double = 6 // 6s
     
     var lastTrackingTime: Int = 0
     var lastResult = FineLocationTrackingResult()
@@ -572,7 +557,6 @@ public class ServiceManager: Observation {
                                             let result = decodeGEO(json: returnedString)
                                             let key: String = "\(buildingGeo)_\(levelGeo)"
                                             self.AbnormalArea[key] = result.geofences
-//                                            print("Geo Result : \(result.geofences), \(key)")
                                         }
                                     })
                                 }
@@ -905,165 +889,85 @@ public class ServiceManager: Observation {
     
     func startTimer() {
         if (receivedForceTimer == nil) {
-            let queue = DispatchQueue(label: Bundle.main.bundleIdentifier! + ".receivedForceTimer")
-            receivedForceTimer = DispatchSource.makeTimerSource(queue: queue)
-            receivedForceTimer!.schedule(deadline: .now(), repeating: RFD_INTERVAL)
-            receivedForceTimer!.setEventHandler(handler: self.receivedForceTimerUpdate)
-            receivedForceTimer!.resume()
+            receivedForceTimer = Timer.scheduledTimer(timeInterval: RFD_INTERVAL, target: self, selector: #selector(self.receivedForceTimerUpdate), userInfo: nil, repeats: true)
+            RunLoop.current.add(receivedForceTimer!, forMode: .common)
         }
-//        if (receivedForceTimer == nil) {
-//            receivedForceTimer = Timer.scheduledTimer(timeInterval: RFD_INTERVAL, target: self, selector: #selector(self.receivedForceTimerUpdate), userInfo: nil, repeats: true)
-//            RunLoop.current.add(receivedForceTimer!, forMode: RunLoopMode.commonModes)
-//        }
-        
+
         if (userVelocityTimer == nil && self.service == "FLT") {
-            let queue = DispatchQueue(label: Bundle.main.bundleIdentifier! + ".userVelocityTimer")
-            userVelocityTimer = DispatchSource.makeTimerSource(queue: queue)
-            userVelocityTimer!.schedule(deadline: .now(), repeating: UVD_INTERVAL)
-            userVelocityTimer!.setEventHandler(handler: self.userVelocityTimerUpdate)
-            userVelocityTimer!.resume()
+            userVelocityTimer = Timer.scheduledTimer(timeInterval: UVD_INTERVAL, target: self, selector: #selector(self.userVelocityTimerUpdate), userInfo: nil, repeats: true)
+            RunLoop.current.add(receivedForceTimer!, forMode: .common)
         }
-         
+
         if (requestTimer == nil && self.service == "FLT") {
-            let queue = DispatchQueue(label: Bundle.main.bundleIdentifier! + ".requestTimer")
-            requestTimer = DispatchSource.makeTimerSource(queue: queue)
-            requestTimer!.schedule(deadline: .now(), repeating: RQ_INTERVAL)
-            requestTimer!.setEventHandler(handler: self.requestTimerUpdate)
-            requestTimer!.resume()
+            requestTimer = Timer.scheduledTimer(timeInterval: RQ_INTERVAL, target: self, selector: #selector(self.requestTimerUpdate), userInfo: nil, repeats: true)
+            RunLoop.current.add(receivedForceTimer!, forMode: .common)
         }
-        
+
         if (updateTimer == nil && self.service == "FLT") {
-            let queue = DispatchQueue(label: Bundle.main.bundleIdentifier! + ".updateTimer")
-            updateTimer = DispatchSource.makeTimerSource(queue: queue)
-            updateTimer!.schedule(deadline: .now(), repeating: UPDATE_INTERVAL)
-            updateTimer!.setEventHandler(handler: self.outputTimerUpdate)
-            updateTimer!.resume()
+            updateTimer = Timer.scheduledTimer(timeInterval: UPDATE_INTERVAL, target: self, selector: #selector(self.outputTimerUpdate), userInfo: nil, repeats: true)
+            RunLoop.current.add(receivedForceTimer!, forMode: .common)
         }
-        
+
         if (osrTimer == nil && self.service == "FLT") {
-            let queue = DispatchQueue(label: Bundle.main.bundleIdentifier! + ".osrTimerUpdate")
-            osrTimer = DispatchSource.makeTimerSource(queue: queue)
-            osrTimer!.schedule(deadline: .now(), repeating: OSR_INTERVAL)
-            osrTimer!.setEventHandler(handler: self.osrTimerUpdate)
-            osrTimer!.resume()
+            osrTimer = Timer.scheduledTimer(timeInterval: OSR_INTERVAL, target: self, selector: #selector(self.osrTimerUpdate), userInfo: nil, repeats: true)
+            RunLoop.current.add(receivedForceTimer!, forMode: .common)
         }
     }
     
     func stopTimer() {
         if (receivedForceTimer != nil) {
-            receivedForceTimer!.cancel()
-//            receivedForceTimer!.invalidate()
+            receivedForceTimer!.invalidate()
             receivedForceTimer = nil
         }
-        
+
         if (userVelocityTimer != nil) {
-            userVelocityTimer!.cancel()
+            userVelocityTimer!.invalidate()
             userVelocityTimer = nil
         }
-        
+
         if (osrTimer != nil) {
-            osrTimer!.cancel()
+            osrTimer!.invalidate()
             osrTimer = nil
         }
-        
+
         if (requestTimer != nil) {
-            requestTimer!.cancel()
+            requestTimer!.invalidate()
             requestTimer = nil
         }
-        
+
         if (updateTimer != nil) {
-            updateTimer!.cancel()
+            updateTimer!.invalidate()
             updateTimer = nil
         }
     }
-    
-//    func startTimer() {
-//        if (receivedForceTimer == nil) {
-//            receivedForceTimer = Timer.scheduledTimer(timeInterval: RFD_INTERVAL, target: self, selector: #selector(self.receivedForceTimerUpdate), userInfo: nil, repeats: true)
-//            RunLoop.current.add(receivedForceTimer!, forMode: RunLoopMode.commonModes)
-//        }
-//
-//        if (userVelocityTimer == nil && self.service == "FLT") {
-//            userVelocityTimer = Timer.scheduledTimer(timeInterval: UVD_INTERVAL, target: self, selector: #selector(self.userVelocityTimerUpdate), userInfo: nil, repeats: true)
-//            RunLoop.current.add(receivedForceTimer!, forMode: RunLoopMode.commonModes)
-//        }
-//
-//        if (requestTimer == nil && self.service == "FLT") {
-//            requestTimer = Timer.scheduledTimer(timeInterval: RQ_INTERVAL, target: self, selector: #selector(self.requestTimerUpdate), userInfo: nil, repeats: true)
-//            RunLoop.current.add(receivedForceTimer!, forMode: RunLoopMode.commonModes)
-//        }
-//
-//        if (updateTimer == nil && self.service == "FLT") {
-//            updateTimer = Timer.scheduledTimer(timeInterval: UPDATE_INTERVAL, target: self, selector: #selector(self.outputTimerUpdate), userInfo: nil, repeats: true)
-//            RunLoop.current.add(receivedForceTimer!, forMode: RunLoopMode.commonModes)
-//        }
-//
-//        if (osrTimer == nil && self.service == "FLT") {
-//            osrTimer = Timer.scheduledTimer(timeInterval: OSR_INTERVAL, target: self, selector: #selector(self.osrTimerUpdate), userInfo: nil, repeats: true)
-//            RunLoop.current.add(receivedForceTimer!, forMode: RunLoopMode.commonModes)
-//        }
-//    }
-    
-//    func stopTimer() {
-//        if (receivedForceTimer != nil) {
-//            receivedForceTimer!.invalidate()
-//            receivedForceTimer = nil
-//        }
-//
-//        if (userVelocityTimer != nil) {
-//            userVelocityTimer!.invalidate()
-//            userVelocityTimer = nil
-//        }
-//
-//        if (osrTimer != nil) {
-//            osrTimer!.invalidate()
-//            osrTimer = nil
-//        }
-//
-//        if (requestTimer != nil) {
-//            requestTimer!.invalidate()
-//            requestTimer = nil
-//        }
-//
-//        if (updateTimer != nil) {
-//            updateTimer!.invalidate()
-//            updateTimer = nil
-//        }
-//    }
     
     func enterSleepMode() {
         let localTime: String = getLocalTimeString()
         print(localTime + " , (Jupiter) Enter Sleep Mode")
         
         if (self.updateTimer != nil) {
-            self.updateTimer!.cancel()
+            self.updateTimer!.invalidate()
             self.updateTimer = nil
         }
     }
     
     func wakeUpFromSleepMode() {
         if (self.updateTimer == nil && self.service == "FLT") {
-            let queue = DispatchQueue(label: Bundle.main.bundleIdentifier! + ".updateTimer")
-            updateTimer = DispatchSource.makeTimerSource(queue: queue)
-            updateTimer!.schedule(deadline: .now(), repeating: UPDATE_INTERVAL)
-            updateTimer!.setEventHandler(handler: self.outputTimerUpdate)
-            updateTimer!.resume()
+            updateTimer = Timer.scheduledTimer(timeInterval: UPDATE_INTERVAL, target: self, selector: #selector(self.outputTimerUpdate), userInfo: nil, repeats: true)
+            RunLoop.current.add(receivedForceTimer!, forMode: .common)
         }
     }
     
     func startCollectTimer() {
         if (collectTimer == nil) {
-            let queue = DispatchQueue(label: Bundle.main.bundleIdentifier! + ".updateTimer")
-            collectTimer = DispatchSource.makeTimerSource(queue: queue)
-            collectTimer!.schedule(deadline: .now(), repeating: UVD_INTERVAL)
-            collectTimer!.setEventHandler(handler: self.collectTimerUpdate)
-            collectTimer!.resume()
+            collectTimer = Timer.scheduledTimer(timeInterval: UVD_INTERVAL, target: self, selector: #selector(self.collectTimerUpdate), userInfo: nil, repeats: true)
+            RunLoop.current.add(collectTimer!, forMode: .common)
         }
     }
     
     func stopCollectTimer() {
         if (collectTimer != nil) {
-            collectTimer!.cancel()
+            collectTimer!.invalidate()
             collectTimer = nil
         }
     }
@@ -1083,7 +987,6 @@ public class ServiceManager: Observation {
         let bleDictionary = bleManager.bleDictionary
         let bleTrimed = bleManager.trimBleData(bleData: bleDictionary)
         var bleAvg = bleManager.avgBleData(bleDictionary: bleTrimed)
-//        var bleAvg = bleManager.trimBleData(bleData: bleDictionary)
         
         let bleCheckTime = Double(currentTime)
         let discoveredTime = bleManager.bleDiscoveredTime
@@ -1120,7 +1023,6 @@ public class ServiceManager: Observation {
             if (self.timeActiveRF >= SLEEP_THRESHOLD_RF) {
                 self.isActiveRF = false
                 self.timeActiveRF = 0
-//                print(getLocalTimeString() + " , (Jupiter) isActiveRF is false")
             }
             
             self.timeSleepRF += RFD_INTERVAL
@@ -1363,7 +1265,6 @@ public class ServiceManager: Observation {
                         self.currentLevel = ""
                         
                         self.isEntered = false
-                        print(localTime + " , (Jupiter) Not in Service Area")
                     }
                 }
             } else {
@@ -1431,9 +1332,8 @@ public class ServiceManager: Observation {
                             self.isGetFirstResponse = true
                             
                             if (self.isActiveReturn) {
-                                self.reporting(input: true)
+                                self.reporting(input: INDOOR_FLAG)
                             }
-//                            print(localTime + " , (Jupiter) Info : Get First Response")
                         }
                         
                         if (!self.isActiveReturn) {
@@ -1441,7 +1341,7 @@ public class ServiceManager: Observation {
                             let isStrongRfd: Bool = checkStrongRfd(bleDict: bleData)
                             self.isActiveReturn = isStrongRfd
                             if (isStrongRfd) {
-                                self.reporting(input: true)
+                                self.reporting(input: INDOOR_FLAG)
                             }
                         }
                         
@@ -1485,7 +1385,6 @@ public class ServiceManager: Observation {
                             self.flagPast = false
                             self.outputResult = finalResult
                         } else {
-//                            print(localTime + " , (Jupiter) Phase 3 Result (In KF): \(result)")
 //                             Kalman Filter가 동작 중이면서 위치 요청시 input의 phase 가 1~3 인 경우
                             if (result.phase == 4) {
                                 self.phase4Count += 1
@@ -1771,18 +1670,18 @@ public class ServiceManager: Observation {
                     // Going Out
                     levelDestination = ""
                     isOn = true
-                    print(localTime + " , (Jupiter) Spot On : Out Detected (isEntered is false)")
+//                    print(localTime + " , (Jupiter) Spot On : Out Detected (isEntered is false)")
                 } else {
                     // Going In
                     self.isEntered = true
                     levelDestination = level_name
                     isOn = true
-                    print(localTime + " , (Jupiter) Spot On : In Detected")
+//                    print(localTime + " , (Jupiter) Spot On : In Detected")
                 }
             } else {
                 levelDestination = ""
                 isOn = true
-                print(localTime + " , (Jupiter) Spot On : Out Detected (isEntered is true)")
+//                print(localTime + " , (Jupiter) Spot On : Out Detected (isEntered is true)")
             }
             return (isOn, levelDestination, "")
         } else {
@@ -1790,7 +1689,6 @@ public class ServiceManager: Observation {
                 isOn = false
                 self.isEntered = true
                 self.isActiveReturn = true
-//                print(localTime + " , (Jupiter) Spot On : Indoor Spot")
                 return (isOn, "", "")
             }
             // Normal OSR
@@ -1830,6 +1728,7 @@ public class ServiceManager: Observation {
             self.travelingOsrDistance = 0
             self.isPossibleEstBias = false
             if (levelDestination == "") {
+//                print(localTime + " , (Jupiter) Spot On : \(result.spot_distance)")
                 self.buildingLevelChangedTime = 0
                 
                 self.isActiveKf = false
@@ -1841,17 +1740,17 @@ public class ServiceManager: Observation {
                 self.timeUpdateOutput = FineLocationTrackingFromServer()
                 self.measurementOutput = FineLocationTrackingFromServer()
                 
-                self.reporting(input: false)
+                self.reporting(input: OUTDOOR_FLAG)
             } else {
                 self.buildingLevelChangedTime = currentTime
                 if (result.linked_level_name == "" && !self.isActiveReturn) {
                     self.isActiveReturn = true
-                    self.reporting(input: true)
+                    self.reporting(input: INDOOR_FLAG)
                 }
             }
             
             self.preOutputMobileTime = currentTime
-            print(localTime + " , (Jupiter) Spot On : Different Spot // levelDestination = \(levelDestination)")
+//            print(localTime + " , (Jupiter) Spot On : Different Spot // levelDestination = \(levelDestination)")
         } else {
             // Same Spot Detected
             if (self.travelingOsrDistance >= result.spot_distance) {
@@ -1868,6 +1767,7 @@ public class ServiceManager: Observation {
                 self.travelingOsrDistance = 0
                 self.isPossibleEstBias = false
                 if (levelDestination == "") {
+//                    print(localTime + " , (Jupiter) Spot On : \(result.spot_distance)")
                     self.buildingLevelChangedTime = 0
                     
                     self.isActiveKf = false
@@ -1879,16 +1779,16 @@ public class ServiceManager: Observation {
                     self.timeUpdateOutput = FineLocationTrackingFromServer()
                     self.measurementOutput = FineLocationTrackingFromServer()
                     
-                    self.reporting(input: false)
+                    self.reporting(input: OUTDOOR_FLAG)
                 } else {
                     if (result.linked_level_name == "" && !self.isActiveReturn) {
                         self.isActiveReturn = true
-                        self.reporting(input: true)
+                        self.reporting(input: INDOOR_FLAG)
                     }
                     self.buildingLevelChangedTime = currentTime
                 }
                 self.preOutputMobileTime = currentTime
-                print(localTime + " , (Jupiter) Spot On : Same Spot // levelDestination = \(levelDestination) // \(result.spot_distance)")
+//                print(localTime + " , (Jupiter) Spot On : Same Spot // levelDestination = \(levelDestination)")
             }
         }
     }

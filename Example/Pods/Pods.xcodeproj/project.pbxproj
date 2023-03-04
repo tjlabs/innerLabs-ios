@@ -1050,7 +1050,7 @@
 		241B0393136CA9786C1D33B87819F0E7 /* DPDKeyboardListener.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = DPDKeyboardListener.swift; path = DropDown/helpers/DPDKeyboardListener.swift; sourceTree = "<group>"; };
 		24433039A4A8AA2633A451C590B151D3 /* BluetoothManager.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BluetoothManager.swift; path = JupiterSDK/Classes/BluetoothManager.swift; sourceTree = "<group>"; };
 		2452495CF0E43ED1A684481A21F47E6B /* ABTExperimentPayload.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABTExperimentPayload.h; path = FirebaseABTesting/Sources/Private/ABTExperimentPayload.h; sourceTree = "<group>"; };
-		249D3629879889DAFD7B486C2E89F745 /* JupiterSDK */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = JupiterSDK; path = JupiterSDK.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		249D3629879889DAFD7B486C2E89F745 /* JupiterSDK.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = JupiterSDK.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		24AD5C25AF09A91BCEED168DF09460A8 /* FBLPromise+Timeout.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "FBLPromise+Timeout.m"; path = "Sources/FBLPromises/FBLPromise+Timeout.m"; sourceTree = "<group>"; };
 		24ECD696A674CBBA788B4BDDF64A99F3 /* GoogleUtilities-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "GoogleUtilities-dummy.m"; sourceTree = "<group>"; };
 		253996DEF308C5837244ECDECD593113 /* FBLPromise+Await.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "FBLPromise+Await.m"; path = "Sources/FBLPromises/FBLPromise+Await.m"; sourceTree = "<group>"; };
@@ -1980,7 +1980,7 @@
 				AD776F1C94991D3E551CEAA515DB110A /* FirebaseRemoteConfig */,
 				2915C263A5C5C8012A8C1E97512DC6A8 /* Floaty */,
 				B43874C6CBB50E7134FBEC24BABFE14F /* GoogleUtilities */,
-				249D3629879889DAFD7B486C2E89F745 /* JupiterSDK */,
+				249D3629879889DAFD7B486C2E89F745 /* JupiterSDK.framework */,
 				C3F44C782D64D7EB20B61CE3844EBFAD /* Kingfisher */,
 				D625E9E1A7452D6B5A6D9E6AE733805F /* Pods-JupiterSDK_Example */,
 				46007FD9363A51EF486FFA592293542D /* Pods-JupiterSDK_Tests */,
@@ -3487,7 +3487,7 @@
 			);
 			name = JupiterSDK;
 			productName = JupiterSDK;
-			productReference = 249D3629879889DAFD7B486C2E89F745 /* JupiterSDK */;
+			productReference = 249D3629879889DAFD7B486C2E89F745 /* JupiterSDK.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		19622742EBA51E823D6DAE3F8CDBFAD4 /* SnapKit */ = {
@@ -5331,7 +5331,7 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -5916,7 +5916,7 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
