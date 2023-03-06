@@ -32,9 +32,9 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
     
     func update(result: FineLocationTrackingResult) {
         DispatchQueue.main.async {
-            let localTime: String = self.getLocalTimeString()
-            let log: String = localTime + " , (Jupiter) Output // Building : \(result.building_name) , Level : \(result.level_name) , Mode : \(result.mode) , dt = \(result.mobile_time - self.observerTime)"
-            print(log)
+//            let localTime: String = self.getLocalTimeString()
+//            let log: String = localTime + " , (Jupiter) Output // Building : \(result.building_name) , Level : \(result.level_name) , Mode : \(result.mode) , dt = \(result.mobile_time - self.observerTime)"
+//            print(log)
             
             let building = result.building_name
             let level = result.level_name
@@ -956,105 +956,6 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
         
     }
     
-    private func drawAll(XY: [Double], serverXY: [Double], tuXY: [Double], heading: Double, limits: [Double]) {
-        let values1 = (0..<1).map { (i) -> ChartDataEntry in
-            return ChartDataEntry(x: XY[0], y: XY[1])
-        }
-        let set1 = ScatterChartDataSet(entries: values1, label: "USER")
-        set1.drawValuesEnabled = false
-        set1.setScatterShape(.circle)
-        set1.setColor(UIColor.systemRed)
-        set1.scatterShapeSize = 16
-        
-        let values2 = (0..<1).map { (i) -> ChartDataEntry in
-            return ChartDataEntry(x: serverXY[0], y: serverXY[1])
-        }
-        
-        let set2 = ScatterChartDataSet(entries: values2, label: "SERVER")
-        set2.drawValuesEnabled = false
-        set2.setScatterShape(.circle)
-        set2.setColor(.yellow)
-        set2.scatterShapeSize = 12
-        
-        let values3 = (0..<1).map { (i) -> ChartDataEntry in
-            return ChartDataEntry(x: tuXY[0], y: tuXY[1])
-        }
-        
-        let set3 = ScatterChartDataSet(entries: values3, label: "TU")
-        set3.drawValuesEnabled = false
-        set3.setScatterShape(.circle)
-        set3.setColor(.systemGreen)
-        set3.scatterShapeSize = 12
-        
-        let chartData = ScatterChartData(dataSet: set1)
-        chartData.append(set2)
-        chartData.append(set3)
-        chartData.setDrawValues(false)
-        
-        // Heading
-        let point = scatterChart.getPosition(entry: ChartDataEntry(x: XY[0], y: XY[1]), axis: .left)
-        let imageView = UIImageView(image: headingImage!.rotate(degrees: -heading+90))
-        imageView.frame = CGRect(x: point.x - 15, y: point.y - 15, width: 30, height: 30)
-        imageView.contentMode = .center
-        imageView.tag = 100
-        if let viewWithTag = scatterChart.viewWithTag(100) {
-            viewWithTag.removeFromSuperview()
-        }
-        scatterChart.addSubview(imageView)
-        
-        let point2 = scatterChart.getPosition(entry: ChartDataEntry(x: serverXY[0], y: serverXY[1]), axis: .left)
-        let imageView2 = UIImageView(image: headingImage!.rotate(degrees: -serverXY[2]+90))
-        imageView2.frame = CGRect(x: point2.x - 15, y: point2.y - 15, width: 30, height: 30)
-        imageView2.contentMode = .center
-        imageView2.tag = 200
-        if let viewWithTag2 = scatterChart.viewWithTag(200) {
-            viewWithTag2.removeFromSuperview()
-        }
-        scatterChart.addSubview(imageView2)
-        
-        let point3 = scatterChart.getPosition(entry: ChartDataEntry(x: tuXY[0], y: tuXY[1]), axis: .left)
-        let imageView3 = UIImageView(image: headingImage!.rotate(degrees: -tuXY[2]+90))
-        imageView3.frame = CGRect(x: point3.x - 15, y: point3.y - 15, width: 30, height: 30)
-        imageView3.contentMode = .center
-        imageView3.tag = 300
-        if let viewWithTag3 = scatterChart.viewWithTag(300) {
-            viewWithTag3.removeFromSuperview()
-        }
-        scatterChart.addSubview(imageView3)
-        
-        
-        let chartFlag: Bool = false
-        scatterChart.isHidden = false
-        
-        // Configure Chart
-        scatterChart.xAxis.axisMinimum = limits[0]
-        scatterChart.xAxis.axisMaximum = limits[1]
-        scatterChart.leftAxis.axisMinimum = limits[2]
-        scatterChart.leftAxis.axisMaximum = limits[3]
-        
-        scatterChart.xAxis.drawGridLinesEnabled = chartFlag
-        scatterChart.leftAxis.drawGridLinesEnabled = chartFlag
-        scatterChart.rightAxis.drawGridLinesEnabled = chartFlag
-        
-        scatterChart.xAxis.drawAxisLineEnabled = chartFlag
-        scatterChart.leftAxis.drawAxisLineEnabled = chartFlag
-        scatterChart.rightAxis.drawAxisLineEnabled = chartFlag
-        
-        scatterChart.xAxis.centerAxisLabelsEnabled = chartFlag
-        scatterChart.leftAxis.centerAxisLabelsEnabled = chartFlag
-        scatterChart.rightAxis.centerAxisLabelsEnabled = chartFlag
-
-        scatterChart.xAxis.drawLabelsEnabled = chartFlag
-        scatterChart.leftAxis.drawLabelsEnabled = chartFlag
-        scatterChart.rightAxis.drawLabelsEnabled = chartFlag
-        
-        scatterChart.legend.enabled = chartFlag
-        
-        scatterChart.backgroundColor = .clear
-        
-        scatterChart.data = chartData
-    }
-    
     func updateCoord(data: CoordToDisplay, flag: Bool) {
         self.XY[0] = data.x
         self.XY[1] = data.y
@@ -1101,7 +1002,6 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
             if (buildings.contains(currentBuilding)) {
                 if (XY[0] != 0 && XY[1] != 0) {
                     drawUser(XY: XY, heading: heading, limits: limits)
-//                    drawAll(XY: XY, serverXY: serviceManager.serverResult, tuXY: serviceManager.timeUpdateResult, heading: heading, limits: limits)
                 }
             }
         }
@@ -1193,7 +1093,7 @@ extension ServiceViewController: UITableViewDelegate {
                 if (indexPath.section == 0) {
                     return 220 + 20
                 } else {
-                    return 120 + 20
+                    return 160 + 20
                 }
                 
             }
