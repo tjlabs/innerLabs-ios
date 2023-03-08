@@ -11,8 +11,9 @@ class FileViewController: UIViewController {
     var arrSelectedFile = [URL]()
     
     // AWS S3
-    let accessKey = ""
-    let secretKey = ""
+    let bucketName = "tjlabs-collect"
+    let accessKey = "AKIA54UJFMQ3QZ75ANAS"
+    let secretKey = "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"
     var fileKey = "ios/"
     
     @IBOutlet weak var fileCollectionView: UICollectionView!
@@ -24,12 +25,11 @@ class FileViewController: UIViewController {
         updateDirFiles()
         setupCollectionView()
     }
-        
+    
     func uploadToS3(fileURLs: [URL]) {
         let urls: [URL] = fileURLs
         
-//        let credentialsProvider = AWSStaticCredentialsProvider(accessKey: self.accessKey, secretKey: self.secretKey)
-        let credentialsProvider = AWSAnonymousCredentialsProvider()
+        let credentialsProvider = AWSStaticCredentialsProvider(accessKey: self.accessKey, secretKey: self.secretKey)
         let configuration = AWSServiceConfiguration(region: AWSRegionType.APNortheast2, credentialsProvider: credentialsProvider)
         AWSServiceManager.default().defaultServiceConfiguration = configuration
         
@@ -44,26 +44,19 @@ class FileViewController: UIViewController {
                 print("Failed to read CSV file")
                 return
             }
-
-            let putRequest = AWSS3PutObjectRequest()
-            putRequest?.bucket = "arn:aws:s3:::tjlabs-collect"
-            putRequest?.key = objectKey
-            putRequest?.acl = .publicReadWrite
-            putRequest?.contentType = "text/csv"
-            putRequest?.body = fileData as Data
             
-            AWSS3.default().putObject(putRequest!).continueWith { task in
-                if let error = task.error {
+            let transferUtility = AWSS3TransferUtility.default()
+            transferUtility.uploadData(fileData, bucket: bucketName, key: objectKey, contentType: "text/csv", expression: nil) { (task, error) in
+                if let error = error {
                     print("Failed to upload CSV file: \(error)")
                 } else {
                     print("CSV file uploaded successfully")
                 }
-                return nil
             }
         }
     }
-
-
+    
+    
     
     @IBAction func tapSelectButton(_ sender: UIButton) {
         UIView.animate(withDuration: 0.0, delay: 0.0, options: .curveLinear, animations: {
@@ -85,8 +78,8 @@ class FileViewController: UIViewController {
             }
             arrSelectedFile = files
             
-            print("Select All : \(arrSelectedIndex)")
-            print("Select All : \(arrSelectedFile)")
+//            print("Select All : \(arrSelectedIndex)")
+//            print("Select All : \(arrSelectedFile)")
             
             self.fileCollectionView.reloadData()
         }
@@ -96,8 +89,8 @@ class FileViewController: UIViewController {
             
             clearSelectedFiles()
             
-            print("Clear All : \(arrSelectedIndex)")
-            print("Clear All : \(arrSelectedFile)")
+//            print("Clear All : \(arrSelectedIndex)")
+//            print("Clear All : \(arrSelectedFile)")
             
             self.fileCollectionView.reloadData()
         }

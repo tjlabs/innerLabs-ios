@@ -24,30 +24,30 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
             print(localTime + " , (Jupiter) Stop : Out of the Service Area")
         case 1:
             print(localTime + " , (Jupiter) Start : Enter the Service Area")
-//        case -1:
-//            print(localTime + " , (Jupiter) Abnormal : Restart the Service")
-//            self.stopTimer()
-//            serviceManager.stopService()
-//
-//            var inputMode: String = "auto"
-//            if (self.sectorID == 6) {
-//                inputMode = "auto"
-//            } else {
-//                inputMode = cardData!.mode
-//            }
-//            let initService = serviceManager.startService(id: uuid, sector_id: cardData!.sector_id, service: serviceName, mode: inputMode)
-//            if (initService.0) {
-//                self.startTimer()
-//            }
+        case -1:
+            print(localTime + " , (Jupiter) Abnormal : Restart the Service")
+            self.stopTimer()
+            serviceManager.stopService()
+
+            var inputMode: String = "auto"
+            if (self.sectorID == 6) {
+                inputMode = "auto"
+            } else {
+                inputMode = cardData!.mode
+            }
+            let initService = serviceManager.startService(id: uuid, sector_id: cardData!.sector_id, service: serviceName, mode: inputMode)
+            if (initService.0) {
+                self.startTimer()
+            }
         default:
             print(localTime + " , (Jupiter) Default Flag")
         }
     }
     
     func update(result: FineLocationTrackingResult) {
-        let localTime: String = self.getLocalTimeString()
-        let log: String = localTime + " , (ServiceVC) Output // Building : \(result.building_name) , Level : \(result.level_name) , Mode : \(result.mode) , dt = \(result.mobile_time - self.observerTime)"
-        print(log)
+//        let localTime: String = self.getLocalTimeString()
+//        let log: String = localTime + " , (ServiceVC) Output // Building : \(result.building_name) , Level : \(result.level_name) , Mode : \(result.mode) , dt = \(result.mobile_time - self.observerTime)"
+//        print(log)
             
         let building = result.building_name
         let level = result.level_name
@@ -497,8 +497,6 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
             let xMax = rpXY[0].max()!
             let yMin = rpXY[1].min()!
             let yMax = rpXY[1].max()!
-//            print("Min Max : \(xMin), \(xMax), \(yMin), \(yMax)")
-            
         } catch {
             print("Error reading .csv file")
         }
@@ -509,7 +507,8 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
     // Display Outputs
     func startTimer() {
         if (timer == nil) {
-            self.timer = Timer.scheduledTimer(timeInterval: TIMER_INTERVAL, target: self, selector: #selector(self.timerUpdate), userInfo: nil, repeats: true)
+            timer = Timer.scheduledTimer(timeInterval: TIMER_INTERVAL, target: self, selector: #selector(self.timerUpdate), userInfo: nil, repeats: true)
+            RunLoop.current.add(self.timer!, forMode: .common)
         }
     }
     
@@ -626,56 +625,6 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
                 }
             }
         })
-    }
-    
-    private func fetchLevel(building: String, level: String, flag: Bool) {
-        // Building -> Level Image Download From URL
-        noImageLabel.text = "해당 \(level) 이미지가 없습니다"
-        
-        DispatchQueue.main.async  {
-            // 빌딩 -> 층 이미지 보이기
-            if let urlLevel = URL(string: "https://storage.googleapis.com/\(IMAGE_URL)/map/\(self.sectorID)/\(building)_\(level).png") {
-                let data = try? Data(contentsOf: urlLevel)
-//                let data = try await URLSession.shared.data(from: urlLevel)
-                
-                if (data != nil) {
-                    // 빌딩 -> 층 이미지가 있는 경우
-                    let resourceBuildingLevel = ImageResource(downloadURL: urlLevel, cacheKey: "\(self.sectorID)_\(building)_\(level)_image")
-                    
-    //                scatterChart.isHidden = false
-                    self.imageLevel.isHidden = false
-                    self.noImageLabel.isHidden = true
-                    self.imageLevel.kf.setImage(with: resourceBuildingLevel, placeholder: nil, options: [.transition(.fade(0.8))], completionHandler: nil)
-                } else {
-                    // 빌딩 -> 층 이미지가 없는 경우
-                    if (flag) {
-    //                    scatterChart.isHidden = false
-                        self.imageLevel.isHidden = false
-                        self.noImageLabel.isHidden = true
-                        
-                        self.imageLevel.image = UIImage(named: "emptyLevel")
-                    } else {
-                        self.scatterChart.isHidden = true
-                        self.imageLevel.isHidden = true
-                        self.noImageLabel.isHidden = false
-                    }
-                    
-                }
-            } else {
-                // 빌딩 -> 층 이미지가 없는 경우
-                if (flag) {
-    //                scatterChart.isHidden = false
-                    self.imageLevel.isHidden = false
-                    self.noImageLabel.isHidden = true
-                    
-                    self.imageLevel.image = UIImage(named: "emptyLevel")
-                } else {
-                    self.scatterChart.isHidden = true
-                    self.imageLevel.isHidden = true
-                    self.noImageLabel.isHidden = false
-                }
-            }
-        }
     }
     
     private func drawRP(RP_X: [Double], RP_Y: [Double], XY: [Double], heading: Double, limits: [Double]) {
@@ -979,7 +928,6 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
         
         if (pastBuilding != currentBuilding || pastLevel != currentLevel) {
             displayLevelImage(building: currentBuilding, level: currentLevel, flag: flag)
-//            fetchLevel(building: currentBuilding, level: currentLevel, flag: flag)
         }
         
         pastBuilding = currentBuilding
@@ -1168,7 +1116,6 @@ extension ServiceViewController : UICollectionViewDelegate{
                 drawDebug(XY: XY, RP_X: rp[0], RP_Y: rp[1], serverXY: serviceManager.serverResult, tuXY: serviceManager.timeUpdateResult, heading: 0, limits: limits)
             }
             displayLevelImage(building: currentBuilding, level: currentLevel, flag: isShowRP)
-//            fetchLevel(building: currentBuilding, level: currentLevel, flag: isShowRP)
         }
         
         levelCollectionView.reloadData()
@@ -1188,7 +1135,6 @@ extension ServiceViewController : UICollectionViewDataSource{
         levelCollectionView.setName(level: levels[currentBuilding]![indexPath.row],
                                     isClicked: currentLevel == levels[currentBuilding]![indexPath.row] ? true : false)
         displayLevelImage(building: currentBuilding, level: currentLevel, flag: isShowRP)
-//        fetchLevel(building: currentBuilding, level: currentLevel, flag: isShowRP)
         
         levelCollectionView.layer.cornerRadius = 15
         levelCollectionView.layer.borderColor = UIColor.darkgrey4.cgColor
