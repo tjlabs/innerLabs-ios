@@ -46,7 +46,7 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
     
     func update(result: FineLocationTrackingResult) {
         let localTime: String = self.getLocalTimeString()
-        let log: String = localTime + " , (Jupiter) Output // Building : \(result.building_name) , Level : \(result.level_name) , Mode : \(result.mode) , dt = \(result.mobile_time - self.observerTime)"
+        let log: String = localTime + " , (ServiceVC) Output // Building : \(result.building_name) , Level : \(result.level_name) , Mode : \(result.mode) , dt = \(result.mobile_time - self.observerTime)"
         print(log)
             
         let building = result.building_name
