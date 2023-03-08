@@ -1,8 +1,8 @@
 {
   "name": "JupiterSDK",
-  "version": "1.10.5",
+  "version": "1.11.15",
   "summary": "JupiterSDK for iOS",
-  "swift_versions": "4.0",
+  "swift_versions": "5.0",
   "description": "TODO: Add long description of the pod here.",
   "platforms": {
     "ios": "12.0"
@@ -17,9 +17,9 @@
   },
   "source": {
     "git": "https://github.com/tjlabs/jupiter-ios.git",
-    "tag": "1.10.5"
+    "tag": "1.11.15"
   },
   "source_files": "JupiterSDK/Classes/**/*",
   "static_framework": true,
-  "swift_version": "4.0"
+  "swift_version": "5.0"
 }

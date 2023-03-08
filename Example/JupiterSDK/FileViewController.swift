@@ -1,13 +1,19 @@
 import UIKit
+import AWSS3
 
 class FileViewController: UIViewController {
     
     var fileUrls = [URL]()
-
+    
     var isSelectAll: Bool = false
     
     var arrSelectedIndex = [IndexPath]()
     var arrSelectedFile = [URL]()
+    
+    // AWS S3
+    let accessKey = ""
+    let secretKey = ""
+    var fileKey = "ios/"
     
     @IBOutlet weak var fileCollectionView: UICollectionView!
     @IBOutlet weak var numFilesLabel: UILabel!
@@ -18,6 +24,46 @@ class FileViewController: UIViewController {
         updateDirFiles()
         setupCollectionView()
     }
+        
+    func uploadToS3(fileURLs: [URL]) {
+        let urls: [URL] = fileURLs
+        
+//        let credentialsProvider = AWSStaticCredentialsProvider(accessKey: self.accessKey, secretKey: self.secretKey)
+        let credentialsProvider = AWSAnonymousCredentialsProvider()
+        let configuration = AWSServiceConfiguration(region: AWSRegionType.APNortheast2, credentialsProvider: credentialsProvider)
+        AWSServiceManager.default().defaultServiceConfiguration = configuration
+        
+        for i in 0..<urls.count {
+            let fileURL: URL = urls[i]
+            let urlToString: String = fileURL.absoluteString
+            let fileNameArray: [String] = urlToString.components(separatedBy: "/")
+            let fileName: String = fileNameArray[fileNameArray.count-1]
+            let objectKey = self.fileKey + fileName
+            
+            guard let fileData = try? Data(contentsOf: fileURL) else {
+                print("Failed to read CSV file")
+                return
+            }
+
+            let putRequest = AWSS3PutObjectRequest()
+            putRequest?.bucket = "arn:aws:s3:::tjlabs-collect"
+            putRequest?.key = objectKey
+            putRequest?.acl = .publicReadWrite
+            putRequest?.contentType = "text/csv"
+            putRequest?.body = fileData as Data
+            
+            AWSS3.default().putObject(putRequest!).continueWith { task in
+                if let error = task.error {
+                    print("Failed to upload CSV file: \(error)")
+                } else {
+                    print("CSV file uploaded successfully")
+                }
+                return nil
+            }
+        }
+    }
+
+
     
     @IBAction func tapSelectButton(_ sender: UIButton) {
         UIView.animate(withDuration: 0.0, delay: 0.0, options: .curveLinear, animations: {
@@ -57,11 +103,15 @@ class FileViewController: UIViewController {
         }
     }
     
+    @IBAction func tapSendButton(_ sender: UIButton) {
+        uploadToS3(fileURLs: self.arrSelectedFile)
+    }
+    
     
     @IBAction func tapBackButton(_ sender: UIButton) {
         goToBack()
     }
-
+    
     @IBAction func tapDeleteButton(_ sender: UIButton) {
         deleteClicked(files: self.arrSelectedFile, indexs: self.arrSelectedIndex)
     }
@@ -70,7 +120,7 @@ class FileViewController: UIViewController {
         view.addSubview(fileCollectionView)
         
         fileCollectionView.register(UINib(nibName: "FileCollectionViewCell", bundle: .main), forCellWithReuseIdentifier: "FileCollectionViewCell")
-
+        
         fileCollectionView.dataSource = self
         fileCollectionView.delegate = self
         fileCollectionView.allowsMultipleSelection = true
@@ -82,7 +132,7 @@ class FileViewController: UIViewController {
     func goToBack() {
         self.navigationController?.popViewController(animated: true)
     }
-
+    
     func allSavedFiles() -> [URL]? {
         let fileManager = FileManager.default
         let documentsURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask)[0]
@@ -120,30 +170,29 @@ class FileViewController: UIViewController {
             showPopUpWithButton(title: "Delete Files", message: "Are you sure to delete?", leftActionTitle: "Cancel", rightActionTitle: "Okay", rightActionCompletion: deleteFiles)
         }
         
-        
-//        var indexsToDelete = [IndexPath]()
-//        var filesToDelete = [URL]()
-//
-//        for i in 0..<files.count {
-//            indexsToDelete.append(indexs[i])
-//            filesToDelete.append(files[i])
-//
-//        }
-//        print("Index to Delete : \(indexsToDelete)")
-//        print("File to Delete : \(filesToDelete)")
-//
-//
-//        do {
-//            for i in 0..<filesToDelete.count {
-//                try FileManager.default.removeItem(at: filesToDelete[i])
-//                print("File successfully deleted at path: \(filesToDelete[i])")
-//            }
-//
-//            clearSelectedFiles()
-//            updateDirFiles()
-//        } catch let error as NSError {
-//            print("Failed to delete file with error: \(error.localizedDescription)")
-//        }
+        //        var indexsToDelete = [IndexPath]()
+        //        var filesToDelete = [URL]()
+        //
+        //        for i in 0..<files.count {
+        //            indexsToDelete.append(indexs[i])
+        //            filesToDelete.append(files[i])
+        //
+        //        }
+        //        print("Index to Delete : \(indexsToDelete)")
+        //        print("File to Delete : \(filesToDelete)")
+        //
+        //
+        //        do {
+        //            for i in 0..<filesToDelete.count {
+        //                try FileManager.default.removeItem(at: filesToDelete[i])
+        //                print("File successfully deleted at path: \(filesToDelete[i])")
+        //            }
+        //
+        //            clearSelectedFiles()
+        //            updateDirFiles()
+        //        } catch let error as NSError {
+        //            print("Failed to delete file with error: \(error.localizedDescription)")
+        //        }
     }
     
     @objc func deleteFiles() {
@@ -152,22 +201,22 @@ class FileViewController: UIViewController {
         
         var indexsToDelete = [IndexPath]()
         var filesToDelete = [URL]()
-
+        
         for i in 0..<files.count {
             indexsToDelete.append(indexes[i])
             filesToDelete.append(files[i])
-
+            
         }
         print("Index to Delete : \(indexsToDelete)")
         print("File to Delete : \(filesToDelete)")
-
-
+        
+        
         do {
             for i in 0..<filesToDelete.count {
                 try FileManager.default.removeItem(at: filesToDelete[i])
                 print("File successfully deleted at path: \(filesToDelete[i])")
             }
-
+            
             clearSelectedFiles()
             updateDirFiles()
         } catch let error as NSError {
@@ -176,8 +225,8 @@ class FileViewController: UIViewController {
     }
     
     func clearSelectedFiles() {
-        arrSelectedIndex = [IndexPath]()
-        arrSelectedFile = [URL]()
+        self.arrSelectedIndex = [IndexPath]()
+        self.arrSelectedFile = [URL]()
     }
 }
 
@@ -233,7 +282,7 @@ extension FileViewController: UICollectionViewDataSource {
         let files = self.fileUrls
         
         let selectedFileUrl = files[indexPath.item]
-
+        
         if arrSelectedIndex.contains(indexPath) {
             arrSelectedIndex = arrSelectedIndex.filter { $0 != indexPath}
             arrSelectedFile = arrSelectedFile.filter { $0 != selectedFileUrl}
@@ -245,7 +294,7 @@ extension FileViewController: UICollectionViewDataSource {
         
         print("Selected : \(arrSelectedIndex)")
         print("Selected : \(arrSelectedFile)")
-
+        
         collectionView.reloadData()
     }
 }

@@ -16,6 +16,7 @@ target 'JupiterSDK_Example' do
   pod 'DropDown'
   pod 'Floaty', '~> 4.2.0'
   pod 'TextFieldEffects'
+  pod 'AWSS3' 
   
   pod 'FirebaseRemoteConfig'
   

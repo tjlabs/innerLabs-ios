@@ -2279,6 +2279,9 @@
                                                 <real key="value" value="5"/>
                                             </userDefinedRuntimeAttribute>
                                         </userDefinedRuntimeAttributes>
+                                        <connections>
+                                            <action selector="tapSendButton:" destination="g4t-hb-bpT" eventType="touchUpInside" id="ezz-tq-lq3"/>
+                                        </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="b2D-03-ADK">
                                         <rect key="frame" x="190" y="0.0" width="180" height="40"/>
