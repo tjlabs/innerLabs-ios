@@ -366,9 +366,10 @@ public class ServiceManager: Observation {
                 message = localTime + " , (Jupiter) Error : Invalid Service Mode"
                 return (isSuccess, message)
             }
+            onStartFlag = true
             setModeParam(mode: self.runMode, phase: self.phase)
         }
-        onStartFlag = true
+        
         
         return (isSuccess, message)
     }
@@ -694,6 +695,14 @@ public class ServiceManager: Observation {
         }
     }
     
+    public func getRecentResult(id: String, completion: @escaping (Int, String) -> Void) {
+        let currentTime: Int = getCurrentTimeInMilliseconds()
+        let input = RecentResult(user_id: id, mobile_time: currentTime)
+        NetworkManager.shared.postRecent(url: RECENT_URL, input: input, completion: { statusCode, returnedString in
+            completion(statusCode, returnedString)
+        })
+    }
+    
     internal func initialzeSensors() -> (Bool, String) {
         var isSuccess: Bool = false
         var message: String = ""
@@ -899,86 +908,124 @@ public class ServiceManager: Observation {
     }
     
     func startTimer() {
-        if (receivedForceTimer == nil) {
-            let queue = DispatchQueue(label: Bundle.main.bundleIdentifier! + ".receivedForceTimer")
-            receivedForceTimer = DispatchSource.makeTimerSource(queue: queue)
-            receivedForceTimer!.schedule(deadline: .now(), repeating: RFD_INTERVAL)
-            receivedForceTimer!.setEventHandler(handler: self.receivedForceTimerUpdate)
-            receivedForceTimer!.activate()
-        }
-
-        if (userVelocityTimer == nil && self.service == "FLT") {
-            let queue = DispatchQueue(label: Bundle.main.bundleIdentifier! + ".userVelocityTimer")
-            userVelocityTimer = DispatchSource.makeTimerSource(queue: queue)
-            userVelocityTimer!.schedule(deadline: .now(), repeating: UVD_INTERVAL)
-            userVelocityTimer!.setEventHandler(handler: self.userVelocityTimerUpdate)
-            userVelocityTimer!.activate()
-        }
-
-        if (requestTimer == nil && self.service == "FLT") {
-            let queue = DispatchQueue(label: Bundle.main.bundleIdentifier! + ".requestTimer")
-            requestTimer = DispatchSource.makeTimerSource(queue: queue)
-            requestTimer!.schedule(deadline: .now(), repeating: RQ_INTERVAL)
-            requestTimer!.setEventHandler(handler: self.requestTimerUpdate)
-            requestTimer!.activate()
-        }
-
-        if (updateTimer == nil && self.service == "FLT") {
-            let queue = DispatchQueue(label: Bundle.main.bundleIdentifier! + ".updateTimer")
-            updateTimer = DispatchSource.makeTimerSource(queue: queue)
-            updateTimer!.schedule(deadline: .now(), repeating: UPDATE_INTERVAL)
-            updateTimer!.setEventHandler(handler: self.outputTimerUpdate)
-            updateTimer!.activate()
-        }
-
-        if (osrTimer == nil && self.service == "FLT") {
-            let queue = DispatchQueue(label: Bundle.main.bundleIdentifier! + ".osrTimer")
-            osrTimer = DispatchSource.makeTimerSource(queue: queue)
-            osrTimer!.schedule(deadline: .now(), repeating: OSR_INTERVAL)
-            osrTimer!.setEventHandler(handler: self.osrTimerUpdate)
-            osrTimer!.activate()
-        }
+        let queueRFD = DispatchQueue(label: Bundle.main.bundleIdentifier! + ".receivedForceTimer")
+        receivedForceTimer = DispatchSource.makeTimerSource(queue: queueRFD)
+        receivedForceTimer!.schedule(deadline: .now(), repeating: RFD_INTERVAL)
+        receivedForceTimer!.setEventHandler(handler: self.receivedForceTimerUpdate)
+        receivedForceTimer!.activate()
+        
+        let queueUVD = DispatchQueue(label: Bundle.main.bundleIdentifier! + ".userVelocityTimer")
+        userVelocityTimer = DispatchSource.makeTimerSource(queue: queueUVD)
+        userVelocityTimer!.schedule(deadline: .now(), repeating: UVD_INTERVAL)
+        userVelocityTimer!.setEventHandler(handler: self.userVelocityTimerUpdate)
+        userVelocityTimer!.activate()
+        
+        let queueRQ = DispatchQueue(label: Bundle.main.bundleIdentifier! + ".requestTimer")
+        requestTimer = DispatchSource.makeTimerSource(queue: queueRQ)
+        requestTimer!.schedule(deadline: .now(), repeating: RQ_INTERVAL)
+        requestTimer!.setEventHandler(handler: self.requestTimerUpdate)
+        requestTimer!.activate()
+        
+        let queueUP = DispatchQueue(label: Bundle.main.bundleIdentifier! + ".updateTimer")
+        updateTimer = DispatchSource.makeTimerSource(queue: queueUP)
+        updateTimer!.schedule(deadline: .now(), repeating: UPDATE_INTERVAL)
+        updateTimer!.setEventHandler(handler: self.outputTimerUpdate)
+        updateTimer!.activate()
+        
+        let queueOSR = DispatchQueue(label: Bundle.main.bundleIdentifier! + ".osrTimer")
+        osrTimer = DispatchSource.makeTimerSource(queue: queueOSR)
+        osrTimer!.schedule(deadline: .now(), repeating: OSR_INTERVAL)
+        osrTimer!.setEventHandler(handler: self.osrTimerUpdate)
+        osrTimer!.activate()
+        
+        
+//        if (receivedForceTimer == nil) {
+//            let queue = DispatchQueue(label: Bundle.main.bundleIdentifier! + ".receivedForceTimer")
+//            receivedForceTimer = DispatchSource.makeTimerSource(queue: queue)
+//            receivedForceTimer!.schedule(deadline: .now(), repeating: RFD_INTERVAL)
+//            receivedForceTimer!.setEventHandler(handler: self.receivedForceTimerUpdate)
+//            receivedForceTimer!.activate()
+//        }
+//
+//        if (userVelocityTimer == nil && self.service == "FLT") {
+//            let queue = DispatchQueue(label: Bundle.main.bundleIdentifier! + ".userVelocityTimer")
+//            userVelocityTimer = DispatchSource.makeTimerSource(queue: queue)
+//            userVelocityTimer!.schedule(deadline: .now(), repeating: UVD_INTERVAL)
+//            userVelocityTimer!.setEventHandler(handler: self.userVelocityTimerUpdate)
+//            userVelocityTimer!.activate()
+//        }
+//
+//        if (requestTimer == nil && self.service == "FLT") {
+//            let queue = DispatchQueue(label: Bundle.main.bundleIdentifier! + ".requestTimer")
+//            requestTimer = DispatchSource.makeTimerSource(queue: queue)
+//            requestTimer!.schedule(deadline: .now(), repeating: RQ_INTERVAL)
+//            requestTimer!.setEventHandler(handler: self.requestTimerUpdate)
+//            requestTimer!.activate()
+//        }
+//
+//        if (updateTimer == nil && self.service == "FLT") {
+//            let queue = DispatchQueue(label: Bundle.main.bundleIdentifier! + ".updateTimer")
+//            updateTimer = DispatchSource.makeTimerSource(queue: queue)
+//            updateTimer!.schedule(deadline: .now(), repeating: UPDATE_INTERVAL)
+//            updateTimer!.setEventHandler(handler: self.outputTimerUpdate)
+//            updateTimer!.activate()
+//        }
+//
+//        if (osrTimer == nil && self.service == "FLT") {
+//            let queue = DispatchQueue(label: Bundle.main.bundleIdentifier! + ".osrTimer")
+//            osrTimer = DispatchSource.makeTimerSource(queue: queue)
+//            osrTimer!.schedule(deadline: .now(), repeating: OSR_INTERVAL)
+//            osrTimer!.setEventHandler(handler: self.osrTimerUpdate)
+//            osrTimer!.activate()
+//        }
     }
 
     func stopTimer() {
-        if (receivedForceTimer != nil) {
-            receivedForceTimer!.cancel()
-            receivedForceTimer = nil
-        }
-
-        if (userVelocityTimer != nil) {
-            userVelocityTimer!.cancel()
-            userVelocityTimer = nil
-        }
-
-        if (osrTimer != nil) {
-            osrTimer!.cancel()
-            osrTimer = nil
-        }
-
-        if (requestTimer != nil) {
-            requestTimer!.cancel()
-            requestTimer = nil
-        }
-
-        if (updateTimer != nil) {
-            updateTimer!.cancel()
-            updateTimer = nil
-        }
+        receivedForceTimer?.cancel()
+        userVelocityTimer?.cancel()
+        osrTimer?.cancel()
+        requestTimer?.cancel()
+        updateTimer?.cancel()
+        
+//        if (receivedForceTimer != nil) {
+//            receivedForceTimer!.cancel()
+//            receivedForceTimer = nil
+//        }
+//
+//        if (userVelocityTimer != nil) {
+//            userVelocityTimer!.cancel()
+//            userVelocityTimer = nil
+//        }
+//
+//        if (osrTimer != nil) {
+//            osrTimer!.cancel()
+//            osrTimer = nil
+//        }
+//
+//        if (requestTimer != nil) {
+//            requestTimer!.cancel()
+//            requestTimer = nil
+//        }
+//
+//        if (updateTimer != nil) {
+//            updateTimer!.cancel()
+//            updateTimer = nil
+//        }
     }
     
     func enterSleepMode() {
         let localTime: String = getLocalTimeString()
         print(localTime + " , (Jupiter) Enter Sleep Mode")
         
-        if (self.updateTimer != nil) {
-            self.updateTimer!.cancel()
-            self.updateTimer = nil
-        }
+        self.updateTimer?.cancel()
+//        if (self.updateTimer != nil) {
+//            self.updateTimer!.cancel()
+//            self.updateTimer = nil
+//        }
     }
     
     func wakeUpFromSleepMode() {
-        if (self.updateTimer == nil && self.service == "FLT") {
+        if (self.service == "FLT") {
             let queue = DispatchQueue(label: Bundle.main.bundleIdentifier! + ".updateTimer")
             updateTimer = DispatchSource.makeTimerSource(queue: queue)
             updateTimer!.schedule(deadline: .now(), repeating: UPDATE_INTERVAL)
@@ -1337,7 +1384,9 @@ public class ServiceManager: Observation {
                     if (result.mobile_time > self.preOutputMobileTime) {
                         if (!self.isGetFirstResponse) {
                             self.isGetFirstResponse = true
-                            self.reporting(input: INDOOR_FLAG)
+                            if (self.isActiveReturn) {
+                                self.reporting(input: INDOOR_FLAG)
+                            }
                         }
                         
                         // Here
@@ -1958,7 +2007,7 @@ public class ServiceManager: Observation {
         return convertNowStr
     }
     
-    func jsonToResult(json: String) -> FineLocationTrackingFromServer {
+    public func jsonToResult(json: String) -> FineLocationTrackingFromServer {
         let result = FineLocationTrackingFromServer()
         let decoder = JSONDecoder()
         let jsonString = json

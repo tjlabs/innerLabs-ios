@@ -13,9 +13,9 @@ class FileViewController: UIViewController {
     @IBOutlet weak var darkView: UIView!
     
     // AWS S3
-    let bucketName = "tjlabs-collect"
-    let accessKey = "AKIA54UJFMQ3QZ75ANAS"
-    let secretKey = "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"
+    var bucketName = ""
+    var accessKey = ""
+    var secretKey = ""
     var fileKey = "ios/"
     
     @IBOutlet weak var fileCollectionView: UICollectionView!
@@ -26,21 +26,38 @@ class FileViewController: UIViewController {
         
         updateDirFiles()
         setupCollectionView()
+        
+        initS3()
+    }
+    
+    func initS3() {
+        if let loadedBucketName = Bundle.main.object(forInfoDictionaryKey: "S3_BUCKET_NAME") as? String {
+            self.bucketName = loadedBucketName
+        }
+        
+        if let loadedAccessKey = Bundle.main.object(forInfoDictionaryKey: "S3_ACCESS_KEY") as? String {
+            self.accessKey = loadedAccessKey
+        }
+
+        if let loadedSecetKey = Bundle.main.object(forInfoDictionaryKey: "S3_SECRET_KEY") as? String {
+            self.secretKey = loadedSecetKey
+        }
     }
     
     func uploadToS3(fileURLs: [URL]) {
-        let darkView = UIView(frame: UIScreen.main.bounds)
-        darkView.backgroundColor = UIColor(white: 0, alpha: 0.5)
-        darkView.isUserInteractionEnabled = true
+        let urls: [URL] = fileURLs
         
         let progressCircleView = ProgressCircleView(frame: CGRect(x: 0, y: 0, width: 200, height: 200), lineWidth: 10, progressColor: .green)
         progressCircleView.backgroundColor = .clear
         progressCircleView.center = self.view.center
-        self.view.addSubview(darkView)
-        self.view.addSubview(progressCircleView)
         
-        
-        let urls: [URL] = fileURLs
+        let darkView = UIView(frame: UIScreen.main.bounds)
+        darkView.backgroundColor = UIColor(white: 0, alpha: 0.5)
+        darkView.isUserInteractionEnabled = true
+        if (urls.count > 0) {
+            self.view.addSubview(darkView)
+            self.view.addSubview(progressCircleView)
+        }
         
         let credentialsProvider = AWSStaticCredentialsProvider(accessKey: self.accessKey, secretKey: self.secretKey)
         let configuration = AWSServiceConfiguration(region: AWSRegionType.APNortheast2, credentialsProvider: credentialsProvider)
@@ -74,7 +91,7 @@ class FileViewController: UIViewController {
             }
             
             let transferUtility = AWSS3TransferUtility.default()
-            transferUtility.uploadData(fileData, bucket: bucketName, key: objectKey, contentType: "text/csv", expression: expression) {(task, error) in
+            transferUtility.uploadData(fileData, bucket: self.bucketName, key: objectKey, contentType: "text/csv", expression: expression) {(task, error) in
                 if let error = error {
                     print("Failed to upload CSV file: \(error)")
                 } else {

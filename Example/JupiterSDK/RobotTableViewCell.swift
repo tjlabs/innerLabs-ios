@@ -8,16 +8,24 @@
 
 import UIKit
 
+protocol RobotTableViewCellDelegate: AnyObject {
+    func robotTableViewCell(_ cell: RobotTableViewCell, didTapButtonWithValue value: String)
+}
+
 class RobotTableViewCell: UITableViewCell, UITextFieldDelegate {
+    
+    weak var delegate: RobotTableViewCellDelegate?
     
     static let identifier = "RobotTableViewCell"
 
+    @IBOutlet weak var robotIdTextField: UITextField!
     @IBOutlet weak var xTextField: UITextField!
     @IBOutlet weak var yTextField: UITextField!
     
+    public var robotId: String = ""
+    
     override func awakeFromNib() {
         super.awakeFromNib()
-        // Initialization code
         
         xTextField.delegate = self
         yTextField.delegate = self
@@ -26,7 +34,6 @@ class RobotTableViewCell: UITableViewCell, UITextFieldDelegate {
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
 
-        // Configure the view for the selected state
     }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
@@ -34,5 +41,13 @@ class RobotTableViewCell: UITableViewCell, UITextFieldDelegate {
         textField.resignFirstResponder()
         
         return false
+    }
+    
+    @IBAction func tapMonitorButton(_ sender: UIButton) {
+        self.robotId = robotIdTextField.text ?? ""
+        
+        if (self.robotId != "" || self.robotId.contains(" ")) {
+            delegate?.robotTableViewCell(self, didTapButtonWithValue: self.robotId)
+        }
     }
 }

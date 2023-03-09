@@ -141,14 +141,14 @@ public struct Output: Codable {
     public var calculated_time: Double = 0
 }
 
-struct ReceivedForce: Codable {
+struct ReceivedForce: Encodable {
     var user_id: String
     var mobile_time: Int
     var ble: [String: Double]
     var pressure: Double
 }
 
-struct UserVelocity: Codable {
+struct UserVelocity: Encodable {
     var user_id: String
     var mobile_time: Int
     var index: Int

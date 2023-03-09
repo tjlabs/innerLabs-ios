@@ -15,7 +15,15 @@ protocol ServiceViewPageDelegate {
     func sendPage(data: Int)
 }
 
-class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewDataSource, Observer {
+class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyTableViewDelegate, ExpyTableViewDataSource, Observer {
+    
+    func robotTableViewCell(_ cell: RobotTableViewCell, didTapButtonWithValue value: String) {
+        print("ID to monitor : \(value)")
+        
+        self.idToMonitor = value
+        self.isMonitor = true
+    }
+    
     func report(flag: Int) {
         let localTime = getLocalTimeString()
         
@@ -132,6 +140,7 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
     var isOpen: Bool = false
     
     var coordToDisplay = CoordToDisplay()
+    var monitorToDisplay = CoordToDisplay()
     var resultToDisplay = ResultToDisplay()
     
     var isShowRP = false
@@ -139,6 +148,9 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
     
     var headingImage = UIImage(named: "heading")
     var observerTime = 0
+    
+    var idToMonitor: String = ""
+    var isMonitor: Bool = false
     
     // Level Collection View
     @IBOutlet weak var levelCollectionView: UICollectionView!
@@ -529,7 +541,32 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
         }
         
         // Map
-        self.updateCoord(data: self.coordToDisplay, flag: self.isShowRP)
+        if (self.isMonitor) {
+            serviceManager.getRecentResult(id: self.idToMonitor, completion: { [self] statusCode, returnedString in
+                if (statusCode == 200) {
+                    let result = serviceManager.jsonToResult(json: returnedString)
+                    let resultTime: Int = result.mobile_time
+                    let resultIndex = result.index
+                    let resultBuildingName: String = result.building_name
+                    let resultLevelName: String = result.level_name
+                    let resultCoordX = result.x
+                    let resultCoordY = result.y
+                    let resultHeading = result.absolute_heading
+                    
+                    if (resultCoordX != 0 && resultCoordY != 0) {
+                        self.monitorToDisplay.x = resultCoordX
+                        self.monitorToDisplay.y = resultCoordY
+                        self.monitorToDisplay.building = resultBuildingName
+                        self.monitorToDisplay.level = resultLevelName
+                        self.monitorToDisplay.heading = resultHeading
+                        
+                        self.monitorCoord(data: self.monitorToDisplay, flag: self.isShowRP)
+                    }
+                }
+            })
+        } else {
+            self.updateCoord(data: self.coordToDisplay, flag: self.isShowRP)
+        }
         
         // Info
         if (serviceManager.displayOutput.isIndexChanged) {
@@ -720,16 +757,20 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
         scatterChart.data = chartData
     }
     
-    private func drawUser(XY: [Double], heading: Double, limits: [Double]) {
+    private func drawUser(XY: [Double], heading: Double, limits: [Double], isMonitor: Bool) {
         let values1 = (0..<1).map { (i) -> ChartDataEntry in
             return ChartDataEntry(x: XY[0], y: XY[1])
         }
         
+        var valueColor = UIColor.systemRed
+        if (isMonitor) {
+            valueColor = UIColor.systemBlue
+        }
         let set1 = ScatterChartDataSet(entries: values1, label: "USER")
         set1.drawValuesEnabled = false
         set1.setScatterShape(.circle)
 
-        set1.setColor(UIColor.systemRed)
+        set1.setColor(valueColor)
         set1.scatterShapeSize = 16
         
         let chartData = ScatterChartData(dataSet: set1)
@@ -755,11 +796,6 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
         scatterChart.xAxis.axisMaximum = limits[1]
         scatterChart.leftAxis.axisMinimum = limits[2]
         scatterChart.leftAxis.axisMaximum = limits[3]
-        
-//        scatterChart.xAxis.axisMinimum = -33.5
-//        scatterChart.xAxis.axisMaximum = 306
-//        scatterChart.leftAxis.axisMinimum = 9.5
-//        scatterChart.leftAxis.axisMaximum = 507
         
         scatterChart.xAxis.drawGridLinesEnabled = chartFlag
         scatterChart.leftAxis.drawGridLinesEnabled = chartFlag
@@ -955,11 +991,63 @@ class ServiceViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
         } else {
             if (buildings.contains(currentBuilding)) {
                 if (XY[0] != 0 && XY[1] != 0) {
-                    drawUser(XY: XY, heading: heading, limits: limits)
+                    drawUser(XY: XY, heading: heading, limits: limits, isMonitor: false)
                 }
             }
         }
         
+        dropText.text = currentBuilding
+    }
+    
+    func monitorCoord(data: CoordToDisplay, flag: Bool) {
+        self.XY[0] = data.x
+        self.XY[1] = data.y
+
+        if (data.building == "") {
+            currentBuilding = buildings[0]
+        } else {
+            currentBuilding = data.building
+            if (data.level == "") {
+                currentLevel = levels[currentBuilding]![0]
+            } else {
+                currentLevel = data.level
+            }
+        }
+
+        if (pastBuilding != currentBuilding || pastLevel != currentLevel) {
+            displayLevelImage(building: currentBuilding, level: currentLevel, flag: flag)
+        }
+
+        pastBuilding = currentBuilding
+        pastLevel = currentLevel
+
+
+        let key = "\(currentBuilding)_\(currentLevel)"
+        let condition: ((String, [[Double]])) -> Bool = {
+            $0.0.contains(key)
+        }
+        let rp: [[Double]] = RP[key] ?? [[Double]]()
+        var limits: [Double] = chartLimits[key] ?? [0, 0, 0, 0]
+        
+        let heading: Double = data.heading
+
+        if (flag) {
+            if (RP.contains(where: condition)) {
+                if (rp.isEmpty) {
+                    scatterChart.isHidden = true
+                } else {
+//                    drawRP(RP_X: rp[0], RP_Y: rp[1], XY: XY, heading: heading, limits: limits)
+                    drawDebug(XY: XY, RP_X: rp[0], RP_Y: rp[1], serverXY: serviceManager.serverResult, tuXY: serviceManager.timeUpdateResult, heading: heading, limits: limits)
+                }
+            }
+        } else {
+            if (buildings.contains(currentBuilding)) {
+                if (XY[0] != 0 && XY[1] != 0) {
+                    drawUser(XY: XY, heading: heading, limits: limits, isMonitor: true)
+                }
+            }
+        }
+
         dropText.text = currentBuilding
     }
     
@@ -1087,6 +1175,7 @@ extension ServiceViewController: UITableViewDataSource {
                 let robotTVC = tableView.dequeueReusableCell(withIdentifier: RobotTableViewCell.identifier) as!
                 RobotTableViewCell
                 
+                robotTVC.delegate = self
                 robotTVC.backgroundColor = .systemGray6
                 
                 return robotTVC

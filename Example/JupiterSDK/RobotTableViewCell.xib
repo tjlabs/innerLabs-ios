@@ -92,6 +92,9 @@
                                                 <real key="value" value="5"/>
                                             </userDefinedRuntimeAttribute>
                                         </userDefinedRuntimeAttributes>
+                                        <connections>
+                                            <action selector="tapMonitorButton:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="xcC-2T-Khc"/>
+                                        </connections>
                                     </button>
                                 </subviews>
                                 <color key="backgroundColor" systemColor="systemGray6Color"/>
@@ -138,6 +141,7 @@
             </tableViewCellContentView>
             <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
             <connections>
+                <outlet property="robotIdTextField" destination="3cl-dA-3EQ" id="mpL-fw-58C"/>
                 <outlet property="xTextField" destination="dsF-O9-cSS" id="m6C-Yk-DWO"/>
                 <outlet property="yTextField" destination="DP5-Hw-T5Y" id="G9d-mn-GhI"/>
             </connections>
