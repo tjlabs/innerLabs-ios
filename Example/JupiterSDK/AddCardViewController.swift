@@ -46,7 +46,9 @@ class AddCardViewController: UIViewController, UITextFieldDelegate {
         codeTextField.resignFirstResponder()
         
         self.code = codeTextField.text ?? ""
-
+        
+        let locale = Locale.current
+        var enrollMessage: String = ""
         // Add Card
         let input = AddCard(user_id: uuid, sector_code: code)
         Network.shared.addCard(url: USER_URL, input: input, completion: { [self] statusCode, returnedString in
@@ -58,7 +60,12 @@ class AddCardViewController: UIViewController, UITextFieldDelegate {
             
             switch (message) {
             case "Update Success":
-                self.responseLabel.text = "\(addedCard.sector_name) 카드가 정상적으로 추가됐습니다"
+                if let countryCode = locale.regionCode, countryCode == "KR" {
+                    enrollMessage = "\(addedCard.sector_name) 카드가 정상적으로 추가됐습니다"
+                } else {
+                    enrollMessage = "\(addedCard.sector_name) card is enrolled"
+                }
+                self.responseLabel.text = enrollMessage
                 self.responseLabel.textColor = .systemBlue
                 self.responseLabel.isHidden = false
                 
@@ -108,15 +115,30 @@ class AddCardViewController: UIViewController, UITextFieldDelegate {
                 
                 self.page = self.page + 4
             case "Update Conflict":
-                self.responseLabel.text = "이미 등록된 카드 입니다"
+                if let countryCode = locale.regionCode, countryCode == "KR" {
+                    enrollMessage = "이미 등록된 카드 입니다"
+                } else {
+                    enrollMessage = "Alreadey enrolled card"
+                }
+                self.responseLabel.text = enrollMessage
                 self.responseLabel.textColor = .systemRed
                 self.responseLabel.isHidden = false
             case "Update Fail":
-                self.responseLabel.text = "유효한 코드를 입력해주세요 !!"
+                if let countryCode = locale.regionCode, countryCode == "KR" {
+                    enrollMessage = "유효한 코드를 입력해주세요 !!"
+                } else {
+                    enrollMessage = "Please enter the valid code"
+                }
+                self.responseLabel.text = enrollMessage
                 self.responseLabel.textColor = .systemRed
                 self.responseLabel.isHidden = false
             default:
-                self.responseLabel.text = "유효한 코드를 입력해주세요 !!"
+                if let countryCode = locale.regionCode, countryCode == "KR" {
+                    enrollMessage = "유효한 코드를 입력해주세요 !!"
+                } else {
+                    enrollMessage = "Please enter the valid code"
+                }
+                self.responseLabel.text = enrollMessage
                 self.responseLabel.textColor = .systemRed
                 self.responseLabel.isHidden = false
             }

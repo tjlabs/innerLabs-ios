@@ -1052,11 +1052,12 @@ public class ServiceManager: Observation {
             self.timeActiveRF += RFD_INTERVAL
             if (self.timeActiveRF >= SLEEP_THRESHOLD_RF) {
                 self.isActiveRF = false
-                self.timeActiveRF = 0
+//                self.timeActiveRF = 0
                 
-//                self.initVariables()
-//                self.isActiveReturn = false
-//                self.reporting(input: OUTDOOR_FLAG)
+                // Here
+                self.initVariables()
+                self.isActiveReturn = false
+                self.reporting(input: OUTDOOR_FLAG)
             }
             
             self.timeSleepRF += RFD_INTERVAL
@@ -1336,16 +1337,17 @@ public class ServiceManager: Observation {
                     if (result.mobile_time > self.preOutputMobileTime) {
                         if (!self.isGetFirstResponse) {
                             self.isGetFirstResponse = true
-//                            self.reporting(input: INDOOR_FLAG)
+                            self.reporting(input: INDOOR_FLAG)
                         }
                         
-//                        if (!self.isActiveReturn) {
-//                            let isStrong = checkStrongRfd(bleDict: bleManager.bleAvg)
-//                            if (isStrong) {
-//                                self.isActiveReturn = true
-//                                self.reporting(input: INDOOR_FLAG)
-//                            }
-//                        }
+                        // Here
+                        if (!self.isActiveReturn) {
+                            let isStrong = checkStrongRfd(bleDict: bleManager.bleAvg)
+                            if (isStrong) {
+                                self.isActiveReturn = true
+                                self.reporting(input: INDOOR_FLAG)
+                            }
+                        }
                         
                         displayOutput.indexRx = result.index
                         self.phase = result.phase

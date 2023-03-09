@@ -75,6 +75,7 @@ class CollectViewController: UIViewController {
     
     @IBOutlet weak var wardCollectionView: UICollectionView!
     @IBOutlet weak var scatterChart: ScatterChartView!
+
     
     var x: Double = 0
     var y: Double = 0
@@ -360,7 +361,7 @@ class CollectViewController: UIViewController {
         if (saveFlag) {
             writeData(collectData: collectedData)
             if (collectedData.isIndexChanged) {
-//                    writeTrajectoryData(collectData: serviceManager.collectData)
+//                writeTrajectoryData(collectData: serviceManager.collectData)
                 let index = collectedData.index
                 let length = collectedData.length
                 indexLabel.text = String(index)

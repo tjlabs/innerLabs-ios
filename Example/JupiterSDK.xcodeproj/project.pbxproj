@@ -28,6 +28,7 @@
 		B3455284282AB7B400F0DD3E /* ServiceInfoTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B3455282282AB7B400F0DD3E /* ServiceInfoTableViewCell.xib */; };
 		B3497310293847DC0078C872 /* FusionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B349730F293847DC0078C872 /* FusionViewController.swift */; };
 		B35272B2281F8DC300321CC6 /* SplashScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B35272B1281F8DC300321CC6 /* SplashScreen.storyboard */; };
+		B3607E4E29B8C34700F11AA6 /* ProgressCircleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3607E4D29B8C34700F11AA6 /* ProgressCircleView.swift */; };
 		B360D88E28090D6A0084FB22 /* NotoSansKR-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = B360D88828090D680084FB22 /* NotoSansKR-Bold.otf */; };
 		B360D88F28090D6A0084FB22 /* NotoSansKR-Light.otf in Resources */ = {isa = PBXBuildFile; fileRef = B360D88928090D680084FB22 /* NotoSansKR-Light.otf */; };
 		B360D89028090D6A0084FB22 /* NotoSansKR-Thin.otf in Resources */ = {isa = PBXBuildFile; fileRef = B360D88A28090D690084FB22 /* NotoSansKR-Thin.otf */; };
@@ -154,6 +155,7 @@
 		B3455282282AB7B400F0DD3E /* ServiceInfoTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ServiceInfoTableViewCell.xib; sourceTree = "<group>"; };
 		B349730F293847DC0078C872 /* FusionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FusionViewController.swift; sourceTree = "<group>"; };
 		B35272B1281F8DC300321CC6 /* SplashScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = SplashScreen.storyboard; sourceTree = "<group>"; };
+		B3607E4D29B8C34700F11AA6 /* ProgressCircleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressCircleView.swift; sourceTree = "<group>"; };
 		B360D8642807C6090084FB22 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../../Downloads/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		B360D88828090D680084FB22 /* NotoSansKR-Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "NotoSansKR-Bold.otf"; sourceTree = "<group>"; };
 		B360D88928090D680084FB22 /* NotoSansKR-Light.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "NotoSansKR-Light.otf"; sourceTree = "<group>"; };
@@ -481,6 +483,7 @@
 				B3C6F99D289CCF78003FB402 /* NSObjectExtension.swift */,
 				B3C6F99F289CCF92003FB402 /* UIImageExtension.swift */,
 				B3E6C0F7292D6B1400D0AC13 /* ImageCacheManager.swift */,
+				B3607E4D29B8C34700F11AA6 /* ProgressCircleView.swift */,
 			);
 			name = Utils;
 			sourceTree = "<group>";
@@ -844,6 +847,7 @@
 				B3BD69A827E9A56B00A32A7A /* UITableViewRegisterable.swift in Sources */,
 				B3E0A4F62887E51700B88E08 /* Environment.swift in Sources */,
 				B3B7FBF72856F43200E23EDF /* GalleryViewController.swift in Sources */,
+				B3607E4E29B8C34700F11AA6 /* ProgressCircleView.swift in Sources */,
 				B3AA004928313C97007CD284 /* UILabelExtension.swift in Sources */,
 				B3BD699F27E9A51100A32A7A /* UIViewControllerExtension.swift in Sources */,
 			);
@@ -994,14 +998,14 @@
 			baseConfigurationReference = 6C664AF60D59718EECD6DBBC /* Pods-JupiterSDK_Example.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = G75UAV755N;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				INFOPLIST_FILE = JupiterSDK/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.lifestyle";
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 1.8.8;
+				MARKETING_VERSION = 1.8.9;
 				MODULE_NAME = ExampleApp;
 				PRODUCT_BUNDLE_IDENTIFIER = com.tjlabscorp.ios.innerLabs;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1015,7 +1019,7 @@
 			baseConfigurationReference = 8B538B887A8FED7CB659550A /* Pods-JupiterSDK_Example.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = G75UAV755N;
 				EXCLUDED_ARCHS = "";
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
@@ -1023,7 +1027,7 @@
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.lifestyle";
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 1.8.8;
+				MARKETING_VERSION = 1.8.9;
 				MODULE_NAME = ExampleApp;
 				PRODUCT_BUNDLE_IDENTIFIER = com.tjlabscorp.ios.innerLabs;
 				PRODUCT_NAME = "$(TARGET_NAME)";
