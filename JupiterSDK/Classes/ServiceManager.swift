@@ -271,7 +271,6 @@ public class ServiceManager: Observation {
     
     var lastTrackingTime: Int = 0
     var lastResult = FineLocationTrackingResult()
-    var lastResultBufferUvdChanged = [Any]()
     
     var SQUARE_RANGE: Double = 10
     let SQUARE_RANGE_SMALL: Double = 10
@@ -360,7 +359,6 @@ public class ServiceManager: Observation {
             setModeParam(mode: self.runMode, phase: self.phase)
         }
         onStartFlag = true
-        
         
         return (isSuccess, message)
     }
@@ -594,7 +592,6 @@ public class ServiceManager: Observation {
     private func initVariables() {
         self.inputReceivedForce = [ReceivedForce(user_id: "", mobile_time: 0, ble: [:], pressure: 0)]
         self.inputUserVelocity = [UserVelocity(user_id: user_id, mobile_time: 0, index: 0, length: 0, heading: 0, looking: true)]
-        self.lastResultBufferUvdChanged = [Any]()
         self.indexAfterResponse = 0
         self.lastOsrId = 0
         self.phase4Count = 0
@@ -949,7 +946,6 @@ public class ServiceManager: Observation {
     
     func wakeUpFromSleepMode() {
         if (self.service == "FLT") {
-            
             if (updateTimer!.isCancelled) {
                 let queue = DispatchQueue(label: Bundle.main.bundleIdentifier! + ".updateTimer")
                 updateTimer = DispatchSource.makeTimerSource(queue: queue)
@@ -957,6 +953,17 @@ public class ServiceManager: Observation {
                 updateTimer!.setEventHandler(handler: self.outputTimerUpdate)
                 updateTimer!.activate()
             }
+//            var isCancelled: Bool = false
+//            if let flag = updateTimer?.isCancelled {
+//                isCancelled = flag
+//                if (isCancelled) {
+//                    let queue = DispatchQueue(label: Bundle.main.bundleIdentifier! + ".updateTimer")
+//                    updateTimer = DispatchSource.makeTimerSource(queue: queue)
+//                    updateTimer!.schedule(deadline: .now(), repeating: UPDATE_INTERVAL)
+//                    updateTimer!.setEventHandler(handler: self.outputTimerUpdate)
+//                    updateTimer!.activate()
+//                }
+//            }
         }
     }
     
@@ -1108,12 +1115,6 @@ public class ServiceManager: Observation {
                     if (lastResult.building_name != "" && lastResult.level_name != "") {
                         self.travelingOsrDistance += unitDRInfo.length
                         let resultBufferData = ResultIsUvdChanged(mobile_time: lastResult.mobile_time, building_name: lastResult.building_name, level_name: lastResult.level_name)
-                        if (self.isActiveReturn) {
-                            self.lastResultBufferUvdChanged.append(resultBufferData)
-                            if (self.lastResultBufferUvdChanged.count > 210) {
-                                self.lastResultBufferUvdChanged.remove(at: 0)
-                            }
-                        }
                     }
                 }
                 
