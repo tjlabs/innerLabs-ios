@@ -54,9 +54,10 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
     
     func update(result: FineLocationTrackingResult) {
         let localTime: String = self.getLocalTimeString()
-        let log: String = localTime + " , (ServiceVC) Output // Building : \(result.building_name) , Level : \(result.level_name) , Mode : \(result.mode) , dt = \(result.mobile_time - self.observerTime)"
+        let log: String = localTime + " , (ServiceVC) Output // Building : \(result.building_name) , Level : \(result.level_name) , Mode : \(result.mode) , dt = \(result.mobile_time - self.observerTime) , time = \(result.mobile_time)"
+        self.observerTime = result.mobile_time
         print(log)
-            
+//
         let building = result.building_name
         let level = result.level_name
         let x = result.x
@@ -73,7 +74,6 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
                 }
             }
         }
-        self.observerTime = result.mobile_time
     }
     
     @IBOutlet var ServiceView: UIView!

@@ -127,44 +127,49 @@ public class NetworkManager {
         
         requestURL.httpMethod = "POST"
         let encodingData = JSONConverter.encodeJson(param: input)
-        requestURL.httpBody = encodingData
-        requestURL.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        requestURL.setValue("\(encodingData)", forHTTPHeaderField: "Content-Length")
-        
-        let dataTask = URLSession.shared.dataTask(with: requestURL, completionHandler: { (data, response, error) in
+        if (encodingData != nil) {
+            requestURL.httpBody = encodingData
+            requestURL.addValue("application/json", forHTTPHeaderField: "Content-Type")
+            requestURL.setValue("\(encodingData)", forHTTPHeaderField: "Content-Length")
             
-            // [error가 존재하면 종료]
-            guard error == nil else {
+            let dataTask = URLSession.shared.dataTask(with: requestURL, completionHandler: { (data, response, error) in
+                
+                // [error가 존재하면 종료]
+                guard error == nil else {
+                    // [콜백 반환]
+                    completion(500, error?.localizedDescription ?? "Fail")
+                    return
+                }
+                
+                // [status 코드 체크 실시]
+                let successsRange = 200..<300
+                guard let statusCode = (response as? HTTPURLResponse)?.statusCode, successsRange.contains(statusCode)
+                else {
+                    // [콜백 반환]
+                    completion(500, (response as? HTTPURLResponse)?.description ?? "Fail")
+                    return
+                }
+                
+                // [response 데이터 획득]
+                let resultCode = (response as? HTTPURLResponse)?.statusCode ?? 500 // [상태 코드]
+                guard let resultLen = data else {
+                    completion(500, (response as? HTTPURLResponse)?.description ?? "Fail")
+                    return
+                }
+                let resultData = String(data: resultLen, encoding: .utf8) ?? "" // [데이터 확인]
+                
                 // [콜백 반환]
-                completion(500, error?.localizedDescription ?? "Fail")
-                return
-            }
+                DispatchQueue.main.async {
+                    completion(resultCode, resultData)
+                }
+            })
             
-            // [status 코드 체크 실시]
-            let successsRange = 200..<300
-            guard let statusCode = (response as? HTTPURLResponse)?.statusCode, successsRange.contains(statusCode)
-            else {
-                // [콜백 반환]
-                completion(500, (response as? HTTPURLResponse)?.description ?? "Fail")
-                return
-            }
-            
-            // [response 데이터 획득]
-            let resultCode = (response as? HTTPURLResponse)?.statusCode ?? 500 // [상태 코드]
-            guard let resultLen = data else {
-                completion(500, (response as? HTTPURLResponse)?.description ?? "Fail")
-                return
-            }
-            let resultData = String(data: resultLen, encoding: .utf8) ?? "" // [데이터 확인]
-            
-            // [콜백 반환]
-            DispatchQueue.main.async {
-                completion(resultCode, resultData)
-            }
-        })
+            // [network 통신 실행]
+            dataTask.resume()
+        } else {
+            completion(500, "Fail to encode")
+        }
         
-        // [network 통신 실행]
-        dataTask.resume()
     }
     
     
@@ -176,52 +181,56 @@ public class NetworkManager {
         
         requestURL.httpMethod = "POST"
         let encodingData = JSONConverter.encodeJson(param: input)
-        requestURL.httpBody = encodingData
-        requestURL.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        requestURL.setValue("\(encodingData)", forHTTPHeaderField: "Content-Length")
-        
-        let dataTask = URLSession.shared.dataTask(with: requestURL, completionHandler: { (data, response, error) in
+        if (encodingData != nil) {
+            requestURL.httpBody = encodingData
+            requestURL.addValue("application/json", forHTTPHeaderField: "Content-Type")
+            requestURL.setValue("\(encodingData)", forHTTPHeaderField: "Content-Length")
             
-//            print("")
-//            print("====================================")
-//            print("RESPONSE CLE 데이터 :: ", data)
-//            print("RESPONSE CLE 데이터 :: ", response)
-//            print("RESPONSE CLE 데이터 :: ", error)
-//            print("====================================")
-//            print("")
-            
-            // [error가 존재하면 종료]
-            guard error == nil else {
+            let dataTask = URLSession.shared.dataTask(with: requestURL, completionHandler: { (data, response, error) in
+                
+    //            print("")
+    //            print("====================================")
+    //            print("RESPONSE CLE 데이터 :: ", data)
+    //            print("RESPONSE CLE 데이터 :: ", response)
+    //            print("RESPONSE CLE 데이터 :: ", error)
+    //            print("====================================")
+    //            print("")
+                
+                // [error가 존재하면 종료]
+                guard error == nil else {
+                    // [콜백 반환]
+                    completion(500, error?.localizedDescription ?? "Fail")
+                    return
+                }
+                
+                // [status 코드 체크 실시]
+                let successsRange = 200..<300
+                guard let statusCode = (response as? HTTPURLResponse)?.statusCode, successsRange.contains(statusCode)
+                else {
+                    // [콜백 반환]
+                    completion(500, (response as? HTTPURLResponse)?.description ?? "Fail")
+                    return
+                }
+                
+                // [response 데이터 획득]
+                let resultCode = (response as? HTTPURLResponse)?.statusCode ?? 500 // [상태 코드]
+                guard let resultLen = data else {
+                    completion(500, (response as? HTTPURLResponse)?.description ?? "Fail")
+                    return
+                }
+                let resultData = String(data: resultLen, encoding: .utf8) ?? "" // [데이터 확인]
+                
                 // [콜백 반환]
-                completion(500, error?.localizedDescription ?? "Fail")
-                return
-            }
+                DispatchQueue.main.async {
+                    completion(resultCode, resultData)
+                }
+            })
             
-            // [status 코드 체크 실시]
-            let successsRange = 200..<300
-            guard let statusCode = (response as? HTTPURLResponse)?.statusCode, successsRange.contains(statusCode)
-            else {
-                // [콜백 반환]
-                completion(500, (response as? HTTPURLResponse)?.description ?? "Fail")
-                return
-            }
-            
-            // [response 데이터 획득]
-            let resultCode = (response as? HTTPURLResponse)?.statusCode ?? 500 // [상태 코드]
-            guard let resultLen = data else {
-                completion(500, (response as? HTTPURLResponse)?.description ?? "Fail")
-                return
-            }
-            let resultData = String(data: resultLen, encoding: .utf8) ?? "" // [데이터 확인]
-            
-            // [콜백 반환]
-            DispatchQueue.main.async {
-                completion(resultCode, resultData)
-            }
-        })
-        
-        // [network 통신 실행]
-        dataTask.resume()
+            // [network 통신 실행]
+            dataTask.resume()
+        } else {
+            completion(500, "Fail to encode")
+        }
     }
     
     // Coarse Location Estimation Service
@@ -232,51 +241,54 @@ public class NetworkManager {
         
         requestURL.httpMethod = "POST"
         let encodingData = JSONConverter.encodeJson(param: input)
-        requestURL.httpBody = encodingData
-        requestURL.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        requestURL.setValue("\(encodingData)", forHTTPHeaderField: "Content-Length")
-        
-        
-        let dataTask = URLSession.shared.dataTask(with: requestURL, completionHandler: { (data, response, error) in
+        if (encodingData != nil) {
+            requestURL.httpBody = encodingData
+            requestURL.addValue("application/json", forHTTPHeaderField: "Content-Type")
+            requestURL.setValue("\(encodingData)", forHTTPHeaderField: "Content-Length")
             
-            // [error가 존재하면 종료]
-            guard error == nil else {
+            let dataTask = URLSession.shared.dataTask(with: requestURL, completionHandler: { (data, response, error) in
+                
+                // [error가 존재하면 종료]
+                guard error == nil else {
+                    // [콜백 반환]
+                    DispatchQueue.main.async {
+                        completion(500, error?.localizedDescription ?? "Fail")
+                    }
+                    return
+                }
+                
+                // [status 코드 체크 실시]
+                let successsRange = 200..<300
+                guard let statusCode = (response as? HTTPURLResponse)?.statusCode, successsRange.contains(statusCode)
+                else {
+                    // [콜백 반환]
+                    DispatchQueue.main.async {
+                        completion(500, (response as? HTTPURLResponse)?.description ?? "Fail")
+                    }
+                    return
+                }
+                
+                // [response 데이터 획득]
+                let resultCode = (response as? HTTPURLResponse)?.statusCode ?? 500 // [상태 코드]
+                guard let resultLen = data else {
+                    DispatchQueue.main.async {
+                        completion(500, (response as? HTTPURLResponse)?.description ?? "Fail")
+                    }
+                    return
+                }
+                let resultData = String(data: resultLen, encoding: .utf8) ?? "" // [데이터 확인]
+                
                 // [콜백 반환]
                 DispatchQueue.main.async {
-                    completion(500, error?.localizedDescription ?? "Fail")
+                    completion(resultCode, resultData)
                 }
-                return
-            }
+            })
             
-            // [status 코드 체크 실시]
-            let successsRange = 200..<300
-            guard let statusCode = (response as? HTTPURLResponse)?.statusCode, successsRange.contains(statusCode)
-            else {
-                // [콜백 반환]
-                DispatchQueue.main.async {
-                    completion(500, (response as? HTTPURLResponse)?.description ?? "Fail")
-                }
-                return
-            }
-            
-            // [response 데이터 획득]
-            let resultCode = (response as? HTTPURLResponse)?.statusCode ?? 500 // [상태 코드]
-            guard let resultLen = data else {
-                DispatchQueue.main.async {
-                    completion(500, (response as? HTTPURLResponse)?.description ?? "Fail")
-                }
-                return
-            }
-            let resultData = String(data: resultLen, encoding: .utf8) ?? "" // [데이터 확인]
-            
-            // [콜백 반환]
-            DispatchQueue.main.async {
-                completion(resultCode, resultData)
-            }
-        })
-        
-        // [network 통신 실행]
-        dataTask.resume()
+            // [network 통신 실행]
+            dataTask.resume()
+        } else {
+            completion(500, "Fail to encode")
+        }
     }
     
     func postFLT(url: String, input: FineLocationTracking, completion: @escaping (Int, String) -> Void) {
@@ -286,61 +298,65 @@ public class NetworkManager {
 
         requestURL.httpMethod = "POST"
         let encodingData = JSONConverter.encodeJson(param: input)
-        requestURL.httpBody = encodingData
-        requestURL.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        requestURL.setValue("\(encodingData)", forHTTPHeaderField: "Content-Length")
-        
-//        print("")
-//        print("====================================")
-//        print("POST FLT URL :: ", url)
-//        print("POST FLT 데이터 :: ", input)
-//        print("====================================")
-//        print("")
+        if (encodingData != nil) {
+            requestURL.httpBody = encodingData
+            requestURL.addValue("application/json", forHTTPHeaderField: "Content-Type")
+            requestURL.setValue("\(encodingData)", forHTTPHeaderField: "Content-Length")
+            
+    //        print("")
+    //        print("====================================")
+    //        print("POST FLT URL :: ", url)
+    //        print("POST FLT 데이터 :: ", input)
+    //        print("====================================")
+    //        print("")
 
-        let dataTask = URLSession.shared.dataTask(with: requestURL, completionHandler: { (data, response, error) in
+            let dataTask = URLSession.shared.dataTask(with: requestURL, completionHandler: { (data, response, error) in
 
-            // [error가 존재하면 종료]
-            guard error == nil else {
-                // [콜백 반환]
-                DispatchQueue.main.async {
-                    completion(500, error?.localizedDescription ?? "Fail")
+                // [error가 존재하면 종료]
+                guard error == nil else {
+                    // [콜백 반환]
+                    DispatchQueue.main.async {
+                        completion(500, error?.localizedDescription ?? "Fail")
+                    }
+                    return
                 }
-                return
-            }
 
-            // [status 코드 체크 실시]
-            let successsRange = 200..<300
-            guard let statusCode = (response as? HTTPURLResponse)?.statusCode, successsRange.contains(statusCode)
-            else {
-                // [콜백 반환]
-                DispatchQueue.main.async {
+                // [status 코드 체크 실시]
+                let successsRange = 200..<300
+                guard let statusCode = (response as? HTTPURLResponse)?.statusCode, successsRange.contains(statusCode)
+                else {
+                    // [콜백 반환]
+                    DispatchQueue.main.async {
+                        completion(500, (response as? HTTPURLResponse)?.description ?? "Fail")
+                    }
+                    return
+                }
+
+                // [response 데이터 획득]
+                let resultCode = (response as? HTTPURLResponse)?.statusCode ?? 500 // [상태 코드]
+                guard let resultLen = data else {
                     completion(500, (response as? HTTPURLResponse)?.description ?? "Fail")
+                    return
                 }
-                return
-            }
+                let resultData = String(data: resultLen, encoding: .utf8) ?? "" // [데이터 확인]
 
-            // [response 데이터 획득]
-            let resultCode = (response as? HTTPURLResponse)?.statusCode ?? 500 // [상태 코드]
-            guard let resultLen = data else {
-                completion(500, (response as? HTTPURLResponse)?.description ?? "Fail")
-                return
-            }
-            let resultData = String(data: resultLen, encoding: .utf8) ?? "" // [데이터 확인]
+                // [콜백 반환]
+                DispatchQueue.main.async {
+    //                print("")
+    //                print("====================================")
+    //                print("RESPONSE FLT 데이터 :: ", resultCode)
+    //                print("                 :: ", resultData)
+    //                print("====================================")
+    //                print("")
+                    completion(resultCode, resultData)
+                }
+            })
 
-            // [콜백 반환]
-            DispatchQueue.main.async {
-//                print("")
-//                print("====================================")
-//                print("RESPONSE FLT 데이터 :: ", resultCode)
-//                print("                 :: ", resultData)
-//                print("====================================")
-//                print("")
-                completion(resultCode, resultData)
-            }
-        })
-
-        // [network 통신 실행]
-        dataTask.resume()
+            // [network 통신 실행]
+            dataTask.resume()
+        } else {
+            completion(500, "Fail to encode")
+        }
     }
     
     func postRecent(url: String, input: RecentResult, completion: @escaping (Int, String) -> Void) {
@@ -350,48 +366,52 @@ public class NetworkManager {
         
         requestURL.httpMethod = "POST"
         let encodingData = JSONConverter.encodeJson(param: input)
-        requestURL.httpBody = encodingData
-        requestURL.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        requestURL.setValue("\(encodingData)", forHTTPHeaderField: "Content-Length")
-        
-        let dataTask = URLSession.shared.dataTask(with: requestURL, completionHandler: { (data, response, error) in
+        if (encodingData != nil) {
+            requestURL.httpBody = encodingData
+            requestURL.addValue("application/json", forHTTPHeaderField: "Content-Type")
+            requestURL.setValue("\(encodingData)", forHTTPHeaderField: "Content-Length")
             
-            // [error가 존재하면 종료]
-            guard error == nil else {
-                // [콜백 반환]
-                DispatchQueue.main.async {
-                    completion(500, error?.localizedDescription ?? "Fail")
+            let dataTask = URLSession.shared.dataTask(with: requestURL, completionHandler: { (data, response, error) in
+                
+                // [error가 존재하면 종료]
+                guard error == nil else {
+                    // [콜백 반환]
+                    DispatchQueue.main.async {
+                        completion(500, error?.localizedDescription ?? "Fail")
+                    }
+                    return
                 }
-                return
-            }
-            
-            // [status 코드 체크 실시]
-            let successsRange = 200..<300
-            guard let statusCode = (response as? HTTPURLResponse)?.statusCode, successsRange.contains(statusCode)
-            else {
-                // [콜백 반환]
-                DispatchQueue.main.async {
+                
+                // [status 코드 체크 실시]
+                let successsRange = 200..<300
+                guard let statusCode = (response as? HTTPURLResponse)?.statusCode, successsRange.contains(statusCode)
+                else {
+                    // [콜백 반환]
+                    DispatchQueue.main.async {
+                        completion(500, (response as? HTTPURLResponse)?.description ?? "Fail")
+                    }
+                    return
+                }
+                
+                // [response 데이터 획득]
+                let resultCode = (response as? HTTPURLResponse)?.statusCode ?? 500 // [상태 코드]
+                guard let resultLen = data else {
                     completion(500, (response as? HTTPURLResponse)?.description ?? "Fail")
+                    return
                 }
-                return
-            }
+                let resultData = String(data: resultLen, encoding: .utf8) ?? "" // [데이터 확인]
+                
+                // [콜백 반환]
+                DispatchQueue.main.async {
+                    completion(resultCode, resultData)
+                }
+            })
             
-            // [response 데이터 획득]
-            let resultCode = (response as? HTTPURLResponse)?.statusCode ?? 500 // [상태 코드]
-            guard let resultLen = data else {
-                completion(500, (response as? HTTPURLResponse)?.description ?? "Fail")
-                return
-            }
-            let resultData = String(data: resultLen, encoding: .utf8) ?? "" // [데이터 확인]
-            
-            // [콜백 반환]
-            DispatchQueue.main.async {
-                completion(resultCode, resultData)
-            }
-        })
-        
-        // [network 통신 실행]
-        dataTask.resume()
+            // [network 통신 실행]
+            dataTask.resume()
+        } else {
+            completion(500, "Fail to encode")
+        }
     }
     
     func postOSR(url: String, input: OnSpotRecognition, completion: @escaping (Int, String) -> Void) {
@@ -401,61 +421,65 @@ public class NetworkManager {
         
         requestURL.httpMethod = "POST"
         let encodingData = JSONConverter.encodeJson(param: input)
-        requestURL.httpBody = encodingData
-        requestURL.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        requestURL.setValue("\(encodingData)", forHTTPHeaderField: "Content-Length")
-        
-//        print("")
-//        print("====================================")
-//        print("POST OSR 데이터 :: ", input)
-//        print("====================================")
-//        print("")
+        if (encodingData != nil) {
+            requestURL.httpBody = encodingData
+            requestURL.addValue("application/json", forHTTPHeaderField: "Content-Type")
+            requestURL.setValue("\(encodingData)", forHTTPHeaderField: "Content-Length")
+            
+    //        print("")
+    //        print("====================================")
+    //        print("POST OSR 데이터 :: ", input)
+    //        print("====================================")
+    //        print("")
 
-        
-        let dataTask = URLSession.shared.dataTask(with: requestURL, completionHandler: { (data, response, error) in
             
-            // [error가 존재하면 종료]
-            guard error == nil else {
-                // [콜백 반환]
-                DispatchQueue.main.async {
-                    completion(500, error?.localizedDescription ?? "Fail")
+            let dataTask = URLSession.shared.dataTask(with: requestURL, completionHandler: { (data, response, error) in
+                
+                // [error가 존재하면 종료]
+                guard error == nil else {
+                    // [콜백 반환]
+                    DispatchQueue.main.async {
+                        completion(500, error?.localizedDescription ?? "Fail")
+                    }
+                    return
                 }
-                return
-            }
-            
-            // [status 코드 체크 실시]
-            let successsRange = 200..<300
-            guard let statusCode = (response as? HTTPURLResponse)?.statusCode, successsRange.contains(statusCode)
-            else {
-                // [콜백 반환]
-                DispatchQueue.main.async {
+                
+                // [status 코드 체크 실시]
+                let successsRange = 200..<300
+                guard let statusCode = (response as? HTTPURLResponse)?.statusCode, successsRange.contains(statusCode)
+                else {
+                    // [콜백 반환]
+                    DispatchQueue.main.async {
+                        completion(500, (response as? HTTPURLResponse)?.description ?? "Fail")
+                    }
+                    return
+                }
+                
+                // [response 데이터 획득]
+                let resultCode = (response as? HTTPURLResponse)?.statusCode ?? 500 // [상태 코드]
+                guard let resultLen = data else {
                     completion(500, (response as? HTTPURLResponse)?.description ?? "Fail")
+                    return
                 }
-                return
-            }
+                let resultData = String(data: resultLen, encoding: .utf8) ?? "" // [데이터 확인]
+                
+                // [콜백 반환]
+                DispatchQueue.main.async {
+                    completion(resultCode, resultData)
+    //                print("")
+    //                print("====================================")
+    //                print("RESPONSE OSR 데이터 :: ", resultCode)
+    //                print("                 :: ", resultData)
+    //                print("====================================")
+    //                print("")
+                }
+            })
             
-            // [response 데이터 획득]
-            let resultCode = (response as? HTTPURLResponse)?.statusCode ?? 500 // [상태 코드]
-            guard let resultLen = data else {
-                completion(500, (response as? HTTPURLResponse)?.description ?? "Fail")
-                return
-            }
-            let resultData = String(data: resultLen, encoding: .utf8) ?? "" // [데이터 확인]
-            
-            // [콜백 반환]
-            DispatchQueue.main.async {
-                completion(resultCode, resultData)
-//                print("")
-//                print("====================================")
-//                print("RESPONSE OSR 데이터 :: ", resultCode)
-//                print("                 :: ", resultData)
-//                print("====================================")
-//                print("")
-            }
-        })
-        
-        // [network 통신 실행]
-        dataTask.resume()
+            // [network 통신 실행]
+            dataTask.resume()
+        } else {
+            completion(500, "Fail to encode")
+        }
     }
     
     func postGEO(url: String, input: Geo, completion: @escaping (Int, String, String, String) -> Void) {
@@ -468,48 +492,52 @@ public class NetworkManager {
         
         requestURL.httpMethod = "POST"
         let encodingData = JSONConverter.encodeJson(param: input)
-        requestURL.httpBody = encodingData
-        requestURL.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        requestURL.setValue("\(encodingData)", forHTTPHeaderField: "Content-Length")
-        
-        let dataTask = URLSession.shared.dataTask(with: requestURL, completionHandler: { (data, response, error) in
+        if (encodingData != nil) {
+            requestURL.httpBody = encodingData
+            requestURL.addValue("application/json", forHTTPHeaderField: "Content-Type")
+            requestURL.setValue("\(encodingData)", forHTTPHeaderField: "Content-Length")
             
-            // [error가 존재하면 종료]
-            guard error == nil else {
-                // [콜백 반환]
-                DispatchQueue.main.async {
-                    completion(500, error?.localizedDescription ?? "Fail", buildingName, levelName)
+            let dataTask = URLSession.shared.dataTask(with: requestURL, completionHandler: { (data, response, error) in
+                
+                // [error가 존재하면 종료]
+                guard error == nil else {
+                    // [콜백 반환]
+                    DispatchQueue.main.async {
+                        completion(500, error?.localizedDescription ?? "Fail", buildingName, levelName)
+                    }
+                    return
                 }
-                return
-            }
-            
-            // [status 코드 체크 실시]
-            let successsRange = 200..<300
-            guard let statusCode = (response as? HTTPURLResponse)?.statusCode, successsRange.contains(statusCode)
-            else {
-                // [콜백 반환]
-                DispatchQueue.main.async {
+                
+                // [status 코드 체크 실시]
+                let successsRange = 200..<300
+                guard let statusCode = (response as? HTTPURLResponse)?.statusCode, successsRange.contains(statusCode)
+                else {
+                    // [콜백 반환]
+                    DispatchQueue.main.async {
+                        completion(500, (response as? HTTPURLResponse)?.description ?? "Fail", buildingName, levelName)
+                    }
+                    return
+                }
+                
+                // [response 데이터 획득]
+                let resultCode = (response as? HTTPURLResponse)?.statusCode ?? 500 // [상태 코드]
+                guard let resultLen = data else {
                     completion(500, (response as? HTTPURLResponse)?.description ?? "Fail", buildingName, levelName)
+                    return
                 }
-                return
-            }
+                let resultData = String(data: resultLen, encoding: .utf8) ?? "" // [데이터 확인]
+                
+                // [콜백 반환]
+                DispatchQueue.main.async {
+                    completion(resultCode, resultData, buildingName, levelName)
+                }
+            })
             
-            // [response 데이터 획득]
-            let resultCode = (response as? HTTPURLResponse)?.statusCode ?? 500 // [상태 코드]
-            guard let resultLen = data else {
-                completion(500, (response as? HTTPURLResponse)?.description ?? "Fail", buildingName, levelName)
-                return
-            }
-            let resultData = String(data: resultLen, encoding: .utf8) ?? "" // [데이터 확인]
-            
-            // [콜백 반환]
-            DispatchQueue.main.async {
-                completion(resultCode, resultData, buildingName, levelName)
-            }
-        })
-        
-        // [network 통신 실행]
-        dataTask.resume()
+            // [network 통신 실행]
+            dataTask.resume()
+        } else {
+            completion(500, "Fail to encode", "", "")
+        }
     }
 }
 
