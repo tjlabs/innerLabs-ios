@@ -57,8 +57,14 @@ class MainViewController: UIViewController, UITextFieldDelegate {
         let arr = os.components(separatedBy: ".")
         osVersion = Int(arr[0]) ?? 0
         
-//        let locale = Locale.current
-//        print("(InnerLabs) Locale Code : \(locale.identifier)")
+        let locale = Locale.current
+        if let countryCode = locale.regionCode, countryCode == "KR" {
+            self.currentRegion = "Korea"
+        } else {
+            self.currentRegion = "Canada"
+        }
+        self.dropText.text = self.currentRegion
+        setRegion(regionName: self.currentRegion)
     }
     
     override func didReceiveMemoryWarning() {
