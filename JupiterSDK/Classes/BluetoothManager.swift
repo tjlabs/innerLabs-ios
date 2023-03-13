@@ -358,6 +358,9 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
         
         self.isScanning = false
         
+        self.bleDictionary = [String: [[Double]]]()
+        self.bleDiscoveredTime = 0
+        
         NotificationCenter.default.post(name: .stopScan, object: nil)
     }
     

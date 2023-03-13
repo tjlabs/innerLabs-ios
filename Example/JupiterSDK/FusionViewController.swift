@@ -524,8 +524,6 @@ class FusionViewController: UIViewController, Observer {
                     // 빌딩 -> 층 이미지가 있는 경우
                     self.imageLevel.isHidden = false
                     self.noImageLabel.isHidden = true
-                    
-//                    self.imageLevel.image = UIImage(named: "L3_Map")
                     self.imageLevel.image = data
                 } else {
                     // 빌딩 -> 층 이미지가 없는 경우
@@ -539,9 +537,6 @@ class FusionViewController: UIViewController, Observer {
                         self.noImageLabel.isHidden = false
                         self.imageLevel.isHidden = true
                     }
-//                    self.imageLevel.isHidden = false
-//                    self.noImageLabel.isHidden = true
-//                    self.imageLevel.image = UIImage(named: "L3_Map")
                 }
             }
         })

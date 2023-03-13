@@ -56,7 +56,7 @@ class CardViewController: UIViewController, ServiceViewPageDelegate, FusionViewP
     override func viewDidLoad() {
         super.viewDidLoad()
         serviceManager.changeRegion(regionName: self.region)
-//        serviceManager.startService(id: self.uuid, sector_id: 0, service: "CLD", mode: "pdr")
+        serviceManager.startService(id: self.uuid, sector_id: 10, service: "CLD", mode: "pdr")
         
         blackView.backgroundColor = UIColor.black
         blackView.alpha = 0
