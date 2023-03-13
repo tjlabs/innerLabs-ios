@@ -35,6 +35,7 @@ class MainViewController: UIViewController, UITextFieldDelegate {
     
     var regions: [String] = ["Korea", "Canada"]
     var currentRegion: String = "Korea"
+    var defaultMeasage: String = ""
     
     let dropDown = DropDown()
     
@@ -60,9 +61,13 @@ class MainViewController: UIViewController, UITextFieldDelegate {
         let locale = Locale.current
         if let countryCode = locale.regionCode, countryCode == "KR" {
             self.currentRegion = "Korea"
+            self.defaultMeasage = "카드를 터치해주세요"
         } else {
             self.currentRegion = "Canada"
+            self.defaultMeasage = "Touch the Card"
         }
+        
+        print("Message = \(self.defaultMeasage)")
         self.dropText.text = self.currentRegion
         setRegion(regionName: self.currentRegion)
     }
@@ -151,10 +156,10 @@ class MainViewController: UIViewController, UITextFieldDelegate {
                     
                     if (myCard.isEmpty) {
                         print("최초 사용자 입니다")
-                        cardDatas.append(CardItemData(sector_id: 0, sector_name: "JUPITER", description: "카드를 터치해주세요", cardColor: "purple", mode: "pdr", service: "NONE", infoBuilding: ["S3"], infoLevel: ["S3":["7F"]]))
+                        cardDatas.append(CardItemData(sector_id: 0, sector_name: "JUPITER", description: self.defaultMeasage, cardColor: "purple", mode: "pdr", service: "NONE", infoBuilding: ["S3"], infoLevel: ["S3":["7F"]]))
                     } else {
                         print("최초 사용자가 아닙니다")
-                        cardDatas.append(CardItemData(sector_id: 0, sector_name: "JUPITER", description: "카드를 터치해주세요", cardColor: "purple", mode: "pdr", service: "NONE", infoBuilding: ["S3"], infoLevel: ["S3":["7F"]]))
+                        cardDatas.append(CardItemData(sector_id: 0, sector_name: "JUPITER", description: self.defaultMeasage, cardColor: "purple", mode: "pdr", service: "NONE", infoBuilding: ["S3"], infoLevel: ["S3":["7F"]]))
                         
                         KingfisherManager.shared.cache.clearMemoryCache()
                         KingfisherManager.shared.cache.clearDiskCache { print("Clear Cache Done !") }

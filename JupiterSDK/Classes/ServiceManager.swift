@@ -545,6 +545,7 @@ public class ServiceManager: Observation {
                 }
             })
             self.loadRssiBias(sector_id: self.sector_id)
+            self.isActiveReturn = true
             
             return (isSuccess, message)
         }
@@ -581,7 +582,6 @@ public class ServiceManager: Observation {
         }
         
         self.initVariables()
-        self.isActiveReturn = true
         displayOutput.phase = String(0)
         self.isMapMatching = false
         
@@ -599,6 +599,7 @@ public class ServiceManager: Observation {
         
         self.currentBuilding = ""
         self.currentLevel = "0F"
+        self.outputResult = FineLocationTrackingResult()
         
         self.isGetFirstResponse = false
         

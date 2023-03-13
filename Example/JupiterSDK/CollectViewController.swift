@@ -281,17 +281,25 @@ class CollectViewController: UIViewController {
         let header = ["time", "accX", "accY", "accZ", "gyroX", "gyroY", "gyroZ", "magX", "magY", "magZ", "roll", "pitch", "yaw", "qx", "qy", "qz", "qw", "pressure", "ble"]
         
         let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd-HH-mm"
+        dateFormatter.dateFormat = "yyyy-MM-dd-HH-mm-ss"
         dateFormatter.locale = Locale(identifier:"ko_KR")
         let nowDate = Date()
         let convertNowStr = dateFormatter.string(from: nowDate)
+        
+        var fileHeader: String = "ios_Korea_"
+        let locale = Locale.current
+        if let countryCode = locale.regionCode, countryCode == "KR" {
+            fileHeader = "ios_Korea_"
+        } else {
+            fileHeader = "ios_Canada_"
+        }
         
         // Create a object for write CSV
         let writeCSVObj = CSV()
         writeCSVObj.rows = self.data
         writeCSVObj.delimiter = DividerType.comma.rawValue
         writeCSVObj.fields = header as NSArray
-        writeCSVObj.name = "iosData_" + convertNowStr
+        writeCSVObj.name = fileHeader + convertNowStr
         
         // Write File using CSV class object
         let output = CSVExport.export(writeCSVObj)
