@@ -61,15 +61,13 @@ class MainViewController: UIViewController, UITextFieldDelegate {
         let locale = Locale.current
         if let countryCode = locale.regionCode, countryCode == "KR" {
             self.currentRegion = "Korea"
-            self.defaultMeasage = "카드를 터치해주세요"
         } else {
             self.currentRegion = "Canada"
-            self.defaultMeasage = "Touch the Card"
         }
         
-        print("Message = \(self.defaultMeasage)")
         self.dropText.text = self.currentRegion
         setRegion(regionName: self.currentRegion)
+        setDefaultMessage(region: self.currentRegion)
     }
     
     override func didReceiveMemoryWarning() {
@@ -242,16 +240,11 @@ class MainViewController: UIViewController, UITextFieldDelegate {
     
     func jsonToCardList(json: String) -> CardList {
         let result = CardList(sectors: [])
-
         let decoder = JSONDecoder()
-        
         let jsonString = json
-        
         if let data = jsonString.data(using: .utf8), let decoded = try? decoder.decode(CardList.self, from: data) {
-            
             return decoded
         }
-        
         return result
     }
     
@@ -297,6 +290,7 @@ class MainViewController: UIViewController, UITextFieldDelegate {
             self!.dropText.text = item
             self!.currentRegion = item
             setRegion(regionName: self!.currentRegion)
+            self!.setDefaultMessage(region: self!.currentRegion)
             self!.dropImage.image = UIImage.init(named: "showInfoToggle")
         }
             
@@ -304,6 +298,17 @@ class MainViewController: UIViewController, UITextFieldDelegate {
         dropDown.cancelAction = { [weak self] in
             //빈 화면 터치 시 DropDown이 사라지고 아이콘을 원래대로 변경
             self!.dropImage.image = UIImage.init(named: "showInfoToggle")
+        }
+    }
+    
+    public func setDefaultMessage(region: String) {
+        switch (region) {
+        case "Korea":
+            self.defaultMeasage = "카드를 터치해 주세요"
+        case "Canada":
+            self.defaultMeasage = "Touch the card"
+        default:
+            self.defaultMeasage = "Touch the card"
         }
     }
     

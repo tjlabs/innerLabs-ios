@@ -534,6 +534,14 @@ class FusionViewController: UIViewController, Observer {
                         self.imageLevel.image = UIImage(named: "emptyLevel")
                     } else {
                         self.scatterChart.isHidden = true
+                        switch (self.region) {
+                        case "Korea":
+                            self.noImageLabel.text = "해당 층 이미지가 없습니다"
+                        case "Canada":
+                            self.noImageLabel.text = "There is no image of floor"
+                        default:
+                            self.noImageLabel.text = "There is no image of floor"
+                        }
                         self.noImageLabel.isHidden = false
                         self.imageLevel.isHidden = true
                     }
