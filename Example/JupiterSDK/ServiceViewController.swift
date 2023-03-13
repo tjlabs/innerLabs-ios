@@ -246,9 +246,13 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
     func setCardData(cardData: CardItemData) {
         self.sectorID = cardData.sector_id
         self.sectorNameLabel.text = cardData.sector_name
-        
+
         let imageName: String = cardData.cardColor + "CardTop"
-        self.cardTopImage.image = UIImage(named: imageName)!
+        if let topImage = UIImage(named: imageName) {
+            self.cardTopImage.image = topImage
+        } else {
+            self.cardTopImage.image = UIImage(named: "purpleCardTop")
+        }
         
         self.sectorNameLabel.isUserInteractionEnabled = true
         let tapRecognizer = UITapGestureRecognizer()

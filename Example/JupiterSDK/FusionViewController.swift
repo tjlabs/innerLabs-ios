@@ -201,7 +201,12 @@ class FusionViewController: UIViewController, Observer {
         self.sectorNameLabel.text = cardData.sector_name
         
         let imageName: String = cardData.cardColor + "CardTop"
-        self.cardTopImage.image = UIImage(named: imageName)!
+        if let topImage = UIImage(named: imageName) {
+            self.cardTopImage.image = topImage
+        } else {
+            self.cardTopImage.image = UIImage(named: "purpleCardTop")
+        }
+        
         
         self.sectorNameLabel.isUserInteractionEnabled = true
         let tapRecognizer = UITapGestureRecognizer()
@@ -821,7 +826,7 @@ class FusionViewController: UIViewController, Observer {
         }
     }
     
-    @IBAction func topOnSpotButton(_ sender: UIButton) {
+    @IBAction func tapOnSpotButton(_ sender: UIButton) {
         serviceManager.getSpotResult(completion: { [self] statusCode, returnedString in
             if (statusCode == 200) {
                 let result: OnSpotAuthorizationResult = decodeOSA(json: returnedString)
@@ -850,44 +855,14 @@ class FusionViewController: UIViewController, Observer {
                         self.spotToDisplay.spot_name = "Invalid"
                         self.spotToDisplay.spot_feature_id = 0
                         self.spotToDisplay.ccs = data.ccs
-                        
-//                        var temp = Spot()
-//                        temp.spot_x = 60
-//                        temp.spot_y = 25
-//                        temp.building_name = "L3"
-//                        temp.level_name = "1F"
-//                        temp.ccs = 0.7200
-//                        temp.sector_name = "KIST"
-//                        temp.mobile_time = Int(getCurrentTimeInMilliseconds())
-//                        temp.spot_id = 40
-//                        temp.spot_name = "Grand Hall"
-//                        temp.spot_number = 4
-//                        temp.spot_feature_id = 13
-//                        self.currentBuilding = "L3"
-//                        self.currentLevel = "1F"
-//                        showOSAResult(data: temp, flag: isShowRP)
                     }
                 }
             } else {
                 print("(Jupiter) Warnings : \(statusCode) , Cannot find spot")
-//                var temp = Spot()
-//                temp.spot_x = 60
-//                temp.spot_y = 25
-//                temp.building_name = "L3"
-//                temp.level_name = "1F"
-//                temp.ccs = 0.7200
-//                temp.sector_name = "KIST"
-//                temp.mobile_time = Int(getCurrentTimeInMilliseconds())
-//                temp.spot_id = 40
-//                temp.spot_name = "Grand Hall"
-//                temp.spot_number = 4
-//                temp.spot_feature_id = 13
-//                self.currentBuilding = "L3"
-//                self.currentLevel = "1F"
-//                showOSAResult(data: temp, flag: isShowRP)
             }
         })
     }
+    
     
     func showOSAResult(data: Spot, flag: Bool) {
         self.spotAuthTime = data.mobile_time

@@ -1627,7 +1627,7 @@
                                         <state key="normal" image="onSpot"/>
                                         <state key="selected" image="onSpot"/>
                                         <connections>
-                                            <action selector="topOnSpotButton:" destination="3sZ-Iz-6FU" eventType="touchUpInside" id="kdC-qs-gFL"/>
+                                            <action selector="tapOnSpotButton:" destination="3sZ-Iz-6FU" eventType="touchUpInside" id="t59-gU-uYy"/>
                                         </connections>
                                     </button>
                                     <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="59B-Pb-lNU">
