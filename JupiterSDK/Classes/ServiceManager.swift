@@ -266,8 +266,8 @@ public class ServiceManager: Observation {
     var timeSleepRF: Double = 0
     var timeSleepUV: Double = 0
     let STOP_THRESHOLD: Double = 2
-    let SLEEP_THRESHOLD: Double = 600 // 10분
-    let SLEEP_THRESHOLD_RF: Double = 6 // 6s
+    let SLEEP_THRESHOLD: Double = 600
+    let SLEEP_THRESHOLD_RF: Double = 6
     
     var lastTrackingTime: Int = 0
     var lastResult = FineLocationTrackingResult()
@@ -1114,7 +1114,6 @@ public class ServiceManager: Observation {
                     let lastResult = self.lastResult
                     if (lastResult.building_name != "" && lastResult.level_name != "") {
                         self.travelingOsrDistance += unitDRInfo.length
-                        let resultBufferData = ResultIsUvdChanged(mobile_time: lastResult.mobile_time, building_name: lastResult.building_name, level_name: lastResult.level_name)
                     }
                 }
                 
@@ -1224,28 +1223,44 @@ public class ServiceManager: Observation {
                 let result = jsonToResult(json: returnedString)
                 if (result.x != 0 && result.y != 0) {
                     if (result.mobile_time > self.preOutputMobileTime) {
-                        self.preOutputMobileTime = result.mobile_time
-                        self.phase = result.phase
-                        self.currentBuilding = result.building_name
-                        self.currentLevel = result.level_name
-                        
-                        self.timeUpdateOutput.building_name = result.building_name
-                        self.timeUpdateOutput.level_name = result.level_name
-                        
-                        self.measurementOutput.building_name = result.building_name
-                        self.measurementOutput.level_name = result.level_name
-                        
-                        displayOutput.indexRx = result.index
-                        
-                        let finalResult = fromServerToResult(fromServer: result, velocity: displayOutput.velocity)
-                        self.outputResult = finalResult
-                        
-                        self.serverResult[0] = result.x
-                        self.serverResult[1] = result.y
-                        self.serverResult[2] = result.absolute_heading
-                        
-                        self.indexPast = result.index
+                        if (result.phase == 1) {
+                            self.phase = result.phase
+                        } else {
+                            self.phase = result.phase
+                            displayOutput.indexRx = result.index
+                            
+                            let resultLevelName = removeLevelDirectionString(levelName: result.level_name)
+                            let currentLevelName = removeLevelDirectionString(levelName: self.currentLevel)
+                            
+                            if (result.building_name != self.currentBuilding || resultLevelName != currentLevelName) {
+                                if ((result.mobile_time - self.buildingLevelChangedTime) > VALID_BL_CHANGE_TIME) {
+                                    // Building Level 이 바뀐지 10초 이상 지남 -> 서버 결과를 이용해 바뀌어야 한다고 판단
+                                    self.currentBuilding = result.building_name
+                                    self.currentLevel = result.level_name
+                                    
+                                    self.timeUpdateOutput.building_name = result.building_name
+                                    self.timeUpdateOutput.level_name = result.level_name
+                                    
+                                    self.measurementOutput.building_name = result.building_name
+                                    self.measurementOutput.level_name = result.level_name
+                                    
+                                    let finalResult = fromServerToResult(fromServer: result, velocity: displayOutput.velocity)
+                                    self.outputResult = finalResult
+                                } else {
+                                    self.outputResult.x = result.x
+                                    self.outputResult.y = result.y
+                                    self.outputResult.absolute_heading = result.absolute_heading
+                                }
+                            }
+                            
+                            self.serverResult[0] = result.x
+                            self.serverResult[1] = result.y
+                            self.serverResult[2] = result.absolute_heading
+                            
+                            self.indexPast = result.index
+                        }
                     }
+                    self.preOutputMobileTime = result.mobile_time
                 }
             } else {
                 let log: String = localTime + " , (Jupiter) Error : Fail to request indoor position in Phase 2"
@@ -1369,7 +1384,7 @@ public class ServiceManager: Observation {
                             
                             if (result.building_name != self.currentBuilding || result.level_name != self.currentLevel) {
                                 if ((result.mobile_time - self.buildingLevelChangedTime) > VALID_BL_CHANGE_TIME) {
-                                    // Building Level 이 바뀐지 15초 이상 지남 -> 서버 결과를 이용해 바뀌어야 한다고 판단
+                                    // Building Level 이 바뀐지 10초 이상 지남 -> 서버 결과를 이용해 바뀌어야 한다고 판단
                                     self.currentBuilding = result.building_name
                                     self.currentLevel = result.level_name
 
@@ -1537,7 +1552,7 @@ public class ServiceManager: Observation {
 
                                         if (result.building_name != self.currentBuilding || result.level_name != self.currentLevel) {
                                             if ((result.mobile_time - self.buildingLevelChangedTime) > VALID_BL_CHANGE_TIME) {
-                                                // Building Level 이 바뀐지 15초 이상 지남 -> 서버 결과를 이용해 바뀌어야 한다고 판단
+                                                // Building Level 이 바뀐지 10초 이상 지남 -> 서버 결과를 이용해 바뀌어야 한다고 판단
                                                 self.currentBuilding = result.building_name
                                                 self.currentLevel = result.level_name
 
@@ -1615,7 +1630,6 @@ public class ServiceManager: Observation {
     func isOnSpotRecognition(result: OnSpotRecognitionResult, level: String) -> (isOn: Bool, levelDestination: String, levelDirection: String) {
         let localTime = getLocalTimeString()
         var isOn: Bool = false
-
         let building_name = result.building_name
         let level_name = result.level_name
         let linked_level_name = result.linked_level_name
