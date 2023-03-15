@@ -186,9 +186,10 @@ public class ServiceManager: Observation {
     var nowTime: Int = 0
     var RECENT_THRESHOLD: Int = 10000 // 2200
     var INDEX_THRESHOLD: Int = 11
-    let VALID_BL_CHANGE_TIME = 10000
+    let VALID_BL_CHANGE_TIME = 5000 // 10000
     let VALID_BL_CHANGE_TIME_SAME_SPOT = 5000
     
+    let DEFAULT_SPOT_DISTANCE: Double = 80
     var lastOsrId: Int = 0
     var buildingLevelChangedTime: Int = 0
     var travelingOsrDistance: Double = 0
@@ -1751,42 +1752,93 @@ public class ServiceManager: Observation {
     func determineSpotDetect(result: OnSpotRecognitionResult, lastSpotId: Int, levelDestination: String, currentTime: Int) {
         var spotDistance = result.spot_distance
         if (spotDistance == 0) {
-            spotDistance = 80
+            spotDistance = DEFAULT_SPOT_DISTANCE
         }
         if (result.spot_id != lastSpotId) {
             // Different Spot Detected
-            self.currentBuilding = result.building_name
-            self.currentLevel = levelDestination
-            
-            self.phase = 2
-            self.outputResult.phase = 2
-            self.timeUpdateOutput.level_name = levelDestination
-            self.measurementOutput.level_name = levelDestination
-            self.outputResult.level_name = levelDestination
+            let resultLevelName: String = removeLevelDirectionString(levelName: levelDestination)
+            if (result.building_name != self.currentBuilding || resultLevelName != self.currentLevel) {
+                if ((result.mobile_time - self.buildingLevelChangedTime) > VALID_BL_CHANGE_TIME) {
+                    // Building Level 이 바뀐지 10초 이상 지남 -> 서버 결과를 이용해 바뀌어야 한다고 판단
+                    self.currentBuilding = result.building_name
+                    self.currentLevel = levelDestination
+
+                    self.timeUpdateOutput.building_name = result.building_name
+                    self.timeUpdateOutput.level_name = levelDestination
+
+                    self.measurementOutput.building_name = result.building_name
+                    self.measurementOutput.level_name = levelDestination
+                    
+                    self.outputResult.level_name = levelDestination
+                    
+                    self.phase = 2
+                    self.outputResult.phase = 2
+                }
+            }
             self.currentSpot = result.spot_id
             self.lastOsrId = result.spot_id
             self.travelingOsrDistance = 0
             self.isPossibleEstBias = false
             self.buildingLevelChangedTime = currentTime
             self.preOutputMobileTime = currentTime
+            
+//            self.currentBuilding = result.building_name
+//            self.currentLevel = levelDestination
+//            self.phase = 2
+//            self.outputResult.phase = 2
+//            self.timeUpdateOutput.level_name = levelDestination
+//            self.measurementOutput.level_name = levelDestination
+//            self.outputResult.level_name = levelDestination
+//            self.currentSpot = result.spot_id
+//            self.lastOsrId = result.spot_id
+//            self.travelingOsrDistance = 0
+//            self.isPossibleEstBias = false
+//            self.buildingLevelChangedTime = currentTime
+//            self.preOutputMobileTime = currentTime
 //            print(localTime + " , (Jupiter) Spot Determined : Different Spot // levelDestination = \(levelDestination) , dist = \(spotDistance)")
         } else {
             // Same Spot Detected
             if (self.travelingOsrDistance >= spotDistance) {
-                self.currentBuilding = result.building_name
-                self.currentLevel = levelDestination
-                
-                self.phase = 2
-                self.outputResult.phase = 2
-                self.timeUpdateOutput.level_name = levelDestination
-                self.measurementOutput.level_name = levelDestination
-                self.outputResult.level_name = levelDestination
+                let resultLevelName: String = removeLevelDirectionString(levelName: levelDestination)
+                if (result.building_name != self.currentBuilding || resultLevelName != self.currentLevel) {
+                    if ((result.mobile_time - self.buildingLevelChangedTime) > VALID_BL_CHANGE_TIME) {
+                        // Building Level 이 바뀐지 10초 이상 지남 -> 서버 결과를 이용해 바뀌어야 한다고 판단
+                        self.currentBuilding = result.building_name
+                        self.currentLevel = levelDestination
+
+                        self.timeUpdateOutput.building_name = result.building_name
+                        self.timeUpdateOutput.level_name = levelDestination
+
+                        self.measurementOutput.building_name = result.building_name
+                        self.measurementOutput.level_name = levelDestination
+                        
+                        self.outputResult.level_name = levelDestination
+                        
+                        self.phase = 2
+                        self.outputResult.phase = 2
+                    }
+                }
                 self.currentSpot = result.spot_id
                 self.lastOsrId = result.spot_id
                 self.travelingOsrDistance = 0
                 self.isPossibleEstBias = false
                 self.buildingLevelChangedTime = currentTime
                 self.preOutputMobileTime = currentTime
+                
+                
+//                self.currentBuilding = result.building_name
+//                self.currentLevel = levelDestination
+//                self.phase = 2
+//                self.outputResult.phase = 2
+//                self.timeUpdateOutput.level_name = levelDestination
+//                self.measurementOutput.level_name = levelDestination
+//                self.outputResult.level_name = levelDestination
+//                self.currentSpot = result.spot_id
+//                self.lastOsrId = result.spot_id
+//                self.travelingOsrDistance = 0
+//                self.isPossibleEstBias = false
+//                self.buildingLevelChangedTime = currentTime
+//                self.preOutputMobileTime = currentTime
 //                print(localTime + " , (Jupiter) Spot Determined : Same Spot // levelDestination = \(levelDestination) , dist = \(spotDistance)")
             }
         }
