@@ -173,7 +173,7 @@ class FusionViewController: UIViewController, Observer {
             isRadioMap = false
         }
         
-        fixChartHeight(flag: isRadioMap)
+        fixChartHeight(flag: isRadioMap, region: self.region)
         
         headingImage = headingImage?.resize(newWidth: 20)
         self.spotContentsView.alpha = 0.0
@@ -309,17 +309,38 @@ class FusionViewController: UIViewController, Observer {
         }
     }
     
-    
-    func fixChartHeight(flag: Bool) {
+    func fixChartHeight(flag: Bool, region: String) {
         if (flag) {
-            if ( cardData?.sector_id == 1 || cardData?.sector_id == 2 ) {
-                displayViewHeight.constant = 480
-            } else {
-                let ratio: Double = 114900 / 68700
-                displayViewHeight.constant = displayView.bounds.width * ratio
-                let window = UIApplication.shared.keyWindow
-                let bottomPadding = window?.safeAreaInsets.bottom ?? 0.0
-                defaultHeight = FusionView.bounds.height - 100 - displayViewHeight.constant - bottomPadding
+            let window = UIApplication.shared.keyWindow
+            
+            switch (region) {
+            case "Korea":
+                if ( cardData?.sector_id == 1 || cardData?.sector_id == 2 ) {
+                    displayViewHeight.constant = 480
+                } else {
+                    let ratio: Double = 114900 / 68700
+                    displayViewHeight.constant = displayView.bounds.width * ratio
+                    let bottomPadding = window?.safeAreaInsets.bottom ?? 0.0
+                    defaultHeight = FusionView.bounds.height - 100 - displayViewHeight.constant - bottomPadding
+                }
+            case "Canada":
+                if ( cardData?.sector_id == 4 ) {
+                    displayViewHeight.constant = 480
+                } else {
+                    let ratio: Double = 114900 / 68700
+                    displayViewHeight.constant = displayView.bounds.width * ratio
+                    let bottomPadding = window?.safeAreaInsets.bottom ?? 0.0
+                    defaultHeight = FusionView.bounds.height - 100 - displayViewHeight.constant - bottomPadding
+                }
+            default:
+                if ( cardData?.sector_id == 1 || cardData?.sector_id == 2 ) {
+                    displayViewHeight.constant = 480
+                } else {
+                    let ratio: Double = 114900 / 68700
+                    displayViewHeight.constant = displayView.bounds.width * ratio
+                    let bottomPadding = window?.safeAreaInsets.bottom ?? 0.0
+                    defaultHeight = FusionView.bounds.height - 100 - displayViewHeight.constant - bottomPadding
+                }
             }
         } else {
             displayViewHeight.constant = 480

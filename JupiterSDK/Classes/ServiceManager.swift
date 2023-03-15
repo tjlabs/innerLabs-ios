@@ -158,7 +158,7 @@ public class ServiceManager: Observation {
     let SENSOR_INTERVAL: TimeInterval = 1/100
     var abnormalMagCount: Int = 0
     var isMercuryMode: Bool = false
-    let ABNORMAL_MAG_THRESHOLD: Double = 1000
+    let ABNORMAL_MAG_THRESHOLD: Double = 2000
     let ABNORMAL_COUNT = 500
     var collectTimer: Timer?
     // ------------------ //

@@ -205,8 +205,7 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
             isRadioMap = false
         }
         
-        fixChartHeight(flag: isRadioMap)
-        
+        fixChartHeight(flag: isRadioMap, region: self.region)
         headingImage = headingImage?.resize(newWidth: 20)
     }
     
@@ -372,21 +371,53 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
         containerViewHeight.constant = defaultHeight
     }
     
-    func fixChartHeight(flag: Bool) {
+    func fixChartHeight(flag: Bool, region: String) {
         if (flag) {
-            if ( cardData?.sector_id == 1 || cardData?.sector_id == 2 ) {
-                displayViewHeight.constant = 480
-                containerViewHeight.constant = 150
-            } else {
-                let ratio: Double = 114900 / 68700
-                displayViewHeight.constant = displayView.bounds.width * ratio
-                
-                let window = UIApplication.shared.keyWindow
-                let bottomPadding = window?.safeAreaInsets.bottom ?? 0.0
-                
-                defaultHeight = ServiceView.bounds.height - 100 - displayViewHeight.constant - bottomPadding
-                
-                containerViewHeight.constant = defaultHeight
+            let window = UIApplication.shared.keyWindow
+            
+            switch (region) {
+            case "Korea":
+                if ( cardData?.sector_id == 1 || cardData?.sector_id == 2 ) {
+                    displayViewHeight.constant = 480
+                    containerViewHeight.constant = 150
+                } else {
+                    let ratio: Double = 114900 / 68700
+                    displayViewHeight.constant = displayView.bounds.width * ratio
+                    
+                    
+                    let bottomPadding = window?.safeAreaInsets.bottom ?? 0.0
+                    
+                    defaultHeight = ServiceView.bounds.height - 100 - displayViewHeight.constant - bottomPadding
+                    containerViewHeight.constant = defaultHeight
+                }
+            case "Canada":
+                if ( cardData?.sector_id == 4 ) {
+                    displayViewHeight.constant = 480
+                    containerViewHeight.constant = 150
+                } else {
+                    let ratio: Double = 114900 / 68700
+                    displayViewHeight.constant = displayView.bounds.width * ratio
+                    let window = UIApplication.shared.keyWindow
+                    let bottomPadding = window?.safeAreaInsets.bottom ?? 0.0
+                    
+                    defaultHeight = ServiceView.bounds.height - 100 - displayViewHeight.constant - bottomPadding
+                    containerViewHeight.constant = defaultHeight
+                }
+            default:
+                if ( cardData?.sector_id == 1 || cardData?.sector_id == 2 ) {
+                    displayViewHeight.constant = 480
+                    containerViewHeight.constant = 150
+                } else {
+                    let ratio: Double = 114900 / 68700
+                    displayViewHeight.constant = displayView.bounds.width * ratio
+                    
+                    let window = UIApplication.shared.keyWindow
+                    let bottomPadding = window?.safeAreaInsets.bottom ?? 0.0
+                    
+                    defaultHeight = ServiceView.bounds.height - 100 - displayViewHeight.constant - bottomPadding
+                    
+                    containerViewHeight.constant = defaultHeight
+                }
             }
         } else {
             displayViewHeight.constant = 480
