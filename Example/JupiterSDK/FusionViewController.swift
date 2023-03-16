@@ -425,7 +425,7 @@ class FusionViewController: UIViewController, Observer {
             if let dataArr = dataEncoded?.components(separatedBy: "\n").map({$0.components(separatedBy: ",")}) {
                 for item in dataArr {
                     let rp: [String] = item
-                    if (rp.count == 2) {
+                    if (rp.count >= 2) {
                         
                         guard let x: Double = Double(rp[0]) else { return [[Double]]() }
                         guard let y: Double = Double(rp[1].components(separatedBy: "\r")[0]) else { return [[Double]]() }
@@ -557,7 +557,7 @@ class FusionViewController: UIViewController, Observer {
                         self.scatterChart.isHidden = true
                         switch (self.region) {
                         case "Korea":
-                            self.noImageLabel.text = "해당 층 이미지가 없습니다"
+                            self.noImageLabel.text = "There is no image of floor"
                         case "Canada":
                             self.noImageLabel.text = "There is no image of floor"
                         default:

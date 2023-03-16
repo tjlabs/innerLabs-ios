@@ -60,11 +60,7 @@ class AddCardViewController: UIViewController, UITextFieldDelegate {
             
             switch (message) {
             case "Update Success":
-                if let countryCode = locale.regionCode, countryCode == "KR" {
-                    enrollMessage = "\(addedCard.sector_name) 카드가 정상적으로 추가됐습니다"
-                } else {
-                    enrollMessage = "\(addedCard.sector_name) card is enrolled"
-                }
+                enrollMessage = "\(addedCard.sector_name) card is enrolled"
                 self.responseLabel.text = enrollMessage
                 self.responseLabel.textColor = .systemBlue
                 self.responseLabel.isHidden = false
@@ -115,29 +111,17 @@ class AddCardViewController: UIViewController, UITextFieldDelegate {
                 
                 self.page = self.page + 4
             case "Update Conflict":
-                if let countryCode = locale.regionCode, countryCode == "KR" {
-                    enrollMessage = "이미 등록된 카드 입니다"
-                } else {
-                    enrollMessage = "Alreadey enrolled card"
-                }
+                enrollMessage = "Alreadey enrolled card"
                 self.responseLabel.text = enrollMessage
                 self.responseLabel.textColor = .systemRed
                 self.responseLabel.isHidden = false
             case "Update Fail":
-                if let countryCode = locale.regionCode, countryCode == "KR" {
-                    enrollMessage = "유효한 코드를 입력해주세요 !!"
-                } else {
-                    enrollMessage = "Please enter the valid code"
-                }
+                enrollMessage = "Please enter the valid code"
                 self.responseLabel.text = enrollMessage
                 self.responseLabel.textColor = .systemRed
                 self.responseLabel.isHidden = false
             default:
-                if let countryCode = locale.regionCode, countryCode == "KR" {
-                    enrollMessage = "유효한 코드를 입력해주세요 !!"
-                } else {
-                    enrollMessage = "Please enter the valid code"
-                }
+                enrollMessage = "Please enter the valid code"
                 self.responseLabel.text = enrollMessage
                 self.responseLabel.textColor = .systemRed
                 self.responseLabel.isHidden = false

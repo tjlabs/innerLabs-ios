@@ -14,8 +14,10 @@ public class ServiceManager: Observation {
                 // Map Matching
                 if (self.isMapMatching) {
                     var mapMatchingMode: String = self.runMode
-                    if (self.isMercuryMode) {
+                    if (self.isVenusMode) {
                         mapMatchingMode = "pdr"
+                    } else if (self.mode == "auto") {
+                        mapMatchingMode = "dr"
                     }
                     let correctResult = correct(building: result.building_name, level: result.level_name, x: result.x, y: result.y, heading: result.absolute_heading, tuXY: [0,0], mode: mapMatchingMode, isPast: isPast, HEADING_RANGE: self.HEADING_RANGE)
                     
@@ -38,7 +40,7 @@ public class ServiceManager: Observation {
                 result.mobile_time = currentTime
                 result.level_name = removeLevelDirectionString(levelName: result.level_name)
                 result.velocity = round(result.velocity*100)/100
-                if (self.isMercuryMode) {
+                if (self.isVenusMode) {
                     result.phase = 1
                 }
                 
@@ -157,7 +159,7 @@ public class ServiceManager: Observation {
 
     let SENSOR_INTERVAL: TimeInterval = 1/100
     var abnormalMagCount: Int = 0
-    var isMercuryMode: Bool = false
+    var isVenusMode: Bool = false
     let ABNORMAL_MAG_THRESHOLD: Double = 2000
     let ABNORMAL_COUNT = 500
     var collectTimer: Timer?
@@ -383,8 +385,6 @@ public class ServiceManager: Observation {
     }
 
     public func startService(id: String, sector_id: Int, service: String, mode: String) -> (Bool, String) {
-        NetworkCheck.shared.startMonitoring()
-        
         let localTime = getLocalTimeString()
         let log: String = localTime + " , (Jupiter) Success : Service Initalization"
         
@@ -457,12 +457,14 @@ public class ServiceManager: Observation {
             
             return (isSuccess, message)
         } else {
-//            if (!NetworkCheck.shared.isConnected) {
-//                isSuccess = false
-//                let log: String = localTime + " , (Jupiter) Error : Network is not connected"
-//                message = log
-//                return (isSuccess, message)
-//            }
+            if (!NetworkCheck.shared.isConnectedToInternet()) {
+                isSuccess = false
+                
+                let log: String = localTime + " , (Jupiter) Error : Network is not connected"
+                message = log
+                
+                return (isSuccess, message)
+            }
             
             // Login Success
             let userInfo = UserInfo(user_id: self.user_id, device_model: deviceModel, os_version: osVersion)
@@ -583,7 +585,6 @@ public class ServiceManager: Observation {
     }
     
     public func stopService() {
-        NetworkCheck.shared.stopMonitoring()
         let localTime: String = getLocalTimeString()
         
         stopTimer()
@@ -784,7 +785,7 @@ public class ServiceManager: Observation {
                 }
                 let norm = sqrt(self.magX*self.magX + self.magY*self.magY + self.magZ*self.magZ)
                 
-                if (norm > ABNORMAL_MAG_THRESHOLD) {
+                if (norm > ABNORMAL_MAG_THRESHOLD || norm == 0) {
                     self.abnormalMagCount += 1
                 } else {
                     self.abnormalMagCount = 0
@@ -792,8 +793,8 @@ public class ServiceManager: Observation {
                 
                 if (self.abnormalMagCount >= ABNORMAL_COUNT) {
                     self.abnormalMagCount = ABNORMAL_COUNT
-                    if (!self.isMercuryMode && self.runMode == "dr") {
-                        self.isMercuryMode = true
+                    if (!self.isVenusMode && self.runMode == "dr") {
+                        self.isVenusMode = true
                         self.phase = 1
                         self.isPossibleEstBias = false
                         self.rssiBias = 0
@@ -809,12 +810,11 @@ public class ServiceManager: Observation {
                         self.reporting(input: MERCURY_FLAG)
                     }
                 } else {
-                    if (self.isMercuryMode) {
-                        self.isMercuryMode = false
+                    if (self.isVenusMode) {
+                        self.isVenusMode = false
                         self.reporting(input: JUPITER_FLAG)
                     }
                 }
-//                print("Mag : \(self.magX) , \(self.magY) , \(self.magZ) , \(norm) , \(self.isMercuryMode)")
             }
         } else {
             let localTime: String = getLocalTimeString()
@@ -1151,7 +1151,7 @@ public class ServiceManager: Observation {
                 } else {
                     self.runMode = "dr"
                     self.sector_id = self.sectorIdOrigin
-                    self.kalmanR = 6
+                    self.kalmanR = 1
                 }
                 setModeParam(mode: self.runMode, phase: self.phase)
             }
@@ -1237,7 +1237,7 @@ public class ServiceManager: Observation {
             // UV가 발생하지 않음
             self.timeActiveUV += UVD_INTERVAL
             if (self.timeActiveUV >= STOP_THRESHOLD && self.isGetFirstResponse) {
-                if (self.isMercuryMode) {
+                if (self.isVenusMode) {
                     self.isStop = false
                 } else {
                     self.isStop = true
@@ -1284,7 +1284,7 @@ public class ServiceManager: Observation {
                         if (result.phase == 1) {
                             self.phase = result.phase
                         } else {
-                            if (self.isMercuryMode) {
+                            if (self.isVenusMode) {
                                 result.phase = 1
                                 result.absolute_heading = 0
                             }
@@ -1465,7 +1465,7 @@ public class ServiceManager: Observation {
                             self.outputResult = updatedResult
                         }
                         
-                        if (self.isMercuryMode) {
+                        if (self.isVenusMode) {
                             self.phase = 1
                             self.outputResult.phase = 1
                             self.outputResult.absolute_heading = 0
@@ -1762,15 +1762,11 @@ public class ServiceManager: Observation {
                     // Building Level 이 바뀐지 10초 이상 지남 -> 서버 결과를 이용해 바뀌어야 한다고 판단
                     self.currentBuilding = result.building_name
                     self.currentLevel = levelDestination
-
                     self.timeUpdateOutput.building_name = result.building_name
                     self.timeUpdateOutput.level_name = levelDestination
-
                     self.measurementOutput.building_name = result.building_name
                     self.measurementOutput.level_name = levelDestination
-                    
                     self.outputResult.level_name = levelDestination
-                    
                     self.phase = 2
                     self.outputResult.phase = 2
                 }
@@ -1805,15 +1801,11 @@ public class ServiceManager: Observation {
                         // Building Level 이 바뀐지 10초 이상 지남 -> 서버 결과를 이용해 바뀌어야 한다고 판단
                         self.currentBuilding = result.building_name
                         self.currentLevel = levelDestination
-
                         self.timeUpdateOutput.building_name = result.building_name
                         self.timeUpdateOutput.level_name = levelDestination
-
                         self.measurementOutput.building_name = result.building_name
                         self.measurementOutput.level_name = levelDestination
-                        
                         self.outputResult.level_name = levelDestination
-                        
                         self.phase = 2
                         self.outputResult.phase = 2
                     }

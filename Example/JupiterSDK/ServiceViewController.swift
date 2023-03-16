@@ -532,7 +532,7 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
             if let dataArr = dataEncoded?.components(separatedBy: "\n").map({$0.components(separatedBy: ",")}) {
                 for item in dataArr {
                     let rp: [String] = item
-                    if (rp.count == 2) {
+                    if (rp.count >= 2) {
                         
                         guard let x: Double = Double(rp[0]) else { return [[Double]]() }
                         guard let y: Double = Double(rp[1].components(separatedBy: "\r")[0]) else { return [[Double]]() }
