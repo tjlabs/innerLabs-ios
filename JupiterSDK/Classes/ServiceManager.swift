@@ -16,9 +16,10 @@ public class ServiceManager: Observation {
                     var mapMatchingMode: String = self.runMode
                     if (self.isVenusMode) {
                         mapMatchingMode = "pdr"
-                    } else if (self.mode == "auto") {
-                        mapMatchingMode = "dr"
                     }
+//                    else if (self.mode == "auto") {
+//                        mapMatchingMode = "dr"
+//                    }
                     let correctResult = correct(building: result.building_name, level: result.level_name, x: result.x, y: result.y, heading: result.absolute_heading, tuXY: [0,0], mode: mapMatchingMode, isPast: isPast, HEADING_RANGE: self.HEADING_RANGE)
                     
                     if (correctResult.isSuccess) {
@@ -188,7 +189,7 @@ public class ServiceManager: Observation {
     var nowTime: Int = 0
     var RECENT_THRESHOLD: Int = 10000 // 2200
     var INDEX_THRESHOLD: Int = 11
-    let VALID_BL_CHANGE_TIME = 5000 // 10000
+    let VALID_BL_CHANGE_TIME = 7000 // 10000
     let VALID_BL_CHANGE_TIME_SAME_SPOT = 5000
     
     let DEFAULT_SPOT_DISTANCE: Double = 80
@@ -1004,17 +1005,6 @@ public class ServiceManager: Observation {
                 updateTimer!.setEventHandler(handler: self.outputTimerUpdate)
                 updateTimer!.activate()
             }
-//            var isCancelled: Bool = false
-//            if let flag = updateTimer?.isCancelled {
-//                isCancelled = flag
-//                if (isCancelled) {
-//                    let queue = DispatchQueue(label: Bundle.main.bundleIdentifier! + ".updateTimer")
-//                    updateTimer = DispatchSource.makeTimerSource(queue: queue)
-//                    updateTimer!.schedule(deadline: .now(), repeating: UPDATE_INTERVAL)
-//                    updateTimer!.setEventHandler(handler: self.outputTimerUpdate)
-//                    updateTimer!.activate()
-//                }
-//            }
         }
     }
     
@@ -1084,7 +1074,7 @@ public class ServiceManager: Observation {
                 self.isActiveRF = false
                 
                 // Here
-                if (self.isActiveReturn) {
+                if (self.isActiveReturn && self.isGetFirstResponse) {
                     self.initVariables()
                     self.isActiveReturn = false
                     self.reporting(input: OUTDOOR_FLAG)
@@ -1389,7 +1379,6 @@ public class ServiceManager: Observation {
                                 self.reporting(input: INDOOR_FLAG)
                             }
                         }
-                        
                         displayOutput.indexRx = result.index
                         
                         var resultCorrected = self.correct(building: result.building_name, level: result.level_name, x: result.x, y: result.y, heading: result.absolute_heading, tuXY: [0,0], mode: self.runMode, isPast: false, HEADING_RANGE: self.HEADING_RANGE)
@@ -1421,9 +1410,18 @@ public class ServiceManager: Observation {
                                 self.isActiveKf = true
                             }
                             
-                            let finalResult = fromServerToResult(fromServer: result, velocity: displayOutput.velocity)
-                            self.currentBuilding = finalResult.building_name
-                            self.currentLevel = finalResult.level_name
+                            var resultCopy = result
+                            if (result.building_name != self.currentBuilding || result.level_name != self.currentLevel) {
+                                if ((result.mobile_time - self.buildingLevelChangedTime) > VALID_BL_CHANGE_TIME) {
+                                    // Building Level 이 바뀐지 10초 이상 지남 -> 서버 결과를 이용해 바뀌어야 한다고 판단
+                                    self.currentBuilding = result.building_name
+                                    self.currentLevel = result.level_name
+                                } else {
+                                    resultCopy.building_name = self.currentBuilding
+                                    resultCopy.level_name = self.currentLevel
+                                }
+                            }
+                            let finalResult = fromServerToResult(fromServer: resultCopy, velocity: displayOutput.velocity)
                             
                             self.flagPast = false
                             self.outputResult = finalResult
@@ -1750,6 +1748,7 @@ public class ServiceManager: Observation {
     }
     
     func determineSpotDetect(result: OnSpotRecognitionResult, lastSpotId: Int, levelDestination: String, currentTime: Int) {
+        let localTime = getLocalTimeString()
         var spotDistance = result.spot_distance
         if (spotDistance == 0) {
             spotDistance = DEFAULT_SPOT_DISTANCE
@@ -2378,10 +2377,10 @@ public class ServiceManager: Observation {
             
             if (phase == 4) {
                 self.UVD_INPUT_NUM = self.VALUE_INPUT_NUM
-                self.INDEX_THRESHOLD = 21
+                self.INDEX_THRESHOLD = (UVD_INPUT_NUM*2)+1
             } else {
                 self.UVD_INPUT_NUM = self.INIT_INPUT_NUM
-                self.INDEX_THRESHOLD = 11
+                self.INDEX_THRESHOLD = UVD_INPUT_NUM+1
             }
         }
     }
