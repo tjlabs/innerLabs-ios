@@ -297,7 +297,7 @@ public class ServiceManager: Observation {
     var pastMatchingResult: [Double] = [0, 0, 0, 0]
     var matchingFailCount: Int = 0
     
-    let UVD_BUFFER_SIZE = 10
+    let UVD_BUFFER_SIZE = 15
     var uvdIndexBuffer = [Int]()
     var tuResultBuffer = [[Double]]()
     var currentTuResult = FineLocationTrackingResult()
@@ -1054,7 +1054,7 @@ public class ServiceManager: Observation {
                 
                 inputReceivedForce.append(data)
                 if ((inputReceivedForce.count-1) >= RFD_INPUT_NUM) {
-                    let sufficientRfd: Bool = checkSufficientRfd(bleDict: bleAvg, CONDITION: -85, COUNT: 3)
+                    let sufficientRfd: Bool = checkSufficientRfd(bleDict: bleAvg, CONDITION: -95, COUNT: 3)
                     self.isSufficientRfd = sufficientRfd
                     
                     inputReceivedForce.remove(at: 0)
@@ -1470,7 +1470,6 @@ public class ServiceManager: Observation {
                         } else {
                             self.phase = result.phase
                         }
-                        
                         self.indexPast = result.index
                     }
                     self.preOutputMobileTime = result.mobile_time
@@ -1669,7 +1668,7 @@ public class ServiceManager: Observation {
                 let bleTrimed = bleManager.trimBleData(bleData: bleData)
                 let bleAvg = bleManager.avgBleData(bleDictionary: bleTrimed)
                 
-                let isStrong = checkSufficientRfd(bleDict: bleAvg, CONDITION: -85, COUNT: 2)
+                let isStrong = checkSufficientRfd(bleDict: bleAvg, CONDITION: -87, COUNT: 2)
                 if (isStrong) {
                     self.isActiveReturn = true
                     self.reporting(input: INDOOR_FLAG)
@@ -2372,7 +2371,7 @@ public class ServiceManager: Observation {
         } else if (mode == "dr") {
             self.kalmanR = 1
             self.INIT_INPUT_NUM = 5
-            self.VALUE_INPUT_NUM = 10
+            self.VALUE_INPUT_NUM = self.UVD_BUFFER_SIZE
             self.SQUARE_RANGE = self.SQUARE_RANGE_SMALL
             
             if (phase == 4) {
