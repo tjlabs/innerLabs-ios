@@ -57,10 +57,13 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
     }
     
     func update(result: FineLocationTrackingResult) {
-//        let localTime: String = self.getLocalTimeString()
-//        let log: String = localTime + " , (ServiceVC) Output // Building : \(result.building_name) , Level : \(result.level_name) , Mode : \(result.mode) , dt = \(result.mobile_time - self.observerTime) , time = \(result.mobile_time)"
-//        self.observerTime = result.mobile_time
+        let localTime: String = self.getLocalTimeString()
+        let dt = result.mobile_time - self.observerTime
+        let log: String = localTime + " , (ServiceVC) : dt = \(dt) // time = \(result.mobile_time) // befor = \(self.observerTime)"
 //        print(log)
+        
+        self.observerTime = result.mobile_time
+        
 //
         let building = result.building_name
         let level = result.level_name

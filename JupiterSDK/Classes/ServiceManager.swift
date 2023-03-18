@@ -27,7 +27,7 @@ public class ServiceManager: Observation {
                         result.y = correctResult.xyh[1]
                         result.absolute_heading = correctResult.xyh[2]
                     } else {
-                        if (isActiveKf) {
+                        if (self.isActiveKf) {
                             result = self.lastResult
                         } else {
                             let correctResult = correct(building: result.building_name, level: result.level_name, x: result.x, y: result.y, heading: result.absolute_heading, tuXY: [0,0], mode: "pdr", isPast: isPast, HEADING_RANGE: self.HEADING_RANGE)
@@ -142,6 +142,8 @@ public class ServiceManager: Observation {
     
     
     // ----- Timer ----- //
+    var serviceStartTime: Int = 0
+    var updateStackedTime: Int = 0
     var receivedForceTimer: DispatchSourceTimer?
     var RFD_INTERVAL: TimeInterval = 1/2 // second
 
@@ -295,9 +297,8 @@ public class ServiceManager: Observation {
     
     let HEADING_RANGE: Double = 50
     var pastMatchingResult: [Double] = [0, 0, 0, 0]
-    var matchingFailCount: Int = 0
     
-    let UVD_BUFFER_SIZE = 15
+    let UVD_BUFFER_SIZE = 10
     var uvdIndexBuffer = [Int]()
     var tuResultBuffer = [[Double]]()
     var currentTuResult = FineLocationTrackingResult()
@@ -315,6 +316,7 @@ public class ServiceManager: Observation {
     var outputResult = FineLocationTrackingResult()
     var flagPast: Bool = false
     var lastOutputTime: Int = 0
+    var pastOutputTime: Int = 0
     
     public override init() {
         let dateFormatter = DateFormatter()
@@ -563,6 +565,7 @@ public class ServiceManager: Observation {
             })
             self.loadRssiBias(sector_id: self.sector_id)
             self.isActiveReturn = true
+            self.serviceStartTime = getCurrentTimeInMilliseconds()
             
             return (isSuccess, message)
         }
@@ -1023,21 +1026,31 @@ public class ServiceManager: Observation {
     }
     
     @objc func outputTimerUpdate() {
+        let localTime = getLocalTimeString()
         if (self.isActiveReturn && self.isActiveService) {
+            self.serviceStartTime = self.serviceStartTime + Int(UPDATE_INTERVAL*1000)
             let currentTime = getCurrentTimeInMilliseconds()
-            self.tracking(input: self.outputResult, isPast: self.flagPast, currentTime: currentTime)
+            let dt = currentTime - self.lastOutputTime
+            let log: String = localTime + " , (Time Check) dt = \(dt) // time = \(currentTime) // before = \(self.lastOutputTime)"
+//            print(log)
+            
+            var resultToReturn = self.outputResult
+            resultToReturn.ble_only_position = self.isVenusMode
+
+            self.tracking(input: resultToReturn, isPast: self.flagPast, currentTime: currentTime)
             
             self.lastOutputTime = currentTime
+            self.pastOutputTime = self.serviceStartTime
         }
     }
     
     @objc func receivedForceTimerUpdate() {
         bleManager.setValidTime(mode: self.runMode)
-        
-        let currentTime = getCurrentTimeInMilliseconds() - (Int(bleManager.BLE_VALID_TIME)/2)
+        let validTime = bleManager.BLE_VALID_TIME
+        let currentTime = getCurrentTimeInMilliseconds() - (Int(validTime)/2)
         let bleData = bleManager.bleDictionary
-        let bleTrimed = bleManager.trimBleData(bleData: bleData)
-        let bleAvg = bleManager.avgBleData(bleDictionary: bleTrimed)
+        let bleTrimed = trimBleData(bleData: bleData, nowTime: getCurrentTimeInMillisecondsDouble(), validTime: validTime)
+        let bleAvg = avgBleData(bleDictionary: bleTrimed)
         
         if (!bleAvg.isEmpty) {
             self.timeActiveRF = 0
@@ -1560,7 +1573,7 @@ public class ServiceManager: Observation {
 
                                     // Measurment Update
                                     let diffIndex = abs(self.indexSend - result.index)
-                                    if (measurementUpdateFlag && (diffIndex<10)) {
+                                    if (measurementUpdateFlag && (diffIndex<UVD_BUFFER_SIZE)) {
                                         displayOutput.indexRx = result.index
 
                                         // Measurement Update 하기전에 현재 Time Update 위치를 고려
@@ -1664,9 +1677,10 @@ public class ServiceManager: Observation {
     @objc func osrTimerUpdate() {
         if (self.isGetFirstResponse) {
             if (!self.isActiveReturn) {
+                let validTime = bleManager.BLE_VALID_TIME
                 let bleData = bleManager.bleDictionary
-                let bleTrimed = bleManager.trimBleData(bleData: bleData)
-                let bleAvg = bleManager.avgBleData(bleDictionary: bleTrimed)
+                let bleTrimed = trimBleData(bleData: bleData, nowTime: getCurrentTimeInMillisecondsDouble(), validTime: validTime)
+                let bleAvg = avgBleData(bleDictionary: bleTrimed)
                 
                 let isStrong = checkSufficientRfd(bleDict: bleAvg, CONDITION: -87, COUNT: 2)
                 if (isStrong) {
@@ -1775,20 +1789,6 @@ public class ServiceManager: Observation {
             self.isPossibleEstBias = false
             self.buildingLevelChangedTime = currentTime
             self.preOutputMobileTime = currentTime
-            
-//            self.currentBuilding = result.building_name
-//            self.currentLevel = levelDestination
-//            self.phase = 2
-//            self.outputResult.phase = 2
-//            self.timeUpdateOutput.level_name = levelDestination
-//            self.measurementOutput.level_name = levelDestination
-//            self.outputResult.level_name = levelDestination
-//            self.currentSpot = result.spot_id
-//            self.lastOsrId = result.spot_id
-//            self.travelingOsrDistance = 0
-//            self.isPossibleEstBias = false
-//            self.buildingLevelChangedTime = currentTime
-//            self.preOutputMobileTime = currentTime
 //            print(localTime + " , (Jupiter) Spot Determined : Different Spot // levelDestination = \(levelDestination) , dist = \(spotDistance)")
         } else {
             // Same Spot Detected
@@ -1814,21 +1814,6 @@ public class ServiceManager: Observation {
                 self.isPossibleEstBias = false
                 self.buildingLevelChangedTime = currentTime
                 self.preOutputMobileTime = currentTime
-                
-                
-//                self.currentBuilding = result.building_name
-//                self.currentLevel = levelDestination
-//                self.phase = 2
-//                self.outputResult.phase = 2
-//                self.timeUpdateOutput.level_name = levelDestination
-//                self.measurementOutput.level_name = levelDestination
-//                self.outputResult.level_name = levelDestination
-//                self.currentSpot = result.spot_id
-//                self.lastOsrId = result.spot_id
-//                self.travelingOsrDistance = 0
-//                self.isPossibleEstBias = false
-//                self.buildingLevelChangedTime = currentTime
-//                self.preOutputMobileTime = currentTime
 //                print(localTime + " , (Jupiter) Spot Determined : Same Spot // levelDestination = \(levelDestination) , dist = \(spotDistance)")
             }
         }
@@ -2009,10 +1994,11 @@ public class ServiceManager: Observation {
     }
     
     @objc func collectTimerUpdate() {
+        let validTime = bleManager.BLE_VALID_TIME
         let currentTime = getCurrentTimeInMilliseconds()
         let bleDictionary = bleManager.bleDictionary
-        let bleTrimed = bleManager.trimBleData(bleData: bleDictionary)
-        let bleAvg = bleManager.avgBleData(bleDictionary: bleTrimed)
+        let bleTrimed = trimBleData(bleData: bleDictionary, nowTime: getCurrentTimeInMillisecondsDouble(), validTime: validTime)
+        let bleAvg = avgBleData(bleDictionary: bleTrimed)
         let bleRaw = bleManager.latestBleData(bleDictionary: bleTrimed)
         
         collectData.time = currentTime
@@ -2036,6 +2022,11 @@ public class ServiceManager: Observation {
     func getCurrentTimeInMilliseconds() -> Int
     {
         return Int(Date().timeIntervalSince1970 * 1000)
+    }
+    
+    func getCurrentTimeInMillisecondsDouble() -> Double
+    {
+        return (Date().timeIntervalSince1970 * 1000)
     }
     
     func getLocalTimeString() -> String {
@@ -2580,5 +2571,61 @@ public class ServiceManager: Observation {
         }
         
         return headingToReturn
+    }
+    
+    // ble
+    public func trimBleData(bleData: [String: [[Double]]], nowTime: Double, validTime: Double) -> [String: [[Double]]] {
+        var bleDictonary = bleData
+        let keys: [String] = Array(bleDictonary.keys.sorted())
+        for index in 0..<keys.count {
+            let bleID: String = keys[index]
+            let bleData: [[Double]] = bleDictonary[bleID]!
+            let bleCount = bleData.count
+            var newValue = [[Double]]()
+            for i in 0..<bleCount {
+                let rssi = bleData[i][0]
+                let time = bleData[i][1]
+                
+                if ((nowTime - time <= validTime) && (rssi >= -100)) {
+                    let dataToAdd: [Double] = [rssi, time]
+                    newValue.append(dataToAdd)
+                }
+            }
+            
+            if ( newValue.count == 0 ) {
+                bleDictonary.removeValue(forKey: bleID)
+            } else {
+                bleDictonary.updateValue(newValue, forKey: bleID)
+            }
+        }
+        
+        return bleDictonary
+    }
+    
+    public func avgBleData(bleDictionary: Dictionary<String, [[Double]]>) -> Dictionary<String, Double> {
+        let digit: Double = pow(10, 2)
+        var ble = [String: Double]()
+        
+        let keys: [String] = Array(bleDictionary.keys)
+        for index in 0..<keys.count {
+            let bleID: String = keys[index]
+            let bleData: [[Double]] = bleDictionary[bleID]!
+            let bleCount = bleData.count
+            
+            var rssiSum: Double = 0
+            
+            for i in 0..<bleCount {
+                let rssi = bleData[i][0]
+                rssiSum += rssi
+            }
+            let rssiFinal: Double = floor(((rssiSum/Double(bleData.count))) * digit) / digit
+            
+            if ( rssiSum == 0 ) {
+                ble.removeValue(forKey: bleID)
+            } else {
+                ble.updateValue(rssiFinal, forKey: bleID)
+            }
+        }
+        return ble
     }
 }
