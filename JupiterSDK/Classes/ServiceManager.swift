@@ -3,56 +3,10 @@ import CoreMotion
 
 public class ServiceManager: Observation {
     
-    func tracking(input: FineLocationTrackingResult, isPast: Bool, currentTime: Int) {
+    func tracking(input: FineLocationTrackingResult, isPast: Bool) {
         for observer in observers {
             var result = input
             if (result.x != 0 && result.y != 0 && result.building_name != "" && result.level_name != "") {
-                result.absolute_heading = compensateHeading(heading: result.absolute_heading, mode: self.runMode)
-                result.mode = self.runMode
-                displayOutput.mode = self.runMode
-                
-                // Map Matching
-                if (self.isMapMatching) {
-                    var mapMatchingMode: String = self.runMode
-                    if (self.isVenusMode) {
-                        mapMatchingMode = "pdr"
-                    }
-//                    else if (self.mode == "auto") {
-//                        mapMatchingMode = "dr"
-//                    }
-                    let correctResult = correct(building: result.building_name, level: result.level_name, x: result.x, y: result.y, heading: result.absolute_heading, tuXY: [0,0], mode: mapMatchingMode, isPast: isPast, HEADING_RANGE: self.HEADING_RANGE)
-                    
-                    if (correctResult.isSuccess) {
-                        result.x = correctResult.xyh[0]
-                        result.y = correctResult.xyh[1]
-                        result.absolute_heading = correctResult.xyh[2]
-                    } else {
-                        if (self.isActiveKf) {
-                            result = self.lastResult
-                        } else {
-                            let correctResult = correct(building: result.building_name, level: result.level_name, x: result.x, y: result.y, heading: result.absolute_heading, tuXY: [0,0], mode: "pdr", isPast: isPast, HEADING_RANGE: self.HEADING_RANGE)
-                            result.x = correctResult.xyh[0]
-                            result.y = correctResult.xyh[1]
-                            result.absolute_heading = correctResult.xyh[2]
-                        }
-                    }
-                }
-                
-                result.mobile_time = currentTime
-                result.level_name = removeLevelDirectionString(levelName: result.level_name)
-                result.velocity = round(result.velocity*100)/100
-                if (self.isVenusMode) {
-                    result.phase = 1
-                }
-                
-                displayOutput.heading = result.absolute_heading
-                displayOutput.building = result.building_name
-                displayOutput.level = result.level_name
-                displayOutput.scc = result.scc
-                displayOutput.phase = String(result.phase)
-
-                self.lastResult = result
-                
                 observer.update(result: result)
             }
         }
@@ -142,8 +96,6 @@ public class ServiceManager: Observation {
     
     
     // ----- Timer ----- //
-    var serviceStartTime: Int = 0
-    var updateStackedTime: Int = 0
     var receivedForceTimer: DispatchSourceTimer?
     var RFD_INTERVAL: TimeInterval = 1/2 // second
 
@@ -314,6 +266,7 @@ public class ServiceManager: Observation {
 
     // Output
     var outputResult = FineLocationTrackingResult()
+    var resultToReturn = FineLocationTrackingResult()
     var flagPast: Bool = false
     var lastOutputTime: Int = 0
     var pastOutputTime: Int = 0
@@ -565,7 +518,6 @@ public class ServiceManager: Observation {
             })
             self.loadRssiBias(sector_id: self.sector_id)
             self.isActiveReturn = true
-            self.serviceStartTime = getCurrentTimeInMilliseconds()
             
             return (isSuccess, message)
         }
@@ -619,6 +571,7 @@ public class ServiceManager: Observation {
         self.currentBuilding = ""
         self.currentLevel = "0F"
         self.outputResult = FineLocationTrackingResult()
+        self.resultToReturn = FineLocationTrackingResult()
         
         self.isGetFirstResponse = false
         
@@ -1028,20 +981,68 @@ public class ServiceManager: Observation {
     @objc func outputTimerUpdate() {
         let localTime = getLocalTimeString()
         if (self.isActiveReturn && self.isActiveService) {
-            self.serviceStartTime = self.serviceStartTime + Int(UPDATE_INTERVAL*1000)
             let currentTime = getCurrentTimeInMilliseconds()
             let dt = currentTime - self.lastOutputTime
-            let log: String = localTime + " , (Time Check) dt = \(dt) // time = \(currentTime) // before = \(self.lastOutputTime)"
+//            let log: String = localTime + " , (JupiterService) dt = \(dt) // time = \(currentTime) // before = \(self.lastOutputTime) // x = \(resultToReturn.x) // y = \(resultToReturn.y) // phase = \(resultToReturn.phase) // level = \(resultToReturn.level_name)"
 //            print(log)
             
-            var resultToReturn = self.outputResult
+            var resultToReturn = self.resultToReturn
+            resultToReturn.mobile_time = currentTime
             resultToReturn.ble_only_position = self.isVenusMode
-
-            self.tracking(input: resultToReturn, isPast: self.flagPast, currentTime: currentTime)
+            
+            self.tracking(input: resultToReturn, isPast: self.flagPast)
             
             self.lastOutputTime = currentTime
-            self.pastOutputTime = self.serviceStartTime
         }
+    }
+    
+    func makeOutputResult(input: FineLocationTrackingResult, isPast: Bool, runMode: String, isVenusMode: Bool) -> FineLocationTrackingResult {
+        var result = input
+        if (result.x != 0 && result.y != 0 && result.building_name != "" && result.level_name != "") {
+            result.absolute_heading = compensateHeading(heading: result.absolute_heading, mode: runMode)
+            result.mode = runMode
+            displayOutput.mode = runMode
+            
+            // Map Matching
+            if (self.isMapMatching) {
+                var mapMatchingMode: String = runMode
+                if (isVenusMode) {
+                    mapMatchingMode = "pdr"
+                }
+                let correctResult = pathMatching(building: result.building_name, level: result.level_name, x: result.x, y: result.y, heading: result.absolute_heading, tuXY: [0,0], mode: mapMatchingMode, isPast: isPast, HEADING_RANGE: self.HEADING_RANGE)
+                
+                if (correctResult.isSuccess) {
+                    result.x = correctResult.xyh[0]
+                    result.y = correctResult.xyh[1]
+                    result.absolute_heading = correctResult.xyh[2]
+                } else {
+                    if (self.isActiveKf) {
+                        result = self.lastResult
+                    } else {
+                        let correctResult = pathMatching(building: result.building_name, level: result.level_name, x: result.x, y: result.y, heading: result.absolute_heading, tuXY: [0,0], mode: "pdr", isPast: isPast, HEADING_RANGE: self.HEADING_RANGE)
+                        result.x = correctResult.xyh[0]
+                        result.y = correctResult.xyh[1]
+                        result.absolute_heading = correctResult.xyh[2]
+                    }
+                }
+            }
+            
+            result.level_name = removeLevelDirectionString(levelName: result.level_name)
+            result.velocity = round(result.velocity*100)/100
+            if (isVenusMode) {
+                result.phase = 1
+            }
+            
+            displayOutput.heading = result.absolute_heading
+            displayOutput.building = result.building_name
+            displayOutput.level = result.level_name
+            displayOutput.scc = result.scc
+            displayOutput.phase = String(result.phase)
+            
+            self.lastResult = result
+        }
+        
+        return result
     }
     
     @objc func receivedForceTimerUpdate() {
@@ -1187,7 +1188,7 @@ public class ServiceManager: Observation {
                 // Time Update
                 if (self.isActiveKf) {
                     if (self.timeUpdateFlag) {
-                        let tuOutput = timeUpdate(length: curUnitDRLength, diffHeading: diffHeading, mobileTime: currentTime, isNeedHeadingCorrection: isNeedHeadingCorrection)
+                        let tuOutput = timeUpdate(length: curUnitDRLength, diffHeading: diffHeading, mobileTime: currentTime, isNeedHeadingCorrection: isNeedHeadingCorrection, runMode: self.runMode)
                         var tuResult = fromServerToResult(fromServer: tuOutput, velocity: displayOutput.velocity)
                         
                         self.timeUpdateResult[0] = tuResult.x
@@ -1208,6 +1209,8 @@ public class ServiceManager: Observation {
                             tuResult.mobile_time = trackingTime
                             self.outputResult = tuResult
                             self.flagPast = false
+                            
+                            self.resultToReturn = self.makeOutputResult(input: self.outputResult, isPast: self.flagPast, runMode: self.runMode, isVenusMode: self.isVenusMode)
                         }
                     }
                 }
@@ -1311,10 +1314,14 @@ public class ServiceManager: Observation {
                                     
                                     let finalResult = fromServerToResult(fromServer: result, velocity: displayOutput.velocity)
                                     self.outputResult = finalResult
+                                    
+                                    self.resultToReturn = self.makeOutputResult(input: self.outputResult, isPast: self.flagPast, runMode: self.runMode, isVenusMode: self.isVenusMode)
                                 } else {
                                     self.outputResult.x = result.x
                                     self.outputResult.y = result.y
                                     self.outputResult.absolute_heading = result.absolute_heading
+                                    
+                                    self.resultToReturn = self.makeOutputResult(input: self.outputResult, isPast: self.flagPast, runMode: self.runMode, isVenusMode: self.isVenusMode)
                                 }
                             }
                             
@@ -1394,7 +1401,7 @@ public class ServiceManager: Observation {
                         }
                         displayOutput.indexRx = result.index
                         
-                        var resultCorrected = self.correct(building: result.building_name, level: result.level_name, x: result.x, y: result.y, heading: result.absolute_heading, tuXY: [0,0], mode: self.runMode, isPast: false, HEADING_RANGE: self.HEADING_RANGE)
+                        var resultCorrected = self.pathMatching(building: result.building_name, level: result.level_name, x: result.x, y: result.y, heading: result.absolute_heading, tuXY: [0,0], mode: self.runMode, isPast: false, HEADING_RANGE: self.HEADING_RANGE)
                         resultCorrected.xyh[2] = compensateHeading(heading: resultCorrected.xyh[2], mode: self.runMode)
                         
                         self.serverResult[0] = resultCorrected.xyh[0]
@@ -1419,7 +1426,8 @@ public class ServiceManager: Observation {
                                 self.outputResult.x = resultCorrected.xyh[0]
                                 self.outputResult.y = resultCorrected.xyh[1]
                                 self.outputResult.absolute_heading = resultCorrected.xyh[2]
-
+                                
+                                self.resultToReturn = self.makeOutputResult(input: self.outputResult, isPast: self.flagPast, runMode: self.runMode, isVenusMode: self.isVenusMode)
                                 self.isActiveKf = true
                             }
                             
@@ -1438,6 +1446,8 @@ public class ServiceManager: Observation {
                             
                             self.flagPast = false
                             self.outputResult = finalResult
+                            
+                            self.resultToReturn = self.makeOutputResult(input: self.outputResult, isPast: self.flagPast, runMode: self.runMode, isVenusMode: self.isVenusMode)
                         } else {
                             // Kalman Filter가 동작 중이면서 위치 요청시 input의 phase 가 1~3 인 경우
                             if (result.phase == 4) {
@@ -1474,12 +1484,16 @@ public class ServiceManager: Observation {
 
                             self.flagPast = false
                             self.outputResult = updatedResult
+                            
+                            self.resultToReturn = self.makeOutputResult(input: self.outputResult, isPast: self.flagPast, runMode: self.runMode, isVenusMode: self.isVenusMode)
                         }
                         
                         if (self.isVenusMode) {
                             self.phase = 1
                             self.outputResult.phase = 1
                             self.outputResult.absolute_heading = 0
+                            
+                            self.resultToReturn = self.makeOutputResult(input: self.outputResult, isPast: self.flagPast, runMode: self.runMode, isVenusMode: self.isVenusMode)
                         } else {
                             self.phase = result.phase
                         }
@@ -1547,6 +1561,9 @@ public class ServiceManager: Observation {
                         if (result.mobile_time > self.preOutputMobileTime) {
                             if (result.phase == 4) {
                                 if (self.isActiveReturn) {
+                                    self.timeUpdateOutput = result
+                                    self.measurementOutput = result
+                                    
                                     self.isActiveKf = true
                                     self.timeUpdateFlag = true
                                 }
@@ -1579,7 +1596,7 @@ public class ServiceManager: Observation {
                                         // Measurement Update 하기전에 현재 Time Update 위치를 고려
                                         var resultForMu = result
                                         resultForMu.absolute_heading = compensateHeading(heading: resultForMu.absolute_heading, mode: self.runMode)
-                                        let resultCorrected = self.correct(building: resultForMu.building_name, level: resultForMu.level_name, x: resultForMu.x, y: resultForMu.y, heading: resultForMu.absolute_heading, tuXY: [self.pastTuResult.x, self.pastTuResult.y], mode: self.runMode, isPast: false, HEADING_RANGE: self.HEADING_RANGE)
+                                        let resultCorrected = self.pathMatching(building: resultForMu.building_name, level: resultForMu.level_name, x: resultForMu.x, y: resultForMu.y, heading: resultForMu.absolute_heading, tuXY: [self.pastTuResult.x, self.pastTuResult.y], mode: self.runMode, isPast: false, HEADING_RANGE: self.HEADING_RANGE)
 
                                         self.serverResult[0] = resultCorrected.xyh[0]
                                         self.serverResult[1] = resultCorrected.xyh[1]
@@ -1650,7 +1667,7 @@ public class ServiceManager: Observation {
 
                                         self.flagPast = false
                                         self.outputResult = muResult
-
+                                        self.resultToReturn = self.makeOutputResult(input: self.outputResult, isPast: self.flagPast, runMode: self.runMode, isVenusMode: self.isVenusMode)
                                         timeUpdatePositionInit(serverOutput: muOutput)
                                     }
                                 }
@@ -1781,6 +1798,8 @@ public class ServiceManager: Observation {
                     self.outputResult.level_name = levelDestination
                     self.phase = 2
                     self.outputResult.phase = 2
+                    
+                    self.resultToReturn = self.makeOutputResult(input: self.outputResult, isPast: self.flagPast, runMode: self.runMode, isVenusMode: self.isVenusMode)
                 }
             }
             self.currentSpot = result.spot_id
@@ -1806,6 +1825,8 @@ public class ServiceManager: Observation {
                         self.outputResult.level_name = levelDestination
                         self.phase = 2
                         self.outputResult.phase = 2
+                        
+                        self.resultToReturn = self.makeOutputResult(input: self.outputResult, isPast: self.flagPast, runMode: self.runMode, isVenusMode: self.isVenusMode)
                     }
                 }
                 self.currentSpot = result.spot_id
@@ -1999,7 +2020,7 @@ public class ServiceManager: Observation {
         let bleDictionary = bleManager.bleDictionary
         let bleTrimed = trimBleData(bleData: bleDictionary, nowTime: getCurrentTimeInMillisecondsDouble(), validTime: validTime)
         let bleAvg = avgBleData(bleDictionary: bleTrimed)
-        let bleRaw = bleManager.latestBleData(bleDictionary: bleTrimed)
+        let bleRaw = latestBleData(bleDictionary: bleTrimed)
         
         collectData.time = currentTime
         collectData.bleRaw = bleRaw
@@ -2148,9 +2169,11 @@ public class ServiceManager: Observation {
         
         self.outputResult.x = result[0]
         self.outputResult.y = result[1]
+        
+        self.resultToReturn = self.makeOutputResult(input: self.outputResult, isPast: self.flagPast, runMode: self.runMode, isVenusMode: self.isVenusMode)
     }
     
-    private func correct(building: String, level: String, x: Double, y: Double, heading: Double, tuXY: [Double], mode: String, isPast: Bool, HEADING_RANGE: Double) -> (isSuccess: Bool, xyh: [Double]) {
+    private func pathMatching(building: String, level: String, x: Double, y: Double, heading: Double, tuXY: [Double], mode: String, isPast: Bool, HEADING_RANGE: Double) -> (isSuccess: Bool, xyh: [Double]) {
         var isSuccess: Bool = false
         var xyh: [Double] = [x, y, heading]
         let levelCopy: String = self.removeLevelDirectionString(levelName: level)
@@ -2386,14 +2409,14 @@ public class ServiceManager: Observation {
         }
     }
 
-    func timeUpdate(length: Double, diffHeading: Double, mobileTime: Int, isNeedHeadingCorrection: Bool) -> FineLocationTrackingFromServer {
+    func timeUpdate(length: Double, diffHeading: Double, mobileTime: Int, isNeedHeadingCorrection: Bool, runMode: String) -> FineLocationTrackingFromServer {
         updateHeading = timeUpdatePosition.heading + diffHeading
         
         var dx = length*cos(updateHeading*D2R)
         var dy = length*sin(updateHeading*D2R)
         
         if (self.phase != 4) {
-            if (self.runMode != "pdr") {
+            if (runMode != "pdr") {
                 dx = dx * TU_SCALE_VALUE
                 dy = dy * TU_SCALE_VALUE
             }
@@ -2403,10 +2426,12 @@ public class ServiceManager: Observation {
         timeUpdatePosition.y = timeUpdatePosition.y + dy
         timeUpdatePosition.heading = updateHeading
         
+        
         var timeUpdateCopy = timeUpdatePosition
-        let correctedTuCopy = self.correct(building: timeUpdateOutput.building_name, level: timeUpdateOutput.level_name, x: timeUpdateCopy.x, y: timeUpdateCopy.y, heading: timeUpdateCopy.heading, tuXY: [0,0], mode: self.runMode, isPast: false, HEADING_RANGE: self.HEADING_RANGE)
+        let correctedTuCopy = self.pathMatching(building: timeUpdateOutput.building_name, level: timeUpdateOutput.level_name, x: timeUpdateCopy.x, y: timeUpdateCopy.y, heading: timeUpdateCopy.heading, tuXY: [0,0], mode: "dr", isPast: false, HEADING_RANGE: self.HEADING_RANGE)
+        
         if (correctedTuCopy.isSuccess) {
-            if (self.runMode == "pdr") {
+            if (runMode == "pdr") {
                 timeUpdateCopy.x = correctedTuCopy.xyh[0]
                 timeUpdateCopy.y = correctedTuCopy.xyh[1]
             } else {
@@ -2418,12 +2443,10 @@ public class ServiceManager: Observation {
             }
             timeUpdatePosition = timeUpdateCopy
         } else {
-            if (self.runMode == "dr") {
-                let correctedTuCopy = self.correct(building: timeUpdateOutput.building_name, level: timeUpdateOutput.level_name, x: timeUpdateCopy.x, y: timeUpdateCopy.y, heading: timeUpdateCopy.heading, tuXY: [0,0], mode: "pdr", isPast: false, HEADING_RANGE: self.HEADING_RANGE)
-                timeUpdateCopy.x = correctedTuCopy.xyh[0]
-                timeUpdateCopy.y = correctedTuCopy.xyh[1]
-                timeUpdatePosition = timeUpdateCopy
-            }
+            let correctedTuCopy = self.pathMatching(building: timeUpdateOutput.building_name, level: timeUpdateOutput.level_name, x: timeUpdateCopy.x, y: timeUpdateCopy.y, heading: timeUpdateCopy.heading, tuXY: [0,0], mode: "pdr", isPast: false, HEADING_RANGE: self.HEADING_RANGE)
+            timeUpdateCopy.x = correctedTuCopy.xyh[0]
+            timeUpdateCopy.y = correctedTuCopy.xyh[1]
+            timeUpdatePosition = timeUpdateCopy
         }
         
         kalmanP += kalmanQ
@@ -2441,13 +2464,13 @@ public class ServiceManager: Observation {
 
     func measurementUpdate(timeUpdatePosition: KalmanOutput, serverOutputHat: FineLocationTrackingFromServer, originalResult: [Double], isNeedHeadingCorrection: Bool, mode: String) -> FineLocationTrackingFromServer {
         var serverOutputHatCopy = serverOutputHat
-        serverOutputHatCopy.absolute_heading = compensateHeading(heading: serverOutputHatCopy.absolute_heading, mode: self.runMode)
+        serverOutputHatCopy.absolute_heading = compensateHeading(heading: serverOutputHatCopy.absolute_heading, mode: mode)
         
         // ServerOutputHat을 맵매칭
-        let serverOutputHatCopyMm = self.correct(building: serverOutputHatCopy.building_name, level: serverOutputHatCopy.level_name, x: serverOutputHatCopy.x, y: serverOutputHatCopy.y, heading: serverOutputHatCopy.absolute_heading, tuXY: [0, 0], mode: self.runMode, isPast: false, HEADING_RANGE: self.HEADING_RANGE)
+        let serverOutputHatCopyMm = self.pathMatching(building: serverOutputHatCopy.building_name, level: serverOutputHatCopy.level_name, x: serverOutputHatCopy.x, y: serverOutputHatCopy.y, heading: serverOutputHatCopy.absolute_heading, tuXY: [0, 0], mode: mode, isPast: false, HEADING_RANGE: self.HEADING_RANGE)
         
         var serverOutputHatMm: FineLocationTrackingFromServer = serverOutputHatCopy
-        var timeUpdateHeadingCopy = compensateHeading(heading: timeUpdatePosition.heading, mode: self.runMode)
+        var timeUpdateHeadingCopy = compensateHeading(heading: timeUpdatePosition.heading, mode: mode)
         
         if (serverOutputHatCopyMm.isSuccess) {
             serverOutputHatMm.x = serverOutputHatCopyMm.xyh[0]
@@ -2480,7 +2503,7 @@ public class ServiceManager: Observation {
         kalmanP -= kalmanK * kalmanP
         headingKalmanP -= headingKalmanK * headingKalmanP
         
-        let measurementOutputCorrected = self.correct(building: measurementOutput.building_name, level: measurementOutput.level_name, x: measurementOutput.x, y: measurementOutput.y, heading: updateHeading, tuXY: [0,0], mode: self.runMode, isPast: false, HEADING_RANGE: self.HEADING_RANGE)
+        let measurementOutputCorrected = self.pathMatching(building: measurementOutput.building_name, level: measurementOutput.level_name, x: measurementOutput.x, y: measurementOutput.y, heading: updateHeading, tuXY: [0,0], mode: mode, isPast: false, HEADING_RANGE: self.HEADING_RANGE)
         
         if (measurementOutputCorrected.isSuccess) {
             let diffX = timeUpdatePosition.x - measurementOutputCorrected.xyh[0]
@@ -2625,6 +2648,21 @@ public class ServiceManager: Observation {
             } else {
                 ble.updateValue(rssiFinal, forKey: bleID)
             }
+        }
+        return ble
+    }
+    
+    public func latestBleData(bleDictionary: Dictionary<String, [[Double]]>) -> Dictionary<String, Double> {
+        var ble = [String: Double]()
+        
+        let keys: [String] = Array(bleDictionary.keys)
+        for index in 0..<keys.count {
+            let bleID: String = keys[index]
+            let bleData: [[Double]] = bleDictionary[bleID]!
+            
+            let rssiFinal: Double = bleData[bleData.count-1][0]
+            
+            ble.updateValue(rssiFinal, forKey: bleID)
         }
         return ble
     }

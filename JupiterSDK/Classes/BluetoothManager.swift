@@ -287,49 +287,6 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
         return bleDictonary
     }
     
-    func avgBleData(bleDictionary: Dictionary<String, [[Double]]>) -> Dictionary<String, Double> {
-        var ble = [String: Double]()
-        
-        let keys: [String] = Array(bleDictionary.keys)
-        for index in 0..<keys.count {
-            let bleID: String = keys[index]
-            let bleData: [[Double]] = bleDictionary[bleID]!
-            let bleCount = bleData.count
-            
-            var rssiSum: Double = 0
-//            print("BLE INFO :", bleCount, "/", bleID, "/", bleData)
-            
-            for i in 0..<bleCount {
-                let rssi = bleData[i][0]
-                rssiSum += rssi
-            }
-            let rssiFinal: Double = floor(((rssiSum/Double(bleData.count)) + RSSI_BIAS) * digit) / digit
-            
-            if ( rssiSum == 0 ) {
-                ble.removeValue(forKey: bleID)
-            } else {
-                ble.updateValue(rssiFinal, forKey: bleID)
-            }
-        }
-        return ble
-    }
-    
-    
-    func latestBleData(bleDictionary: Dictionary<String, [[Double]]>) -> Dictionary<String, Double> {
-        var ble = [String: Double]()
-        
-        let keys: [String] = Array(bleDictionary.keys)
-        for index in 0..<keys.count {
-            let bleID: String = keys[index]
-            let bleData: [[Double]] = bleDictionary[bleID]!
-            
-            let rssiFinal: Double = bleData[bleData.count-1][0]
-            
-            ble.updateValue(rssiFinal, forKey: bleID)
-        }
-        return ble
-    }
-    
     func isConnected() -> Bool {
         return connected
     }
