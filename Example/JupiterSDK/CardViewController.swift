@@ -278,7 +278,17 @@ class CardViewController: UIViewController, ServiceViewPageDelegate, FusionViewP
     }
     
     @IBAction func tapLoginInfoButton(_ sender: UIButton) {
-        showPopUp(title: "로그인 정보", message: self.uuid)
+        var popUpTitle: String = "로그인 정보"
+        switch (self.region) {
+        case "Korea":
+            popUpTitle = "로그인 정보"
+        case "Canada":
+            popUpTitle = "Login Information"
+        default:
+            popUpTitle = "Login Information"
+            
+        }
+        showPopUp(title: popUpTitle, message: self.uuid)
     }
     
     

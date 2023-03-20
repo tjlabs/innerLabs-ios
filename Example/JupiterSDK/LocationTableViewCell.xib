@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="20037" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21507" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="20020"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21505"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -28,14 +28,14 @@
                         <subviews>
                             <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" editable="NO" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="hYc-4R-6yq">
                                 <rect key="frame" x="5" y="5" width="278" height="190"/>
-                                <string key="text">▶ Investors &amp; Partners.
+                                <mutableString key="text">▶ Investors &amp; Partners.
 ​
 KIMGISA LAB｜KAKAO VENTURES｜LAGUNA INVESTMENT｜KAKAOMOBILITY｜DOT｜QUADREAL｜ANDORIX｜KIST｜
 ​
 ​
 ▶ Members.
 ​
-Tony｜Jeffery｜James｜Leo｜Mark｜Edan｜Holden｜Pepper｜
+Tony｜Jeffery｜James｜Leo | Henry｜Holden | Mark｜Steve | Lucy | Edan｜Seline｜Pepper｜
 ​
 ​
 ▶ Web.
@@ -48,7 +48,7 @@ https://tjlabscorp.com
 701, TIPS Town S3, Yeoksam-ro 175, Gangnam-gu, Seoul
 ​
 ​
-Until the day, TJLABS' Jupiter will be implemented on Jupiter.</string>
+Until the day, TJLABS' Jupiter will be implemented on Jupiter.</mutableString>
                                 <color key="textColor" systemColor="labelColor"/>
                                 <fontDescription key="fontDescription" name="NotoSansKR-Medium" family="Noto Sans KR" pointSize="14"/>
                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
@@ -81,7 +81,7 @@ Until the day, TJLABS' Jupiter will be implemented on Jupiter.</string>
     </objects>
     <resources>
         <systemColor name="labelColor">
-            <color white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+            <color red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemGray6Color">
             <color red="0.94901960784313721" green="0.94901960784313721" blue="0.96862745098039216" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>

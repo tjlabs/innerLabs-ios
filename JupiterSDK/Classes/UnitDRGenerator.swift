@@ -50,7 +50,7 @@ public class UnitDRGenerator: NSObject {
             pdrDistanceEstimator.isAutoMode(autoMode: false)
             pdrDistanceEstimator.normalStepCountSet(normalStepCountSet: pdrDistanceEstimator.normalStepCountSetting)
             unitDistancePdr = pdrDistanceEstimator.estimateDistanceInfo(time: currentTime, sensorData: sensorData)
-            autoMode = 0
+            self.autoMode = 0
             
             var sensorAtt = sensorData.att
             
