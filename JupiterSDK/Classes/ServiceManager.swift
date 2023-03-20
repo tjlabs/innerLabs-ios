@@ -1561,10 +1561,13 @@ public class ServiceManager: Observation {
                         if (result.mobile_time > self.preOutputMobileTime) {
                             if (result.phase == 4) {
                                 if (self.isActiveReturn) {
-                                    if (!self.isActiveKf) {
-                                        self.timeUpdateOutput = result
-                                        self.measurementOutput = result
-                                    }
+                                    self.timeUpdateOutput.building_name = self.outputResult.building_name
+                                    self.timeUpdateOutput.level_name = self.outputResult.level_name
+                                    self.timeUpdateOutput.phase = self.outputResult.phase
+                                    
+                                    self.measurementOutput.building_name = self.outputResult.building_name
+                                    self.measurementOutput.level_name = self.outputResult.level_name
+                                    self.measurementOutput.phase = self.outputResult.phase
                                     
                                     self.isActiveKf = true
                                     self.timeUpdateFlag = true
