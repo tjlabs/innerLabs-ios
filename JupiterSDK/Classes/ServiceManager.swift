@@ -1561,8 +1561,10 @@ public class ServiceManager: Observation {
                         if (result.mobile_time > self.preOutputMobileTime) {
                             if (result.phase == 4) {
                                 if (self.isActiveReturn) {
-                                    self.timeUpdateOutput = result
-                                    self.measurementOutput = result
+                                    if (!self.isActiveKf) {
+                                        self.timeUpdateOutput = result
+                                        self.measurementOutput = result
+                                    }
                                     
                                     self.isActiveKf = true
                                     self.timeUpdateFlag = true
@@ -2509,25 +2511,28 @@ public class ServiceManager: Observation {
             let diffX = timeUpdatePosition.x - measurementOutputCorrected.xyh[0]
             let diffY = timeUpdatePosition.y - measurementOutputCorrected.xyh[1]
             let diffXY = sqrt(diffX*diffX + diffY*diffY)
-            
+
             if (diffXY > 30) {
                 // Use Server Result
-                self.timeUpdatePosition.x = originalResult[0]
-                self.timeUpdatePosition.y = originalResult[1]
-                self.timeUpdatePosition.heading = originalResult[2]
-                
-                measurementOutput.x = originalResult[0]
-                measurementOutput.y = originalResult[1]
-                updateHeading = originalResult[2]
-                
+                let measurementOutputCorrected = self.pathMatching(building: measurementOutput.building_name, level: measurementOutput.level_name, x: measurementOutput.x, y: measurementOutput.y, heading: updateHeading, tuXY: [0,0], mode: "pdr", isPast: false, HEADING_RANGE: self.HEADING_RANGE)
+
+                // Use Server Result
+                self.timeUpdatePosition.x = measurementOutputCorrected.xyh[0]
+                self.timeUpdatePosition.y = measurementOutputCorrected.xyh[1]
+                self.timeUpdatePosition.heading = measurementOutputCorrected.xyh[2]
+
+                measurementOutput.x = measurementOutputCorrected.xyh[0]
+                measurementOutput.y = measurementOutputCorrected.xyh[1]
+                updateHeading = measurementOutputCorrected.xyh[2]
+
                 backKalmanParam()
             } else {
                 self.timeUpdatePosition.x = measurementOutputCorrected.xyh[0]
                 self.timeUpdatePosition.y = measurementOutputCorrected.xyh[1]
-                
+
                 measurementOutput.x = measurementOutputCorrected.xyh[0]
                 measurementOutput.y = measurementOutputCorrected.xyh[1]
-                
+
                 if (isNeedHeadingCorrection) {
                     self.timeUpdatePosition.heading = measurementOutputCorrected.xyh[2]
                     updateHeading = measurementOutputCorrected.xyh[2]
@@ -2543,15 +2548,17 @@ public class ServiceManager: Observation {
                 saveKalmanParam()
             }
         } else {
+            let measurementOutputCorrected = self.pathMatching(building: measurementOutput.building_name, level: measurementOutput.level_name, x: measurementOutput.x, y: measurementOutput.y, heading: updateHeading, tuXY: [0,0], mode: "pdr", isPast: false, HEADING_RANGE: self.HEADING_RANGE)
+
             // Use Server Result
-            self.timeUpdatePosition.x = originalResult[0]
-            self.timeUpdatePosition.y = originalResult[1]
-            self.timeUpdatePosition.heading = originalResult[2]
-            
-            measurementOutput.x = originalResult[0]
-            measurementOutput.y = originalResult[1]
-            updateHeading = originalResult[2]
-            
+            self.timeUpdatePosition.x = measurementOutputCorrected.xyh[0]
+            self.timeUpdatePosition.y = measurementOutputCorrected.xyh[1]
+            self.timeUpdatePosition.heading = measurementOutputCorrected.xyh[2]
+
+            measurementOutput.x = measurementOutputCorrected.xyh[0]
+            measurementOutput.y = measurementOutputCorrected.xyh[1]
+            updateHeading = measurementOutputCorrected.xyh[2]
+
             backKalmanParam()
         }
         
