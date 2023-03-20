@@ -281,7 +281,7 @@ class CollectViewController: UIViewController {
         let header = ["time", "accX", "accY", "accZ", "gyroX", "gyroY", "gyroZ", "magX", "magY", "magZ", "roll", "pitch", "yaw", "qx", "qy", "qz", "qw", "pressure", "ble"]
         
         let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd-HH-mm-ss"
+        dateFormatter.dateFormat = "yyyyMMddHHmmss"
         dateFormatter.locale = Locale(identifier:"ko_KR")
         let nowDate = Date()
         let convertNowStr = dateFormatter.string(from: nowDate)
@@ -349,13 +349,7 @@ class CollectViewController: UIViewController {
     
     func readCSVPath(_ filePath: String) {
         let request = NSURLRequest(url:  URL(fileURLWithPath: filePath) )
-        
-        // Read File and convert as CSV class object
         _ = CSVExport.readCSVObject(filePath);
-        
-        // Use 'SwiftLoggly' pod framework to print the Dictionary
-        //        loggly(LogType.Info, text: readCSVObj.name)
-        //        loggly(LogType.Info, text: readCSVObj.delimiter)
     }
 
     @objc func timerUpdate() {

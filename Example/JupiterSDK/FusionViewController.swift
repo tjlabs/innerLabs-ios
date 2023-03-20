@@ -854,7 +854,6 @@ class FusionViewController: UIViewController, Observer {
         serviceManager.getSpotResult(completion: { [self] statusCode, returnedString in
             if (statusCode == 200) {
                 let result: OnSpotAuthorizationResult = decodeOSA(json: returnedString)
-                
                 if (result.spots.count > 0) {
                     // Find Highest Prob
                     var bestIndex: Int = 0

@@ -5,7 +5,7 @@ public class ServiceManager: Observation {
     
     func tracking(input: FineLocationTrackingResult, isPast: Bool) {
         for observer in observers {
-            var result = input
+            let result = input
             if (result.x != 0 && result.y != 0 && result.building_name != "" && result.level_name != "") {
                 observer.update(result: result)
             }
@@ -144,7 +144,6 @@ public class ServiceManager: Observation {
     var RECENT_THRESHOLD: Int = 10000 // 2200
     var INDEX_THRESHOLD: Int = 11
     let VALID_BL_CHANGE_TIME = 7000 // 10000
-    let VALID_BL_CHANGE_TIME_SAME_SPOT = 5000
     
     let DEFAULT_SPOT_DISTANCE: Double = 80
     var lastOsrId: Int = 0
@@ -991,7 +990,6 @@ public class ServiceManager: Observation {
             resultToReturn.ble_only_position = self.isVenusMode
             
             self.tracking(input: resultToReturn, isPast: self.flagPast)
-            
             self.lastOutputTime = currentTime
         }
     }
@@ -2607,7 +2605,7 @@ public class ServiceManager: Observation {
     }
     
     // ble
-    public func trimBleData(bleData: [String: [[Double]]], nowTime: Double, validTime: Double) -> [String: [[Double]]] {
+    func trimBleData(bleData: [String: [[Double]]], nowTime: Double, validTime: Double) -> [String: [[Double]]] {
         var bleDictonary = bleData
         let keys: [String] = Array(bleDictonary.keys.sorted())
         for index in 0..<keys.count {
@@ -2635,7 +2633,7 @@ public class ServiceManager: Observation {
         return bleDictonary
     }
     
-    public func avgBleData(bleDictionary: Dictionary<String, [[Double]]>) -> Dictionary<String, Double> {
+    func avgBleData(bleDictionary: Dictionary<String, [[Double]]>) -> Dictionary<String, Double> {
         let digit: Double = pow(10, 2)
         var ble = [String: Double]()
         
@@ -2662,7 +2660,7 @@ public class ServiceManager: Observation {
         return ble
     }
     
-    public func latestBleData(bleDictionary: Dictionary<String, [[Double]]>) -> Dictionary<String, Double> {
+    func latestBleData(bleDictionary: Dictionary<String, [[Double]]>) -> Dictionary<String, Double> {
         var ble = [String: Double]()
         
         let keys: [String] = Array(bleDictionary.keys)
