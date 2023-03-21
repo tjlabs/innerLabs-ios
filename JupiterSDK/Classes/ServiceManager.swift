@@ -114,6 +114,7 @@ public class ServiceManager: Observation {
 
     let SENSOR_INTERVAL: TimeInterval = 1/100
     var abnormalMagCount: Int = 0
+    var magNormQueue = [Double]()
     var isVenusMode: Bool = false
     let ABNORMAL_MAG_THRESHOLD: Double = 2000
     let ABNORMAL_COUNT = 500
@@ -154,7 +155,7 @@ public class ServiceManager: Observation {
     var indexAfterResponse: Int = 0
     var isPossibleEstBias: Bool = false
     
-    var rssiBiasArray: [Int] = [4, 2, 6]
+    var rssiBiasArray: [Int] = [2, 0, 4]
     var rssiBias: Int = 0
     let SCC_THRESHOLD: Double = 0.75
     let SCC_MAX: Double = 0.8
@@ -739,38 +740,39 @@ public class ServiceManager: Observation {
                     sensorData.mag[2] = magZ
                     collectData.mag[2] = magZ
                 }
-                let norm = sqrt(self.magX*self.magX + self.magY*self.magY + self.magZ*self.magZ)
+//                let norm = sqrt(self.magX*self.magX + self.magY*self.magY + self.magZ*self.magZ)
+//                updateMagNormQueue(data: norm)
                 
-                if (norm > ABNORMAL_MAG_THRESHOLD || norm == 0) {
-                    self.abnormalMagCount += 1
-                } else {
-                    self.abnormalMagCount = 0
-                }
+//                if (norm > ABNORMAL_MAG_THRESHOLD || norm == 0) {
+//                    self.abnormalMagCount += 1
+//                } else {
+//                    self.abnormalMagCount = 0
+//                }
                 
-                if (self.abnormalMagCount >= ABNORMAL_COUNT) {
-                    self.abnormalMagCount = ABNORMAL_COUNT
-                    if (!self.isVenusMode && self.runMode == "dr") {
-                        self.isVenusMode = true
-                        self.phase = 1
-                        self.isPossibleEstBias = false
-                        self.rssiBias = 0
-                        
-                        self.isActiveKf = false
-                        self.timeUpdateFlag = false
-                        self.measurementUpdateFlag = false
-                        self.timeUpdatePosition = KalmanOutput()
-                        self.measurementPosition = KalmanOutput()
-
-                        self.timeUpdateOutput = FineLocationTrackingFromServer()
-                        self.measurementOutput = FineLocationTrackingFromServer()
-                        self.reporting(input: MERCURY_FLAG)
-                    }
-                } else {
-                    if (self.isVenusMode) {
-                        self.isVenusMode = false
-                        self.reporting(input: JUPITER_FLAG)
-                    }
-                }
+//                if (self.abnormalMagCount >= ABNORMAL_COUNT) {
+//                    self.abnormalMagCount = ABNORMAL_COUNT
+//                    if (!self.isVenusMode && self.runMode == "dr") {
+//                        self.isVenusMode = true
+//                        self.phase = 1
+//                        self.isPossibleEstBias = false
+//                        self.rssiBias = 0
+//
+//                        self.isActiveKf = false
+//                        self.timeUpdateFlag = false
+//                        self.measurementUpdateFlag = false
+//                        self.timeUpdatePosition = KalmanOutput()
+//                        self.measurementPosition = KalmanOutput()
+//
+//                        self.timeUpdateOutput = FineLocationTrackingFromServer()
+//                        self.measurementOutput = FineLocationTrackingFromServer()
+//                        self.reporting(input: MERCURY_FLAG)
+//                    }
+//                } else {
+//                    if (self.isVenusMode) {
+//                        self.isVenusMode = false
+//                        self.reporting(input: JUPITER_FLAG)
+//                    }
+//                }
             }
         } else {
             let localTime: String = getLocalTimeString()
@@ -899,6 +901,7 @@ public class ServiceManager: Observation {
         
         return (isSuccess, message)
     }
+    
 
     func stopBLE() {
         bleManager.stopScan()
@@ -1126,6 +1129,31 @@ public class ServiceManager: Observation {
         
         if (onStartFlag && self.service == "FLT") {
             unitDRInfo = unitDRGenerator.generateDRInfo(sensorData: sensorData)
+        }
+        
+        let checkVenusMode: Bool = unitDRInfo.isVenusMode
+        if (checkVenusMode) {
+            if (!self.isVenusMode && self.runMode == "dr") {
+                self.isVenusMode = true
+                self.phase = 1
+                self.isPossibleEstBias = false
+                self.rssiBias = 0
+
+                self.isActiveKf = false
+                self.timeUpdateFlag = false
+                self.measurementUpdateFlag = false
+                self.timeUpdatePosition = KalmanOutput()
+                self.measurementPosition = KalmanOutput()
+
+                self.timeUpdateOutput = FineLocationTrackingFromServer()
+                self.measurementOutput = FineLocationTrackingFromServer()
+                self.reporting(input: MERCURY_FLAG)
+            }
+        } else {
+            if (self.isVenusMode) {
+                self.isVenusMode = false
+                self.reporting(input: JUPITER_FLAG)
+            }
         }
         
         if (unitDRInfo.isIndexChanged) {
@@ -1559,13 +1587,17 @@ public class ServiceManager: Observation {
                         if (result.mobile_time > self.preOutputMobileTime) {
                             if (result.phase == 4) {
                                 if (self.isActiveReturn) {
-                                    self.timeUpdateOutput.building_name = self.outputResult.building_name
-                                    self.timeUpdateOutput.level_name = self.outputResult.level_name
-                                    self.timeUpdateOutput.phase = self.outputResult.phase
+                                    let outputBuilding = self.outputResult.building_name
+                                    let outputLevel = self.outputResult.level_name
+                                    let outputPhase = self.outputResult.phase
                                     
-                                    self.measurementOutput.building_name = self.outputResult.building_name
-                                    self.measurementOutput.level_name = self.outputResult.level_name
-                                    self.measurementOutput.phase = self.outputResult.phase
+                                    self.timeUpdateOutput.building_name = outputBuilding
+                                    self.timeUpdateOutput.level_name = outputLevel
+                                    self.timeUpdateOutput.phase = outputPhase
+                                    
+                                    self.measurementOutput.building_name = outputBuilding
+                                    self.measurementOutput.level_name = outputLevel
+                                    self.measurementOutput.phase = outputPhase
                                     
                                     self.isActiveKf = true
                                     self.timeUpdateFlag = true

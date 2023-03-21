@@ -34,8 +34,10 @@ public class DRDistanceEstimator: NSObject {
     public var preVelocitySmoothing: Double = 0
     
     public var velocityScaleFactor: Double = 1.0
+    public var isVenusMode: Bool = false
     
     public var distance: Double = 0
+    
     var pastTime: Int = 0
     
     var preRoll: Double = 0
@@ -128,7 +130,11 @@ public class DRDistanceEstimator: NSObject {
             magNormVar = 7
         }
         updateMagNormVarQueue(data: magNormVar)
-
+        if (magNormVar == 0) {
+            self.isVenusMode = true
+        } else {
+            self.isVenusMode = false
+        }
 
         var magVarFeature: Double = magNormVar
         if (magNormVarQueue.count == 1) {

@@ -87,9 +87,10 @@ public struct UnitDRInfo {
     public var lookingFlag: Bool = false
     public var isIndexChanged: Bool = false
     public var autoMode: Int = 0
+    public var isVenusMode: Bool = false
     
     public func toString() -> String {
-        return "{index : \(index), length : \(length), heading : \(heading), velocity : \(velocity), lookingFlag : \(lookingFlag), isStepDetected : \(isIndexChanged), autoMode : \(autoMode)}"
+        return "{index : \(index), length : \(length), heading : \(heading), velocity : \(velocity), lookingFlag : \(lookingFlag), isStepDetected : \(isIndexChanged), autoMode : \(autoMode), isVenusMode : \(isVenusMode)}"
     }
 }
 

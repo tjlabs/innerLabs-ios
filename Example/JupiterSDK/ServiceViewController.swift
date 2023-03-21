@@ -60,9 +60,9 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
         let localTime: String = self.getLocalTimeString()
         let dt = result.mobile_time - self.observerTime
         let log: String = localTime + " , (JupiterVC) : dt = \(dt) // time = \(result.mobile_time) // befor = \(self.observerTime) // x = \(result.x) // y = \(result.y) // phase = \(result.phase)"
-//        if (dt > 300) {
-//            print(log)
-//        }
+        if (dt > 300) {
+            print(log)
+        }
         
         self.observerTime = result.mobile_time
         let building = result.building_name
@@ -591,7 +591,9 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
                     let resultTime: Int = result.mobile_time
                     let resultIndex = result.index
                     let resultBuildingName: String = result.building_name
-                    let resultLevelName: String = result.level_name
+                    let resultLevelNameAll: String = result.level_name
+                    let resultLevelName: String = removeLevelDirectionString(levelName: resultLevelNameAll)
+                    
                     let resultCoordX = pathMatchingResult.xyh[0]
                     let resultCoordY = pathMatchingResult.xyh[1]
                     let resultHeading = pathMatchingResult.xyh[2]
@@ -687,7 +689,6 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
                     self.imageLevel.isHidden = false
                     self.noImageLabel.isHidden = true
                     
-//                    self.imageLevel.image = UIImage(named: "eMagic")
                     self.imageLevel.image = data
                 } else {
                     // 빌딩 -> 층 이미지가 없는 경우
@@ -1097,6 +1098,14 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
     func getCurrentTimeInMilliseconds() -> Double
     {
         return Double(Date().timeIntervalSince1970 * 1000)
+    }
+    
+    func removeLevelDirectionString(levelName: String) -> String {
+        var levelToReturn: String = levelName
+        if (levelToReturn.contains("_D")) {
+            levelToReturn = levelName.replacingOccurrences(of: "_D", with: "")
+        }
+        return levelToReturn
     }
     
     func hideDropDown(flag: Bool) {
