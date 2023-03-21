@@ -75,23 +75,21 @@ public class UnitDRGenerator: NSObject {
             
             let heading = HF.radian2degree(radian: curAttitudePdr.Yaw)
             
-            return UnitDRInfo(index: unitDistancePdr.index, length: unitDistancePdr.length, heading: heading, velocity: unitDistancePdr.velocity, lookingFlag: unitStatus, isIndexChanged: unitDistancePdr.isIndexChanged, autoMode: 0, isVenusMode: false)
+            return UnitDRInfo(index: unitDistancePdr.index, length: unitDistancePdr.length, heading: heading, velocity: unitDistancePdr.velocity, lookingFlag: unitStatus, isIndexChanged: unitDistancePdr.isIndexChanged, autoMode: 0)
         case MODE_DR:
             unitDistanceDr = drDistanceEstimator.estimateDistanceInfo(time: currentTime, sensorData: sensorData)
             self.autoMode = 1
             curAttitudeDr = unitAttitudeEstimator.estimateAtt(time: currentTime, acc: sensorData.acc, gyro: sensorData.gyro, rotMatrix: sensorData.rotationMatrix)
-            let isVenusMode: Bool = drDistanceEstimator.isVenusMode
             
             let heading = HF.radian2degree(radian: curAttitudeDr.Yaw)
             
             let unitStatus = unitStatusEstimator.estimateStatus(Attitude: curAttitudeDr, isIndexChanged: unitDistanceDr.isIndexChanged, unitMode: unitMode)
-            return UnitDRInfo(index: unitDistanceDr.index, length: unitDistanceDr.length, heading: heading, velocity: unitDistanceDr.velocity, lookingFlag: unitStatus, isIndexChanged: unitDistanceDr.isIndexChanged, autoMode: 0, isVenusMode: isVenusMode)
+            return UnitDRInfo(index: unitDistanceDr.index, length: unitDistanceDr.length, heading: heading, velocity: unitDistanceDr.velocity, lookingFlag: unitStatus, isIndexChanged: unitDistanceDr.isIndexChanged, autoMode: 0)
         case MODE_AUTO:
             pdrDistanceEstimator.isAutoMode(autoMode: true)
             pdrDistanceEstimator.normalStepCountSet(normalStepCountSet: MODE_AUTO_NORMAL_STEP_COUNT_SET)
             unitDistancePdr = pdrDistanceEstimator.estimateDistanceInfo(time: currentTime, sensorData: sensorData)
             unitDistanceDr = drDistanceEstimator.estimateDistanceInfo(time: currentTime, sensorData: sensorData)
-            let isVenusMode: Bool = drDistanceEstimator.isVenusMode
             
             if (pdrDistanceEstimator.normalStepCountFlag) {
                 if (unitDistancePdr.isIndexChanged) {
@@ -136,21 +134,20 @@ public class UnitDRGenerator: NSObject {
             let unitStatusDr = unitStatusEstimator.estimateStatus(Attitude: curAttitudeDr, isIndexChanged: unitDistanceDr.isIndexChanged, unitMode: MODE_DR)
             
             if (self.autoMode == 0) {
-                return UnitDRInfo(index: unitIndexAuto, length: unitDistanceAuto.length, heading: headingPdr, velocity: unitDistanceAuto.velocity, lookingFlag: unitStatusPdr, isIndexChanged: unitDistanceAuto.isIndexChanged, autoMode: self.autoMode, isVenusMode: false)
+                return UnitDRInfo(index: unitIndexAuto, length: unitDistanceAuto.length, heading: headingPdr, velocity: unitDistanceAuto.velocity, lookingFlag: unitStatusPdr, isIndexChanged: unitDistanceAuto.isIndexChanged, autoMode: self.autoMode)
             } else {
-                return UnitDRInfo(index: unitIndexAuto, length: unitDistanceAuto.length, heading: headingDr, velocity: unitDistanceAuto.velocity, lookingFlag: unitStatusDr, isIndexChanged: unitDistanceAuto.isIndexChanged, autoMode: self.autoMode, isVenusMode: isVenusMode)
+                return UnitDRInfo(index: unitIndexAuto, length: unitDistanceAuto.length, heading: headingDr, velocity: unitDistanceAuto.velocity, lookingFlag: unitStatusDr, isIndexChanged: unitDistanceAuto.isIndexChanged, autoMode: self.autoMode)
             }
         default:
             // (Default : DR Mode)
             unitDistanceDr = drDistanceEstimator.estimateDistanceInfo(time: currentTime, sensorData: sensorData)
             self.autoMode = 1
             curAttitudeDr = unitAttitudeEstimator.estimateAtt(time: currentTime, acc: sensorData.acc, gyro: sensorData.gyro, rotMatrix: sensorData.rotationMatrix)
-            let isVenusMode: Bool = drDistanceEstimator.isVenusMode
             
             let heading = HF.radian2degree(radian: curAttitudeDr.Yaw)
             
             let unitStatus = unitStatusEstimator.estimateStatus(Attitude: curAttitudeDr, isIndexChanged: unitDistanceDr.isIndexChanged, unitMode: unitMode)
-            return UnitDRInfo(index: unitDistanceDr.index, length: unitDistanceDr.length, heading: heading, velocity: unitDistanceDr.velocity, lookingFlag: unitStatus, isIndexChanged: unitDistanceDr.isIndexChanged, autoMode: 0, isVenusMode: isVenusMode)
+            return UnitDRInfo(index: unitDistanceDr.index, length: unitDistanceDr.length, heading: heading, velocity: unitDistanceDr.velocity, lookingFlag: unitStatus, isIndexChanged: unitDistanceDr.isIndexChanged, autoMode: 0)
         }
     }
     

@@ -19,7 +19,7 @@ public class ServiceManager: Observation {
     }
     
     // 0 : Release  //  1 : Test
-    var serverType: Int = 0
+    var serverType: Int = 1
     // 0 : Android  //  1 : iOS
     var osType: Int = 1
     var region: String = "Korea"
@@ -130,6 +130,7 @@ public class ServiceManager: Observation {
     
     
     // ----- Fine Location Tracking ----- //
+    var bleData: Dictionary<String, [[Double]]>?
     var unitDRInfo = UnitDRInfo()
     var unitDRGenerator = UnitDRGenerator()
     
@@ -157,6 +158,10 @@ public class ServiceManager: Observation {
     
     var rssiBiasArray: [Int] = [2, 0, 4]
     var rssiBias: Int = 0
+    var scCompensationArray: [Double] = [0.8, 1.0, 1.2]
+    var scCompensation: Double = 1.0
+    var scCompensationBadCount: Int = 0
+    
     let SCC_THRESHOLD: Double = 0.75
     let SCC_MAX: Double = 0.8
     let BIAS_RANGE_MAX: Int = 10
@@ -164,6 +169,10 @@ public class ServiceManager: Observation {
     var sccGoodBiasArray = [Int]()
     var biasRequestTime: Int = 0
     var isBiasRequested: Bool = false
+    
+    var scRequestTime: Int = 0
+    var isScRequested: Bool = false
+    
     let MINIMUN_INDEX_FOR_BIAS: Int = 30
     let GOOD_BIAS_ARRAY_SIZE: Int = 15
     // --------------------------------- //
@@ -740,39 +749,37 @@ public class ServiceManager: Observation {
                     sensorData.mag[2] = magZ
                     collectData.mag[2] = magZ
                 }
-//                let norm = sqrt(self.magX*self.magX + self.magY*self.magY + self.magZ*self.magZ)
-//                updateMagNormQueue(data: norm)
+                let norm = sqrt(self.magX*self.magX + self.magY*self.magY + self.magZ*self.magZ)
+                if (norm > ABNORMAL_MAG_THRESHOLD || norm == 0) {
+                    self.abnormalMagCount += 1
+                } else {
+                    self.abnormalMagCount = 0
+                }
                 
-//                if (norm > ABNORMAL_MAG_THRESHOLD || norm == 0) {
-//                    self.abnormalMagCount += 1
-//                } else {
-//                    self.abnormalMagCount = 0
-//                }
-                
-//                if (self.abnormalMagCount >= ABNORMAL_COUNT) {
-//                    self.abnormalMagCount = ABNORMAL_COUNT
-//                    if (!self.isVenusMode && self.runMode == "dr") {
-//                        self.isVenusMode = true
-//                        self.phase = 1
-//                        self.isPossibleEstBias = false
-//                        self.rssiBias = 0
-//
-//                        self.isActiveKf = false
-//                        self.timeUpdateFlag = false
-//                        self.measurementUpdateFlag = false
-//                        self.timeUpdatePosition = KalmanOutput()
-//                        self.measurementPosition = KalmanOutput()
-//
-//                        self.timeUpdateOutput = FineLocationTrackingFromServer()
-//                        self.measurementOutput = FineLocationTrackingFromServer()
-//                        self.reporting(input: MERCURY_FLAG)
-//                    }
-//                } else {
-//                    if (self.isVenusMode) {
-//                        self.isVenusMode = false
-//                        self.reporting(input: JUPITER_FLAG)
-//                    }
-//                }
+                if (self.abnormalMagCount >= ABNORMAL_COUNT) {
+                    self.abnormalMagCount = ABNORMAL_COUNT
+                    if (!self.isVenusMode && self.runMode == "dr") {
+                        self.isVenusMode = true
+                        self.phase = 1
+                        self.isPossibleEstBias = false
+                        self.rssiBias = 0
+
+                        self.isActiveKf = false
+                        self.timeUpdateFlag = false
+                        self.measurementUpdateFlag = false
+                        self.timeUpdatePosition = KalmanOutput()
+                        self.measurementPosition = KalmanOutput()
+
+                        self.timeUpdateOutput = FineLocationTrackingFromServer()
+                        self.measurementOutput = FineLocationTrackingFromServer()
+                        self.reporting(input: MERCURY_FLAG)
+                    }
+                } else {
+                    if (self.isVenusMode) {
+                        self.isVenusMode = false
+                        self.reporting(input: JUPITER_FLAG)
+                    }
+                }
             }
         } else {
             let localTime: String = getLocalTimeString()
@@ -1047,62 +1054,68 @@ public class ServiceManager: Observation {
     }
     
     @objc func receivedForceTimerUpdate() {
+        let localTime: String = getLocalTimeString()
         bleManager.setValidTime(mode: self.runMode)
         let validTime = bleManager.BLE_VALID_TIME
         let currentTime = getCurrentTimeInMilliseconds() - (Int(validTime)/2)
-        let bleData = bleManager.bleDictionary
-        let bleTrimed = trimBleData(bleData: bleData, nowTime: getCurrentTimeInMillisecondsDouble(), validTime: validTime)
-        let bleAvg = avgBleData(bleDictionary: bleTrimed)
-        
-        if (!bleAvg.isEmpty) {
-            self.timeActiveRF = 0
-            self.timeSleepRF = 0
-            self.timeEmptyRF = 0
+        var bleDictionary: Dictionary<String, [[Double]]>? = bleManager.bleDictionary
+        if let bleData = bleDictionary {
+            let bleTrimed = trimBleData(bleData: bleData, nowTime: getCurrentTimeInMillisecondsDouble(), validTime: validTime)
+            let bleAvg = avgBleData(bleDictionary: bleTrimed)
             
-            self.isActiveRF = true
-            self.isEmptyRF = false
-            self.isActiveService = true
-            
-            self.wakeUpFromSleepMode()
-            if (self.isActiveService) {
-                let data = ReceivedForce(user_id: self.user_id, mobile_time: currentTime, ble: bleAvg, pressure: self.pressure)
+            if (!bleAvg.isEmpty) {
+                self.timeActiveRF = 0
+                self.timeSleepRF = 0
+                self.timeEmptyRF = 0
                 
-                inputReceivedForce.append(data)
-                if ((inputReceivedForce.count-1) >= RFD_INPUT_NUM) {
-                    let sufficientRfd: Bool = checkSufficientRfd(bleDict: bleAvg, CONDITION: -95, COUNT: 3)
-                    self.isSufficientRfd = sufficientRfd
+                self.isActiveRF = true
+                self.isEmptyRF = false
+                self.isActiveService = true
+                
+                self.wakeUpFromSleepMode()
+                if (self.isActiveService) {
+                    let data = ReceivedForce(user_id: self.user_id, mobile_time: currentTime, ble: bleAvg, pressure: self.pressure)
                     
-                    inputReceivedForce.remove(at: 0)
-                    NetworkManager.shared.putReceivedForce(url: RF_URL, input: inputReceivedForce, completion: { [self] statusCode, returnedStrig in
-                        if (statusCode != 200) {
-                            let localTime = getLocalTimeString()
-                            let log: String = localTime + " , (Jupiter) Error : Fail to send bluetooth data"
-                            print(log)
-                        }
-                    })
-                    inputReceivedForce = [ReceivedForce(user_id: "", mobile_time: 0, ble: [:], pressure: 0)]
+                    inputReceivedForce.append(data)
+                    if ((inputReceivedForce.count-1) >= RFD_INPUT_NUM) {
+                        let sufficientRfd: Bool = checkSufficientRfd(bleDict: bleAvg, CONDITION: -95, COUNT: 3)
+                        self.isSufficientRfd = sufficientRfd
+                        
+                        inputReceivedForce.remove(at: 0)
+                        NetworkManager.shared.putReceivedForce(url: RF_URL, input: inputReceivedForce, completion: { [self] statusCode, returnedStrig in
+                            if (statusCode != 200) {
+                                let localTime = getLocalTimeString()
+                                let log: String = localTime + " , (Jupiter) Error : Fail to send bluetooth data"
+                                print(log)
+                            }
+                        })
+                        inputReceivedForce = [ReceivedForce(user_id: "", mobile_time: 0, ble: [:], pressure: 0)]
+                    }
+                }
+            } else {
+                self.timeActiveRF += RFD_INTERVAL
+                if (self.timeActiveRF >= SLEEP_THRESHOLD_RF) {
+                    self.isActiveRF = false
+                    
+                    // Here
+                    if (self.isActiveReturn && self.isGetFirstResponse) {
+                        self.initVariables()
+                        self.isActiveReturn = false
+                        self.reporting(input: OUTDOOR_FLAG)
+                    }
+                }
+                
+                self.timeSleepRF += RFD_INTERVAL
+                if (self.timeSleepRF >= SLEEP_THRESHOLD) {
+                    self.isActiveService = false
+                    self.timeSleepRF = 0
+                    
+                    self.enterSleepMode()
                 }
             }
         } else {
-            self.timeActiveRF += RFD_INTERVAL
-            if (self.timeActiveRF >= SLEEP_THRESHOLD_RF) {
-                self.isActiveRF = false
-                
-                // Here
-                if (self.isActiveReturn && self.isGetFirstResponse) {
-                    self.initVariables()
-                    self.isActiveReturn = false
-                    self.reporting(input: OUTDOOR_FLAG)
-                }
-            }
-            
-            self.timeSleepRF += RFD_INTERVAL
-            if (self.timeSleepRF >= SLEEP_THRESHOLD) {
-                self.isActiveService = false
-                self.timeSleepRF = 0
-                
-                self.enterSleepMode()
-            }
+            let log: String = localTime + " , (Jupiter) Warnings : Fail to get recent ble"
+            print(log)
         }
     }
     
@@ -1129,31 +1142,6 @@ public class ServiceManager: Observation {
         
         if (onStartFlag && self.service == "FLT") {
             unitDRInfo = unitDRGenerator.generateDRInfo(sensorData: sensorData)
-        }
-        
-        let checkVenusMode: Bool = unitDRInfo.isVenusMode
-        if (checkVenusMode) {
-            if (!self.isVenusMode && self.runMode == "dr") {
-                self.isVenusMode = true
-                self.phase = 1
-                self.isPossibleEstBias = false
-                self.rssiBias = 0
-
-                self.isActiveKf = false
-                self.timeUpdateFlag = false
-                self.measurementUpdateFlag = false
-                self.timeUpdatePosition = KalmanOutput()
-                self.measurementPosition = KalmanOutput()
-
-                self.timeUpdateOutput = FineLocationTrackingFromServer()
-                self.measurementOutput = FineLocationTrackingFromServer()
-                self.reporting(input: MERCURY_FLAG)
-            }
-        } else {
-            if (self.isVenusMode) {
-                self.isVenusMode = false
-                self.reporting(input: JUPITER_FLAG)
-            }
         }
         
         if (unitDRInfo.isIndexChanged) {
@@ -1307,7 +1295,7 @@ public class ServiceManager: Observation {
     }
     
     private func processPhase2(currentTime: Int, localTime: String) {
-        let input = FineLocationTracking(user_id: self.user_id, mobile_time: currentTime, sector_id: self.sector_id, building_name: self.currentBuilding, level_name: self.currentLevel, spot_id: self.currentSpot, phase: self.phase, rss_compensation_list: [self.rssiBias])
+        let input = FineLocationTracking(user_id: self.user_id, mobile_time: currentTime, sector_id: self.sector_id, building_name: self.currentBuilding, level_name: self.currentLevel, spot_id: self.currentSpot, phase: self.phase, rss_compensation_list: [self.rssiBias], sc_compensation_list: [1.0])
         NetworkManager.shared.postFLT(url: FLT_URL, input: input, completion: { [self] statusCode, returnedString in
             if (statusCode == 200) {
                 var result = jsonToResult(json: returnedString)
@@ -1387,7 +1375,7 @@ public class ServiceManager: Observation {
             }
         }
         
-        let input = FineLocationTracking(user_id: self.user_id, mobile_time: currentTime, sector_id: self.sector_id, building_name: self.currentBuilding, level_name: self.currentLevel, spot_id: self.currentSpot, phase: self.phase, rss_compensation_list: requestBiasArray)
+        let input = FineLocationTracking(user_id: self.user_id, mobile_time: currentTime, sector_id: self.sector_id, building_name: self.currentBuilding, level_name: self.currentLevel, spot_id: self.currentSpot, phase: self.phase, rss_compensation_list: requestBiasArray, sc_compensation_list: [1.0])
         NetworkManager.shared.postFLT(url: FLT_URL, input: input, completion: { [self] statusCode, returnedString in
             if (statusCode == 200) {
                 let result = jsonToResult(json: returnedString)
@@ -1539,6 +1527,8 @@ public class ServiceManager: Observation {
     private func processPhase4(currentTime: Int, localTime: String) {
         self.nowTime = currentTime
         var requestBiasArray: [Int] = [self.rssiBias]
+        var requestScArray: [Double] = [self.scCompensation]
+        
         if (self.isPossibleEstBias) {
             if (self.isBiasRequested) {
                 requestBiasArray = [self.rssiBias]
@@ -1552,11 +1542,24 @@ public class ServiceManager: Observation {
                 }
             }
         }
-
-        let input = FineLocationTracking(user_id: self.user_id, mobile_time: currentTime, sector_id: self.sector_id, building_name: self.currentBuilding, level_name: self.currentLevel, spot_id: self.currentSpot, phase: self.phase, rss_compensation_list: requestBiasArray)
+        
+        // 사이즈 검사
+        // 3개 -> scCompensation 불가능 -> 여기는 무조건 1개 보냄
+        if (requestBiasArray.count == 1) {
+            // 1개 -> scCoompenstaion 가능 -> 여기서 판단해서 3개보낼지 하나보낼지
+            if (self.isScRequested) {
+                requestScArray = [self.scCompensation]
+            } else {
+                requestScArray = self.scCompensationArray
+                self.scRequestTime = currentTime
+                self.isScRequested = true
+            }
+        }
+        let input = FineLocationTracking(user_id: self.user_id, mobile_time: currentTime, sector_id: self.sector_id, building_name: self.currentBuilding, level_name: self.currentLevel, spot_id: self.currentSpot, phase: self.phase, rss_compensation_list: requestBiasArray, sc_compensation_list: requestScArray)
         NetworkManager.shared.postFLT(url: FLT_URL, input: input, completion: { [self] statusCode, returnedString in
             if (statusCode == 200) {
                 let result = jsonToResult(json: returnedString)
+                // Bias Compensation
                 if (self.isBiasRequested) {
                     let biasCheckTime = abs(result.mobile_time - self.biasRequestTime)
                     if (biasCheckTime < 100) {
@@ -1579,6 +1582,30 @@ public class ServiceManager: Observation {
                         displayOutput.bias = self.rssiBias
                     } else if (biasCheckTime > 3000) {
                         self.isBiasRequested = false
+                    }
+                }
+                
+                // Sc Compensation
+                if (self.isScRequested) {
+                    let compensationCheckTime = abs(result.mobile_time - self.scRequestTime)
+                    if (compensationCheckTime < 100) {
+                        if (result.scc < 0.55) {
+                            self.scCompensationBadCount += 1
+                        } else {
+                            if (result.scc > 0.7) {
+                                self.scCompensation = result.sc_compensation
+                            }
+                            self.scCompensationBadCount = 0
+                        }
+
+                        if (self.scCompensationBadCount > 1) {
+                            self.scCompensationBadCount = 0
+                            let resultEstScCompensation = estimateScCompensation(sccResult: result.scc, scResult: result.sc_compensation, scArray: self.scCompensationArray)
+                            self.scCompensationArray = resultEstScCompensation
+                            self.isScRequested = false
+                        }
+                    } else if (compensationCheckTime > 3000) {
+                        self.isScRequested = false
                     }
                 }
 
@@ -1728,16 +1755,22 @@ public class ServiceManager: Observation {
     
     @objc func osrTimerUpdate() {
         if (self.isGetFirstResponse) {
+            let localTime: String = getLocalTimeString()
             if (!self.isActiveReturn) {
                 let validTime = bleManager.BLE_VALID_TIME
-                let bleData = bleManager.bleDictionary
-                let bleTrimed = trimBleData(bleData: bleData, nowTime: getCurrentTimeInMillisecondsDouble(), validTime: validTime)
-                let bleAvg = avgBleData(bleDictionary: bleTrimed)
-                
-                let isStrong = checkSufficientRfd(bleDict: bleAvg, CONDITION: -87, COUNT: 2)
-                if (isStrong) {
-                    self.isActiveReturn = true
-                    self.reporting(input: INDOOR_FLAG)
+                var bleDictionary: Dictionary<String, [[Double]]>? = bleManager.bleDictionary
+                if let bleData = bleDictionary {
+                    let bleTrimed = trimBleData(bleData: bleData, nowTime: getCurrentTimeInMillisecondsDouble(), validTime: validTime)
+                    let bleAvg = avgBleData(bleDictionary: bleTrimed)
+                    
+                    let isStrong = checkSufficientRfd(bleDict: bleAvg, CONDITION: -87, COUNT: 2)
+                    if (isStrong) {
+                        self.reporting(input: INDOOR_FLAG)
+                        self.isActiveReturn = true
+                    }
+                } else {
+                    let log: String = localTime + " , (Jupiter) Warnings : Fail to get recent ble"
+                    print(log)
                 }
             }
             
@@ -1975,7 +2008,6 @@ public class ServiceManager: Observation {
         }
     }
     
-    
     func estimateRssiBias(sccResult: Double, biasResult: Int, biasArray: [Int]) -> (Bool, [Int]) {
         var isSccHigh: Bool = false
         var newBiasArray: [Int] = biasArray
@@ -2022,6 +2054,12 @@ public class ServiceManager: Observation {
         return (isSccHigh, newBiasArray)
     }
     
+    func estimateScCompensation(sccResult: Double, scResult: Double, scArray: [Double]) -> [Double] {
+        var newBiasArray: [Double] = scArray
+        
+        return newBiasArray
+    }
+    
     func averageBiasArray(biasArray: [Int]) -> Int {
         var result: Int = 0
         let array: [Double] = convertToDoubleArray(intArray: biasArray)
@@ -2050,16 +2088,22 @@ public class ServiceManager: Observation {
     }
     
     @objc func collectTimerUpdate() {
+        let localTime = getLocalTimeString()
         let validTime = bleManager.BLE_VALID_TIME
         let currentTime = getCurrentTimeInMilliseconds()
-        let bleDictionary = bleManager.bleDictionary
-        let bleTrimed = trimBleData(bleData: bleDictionary, nowTime: getCurrentTimeInMillisecondsDouble(), validTime: validTime)
-        let bleAvg = avgBleData(bleDictionary: bleTrimed)
-        let bleRaw = latestBleData(bleDictionary: bleTrimed)
-        
-        collectData.time = currentTime
-        collectData.bleRaw = bleRaw
-        collectData.bleAvg = bleAvg
+        var bleDictionary: Dictionary<String, [[Double]]>? = bleManager.bleDictionary
+        if let bleData = bleDictionary {
+            let bleTrimed = trimBleData(bleData: bleData, nowTime: getCurrentTimeInMillisecondsDouble(), validTime: validTime)
+            let bleAvg = avgBleData(bleDictionary: bleTrimed)
+            let bleRaw = latestBleData(bleDictionary: bleTrimed)
+            
+            collectData.time = currentTime
+            collectData.bleRaw = bleRaw
+            collectData.bleAvg = bleAvg
+        } else {
+            let log: String = localTime + " , (Jupiter) Warnings : Fail to get recent ble"
+            print(log)
+        }
         
         if (onStartFlag) {
             unitDRInfo = unitDRGenerator.generateDRInfo(sensorData: sensorData)
@@ -2637,17 +2681,42 @@ public class ServiceManager: Observation {
     }
     
     // ble
-    func trimBleData(bleData: [String: [[Double]]], nowTime: Double, validTime: Double) -> [String: [[Double]]] {
-        var bleDictonary = bleData
-        let keys: [String] = Array(bleDictonary.keys.sorted())
-        for index in 0..<keys.count {
-            let bleID: String = keys[index]
-            let bleData: [[Double]] = bleDictonary[bleID]!
-            let bleCount = bleData.count
+//    func trimBleData(bleData: [String: [[Double]]], nowTime: Double, validTime: Double) -> [String: [[Double]]] {
+//        var bleDictonary = bleData
+//        let keys: [String] = Array(bleDictonary.keys.sorted())
+//        for index in 0..<keys.count {
+//            let bleID: String = keys[index]
+//            let bleData: [[Double]] = bleDictonary[bleID]!
+//            let bleCount = bleData.count
+//            var newValue = [[Double]]()
+//            for i in 0..<bleCount {
+//                let rssi = bleData[i][0]
+//                let time = bleData[i][1]
+//
+//                if ((nowTime - time <= validTime) && (rssi >= -100)) {
+//                    let dataToAdd: [Double] = [rssi, time]
+//                    newValue.append(dataToAdd)
+//                }
+//            }
+//
+//            if ( newValue.count == 0 ) {
+//                bleDictonary.removeValue(forKey: bleID)
+//            } else {
+//                bleDictonary.updateValue(newValue, forKey: bleID)
+//            }
+//        }
+//
+//        return bleDictonary
+//    }
+    
+    func trimBleData(bleData: Dictionary<String, [[Double]]>, nowTime: Double, validTime: Double) -> Dictionary<String, [[Double]]> {
+        var trimmedData = [String: [[Double]]]()
+        
+        for (bleID, bleData) in bleData {
             var newValue = [[Double]]()
-            for i in 0..<bleCount {
-                let rssi = bleData[i][0]
-                let time = bleData[i][1]
+            for data in bleData {
+                let rssi = data[0]
+                let time = data[1]
                 
                 if ((nowTime - time <= validTime) && (rssi >= -100)) {
                     let dataToAdd: [Double] = [rssi, time]
@@ -2655,14 +2724,12 @@ public class ServiceManager: Observation {
                 }
             }
             
-            if ( newValue.count == 0 ) {
-                bleDictonary.removeValue(forKey: bleID)
-            } else {
-                bleDictonary.updateValue(newValue, forKey: bleID)
+            if (newValue.count > 0) {
+                trimmedData[bleID] = newValue
             }
         }
         
-        return bleDictonary
+        return trimmedData
     }
     
     func avgBleData(bleDictionary: Dictionary<String, [[Double]]>) -> Dictionary<String, Double> {
@@ -2690,6 +2757,15 @@ public class ServiceManager: Observation {
             }
         }
         return ble
+    }
+    
+    func isAddressValid<T>(_ address: UnsafePointer<T>) -> Bool {
+        do {
+            let value = address.pointee
+            return true
+        } catch {
+            return false
+        }
     }
     
     func latestBleData(bleDictionary: Dictionary<String, [[Double]]>) -> Dictionary<String, Double> {
