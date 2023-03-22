@@ -60,7 +60,6 @@
 		B3B7FBF52856DA4000E23EDF /* PopUpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3B7FBF42856DA4000E23EDF /* PopUpViewController.swift */; };
 		B3B7FBF72856F43200E23EDF /* GalleryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3B7FBF62856F43200E23EDF /* GalleryViewController.swift */; };
 		B3B9F4E5286C2EA300FEE914 /* Gallery_4F_Road.csv in Resources */ = {isa = PBXBuildFile; fileRef = B3B9F4E4286C2EA300FEE914 /* Gallery_4F_Road.csv */; };
-		B3BC4D5629C2E51D00C91EF8 /* COEX_B2.csv in Resources */ = {isa = PBXBuildFile; fileRef = B3BC4D5529C2E51D00C91EF8 /* COEX_B2.csv */; };
 		B3BD699827E9A4A500A32A7A /* ColorPalette.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3BD699727E9A4A500A32A7A /* ColorPalette.swift */; };
 		B3BD699A27E9A4BE00A32A7A /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B3BD699927E9A4BE00A32A7A /* Colors.xcassets */; };
 		B3BD699F27E9A51100A32A7A /* UIViewControllerExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3BD699E27E9A51100A32A7A /* UIViewControllerExtension.swift */; };
@@ -96,6 +95,8 @@
 		B3E094EC28ADCD3100D3BC59 /* S3_7F_Road.csv in Resources */ = {isa = PBXBuildFile; fileRef = B3E094EB28ADCD3100D3BC59 /* S3_7F_Road.csv */; };
 		B3E0A4F62887E51700B88E08 /* Environment.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3E0A4F52887E51700B88E08 /* Environment.swift */; };
 		B3E6C0F8292D6B1400D0AC13 /* ImageCacheManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3E6C0F7292D6B1400D0AC13 /* ImageCacheManager.swift */; };
+		B3EDAA4729CB731000E074FC /* COEX_B2.csv in Resources */ = {isa = PBXBuildFile; fileRef = B3EDAA4629CB731000E074FC /* COEX_B2.csv */; };
+		B3EDAA4929CB8F1100E074FC /* COEX_B0.csv in Resources */ = {isa = PBXBuildFile; fileRef = B3EDAA4829CB8F1100E074FC /* COEX_B0.csv */; };
 		B3F5C77E282A5408009BEDB9 /* Network.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3F5C77D282A5408009BEDB9 /* Network.swift */; };
 		B3F5C780282A5519009BEDB9 /* Protocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3F5C77F282A5519009BEDB9 /* Protocol.swift */; };
 		B3F9F31E298B701500BA5833 /* morguard_7F.csv in Resources */ = {isa = PBXBuildFile; fileRef = B3F9F31D298B701500BA5833 /* morguard_7F.csv */; };
@@ -182,7 +183,6 @@
 		B3B7FBF42856DA4000E23EDF /* PopUpViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopUpViewController.swift; sourceTree = "<group>"; };
 		B3B7FBF62856F43200E23EDF /* GalleryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GalleryViewController.swift; sourceTree = "<group>"; };
 		B3B9F4E4286C2EA300FEE914 /* Gallery_4F_Road.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Gallery_4F_Road.csv; sourceTree = "<group>"; };
-		B3BC4D5529C2E51D00C91EF8 /* COEX_B2.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = COEX_B2.csv; sourceTree = "<group>"; };
 		B3BD699727E9A4A500A32A7A /* ColorPalette.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorPalette.swift; sourceTree = "<group>"; };
 		B3BD699927E9A4BE00A32A7A /* Colors.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Colors.xcassets; sourceTree = "<group>"; };
 		B3BD699E27E9A51100A32A7A /* UIViewControllerExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIViewControllerExtension.swift; sourceTree = "<group>"; };
@@ -218,6 +218,8 @@
 		B3E094EB28ADCD3100D3BC59 /* S3_7F_Road.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = S3_7F_Road.csv; sourceTree = "<group>"; };
 		B3E0A4F52887E51700B88E08 /* Environment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Environment.swift; sourceTree = "<group>"; };
 		B3E6C0F7292D6B1400D0AC13 /* ImageCacheManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageCacheManager.swift; sourceTree = "<group>"; };
+		B3EDAA4629CB731000E074FC /* COEX_B2.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = COEX_B2.csv; sourceTree = "<group>"; };
+		B3EDAA4829CB8F1100E074FC /* COEX_B0.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = COEX_B0.csv; sourceTree = "<group>"; };
 		B3F5C77D282A5408009BEDB9 /* Network.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Network.swift; sourceTree = "<group>"; };
 		B3F5C77F282A5519009BEDB9 /* Protocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Protocol.swift; sourceTree = "<group>"; };
 		B3F9F31D298B701500BA5833 /* morguard_7F.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = morguard_7F.csv; sourceTree = "<group>"; };
@@ -315,8 +317,9 @@
 				B3FD74EB2869A38800CD4D74 /* Gallery_3F.csv */,
 				B33375002990FAC500F5B030 /* S3_7F.csv */,
 				B3E094EB28ADCD3100D3BC59 /* S3_7F_Road.csv */,
+				B3EDAA4829CB8F1100E074FC /* COEX_B0.csv */,
 				B3FF6A8F28E5585000CFA824 /* COEX_B1.csv */,
-				B3BC4D5529C2E51D00C91EF8 /* COEX_B2.csv */,
+				B3EDAA4629CB731000E074FC /* COEX_B2.csv */,
 				B3B9F4E4286C2EA300FEE914 /* Gallery_4F_Road.csv */,
 				B3FD74EA2869A38800CD4D74 /* Gallery_4F.csv */,
 				B3FF2024294B922C003B06AB /* COEX_B3.csv */,
@@ -610,12 +613,13 @@
 				B3B4F85B28114EEB009F9E6C /* ShowCardCollectionViewCell.xib in Resources */,
 				B3B3610B28295E1D00B8E876 /* Autoway_B4.csv in Resources */,
 				B3FF2027294B922C003B06AB /* COEX_B3.csv in Resources */,
+				B3EDAA4929CB8F1100E074FC /* COEX_B0.csv in Resources */,
 				B3F9F31E298B701500BA5833 /* morguard_7F.csv in Resources */,
 				B3D19DED29079CE000A5F7D4 /* SpotTableViewCell.xib in Resources */,
 				B369287E28C5BCAC005FD4A9 /* LUPIUM_B1.csv in Resources */,
 				B3FD74ED2869A38800CD4D74 /* Gallery_3F.csv in Resources */,
+				B3EDAA4729CB731000E074FC /* COEX_B2.csv in Resources */,
 				B3BD699A27E9A4BE00A32A7A /* Colors.xcassets in Resources */,
-				B3BC4D5629C2E51D00C91EF8 /* COEX_B2.csv in Resources */,
 				B360D89028090D6A0084FB22 /* NotoSansKR-Thin.otf in Resources */,
 				B3455284282AB7B400F0DD3E /* ServiceInfoTableViewCell.xib in Resources */,
 				B35272B2281F8DC300321CC6 /* SplashScreen.storyboard in Resources */,

@@ -60,9 +60,9 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
         let localTime: String = self.getLocalTimeString()
         let dt = result.mobile_time - self.observerTime
         let log: String = localTime + " , (JupiterVC) : dt = \(dt) // time = \(result.mobile_time) // befor = \(self.observerTime) // x = \(result.x) // y = \(result.y) // phase = \(result.phase)"
-        if (dt > 300) {
-            print(log)
-        }
+//        if (dt > 300) {
+//            print(log)
+//        }
         
         self.observerTime = result.mobile_time
         let building = result.building_name
@@ -1072,7 +1072,6 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
         }
         let rp: [[Double]] = RP[key] ?? [[Double]]()
         var limits: [Double] = chartLimits[key] ?? [0, 0, 0, 0]
-        
         let heading: Double = data.heading
 
         if (flag) {
@@ -1247,7 +1246,6 @@ extension ServiceViewController : UICollectionViewDelegate{
         let rp: [[Double]] = RP[key] ?? [[Double]]()
         
         var limits: [Double] = chartLimits[key] ?? [0, 0, 0, 0]
-        
         if (rp.isEmpty) {
             // RP가 없어서 그리지 않음
             scatterChart.isHidden = true
