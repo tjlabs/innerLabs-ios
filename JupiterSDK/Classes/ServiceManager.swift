@@ -19,7 +19,7 @@ public class ServiceManager: Observation {
     }
     
     // 0 : Release  //  1 : Test
-    var serverType: Int = 1
+    var serverType: Int = 0
     // 0 : Android  //  1 : iOS
     var osType: Int = 1
     var region: String = "Korea"
@@ -1302,13 +1302,13 @@ public class ServiceManager: Observation {
     private func processPhase2(currentTime: Int, localTime: String) {
         let localTime = getLocalTimeString()
         let input = FineLocationTracking(user_id: self.user_id, mobile_time: currentTime, sector_id: self.sector_id, building_name: self.currentBuilding, level_name: self.currentLevel, spot_id: self.currentSpot, phase: self.phase, rss_compensation_list: [self.rssiBias], sc_compensation_list: [1.0])
-        print(localTime + " , (Jupiter) Phase 2 Input : \(input.level_name)")
+//        print(localTime + " , (Jupiter) Phase 2 Input : \(input.level_name)")
         NetworkManager.shared.postFLT(url: FLT_URL, input: input, completion: { [self] statusCode, returnedString in
             if (statusCode == 200) {
                 var result = jsonToResult(json: returnedString)
                 if (result.x != 0 && result.y != 0) {
                     if (result.mobile_time > self.preOutputMobileTime) {
-                        print(localTime + " , (Jupiter) Phase 2 Result : \(result.level_name) , \(result.phase)")
+//                        print(localTime + " , (Jupiter) Phase 2 Result : \(result.level_name) , \(result.phase)")
                         if (result.phase == 1) {
                             self.phase = result.phase
                         } else {
@@ -1384,7 +1384,7 @@ public class ServiceManager: Observation {
         }
         
         let input = FineLocationTracking(user_id: self.user_id, mobile_time: currentTime, sector_id: self.sector_id, building_name: self.currentBuilding, level_name: self.currentLevel, spot_id: self.currentSpot, phase: self.phase, rss_compensation_list: requestBiasArray, sc_compensation_list: [1.0])
-        print(localTime + " , (Jupiter) Phase 3 Input : \(input.level_name)")
+//        print(localTime + " , (Jupiter) Phase 3 Input : \(input.level_name)")
         NetworkManager.shared.postFLT(url: FLT_URL, input: input, completion: { [self] statusCode, returnedString in
             if (statusCode == 200) {
                 let result = jsonToResult(json: returnedString)
@@ -1416,7 +1416,7 @@ public class ServiceManager: Observation {
                     }
                     
                     if (result.mobile_time > self.preOutputMobileTime) {
-                        print(localTime + " , (Jupiter) Phase 3 Result : \(result.level_name) , \(result.phase)")
+//                        print(localTime + " , (Jupiter) Phase 3 Result : \(result.level_name) , \(result.phase)")
                         if (!self.isGetFirstResponse) {
                             self.isGetFirstResponse = true
                             if (self.isActiveReturn) {
@@ -1891,7 +1891,7 @@ public class ServiceManager: Observation {
             self.isPossibleEstBias = false
             self.buildingLevelChangedTime = currentTime
             self.preOutputMobileTime = currentTime
-            print(localTime + " , (Jupiter) Spot Determined : Different Spot // levelDestination = \(levelDestination) , dist = \(spotDistance)")
+//            print(localTime + " , (Jupiter) Spot Determined : Different Spot // levelDestination = \(levelDestination) , dist = \(spotDistance)")
         } else {
             // Same Spot Detected
             if (self.travelingOsrDistance >= spotDistance) {
@@ -1918,7 +1918,7 @@ public class ServiceManager: Observation {
                 self.isPossibleEstBias = false
                 self.buildingLevelChangedTime = currentTime
                 self.preOutputMobileTime = currentTime
-                print(localTime + " , (Jupiter) Spot Determined : Same Spot // levelDestination = \(levelDestination) , dist = \(spotDistance)")
+//                print(localTime + " , (Jupiter) Spot Determined : Same Spot // levelDestination = \(levelDestination) , dist = \(spotDistance)")
             }
         }
     }
