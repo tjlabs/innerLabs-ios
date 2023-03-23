@@ -40,6 +40,7 @@ public class ServiceManager: Observation {
     var Road = [String: [[Double]]]()
     var RoadHeading = [String: [String]]()
     var AbnormalArea = [String: [[Double]]]()
+    var EntranceArea = [String: [[Double]]]()
     
     
     // ----- Sensor & BLE ----- //
@@ -519,6 +520,10 @@ public class ServiceManager: Observation {
                                             self.AbnormalArea[key] = result.geofences
                                         }
                                     })
+                                    
+                                    // Entrance Area
+                                    let key: String = "\(buildingName)_\(levelName)"
+                                    self.EntranceArea[key] = loadEntranceArea(buildingName: buildingName, levelName: levelName)
                                 }
                             }
                         }
@@ -1795,8 +1800,13 @@ public class ServiceManager: Observation {
             })
             
             // Check Abnormal Area
-            let scaleFactor = self.checkInAbnormalArea(result: self.lastResult)
+            let lastResult = self.lastResult
+            let scaleFactor = self.checkInAbnormalArea(result: lastResult)
             unitDRGenerator.setVelocityScaleFactor(scaleFactor: scaleFactor)
+            
+            // Check Entrance Level
+            let isEntrance = self.checkIsEntranceLevel(result: lastResult)
+            unitDRGenerator.setIsEntranceLevel(flag: isEntrance)
         } else {
             self.travelingOsrDistance = 0
         }
@@ -1955,7 +1965,7 @@ public class ServiceManager: Observation {
         let lastResult = result
         
         let buildingName = lastResult.building_name
-        let levelName = lastResult.level_name
+        let levelName = removeLevelDirectionString(levelName: result.level_name)
         
         let key = "\(buildingName)_\(levelName)"
         guard let abnormalArea: [[Double]] = AbnormalArea[key] else {
@@ -1977,6 +1987,38 @@ public class ServiceManager: Observation {
         }
         
         return velocityScaleFactor
+    }
+    
+    func checkIsEntranceLevel(result: FineLocationTrackingResult) -> Bool {
+        let localTime = getLocalTimeString()
+        let lastResult = result
+        
+        let buildingName = lastResult.building_name
+        let levelName = removeLevelDirectionString(levelName: result.level_name)
+        
+        if (levelName == "B0") {
+            return true
+        } else {
+            let key = "\(buildingName)_\(levelName)"
+            guard let entranceArea: [[Double]] = EntranceArea[key] else {
+                return false
+            }
+            
+            for i in 0..<entranceArea.count {
+                let xMin = entranceArea[i][0]
+                let yMin = entranceArea[i][1]
+                let xMax = entranceArea[i][2]
+                let yMax = entranceArea[i][3]
+                
+                if (lastResult.x >= xMin && lastResult.x <= xMax) {
+                    if (lastResult.y >= yMin && lastResult.y <= yMax) {
+                        return true
+                    }
+                }
+            }
+            
+            return false
+        }
     }
     
     func saveRssiBias(bias: Int, sector_id: Int) {
@@ -2236,6 +2278,26 @@ public class ServiceManager: Observation {
         }
         
         return abnormalArea
+    }
+    
+    private func loadEntranceArea(buildingName: String, levelName: String) -> [[Double]] {
+        var entranceArea = [[Double]]()
+        let key: String = "\(buildingName)_\(levelName)"
+        if (key == "COEX_B2") {
+            entranceArea.append([225, 395, 262, 420])
+            entranceArea.append([247, 263, 296, 290])
+            entranceArea.append([20, 360, 67, 396])
+            entranceArea.append([265, 0, 298, 29])
+            entranceArea.append([241, 154, 257, 185])
+        } else if (key == "COEX_B3") {
+            entranceArea.append([225, 395, 262, 420])
+            entranceArea.append([247, 263, 296, 290])
+        } else if (key == "COEX_B4") {
+            entranceArea.append([225, 395, 262, 420])
+            entranceArea.append([247, 263, 296, 290])
+        }
+        
+        return entranceArea
     }
     
     private func updateAllResult(result: [Double]) {

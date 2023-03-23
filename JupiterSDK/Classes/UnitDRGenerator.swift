@@ -27,6 +27,8 @@ public class UnitDRGenerator: NSObject {
     var preRoll: Double = 0
     var prePitch: Double = 0
     
+    public var isEnteranceLevel: Bool = false
+    
     public func setMode(mode: String) {
         unitMode = mode
     }
@@ -91,7 +93,12 @@ public class UnitDRGenerator: NSObject {
             unitDistancePdr = pdrDistanceEstimator.estimateDistanceInfo(time: currentTime, sensorData: sensorData)
             unitDistanceDr = drDistanceEstimator.estimateDistanceInfo(time: currentTime, sensorData: sensorData)
             
-            if (pdrDistanceEstimator.normalStepCountFlag) {
+            var isPossibleDrLevel = pdrDistanceEstimator.normalStepCountFlag
+            if (self.isEnteranceLevel) {
+                isPossibleDrLevel = false
+            }
+            
+            if (isPossibleDrLevel) {
                 if (unitDistancePdr.isIndexChanged) {
                     unitIndexAuto += 1
                 }
@@ -167,6 +174,10 @@ public class UnitDRGenerator: NSObject {
     
     public func setVelocityScaleFactor(scaleFactor: Double) {
         self.drDistanceEstimator.velocityScaleFactor = scaleFactor
+    }
+    
+    public func setIsEntranceLevel (flag: Bool) {
+        self.isEnteranceLevel = flag
     }
     
     func getCurrentTimeInMilliseconds() -> Double
