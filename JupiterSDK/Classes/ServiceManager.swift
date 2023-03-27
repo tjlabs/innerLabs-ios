@@ -1357,7 +1357,7 @@ public class ServiceManager: Observation {
                         
                         if (result.building_name != self.currentBuilding || resultLevelName != currentLevelName) {
                             if ((result.mobile_time - self.buildingLevelChangedTime) > TIME_CONDITION) {
-                                // Building Level 이 바뀐지 10초 이상 지남 -> 서버 결과를 이용해 바뀌어야 한다고 판단
+                                // Building Level 이 바뀐지 7초 이상 지남 -> 서버 결과를 이용해 바뀌어야 한다고 판단
                                 self.currentBuilding = result.building_name
                                 self.currentLevel = result.level_name
                                 
