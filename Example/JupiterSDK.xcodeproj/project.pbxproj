@@ -20,9 +20,6 @@
 		B30EED7C28936CB5009A3EDA /* TipsTownViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B30EED7B28936CB5009A3EDA /* TipsTownViewController.swift */; };
 		B30EED872893B64C009A3EDA /* CollectViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B30EED862893B64C009A3EDA /* CollectViewController.swift */; };
 		B31EC7D92876C03A00799659 /* ServiceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B31EC7D82876C03A00799659 /* ServiceViewController.swift */; };
-		B325A3EA29D1AE0B00106280 /* COEX_B3.csv in Resources */ = {isa = PBXBuildFile; fileRef = B325A3E729D1AE0A00106280 /* COEX_B3.csv */; };
-		B325A3EB29D1AE0B00106280 /* COEX_B4.csv in Resources */ = {isa = PBXBuildFile; fileRef = B325A3E829D1AE0A00106280 /* COEX_B4.csv */; };
-		B325A3EC29D1AE0B00106280 /* COEX_B2.csv in Resources */ = {isa = PBXBuildFile; fileRef = B325A3E929D1AE0A00106280 /* COEX_B2.csv */; };
 		B33375012990FAC500F5B030 /* S3_7F.csv in Resources */ = {isa = PBXBuildFile; fileRef = B33375002990FAC500F5B030 /* S3_7F.csv */; };
 		B340EE3328093FB20096E404 /* CardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B340EE3228093FB20096E404 /* CardViewController.swift */; };
 		B3455283282AB7B400F0DD3E /* ServiceInfoTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3455281282AB7B400F0DD3E /* ServiceInfoTableViewCell.swift */; };
@@ -55,7 +52,6 @@
 		B3AA004928313C97007CD284 /* UILabelExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3AA004828313C97007CD284 /* UILabelExtension.swift */; };
 		B3AA004B28313CDF007CD284 /* UITextFieldExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3AA004A28313CDF007CD284 /* UITextFieldExtension.swift */; };
 		B3AA004D28313CEA007CD284 /* UITextViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3AA004C28313CEA007CD284 /* UITextViewExtension.swift */; };
-		B3AF8C2B29D12CA000B2DF67 /* COEX_B0.csv in Resources */ = {isa = PBXBuildFile; fileRef = B3AF8C2729D12CA000B2DF67 /* COEX_B0.csv */; };
 		B3B2963C29B9756F0010CC64 /* SecretConfig.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = B3B2963B29B9756F0010CC64 /* SecretConfig.xcconfig */; };
 		B3B3610928295E1400B8E876 /* Autoway_B3.csv in Resources */ = {isa = PBXBuildFile; fileRef = B3B3610828295E1400B8E876 /* Autoway_B3.csv */; };
 		B3B3610B28295E1D00B8E876 /* Autoway_B4.csv in Resources */ = {isa = PBXBuildFile; fileRef = B3B3610A28295E1D00B8E876 /* Autoway_B4.csv */; };
@@ -99,6 +95,10 @@
 		B3E094EC28ADCD3100D3BC59 /* S3_7F_Road.csv in Resources */ = {isa = PBXBuildFile; fileRef = B3E094EB28ADCD3100D3BC59 /* S3_7F_Road.csv */; };
 		B3E0A4F62887E51700B88E08 /* Environment.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3E0A4F52887E51700B88E08 /* Environment.swift */; };
 		B3E6C0F8292D6B1400D0AC13 /* ImageCacheManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3E6C0F7292D6B1400D0AC13 /* ImageCacheManager.swift */; };
+		B3F1A2FF29D2B2620031B914 /* COEX_B3.csv in Resources */ = {isa = PBXBuildFile; fileRef = B3F1A2FB29D2B2610031B914 /* COEX_B3.csv */; };
+		B3F1A30029D2B2620031B914 /* COEX_B2.csv in Resources */ = {isa = PBXBuildFile; fileRef = B3F1A2FC29D2B2610031B914 /* COEX_B2.csv */; };
+		B3F1A30129D2B2620031B914 /* COEX_B4.csv in Resources */ = {isa = PBXBuildFile; fileRef = B3F1A2FD29D2B2610031B914 /* COEX_B4.csv */; };
+		B3F1A30229D2B2620031B914 /* COEX_B0.csv in Resources */ = {isa = PBXBuildFile; fileRef = B3F1A2FE29D2B2610031B914 /* COEX_B0.csv */; };
 		B3F5C77E282A5408009BEDB9 /* Network.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3F5C77D282A5408009BEDB9 /* Network.swift */; };
 		B3F5C780282A5519009BEDB9 /* Protocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3F5C77F282A5519009BEDB9 /* Protocol.swift */; };
 		B3F9F31E298B701500BA5833 /* morguard_7F.csv in Resources */ = {isa = PBXBuildFile; fileRef = B3F9F31D298B701500BA5833 /* morguard_7F.csv */; };
@@ -142,9 +142,6 @@
 		B30EED7B28936CB5009A3EDA /* TipsTownViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TipsTownViewController.swift; sourceTree = "<group>"; };
 		B30EED862893B64C009A3EDA /* CollectViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectViewController.swift; sourceTree = "<group>"; };
 		B31EC7D82876C03A00799659 /* ServiceViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceViewController.swift; sourceTree = "<group>"; };
-		B325A3E729D1AE0A00106280 /* COEX_B3.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = COEX_B3.csv; sourceTree = "<group>"; };
-		B325A3E829D1AE0A00106280 /* COEX_B4.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = COEX_B4.csv; sourceTree = "<group>"; };
-		B325A3E929D1AE0A00106280 /* COEX_B2.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = COEX_B2.csv; sourceTree = "<group>"; };
 		B33375002990FAC500F5B030 /* S3_7F.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = S3_7F.csv; sourceTree = "<group>"; };
 		B340EE3228093FB20096E404 /* CardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardViewController.swift; sourceTree = "<group>"; };
 		B3455281282AB7B400F0DD3E /* ServiceInfoTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceInfoTableViewCell.swift; sourceTree = "<group>"; };
@@ -178,7 +175,6 @@
 		B3AA004828313C97007CD284 /* UILabelExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UILabelExtension.swift; sourceTree = "<group>"; };
 		B3AA004A28313CDF007CD284 /* UITextFieldExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITextFieldExtension.swift; sourceTree = "<group>"; };
 		B3AA004C28313CEA007CD284 /* UITextViewExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITextViewExtension.swift; sourceTree = "<group>"; };
-		B3AF8C2729D12CA000B2DF67 /* COEX_B0.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = COEX_B0.csv; sourceTree = "<group>"; };
 		B3B2963B29B9756F0010CC64 /* SecretConfig.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = SecretConfig.xcconfig; sourceTree = "<group>"; };
 		B3B3610828295E1400B8E876 /* Autoway_B3.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Autoway_B3.csv; sourceTree = "<group>"; };
 		B3B3610A28295E1D00B8E876 /* Autoway_B4.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Autoway_B4.csv; sourceTree = "<group>"; };
@@ -222,6 +218,10 @@
 		B3E094EB28ADCD3100D3BC59 /* S3_7F_Road.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = S3_7F_Road.csv; sourceTree = "<group>"; };
 		B3E0A4F52887E51700B88E08 /* Environment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Environment.swift; sourceTree = "<group>"; };
 		B3E6C0F7292D6B1400D0AC13 /* ImageCacheManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageCacheManager.swift; sourceTree = "<group>"; };
+		B3F1A2FB29D2B2610031B914 /* COEX_B3.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = COEX_B3.csv; sourceTree = "<group>"; };
+		B3F1A2FC29D2B2610031B914 /* COEX_B2.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = COEX_B2.csv; sourceTree = "<group>"; };
+		B3F1A2FD29D2B2610031B914 /* COEX_B4.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = COEX_B4.csv; sourceTree = "<group>"; };
+		B3F1A2FE29D2B2610031B914 /* COEX_B0.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = COEX_B0.csv; sourceTree = "<group>"; };
 		B3F5C77D282A5408009BEDB9 /* Network.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Network.swift; sourceTree = "<group>"; };
 		B3F5C77F282A5519009BEDB9 /* Protocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Protocol.swift; sourceTree = "<group>"; };
 		B3F9F31D298B701500BA5833 /* morguard_7F.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = morguard_7F.csv; sourceTree = "<group>"; };
@@ -322,13 +322,13 @@
 				B3FD74EA2869A38800CD4D74 /* Gallery_4F.csv */,
 				B3021F0E29541D7C000CE9AD /* Museum_1F.csv */,
 				B364B35428BCD8C5001A8950 /* LUPIUM_3F.csv */,
+				B3F1A2FE29D2B2610031B914 /* COEX_B0.csv */,
+				B3F1A2FC29D2B2610031B914 /* COEX_B2.csv */,
+				B3F1A2FB29D2B2610031B914 /* COEX_B3.csv */,
+				B3F1A2FD29D2B2610031B914 /* COEX_B4.csv */,
 				B30D4F87298A0BF000BFC124 /* morguard_6F.csv */,
 				B3F9F31D298B701500BA5833 /* morguard_7F.csv */,
 				B364B35228BCD8C5001A8950 /* LUPIUM_5F.csv */,
-				B3AF8C2729D12CA000B2DF67 /* COEX_B0.csv */,
-				B325A3E929D1AE0A00106280 /* COEX_B2.csv */,
-				B325A3E729D1AE0A00106280 /* COEX_B3.csv */,
-				B325A3E829D1AE0A00106280 /* COEX_B4.csv */,
 				B3FE481C2967965600EDAE94 /* Eureka_KIST.csv */,
 				B364B35328BCD8C5001A8950 /* LUPIUM_7F.csv */,
 				B36928AD28C5D290005FD4A9 /* L8_B1.csv */,
@@ -598,9 +598,9 @@
 				B36928AE28C5D290005FD4A9 /* L8_B1.csv in Resources */,
 				B3B3610928295E1400B8E876 /* Autoway_B3.csv in Resources */,
 				B360D89328090D6A0084FB22 /* NotoSansKR-Regular.otf in Resources */,
-				B325A3EC29D1AE0B00106280 /* COEX_B2.csv in Resources */,
 				B388AC32282BF6A3001C3D71 /* RobotTableViewCell.xib in Resources */,
 				B3BD69B527E9A8AD00A32A7A /* LevelCollectionViewCell.xib in Resources */,
+				B3F1A2FF29D2B2620031B914 /* COEX_B3.csv in Resources */,
 				B364B35828BCD8C5001A8950 /* LUPIUM_3F.csv in Resources */,
 				B360D89128090D6A0084FB22 /* NotoSansKR-Black.otf in Resources */,
 				B3FF6A9028E5585000CFA824 /* COEX_B1.csv in Resources */,
@@ -611,10 +611,9 @@
 				B3D194DD282E2726004E6F9A /* JupiterGuideTableViewCell.xib in Resources */,
 				B3D194E3282E2B2B004E6F9A /* LocationTableViewCell.xib in Resources */,
 				B3B4F85B28114EEB009F9E6C /* ShowCardCollectionViewCell.xib in Resources */,
-				B325A3EA29D1AE0B00106280 /* COEX_B3.csv in Resources */,
 				B3B3610B28295E1D00B8E876 /* Autoway_B4.csv in Resources */,
 				B3F9F31E298B701500BA5833 /* morguard_7F.csv in Resources */,
-				B3AF8C2B29D12CA000B2DF67 /* COEX_B0.csv in Resources */,
+				B3F1A30229D2B2620031B914 /* COEX_B0.csv in Resources */,
 				B3D19DED29079CE000A5F7D4 /* SpotTableViewCell.xib in Resources */,
 				B369287E28C5BCAC005FD4A9 /* LUPIUM_B1.csv in Resources */,
 				B3FD74ED2869A38800CD4D74 /* Gallery_3F.csv in Resources */,
@@ -623,6 +622,7 @@
 				B3455284282AB7B400F0DD3E /* ServiceInfoTableViewCell.xib in Resources */,
 				B35272B2281F8DC300321CC6 /* SplashScreen.storyboard in Resources */,
 				607FACE01AFB9204008FA782 /* LaunchScreen.xib in Resources */,
+				B3F1A30029D2B2620031B914 /* COEX_B2.csv in Resources */,
 				B3FE481D2967965600EDAE94 /* Eureka_KIST.csv in Resources */,
 				607FACDD1AFB9204008FA782 /* Images.xcassets in Resources */,
 				B360D88F28090D6A0084FB22 /* NotoSansKR-Light.otf in Resources */,
@@ -636,7 +636,7 @@
 				B3D488F6289B8B4900A8154C /* GoogleService-Info.plist in Resources */,
 				B3FD74EC2869A38800CD4D74 /* Gallery_4F.csv in Resources */,
 				B38807F3283390280029B174 /* L1_3F.csv in Resources */,
-				B325A3EB29D1AE0B00106280 /* COEX_B4.csv in Resources */,
+				B3F1A30129D2B2620031B914 /* COEX_B4.csv in Resources */,
 				B3E094EC28ADCD3100D3BC59 /* S3_7F_Road.csv in Resources */,
 				B3DE961D2999F65500352F40 /* WardCollectionViewCell.xib in Resources */,
 				B30D4F89298A0BF000BFC124 /* morguard_6F.csv in Resources */,

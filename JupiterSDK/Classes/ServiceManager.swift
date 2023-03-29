@@ -1016,7 +1016,7 @@ public class ServiceManager: Observation {
             result.absolute_heading = compensateHeading(heading: result.absolute_heading, mode: runMode)
             result.mode = runMode
             displayOutput.mode = runMode
-            
+//            var updatedResult = result
             // Map Matching
             if (self.isMapMatching) {
                 var mapMatchingMode: String = runMode
@@ -2366,7 +2366,7 @@ public class ServiceManager: Observation {
         if (key == "COEX_B2") {
             entranceArea.append([225, 395, 262, 420])
             entranceArea.append([247, 263, 296, 290])
-            entranceArea.append([20, 360, 67, 396])
+            entranceArea.append([14, 360, 67, 396])
             entranceArea.append([265, 0, 298, 29])
             entranceArea.append([241, 154, 257, 185])
         } else if (key == "COEX_B3") {
@@ -2827,35 +2827,7 @@ public class ServiceManager: Observation {
         return headingToReturn
     }
     
-    // ble
-//    func trimBleData(bleData: [String: [[Double]]], nowTime: Double, validTime: Double) -> [String: [[Double]]] {
-//        var bleDictonary = bleData
-//        let keys: [String] = Array(bleDictonary.keys.sorted())
-//        for index in 0..<keys.count {
-//            let bleID: String = keys[index]
-//            let bleData: [[Double]] = bleDictonary[bleID]!
-//            let bleCount = bleData.count
-//            var newValue = [[Double]]()
-//            for i in 0..<bleCount {
-//                let rssi = bleData[i][0]
-//                let time = bleData[i][1]
-//
-//                if ((nowTime - time <= validTime) && (rssi >= -100)) {
-//                    let dataToAdd: [Double] = [rssi, time]
-//                    newValue.append(dataToAdd)
-//                }
-//            }
-//
-//            if ( newValue.count == 0 ) {
-//                bleDictonary.removeValue(forKey: bleID)
-//            } else {
-//                bleDictonary.updateValue(newValue, forKey: bleID)
-//            }
-//        }
-//
-//        return bleDictonary
-//    }
-    
+    // BLUETOOTH //
     func trimBleData(bleData: Dictionary<String, [[Double]]>, nowTime: Double, validTime: Double) -> Dictionary<String, [[Double]]> {
         var trimmedData = [String: [[Double]]]()
         
