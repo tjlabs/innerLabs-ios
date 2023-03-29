@@ -358,6 +358,7 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
             for view in self.scatterChart.subviews {
                 view.removeFromSuperview()
             }
+            
         } else if (countTap > 9) {
             isShowRP = false
             biasLabel.isHidden = true
@@ -830,6 +831,14 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
             viewWithTag.removeFromSuperview()
         }
         scatterChart.addSubview(imageView)
+        
+        if let viewWithTag2 = scatterChart.viewWithTag(200) {
+            viewWithTag2.removeFromSuperview()
+        }
+        
+        if let viewWithTag3 = scatterChart.viewWithTag(300) {
+            viewWithTag3.removeFromSuperview()
+        }
         
         let chartFlag: Bool = false
         scatterChart.isHidden = false

@@ -520,12 +520,16 @@ public class ServiceManager: Observation {
                                             let result = decodeGEO(json: returnedString)
                                             let key: String = "\(buildingGeo)_\(levelGeo)"
                                             self.AbnormalArea[key] = result.geofences
+                                            self.EntranceArea[key] = result.entrance_area
+                                            
+//                                            print(key)
+//                                            print("Abnormal Area : \(self.AbnormalArea[key])")
+//                                            print("Entrance Area : \(self.EntranceArea[key])")
                                         }
                                     })
-                                    
                                     // Entrance Area
-                                    let key: String = "\(buildingName)_\(levelName)"
-                                    self.EntranceArea[key] = loadEntranceArea(buildingName: buildingName, levelName: levelName)
+//                                    let key: String = "\(buildingName)_\(levelName)"
+//                                    self.EntranceArea[key] = loadEntranceArea(buildingName: buildingName, levelName: levelName)
                                 }
                             }
                         }
@@ -2053,15 +2057,17 @@ public class ServiceManager: Observation {
         }
         
         for i in 0..<abnormalArea.count {
-            let xMin = abnormalArea[i][0]
-            let yMin = abnormalArea[i][1]
-            let xMax = abnormalArea[i][2]
-            let yMax = abnormalArea[i][3]
-            
-            if (lastResult.x >= xMin && lastResult.x <= xMax) {
-                if (lastResult.y >= yMin && lastResult.y <= yMax) {
-                    velocityScaleFactor = abnormalArea[i][4]
-                    return velocityScaleFactor
+            if (!abnormalArea[i].isEmpty) {
+                let xMin = abnormalArea[i][0]
+                let yMin = abnormalArea[i][1]
+                let xMax = abnormalArea[i][2]
+                let yMax = abnormalArea[i][3]
+                
+                if (lastResult.x >= xMin && lastResult.x <= xMax) {
+                    if (lastResult.y >= yMin && lastResult.y <= yMax) {
+                        velocityScaleFactor = abnormalArea[i][4]
+                        return velocityScaleFactor
+                    }
                 }
             }
         }
@@ -2085,16 +2091,19 @@ public class ServiceManager: Observation {
             }
             
             for i in 0..<entranceArea.count {
-                let xMin = entranceArea[i][0]
-                let yMin = entranceArea[i][1]
-                let xMax = entranceArea[i][2]
-                let yMax = entranceArea[i][3]
-                
-                if (lastResult.x >= xMin && lastResult.x <= xMax) {
-                    if (lastResult.y >= yMin && lastResult.y <= yMax) {
-                        return true
+                if (!entranceArea[i].isEmpty) {
+                    let xMin = entranceArea[i][0]
+                    let yMin = entranceArea[i][1]
+                    let xMax = entranceArea[i][2]
+                    let yMax = entranceArea[i][3]
+                    
+                    if (lastResult.x >= xMin && lastResult.x <= xMax) {
+                        if (lastResult.y >= yMin && lastResult.y <= yMax) {
+                            return true
+                        }
                     }
                 }
+                
             }
             
             return false
@@ -2595,7 +2604,7 @@ public class ServiceManager: Observation {
     
     func setModeParam(mode: String, phase: Int) {
         if (mode == "pdr") {
-            self.kalmanR = 3
+            self.kalmanR = 0.5
             self.INIT_INPUT_NUM = 3
             self.VALUE_INPUT_NUM = 5
             self.SQUARE_RANGE = self.SQUARE_RANGE_SMALL
