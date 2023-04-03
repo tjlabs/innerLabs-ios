@@ -734,10 +734,10 @@ class FusionViewController: UIViewController, Observer {
 //        }
         
         if ( limits[0] == 0 && limits[1] == 0 && limits[2] == 0 && limits[3] == 0 ) {
-            scatterChart.xAxis.axisMinimum = xMin - 9.8
-            scatterChart.xAxis.axisMaximum = xMax + 9.8
-            scatterChart.leftAxis.axisMinimum = yMin - 5.28
-            scatterChart.leftAxis.axisMaximum = yMax + 4.05
+            scatterChart.xAxis.axisMinimum = xMin - 4.4
+            scatterChart.xAxis.axisMaximum = xMax + 1.9
+            scatterChart.leftAxis.axisMinimum = yMin - 6.2
+            scatterChart.leftAxis.axisMaximum = yMax + 46
         } else {
             scatterChart.xAxis.axisMinimum = limits[0]
             scatterChart.xAxis.axisMaximum = limits[1]

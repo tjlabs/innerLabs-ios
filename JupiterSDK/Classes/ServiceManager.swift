@@ -19,7 +19,7 @@ public class ServiceManager: Observation {
     }
     
     // 0 : Release  //  1 : Test
-    var serverType: Int = 0
+    var serverType: Int = 1
     // 0 : Android  //  1 : iOS
     var osType: Int = 1
     var region: String = "Korea"
@@ -99,6 +99,7 @@ public class ServiceManager: Observation {
     // ----- Timer ----- //
     var receivedForceTimer: DispatchSourceTimer?
     var RFD_INTERVAL: TimeInterval = 1/2 // second
+    var BLE_VALID_TIME: Double = 1000
 
     var userVelocityTimer: DispatchSourceTimer?
     var UVD_INTERVAL: TimeInterval = 1/40 // second
@@ -161,6 +162,8 @@ public class ServiceManager: Observation {
     
     var rssiBiasArray: [Int] = [2, 0, 4]
     var rssiBias: Int = 0
+    var isBiasConverged: Bool = false
+    var sccBadCount: Int = 0
     var scCompensationArray: [Double] = [0.8, 1.0, 1.2]
     var scCompensation: Double = 1.0
     var scCompensationBadCount: Int = 0
@@ -177,7 +180,7 @@ public class ServiceManager: Observation {
     var isScRequested: Bool = false
     
     let MINIMUN_INDEX_FOR_BIAS: Int = 30
-    let GOOD_BIAS_ARRAY_SIZE: Int = 15
+    let GOOD_BIAS_ARRAY_SIZE: Int = 22
     // --------------------------------- //
     
     
@@ -537,7 +540,13 @@ public class ServiceManager: Observation {
                 }
             })
             
-            self.loadRssiBias(sector_id: self.sector_id)
+            let loadedBias = self.loadRssiBias(sector_id: self.sector_id)
+            self.rssiBias = loadedBias.0
+            self.isBiasConverged = loadedBias.1
+            
+            let biasArray = self.makeRssiBiasArray(bias: loadedBias.0)
+            self.rssiBiasArray = biasArray
+            
             self.isActiveReturn = true
             
             return (isSuccess, message)
@@ -570,7 +579,7 @@ public class ServiceManager: Observation {
         if (self.service == "FLT") {
             unitDRInfo = UnitDRInfo()
             onStartFlag = false
-            saveRssiBias(bias: self.rssiBias, sector_id: self.sector_id)
+            saveRssiBias(bias: self.rssiBias, isConverged: self.isBiasConverged, sector_id: self.sector_id)
         }
         
         self.initVariables()
@@ -1066,7 +1075,8 @@ public class ServiceManager: Observation {
     @objc func receivedForceTimerUpdate() {
         let localTime: String = getLocalTimeString()
         bleManager.setValidTime(mode: self.runMode)
-        let validTime = bleManager.BLE_VALID_TIME
+        self.setValidTime(mode: self.runMode)
+        let validTime = self.BLE_VALID_TIME
         let currentTime = getCurrentTimeInMilliseconds() - (Int(validTime)/2)
         let bleDictionary: Dictionary<String, [[Double]]>? = bleManager.bleDictionary
         if let bleData = bleDictionary {
@@ -1323,6 +1333,7 @@ public class ServiceManager: Observation {
                         if (result.phase == 2 && result.scc < SCC_FOR_PHASE4) {
                             self.phase2Count += 1
                             if (self.phase2Count > 4) {
+                                self.phase2Count = 0
                                 self.phase = 1
                             }
                         } else {
@@ -1345,8 +1356,9 @@ public class ServiceManager: Observation {
                                 self.measurementOutput.x = resultCorrected.xyh[0]
                                 self.measurementOutput.y = resultCorrected.xyh[1]
                                 self.measurementOutput.absolute_heading = resultCorrected.xyh[2]
+                                
+                                self.phase2Count = 0
                             }
-                            self.phase2Count = 0
                             self.phase = result.phase
                         }
                         
@@ -1407,24 +1419,30 @@ public class ServiceManager: Observation {
     
     private func processPhase3(currentTime: Int, localTime: String) {
         var requestBiasArray: [Int] = [self.rssiBias]
-        if (self.isPossibleEstBias) {
-            if (self.isBiasRequested) {
-                requestBiasArray = [self.rssiBias]
-            } else {
-                if (!self.isActiveKf && self.isSufficientRfd) {
-                    requestBiasArray = self.rssiBiasArray
-                    self.biasRequestTime = currentTime
-                    self.isBiasRequested = true
-                } else if (self.phase > 2 && self.isSufficientRfd) {
-                    requestBiasArray = self.rssiBiasArray
-                    self.biasRequestTime = currentTime
-                    self.isBiasRequested = true
-                } else {
+        if (self.isBiasConverged) {
+            requestBiasArray = [self.rssiBias]
+            self.isBiasRequested = false
+        } else {
+            if (self.isPossibleEstBias) {
+                if (self.isBiasRequested) {
                     requestBiasArray = [self.rssiBias]
+                } else {
+                    if (!self.isActiveKf && self.isSufficientRfd) {
+                        requestBiasArray = self.rssiBiasArray
+                        self.biasRequestTime = currentTime
+                        self.isBiasRequested = true
+                    } else if (self.phase > 2 && self.isSufficientRfd) {
+                        requestBiasArray = self.rssiBiasArray
+                        self.biasRequestTime = currentTime
+                        self.isBiasRequested = true
+                    } else {
+                        requestBiasArray = [self.rssiBias]
+                    }
                 }
             }
         }
         
+        self.phase2Count = 0
         let input = FineLocationTracking(user_id: self.user_id, mobile_time: currentTime, sector_id: self.sector_id, building_name: self.currentBuilding, level_name: self.currentLevel, spot_id: self.currentSpot, phase: self.phase, rss_compensation_list: requestBiasArray, sc_compensation_list: [1.0])
 //        print(localTime + " , (Jupiter) Phase 3 Input : \(input.level_name)")
         NetworkManager.shared.postFLT(url: FLT_URL, input: input, completion: { [self] statusCode, returnedString in
@@ -1445,8 +1463,8 @@ public class ServiceManager: Observation {
                                     let biasAvg: Int = averageBiasArray(biasArray: self.sccGoodBiasArray)
                                     self.sccGoodBiasArray.remove(at: 0)
                                     self.rssiBias = biasAvg
-
-                                    self.saveRssiBias(bias: self.rssiBias, sector_id: self.sector_id)
+                                    self.isBiasConverged = true
+                                    self.saveRssiBias(bias: self.rssiBias, isConverged: self.isBiasConverged, sector_id: self.sector_id)
                                 }
                             }
                             
@@ -1458,7 +1476,7 @@ public class ServiceManager: Observation {
                     }
                     
                     if (result.mobile_time > self.preOutputMobileTime) {
-//                        print(localTime + " , (Jupiter) Phase 3 Result xc: \(result.level_name) , \(result.phase)")
+//                        print(localTime + " , (Jupiter) Phase 3 Result : \(result.level_name) , \(result.phase)")
                         if (!self.isGetFirstResponse) {
                             self.isGetFirstResponse = true
                             if (self.isActiveReturn) {
@@ -1466,6 +1484,19 @@ public class ServiceManager: Observation {
                             }
                         }
                         displayOutput.indexRx = result.index
+                        
+                        // Check Bias Re-estimation is needed
+                        if (self.isBiasConverged) {
+                            if (result.scc < 0.4) {
+                                self.sccBadCount += 1
+                                if (self.sccBadCount > 1) {
+                                    reEstimateRssiBias()
+                                    self.sccBadCount = 0
+                                }
+                            } else {
+                                self.sccBadCount = 0
+                            }
+                        }
                         
                         var resultCorrected = self.pathMatching(building: result.building_name, level: result.level_name, x: result.x, y: result.y, heading: result.absolute_heading, tuXY: [0,0], mode: self.runMode, isPast: false, HEADING_RANGE: self.HEADING_RANGE)
                         resultCorrected.xyh[2] = compensateHeading(heading: resultCorrected.xyh[2], mode: self.runMode)
@@ -1607,19 +1638,25 @@ public class ServiceManager: Observation {
         var requestBiasArray: [Int] = [self.rssiBias]
         var requestScArray: [Double] = [self.scCompensation]
         
-        if (self.isPossibleEstBias) {
-            if (self.isBiasRequested) {
-                requestBiasArray = [self.rssiBias]
-            } else {
-                if (self.isSufficientRfd) {
-                    requestBiasArray = self.rssiBiasArray
-                    self.biasRequestTime = currentTime
-                    self.isBiasRequested = true
-                } else {
+        if (self.isBiasConverged) {
+            requestBiasArray = [self.rssiBias]
+            self.isBiasRequested = false
+        } else {
+            if (self.isPossibleEstBias) {
+                if (self.isBiasRequested) {
                     requestBiasArray = [self.rssiBias]
+                } else {
+                    if (self.isSufficientRfd) {
+                        requestBiasArray = self.rssiBiasArray
+                        self.biasRequestTime = currentTime
+                        self.isBiasRequested = true
+                    } else {
+                        requestBiasArray = [self.rssiBias]
+                    }
                 }
             }
         }
+        
         
         // 사이즈 검사
         // 3개 -> scCompensation 불가능 -> 여기는 무조건 1개 보냄
@@ -1652,8 +1689,8 @@ public class ServiceManager: Observation {
                                 let biasAvg: Int = averageBiasArray(biasArray: self.sccGoodBiasArray)
                                 self.sccGoodBiasArray.remove(at: 0)
                                 self.rssiBias = biasAvg
-
-                                self.saveRssiBias(bias: self.rssiBias, sector_id: self.sector_id)
+                                self.isBiasConverged = true
+                                self.saveRssiBias(bias: self.rssiBias, isConverged: self.isBiasConverged, sector_id: self.sector_id)
                             }
                         }
                         self.isBiasRequested = false
@@ -1825,7 +1862,10 @@ public class ServiceManager: Observation {
 
                                 self.kalmanR = 0.01
                                 self.headingKalmanR = 0.01
-
+                                
+                                self.indexAfterResponse = 0
+                                self.isPossibleEstBias = false
+                                
                                 self.isPhaseBreak = true
                             }
                         }
@@ -1844,7 +1884,7 @@ public class ServiceManager: Observation {
         if (self.isGetFirstResponse) {
             let localTime: String = getLocalTimeString()
             if (!self.isActiveReturn) {
-                let validTime = bleManager.BLE_VALID_TIME
+                let validTime = self.BLE_VALID_TIME
                 let bleDictionary: Dictionary<String, [[Double]]>? = bleManager.bleDictionary
                 if let bleData = bleDictionary {
                     let bleTrimed = trimBleData(bleData: bleData, nowTime: getCurrentTimeInMillisecondsDouble(), validTime: validTime)
@@ -2110,7 +2150,26 @@ public class ServiceManager: Observation {
         }
     }
     
-    func saveRssiBias(bias: Int, sector_id: Int) {
+    func saveRssiBias(bias: Int, isConverged: Bool, sector_id: Int) {
+        let currentTime = getCurrentTimeInMilliseconds()
+        
+        // Time
+        do {
+            let key: String = "JupiterRssiBiasTime_\(sector_id)"
+            UserDefaults.standard.set(currentTime, forKey: key)
+        } catch {
+            print("(Jupiter) Error : Fail to save RssiBiasTime")
+        }
+        
+        // Converged
+        do {
+            let key: String = "JupiterRssiBiasConverge_\(sector_id)"
+            UserDefaults.standard.set(currentTime, forKey: key)
+        } catch {
+            print("(Jupiter) Error : Fail to save RssiBiasConverge")
+        }
+        
+        // Bias
         do {
             let key: String = "JupiterRssiBias_\(sector_id)"
             UserDefaults.standard.set(bias, forKey: key)
@@ -2119,29 +2178,59 @@ public class ServiceManager: Observation {
         }
     }
     
-    func loadRssiBias(sector_id: Int) {
+    func loadRssiBias(sector_id: Int) -> (Int, Bool) {
+        var bias: Int = 2
+        var isConverged: Bool = false
+        
+        let currentTime = getCurrentTimeInMilliseconds()
+        let keyBiasTime: String = "JupiterRssiBiasTime_\(sector_id)"
+        if let biasTime: Int = UserDefaults.standard.object(forKey: keyBiasTime) as? Int {
+            // 7 Day
+            if (currentTime - biasTime) > 1000*3600*24*7  {
+                return (bias, isConverged)
+            }
+        }
+        
+        let keyBiasConverged: String = "JupiterRssiBiasConverge_\(sector_id)"
+        if let biasConverged: Bool = UserDefaults.standard.object(forKey: keyBiasConverged) as? Bool {
+            isConverged = biasConverged
+        }
+        
         let keyBias: String = "JupiterRssiBias_\(sector_id)"
         if let loadedRssiBias: Int = UserDefaults.standard.object(forKey: keyBias) as? Int {
-            self.rssiBias = loadedRssiBias
-            
-            let biasRange: Int = 3
-            var biasArray: [Int] = [loadedRssiBias, loadedRssiBias-biasRange, loadedRssiBias+biasRange]
-            if (biasArray[1] <= BIAS_RANGE_MIN) {
-                biasArray[1] = BIAS_RANGE_MIN
-                biasArray[0] = BIAS_RANGE_MIN + biasRange
-                biasArray[2] = BIAS_RANGE_MIN + (2*biasRange)
-                if (biasArray[2] > BIAS_RANGE_MAX) {
-                    biasArray[2] = BIAS_RANGE_MAX
-                }
-                
-            } else if (biasArray[2] >= BIAS_RANGE_MAX) {
+            bias = loadedRssiBias
+        }
+        
+        return (bias, isConverged)
+    }
+    
+    func makeRssiBiasArray(bias: Int) -> [Int] {
+        var loadedRssiBias: Int = bias
+        let biasRange: Int = 3
+        var biasArray: [Int] = [loadedRssiBias, loadedRssiBias-biasRange, loadedRssiBias+biasRange]
+        
+        if (biasArray[1] <= BIAS_RANGE_MIN) {
+            biasArray[1] = BIAS_RANGE_MIN
+            biasArray[0] = BIAS_RANGE_MIN + biasRange
+            biasArray[2] = BIAS_RANGE_MIN + (2*biasRange)
+            if (biasArray[2] > BIAS_RANGE_MAX) {
                 biasArray[2] = BIAS_RANGE_MAX
-                biasArray[0] = BIAS_RANGE_MAX - biasRange
-                biasArray[1] = BIAS_RANGE_MAX - (2*biasRange)
             }
             
-            self.rssiBiasArray = biasArray
+        } else if (biasArray[2] >= BIAS_RANGE_MAX) {
+            biasArray[2] = BIAS_RANGE_MAX
+            biasArray[0] = BIAS_RANGE_MAX - biasRange
+            biasArray[1] = BIAS_RANGE_MAX - (2*biasRange)
         }
+        
+        return biasArray
+    }
+    
+    func reEstimateRssiBias() {
+        self.isBiasConverged = false
+        self.rssiBias = 2
+        self.rssiBiasArray = [2, 0, 4]
+        self.sccGoodBiasArray = [Int]()
     }
     
     func estimateRssiBias(sccResult: Double, biasResult: Int, biasArray: [Int]) -> (Bool, [Int]) {
@@ -2191,7 +2280,7 @@ public class ServiceManager: Observation {
     }
     
     func estimateScCompensation(sccResult: Double, scResult: Double, scArray: [Double]) -> [Double] {
-        var newBiasArray: [Double] = scArray
+        let newBiasArray: [Double] = scArray
         
         return newBiasArray
     }
@@ -2225,7 +2314,7 @@ public class ServiceManager: Observation {
     
     @objc func collectTimerUpdate() {
         let localTime = getLocalTimeString()
-        let validTime = bleManager.BLE_VALID_TIME
+        let validTime = self.BLE_VALID_TIME
         let currentTime = getCurrentTimeInMilliseconds()
         var bleDictionary: Dictionary<String, [[Double]]>? = bleManager.bleDictionary
         if let bleData = bleDictionary {
@@ -2834,6 +2923,14 @@ public class ServiceManager: Observation {
         }
         
         return headingToReturn
+    }
+    
+    func setValidTime(mode: String) {
+        if (mode == "dr") {
+            self.BLE_VALID_TIME = 1000
+        } else {
+            self.BLE_VALID_TIME = 1500
+        }
     }
     
     // BLUETOOTH //
