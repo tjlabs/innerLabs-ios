@@ -29,11 +29,13 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
         
         switch(flag) {
         case 0:
-            print(localTime + " , (Jupiter) Stop : Out of the Service Area")
+            print(localTime + " , (Jupiter) Report : Stop!! Out of the Service Area")
         case 1:
-            print(localTime + " , (Jupiter) Start : Enter the Service Area")
+            print(localTime + " , (Jupiter) Report : Start!! Enter the Service Area")
+        case 2:
+            print(localTime + " , (Jupiter) Report : BLE is Off")
         case -1:
-            print(localTime + " , (Jupiter) Abnormal : Restart the Service")
+            print(localTime + " , (Jupiter) Report : Abnormal!! Restart the Service")
             self.stopTimer()
             serviceManager.stopService()
 
@@ -47,10 +49,10 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
             if (initService.0) {
                 self.startTimer()
             }
-        case 2:
-            print(localTime + " , (Jupiter) Start : Run Mecury Mode")
         case 3:
-            print(localTime + " , (Jupiter) Start : Run Jupiter Mode")
+            print(localTime + " , (Jupiter) Report : Start!! Run Mecury Mode")
+        case 4:
+            print(localTime + " , (Jupiter) Report : Start!! Run Jupiter Mode")
         default:
             print(localTime + " , (Jupiter) Default Flag")
         }

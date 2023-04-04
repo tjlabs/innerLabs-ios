@@ -735,15 +735,16 @@ class FusionViewController: UIViewController, Observer {
         
         if ( limits[0] == 0 && limits[1] == 0 && limits[2] == 0 && limits[3] == 0 ) {
             scatterChart.xAxis.axisMinimum = xMin - 3
-            scatterChart.xAxis.axisMaximum = xMax + 2.5
-            scatterChart.leftAxis.axisMinimum = yMin - 3.5
-            scatterChart.leftAxis.axisMaximum = yMax + 51
+            scatterChart.xAxis.axisMaximum = xMax + 3
+            scatterChart.leftAxis.axisMinimum = yMin - 1.5
+            scatterChart.leftAxis.axisMaximum = yMax + 49.2
         } else {
             scatterChart.xAxis.axisMinimum = limits[0]
             scatterChart.xAxis.axisMaximum = limits[1]
             scatterChart.leftAxis.axisMinimum = limits[2]
             scatterChart.leftAxis.axisMaximum = limits[3]
         }
+        
         
         // Configure Chart
         scatterChart.xAxis.drawGridLinesEnabled = chartFlag

@@ -243,7 +243,9 @@ public class ServiceManager: Observation {
     var isEntered: Bool = false
     var phase4Count: Int = 0
     var isSufficientRfd: Bool = false
+    var isBleOff: Bool = false
     
+    var timeBleOff: Double = 0
     var timeActiveRF: Double = 0
     var timeActiveUV: Double = 0
     var timeEmptyRF: Double = 0
@@ -254,6 +256,7 @@ public class ServiceManager: Observation {
     let STOP_THRESHOLD: Double = 2
     let SLEEP_THRESHOLD: Double = 600
     let SLEEP_THRESHOLD_RF: Double = 6
+    let BLE_OFF_THRESHOLD: Double = 5
     
     var lastTrackingTime: Int = 0
     var lastResult = FineLocationTrackingResult()
@@ -524,10 +527,6 @@ public class ServiceManager: Observation {
                                             let key: String = "\(buildingGeo)_\(levelGeo)"
                                             self.AbnormalArea[key] = result.geofences
                                             self.EntranceArea[key] = result.entrance_area
-                                            
-//                                            print(key)
-//                                            print("Abnormal Area : \(self.AbnormalArea[key])")
-//                                            print("Entrance Area : \(self.EntranceArea[key])")
                                         }
                                     })
                                     // Entrance Area
@@ -794,7 +793,7 @@ public class ServiceManager: Observation {
 
                         self.timeUpdateOutput = FineLocationTrackingFromServer()
                         self.measurementOutput = FineLocationTrackingFromServer()
-                        self.reporting(input: MERCURY_FLAG)
+                        self.reporting(input: VENUS_FLAG)
                     }
                 } else {
                     if (self.isVenusMode) {
@@ -1075,6 +1074,18 @@ public class ServiceManager: Observation {
     
     @objc func receivedForceTimerUpdate() {
         let localTime: String = getLocalTimeString()
+        if (!bleManager.bluetoothReady) {
+            self.timeBleOff += RFD_INTERVAL
+            
+            if (self.timeBleOff >= BLE_OFF_THRESHOLD) {
+                if (!self.isBleOff) {
+                    self.timeBleOff = 0
+                    self.isBleOff = true
+                    self.reporting(input: BLE_OFF_FLAG)
+                }
+            }
+        }
+        
         bleManager.setValidTime(mode: self.runMode)
         self.setValidTime(mode: self.runMode)
         let validTime = self.BLE_VALID_TIME
@@ -1085,12 +1096,14 @@ public class ServiceManager: Observation {
             let bleAvg = avgBleData(bleDictionary: bleTrimed)
             
             if (!bleAvg.isEmpty) {
+                self.timeBleOff = 0
                 self.timeActiveRF = 0
                 self.timeSleepRF = 0
                 self.timeEmptyRF = 0
                 
                 self.isActiveRF = true
                 self.isEmptyRF = false
+                self.isBleOff = false
                 self.isActiveService = true
                 
                 self.wakeUpFromSleepMode()
@@ -1120,9 +1133,11 @@ public class ServiceManager: Observation {
                     
                     // Here
                     if (self.isActiveReturn && self.isGetFirstResponse) {
-                        self.initVariables()
-                        self.isActiveReturn = false
-                        self.reporting(input: OUTDOOR_FLAG)
+                        if (!self.isBleOff) {
+                            self.initVariables()
+                            self.isActiveReturn = false
+                            self.reporting(input: OUTDOOR_FLAG)
+                        }
                     }
                 }
                 
