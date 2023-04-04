@@ -256,7 +256,7 @@ public class ServiceManager: Observation {
     let STOP_THRESHOLD: Double = 2
     let SLEEP_THRESHOLD: Double = 600
     let SLEEP_THRESHOLD_RF: Double = 6
-    let BLE_OFF_THRESHOLD: Double = 5
+    let BLE_OFF_THRESHOLD: Double = 4
     
     var lastTrackingTime: Int = 0
     var lastResult = FineLocationTrackingResult()
@@ -1079,8 +1079,9 @@ public class ServiceManager: Observation {
             
             if (self.timeBleOff >= BLE_OFF_THRESHOLD) {
                 if (!self.isBleOff) {
-                    self.timeBleOff = 0
+                    self.isActiveReturn = false
                     self.isBleOff = true
+                    self.timeBleOff = 0
                     self.reporting(input: BLE_OFF_FLAG)
                 }
             }
@@ -2243,7 +2244,7 @@ public class ServiceManager: Observation {
     }
     
     func reEstimateRssiBias() {
-        print(getLocalTimeString() + " , (Jupiter) Bias in not correct -> Initialization")
+        print(getLocalTimeString() + " , (Jupiter) Bias is not correct -> Initialization")
         self.isBiasConverged = false
         self.rssiBias = 2
         self.rssiBiasArray = [2, 0, 4]

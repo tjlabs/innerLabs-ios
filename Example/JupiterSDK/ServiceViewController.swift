@@ -62,9 +62,7 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
         let localTime: String = self.getLocalTimeString()
         let dt = result.mobile_time - self.observerTime
         let log: String = localTime + " , (JupiterVC) : dt = \(dt) // time = \(result.mobile_time) // befor = \(self.observerTime) // x = \(result.x) // y = \(result.y) // phase = \(result.phase)"
-//        if (dt > 300) {
-//            print(log)
-//        }
+//        print(log)
         
         self.observerTime = result.mobile_time
         let building = result.building_name
