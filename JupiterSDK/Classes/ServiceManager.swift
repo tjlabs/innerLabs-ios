@@ -541,6 +541,7 @@ public class ServiceManager: Observation {
             })
             
             let loadedBias = self.loadRssiBias(sector_id: self.sector_id)
+            print(localTime + " , (Jupiter) Bias Load : \(loadedBias)")
             self.rssiBias = loadedBias.0
             self.isBiasConverged = loadedBias.1
             
@@ -2164,7 +2165,7 @@ public class ServiceManager: Observation {
         // Converged
         do {
             let key: String = "JupiterRssiBiasConverge_\(sector_id)"
-            UserDefaults.standard.set(currentTime, forKey: key)
+            UserDefaults.standard.set(isConverged, forKey: key)
         } catch {
             print("(Jupiter) Error : Fail to save RssiBiasConverge")
         }
@@ -2227,6 +2228,7 @@ public class ServiceManager: Observation {
     }
     
     func reEstimateRssiBias() {
+        print(getLocalTimeString() + " , (Jupiter) Bias in not correct -> Initialization")
         self.isBiasConverged = false
         self.rssiBias = 2
         self.rssiBiasArray = [2, 0, 4]
