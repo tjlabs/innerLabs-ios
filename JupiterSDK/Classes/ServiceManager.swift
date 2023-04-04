@@ -19,7 +19,7 @@ public class ServiceManager: Observation {
     }
     
     // 0 : Release  //  1 : Test
-    var serverType: Int = 1
+    var serverType: Int = 0
     // 0 : Android  //  1 : iOS
     var osType: Int = 1
     var region: String = "Korea"
@@ -114,6 +114,7 @@ public class ServiceManager: Observation {
     var osrTimer: DispatchSourceTimer?
     var OSR_INTERVAL: TimeInterval = 2
     var phase2Count: Int = 0
+    var isEnterPhase2: Bool = false
     var SCC_FOR_PHASE4: Double = 0.65
 
     let SENSOR_INTERVAL: TimeInterval = 1/100
@@ -180,7 +181,7 @@ public class ServiceManager: Observation {
     var isScRequested: Bool = false
     
     let MINIMUN_INDEX_FOR_BIAS: Int = 30
-    let GOOD_BIAS_ARRAY_SIZE: Int = 22
+    let GOOD_BIAS_ARRAY_SIZE: Int = 30
     // --------------------------------- //
     
     
@@ -1076,7 +1077,6 @@ public class ServiceManager: Observation {
         let localTime: String = getLocalTimeString()
         if (!bleManager.bluetoothReady) {
             self.timeBleOff += RFD_INTERVAL
-            
             if (self.timeBleOff >= BLE_OFF_THRESHOLD) {
                 if (!self.isBleOff) {
                     self.isActiveReturn = false
@@ -1131,7 +1131,6 @@ public class ServiceManager: Observation {
                 self.timeActiveRF += RFD_INTERVAL
                 if (self.timeActiveRF >= SLEEP_THRESHOLD_RF) {
                     self.isActiveRF = false
-                    
                     // Here
                     if (self.isActiveReturn && self.isGetFirstResponse) {
                         if (!self.isBleOff) {
@@ -1354,70 +1353,87 @@ public class ServiceManager: Observation {
                                 self.phase = 1
                             }
                         } else {
-                            if (result.phase == 4) {
-                                var resultCorrected = self.pathMatching(building: result.building_name, level: result.level_name, x: result.x, y: result.y, heading: result.absolute_heading, tuXY: [0,0], mode: self.runMode, isPast: false, HEADING_RANGE: self.HEADING_RANGE)
-                                resultCorrected.xyh[2] = compensateHeading(heading: resultCorrected.xyh[2], mode: self.runMode)
-                                
-                                self.timeUpdatePosition.x = resultCorrected.xyh[0]
-                                self.timeUpdatePosition.y = resultCorrected.xyh[1]
-                                self.timeUpdatePosition.heading = resultCorrected.xyh[2]
+//                            if (result.phase == 4) {
+//                                self.phase2Count = 0
+//                            }
+                            
+                            var resultCorrected = self.pathMatching(building: result.building_name, level: result.level_name, x: result.x, y: result.y, heading: result.absolute_heading, tuXY: [0,0], mode: self.runMode, isPast: false, HEADING_RANGE: self.HEADING_RANGE)
+                            resultCorrected.xyh[2] = compensateHeading(heading: resultCorrected.xyh[2], mode: self.runMode)
+                            
+                            self.timeUpdatePosition.x = resultCorrected.xyh[0]
+                            self.timeUpdatePosition.y = resultCorrected.xyh[1]
+//                            self.timeUpdatePosition.heading = resultCorrected.xyh[2]
 
-                                self.timeUpdateOutput.x = resultCorrected.xyh[0]
-                                self.timeUpdateOutput.y = resultCorrected.xyh[1]
-                                self.timeUpdateOutput.absolute_heading = resultCorrected.xyh[2]
-                                
-                                self.measurementPosition.x = resultCorrected.xyh[0]
-                                self.measurementPosition.y = resultCorrected.xyh[1]
-                                self.measurementPosition.heading = resultCorrected.xyh[2]
-                                
-                                self.measurementOutput.x = resultCorrected.xyh[0]
-                                self.measurementOutput.y = resultCorrected.xyh[1]
-                                self.measurementOutput.absolute_heading = resultCorrected.xyh[2]
-                                
+                            self.timeUpdateOutput.x = resultCorrected.xyh[0]
+                            self.timeUpdateOutput.y = resultCorrected.xyh[1]
+//                            self.timeUpdateOutput.absolute_heading = resultCorrected.xyh[2]
+                            
+                            self.measurementPosition.x = resultCorrected.xyh[0]
+                            self.measurementPosition.y = resultCorrected.xyh[1]
+//                            self.measurementPosition.heading = resultCorrected.xyh[2]
+                            
+                            self.measurementOutput.x = resultCorrected.xyh[0]
+                            self.measurementOutput.y = resultCorrected.xyh[1]
+//                            self.measurementOutput.absolute_heading = resultCorrected.xyh[2]
+                            
+                            self.outputResult.x = resultCorrected.xyh[0]
+                            self.outputResult.y = resultCorrected.xyh[1]
+//                            self.outputResult.absolute_heading = result.absolute_heading
+                            
+                            if (result.phase == 4) {
                                 self.phase2Count = 0
+                                self.isEnterPhase2 = true
+                                self.timeUpdatePosition.heading = resultCorrected.xyh[2]
+                                self.timeUpdateOutput.absolute_heading = resultCorrected.xyh[2]
+                                self.measurementPosition.heading = resultCorrected.xyh[2]
+                                self.measurementOutput.absolute_heading = resultCorrected.xyh[2]
+                                self.outputResult.absolute_heading = result.absolute_heading
                             }
+                            
+                            self.resultToReturn = self.makeOutputResult(input: self.outputResult, isPast: self.flagPast, runMode: self.runMode, isVenusMode: self.isVenusMode)
+                            
                             self.phase = result.phase
                         }
                         
-                        let resultLevelName = removeLevelDirectionString(levelName: result.level_name)
-                        let currentLevelName = removeLevelDirectionString(levelName: self.currentLevel)
+//                        let resultLevelName = removeLevelDirectionString(levelName: result.level_name)
+//                        let currentLevelName = removeLevelDirectionString(levelName: self.currentLevel)
+//
+//                        let levelArray: [String] = [resultLevelName, currentLevelName]
+//                        var TIME_CONDITION = VALID_BL_CHANGE_TIME
+//                        if (levelArray.contains("B0") && levelArray.contains("B2")) {
+//                            TIME_CONDITION = 7000*3
+//                        }
                         
-                        let levelArray: [String] = [resultLevelName, currentLevelName]
-                        var TIME_CONDITION = VALID_BL_CHANGE_TIME
-                        if (levelArray.contains("B0") && levelArray.contains("B2")) {
-                            TIME_CONDITION = 7000*3
-                        }
-                        
-                        if (result.building_name != self.currentBuilding || resultLevelName != currentLevelName) {
-                            if ((result.mobile_time - self.buildingLevelChangedTime) > TIME_CONDITION) {
-                                // Building Level 이 바뀐지 7초 이상 지남 -> 서버 결과를 이용해 바뀌어야 한다고 판단
-                                self.currentBuilding = result.building_name
-                                self.currentLevel = result.level_name
-                                
-                                self.timeUpdateOutput.building_name = result.building_name
-                                self.timeUpdateOutput.level_name = result.level_name
-                                
-                                self.measurementOutput.building_name = result.building_name
-                                self.measurementOutput.level_name = result.level_name
-                                
-                                let finalResult = fromServerToResult(fromServer: result, velocity: displayOutput.velocity)
-                                self.outputResult = finalResult
-                                
-                                self.resultToReturn = self.makeOutputResult(input: self.outputResult, isPast: self.flagPast, runMode: self.runMode, isVenusMode: self.isVenusMode)
-                            } else {
-                                self.outputResult.x = result.x
-                                self.outputResult.y = result.y
-                                self.outputResult.absolute_heading = result.absolute_heading
-                                
-                                self.resultToReturn = self.makeOutputResult(input: self.outputResult, isPast: self.flagPast, runMode: self.runMode, isVenusMode: self.isVenusMode)
-                            }
-                        } else {
-                            self.outputResult.x = result.x
-                            self.outputResult.y = result.y
-                            self.outputResult.absolute_heading = result.absolute_heading
-                            
-                            self.resultToReturn = self.makeOutputResult(input: self.outputResult, isPast: self.flagPast, runMode: self.runMode, isVenusMode: self.isVenusMode)
-                        }
+//                        if (result.building_name != self.currentBuilding || resultLevelName != currentLevelName) {
+//                            if ((result.mobile_time - self.buildingLevelChangedTime) > TIME_CONDITION) {
+//                                // Building Level 이 바뀐지 7초 이상 지남 -> 서버 결과를 이용해 바뀌어야 한다고 판단
+//                                self.currentBuilding = result.building_name
+//                                self.currentLevel = result.level_name
+//
+//                                self.timeUpdateOutput.building_name = result.building_name
+//                                self.timeUpdateOutput.level_name = result.level_name
+//
+//                                self.measurementOutput.building_name = result.building_name
+//                                self.measurementOutput.level_name = result.level_name
+//
+//                                let finalResult = fromServerToResult(fromServer: result, velocity: displayOutput.velocity)
+//                                self.outputResult = finalResult
+//
+//                                self.resultToReturn = self.makeOutputResult(input: self.outputResult, isPast: self.flagPast, runMode: self.runMode, isVenusMode: self.isVenusMode)
+//                            } else {
+//                                self.outputResult.x = result.x
+//                                self.outputResult.y = result.y
+//                                self.outputResult.absolute_heading = result.absolute_heading
+//
+//                                self.resultToReturn = self.makeOutputResult(input: self.outputResult, isPast: self.flagPast, runMode: self.runMode, isVenusMode: self.isVenusMode)
+//                            }
+//                        } else {
+//                            self.outputResult.x = result.x
+//                            self.outputResult.y = result.y
+//                            self.outputResult.absolute_heading = result.absolute_heading
+//
+//                            self.resultToReturn = self.makeOutputResult(input: self.outputResult, isPast: self.flagPast, runMode: self.runMode, isVenusMode: self.isVenusMode)
+//                        }
                         
                         self.serverResult[0] = result.x
                         self.serverResult[1] = result.y
@@ -1801,19 +1817,38 @@ public class ServiceManager: Observation {
 
                                         var currentTuResult = self.currentTuResult
                                         var pastTuResult = self.pastTuResult
+                                        
+                                        var dx: Double = 0
+                                        var dy: Double = 0
+                                        var dh: Double = 0
+                                        
                                         if (currentTuResult.mobile_time != 0 && pastTuResult.mobile_time != 0) {
-                                            var dx: Double = 0
-                                            var dy: Double = 0
-                                            var dh: Double = 0
-                                            
-                                            if let idx = indexBuffer.firstIndex(of: result.index) {
-                                                if ( sqrt((dx*dx) + (dy*dy)) < 15 ) {
-                                                    dx = currentTuResult.x - tuBuffer[idx][0]
-                                                    dy = currentTuResult.y - tuBuffer[idx][1]
-                                                    currentTuResult.absolute_heading = compensateHeading(heading: currentTuResult.absolute_heading, mode: self.runMode)
-                                                    let tuBufferHeading = compensateHeading(heading: tuBuffer[idx][2], mode: self.runMode)
+                                            if (self.isEnterPhase2) {
+                                                self.isEnterPhase2 = false
+                                                
+                                                dx = currentTuResult.x - pastTuResult.x
+                                                dy = currentTuResult.y - pastTuResult.y
+                                                currentTuResult.absolute_heading = compensateHeading(heading: currentTuResult.absolute_heading, mode: self.runMode)
+                                                pastTuResult.absolute_heading = compensateHeading(heading: pastTuResult.absolute_heading, mode: self.runMode)
 
-                                                    dh = currentTuResult.absolute_heading - tuBufferHeading
+                                                dh = currentTuResult.absolute_heading - pastTuResult.absolute_heading
+                                            } else {
+                                                if let idx = indexBuffer.firstIndex(of: result.index) {
+                                                    if ( sqrt((dx*dx) + (dy*dy)) < 15 ) {
+                                                        dx = currentTuResult.x - tuBuffer[idx][0]
+                                                        dy = currentTuResult.y - tuBuffer[idx][1]
+                                                        currentTuResult.absolute_heading = compensateHeading(heading: currentTuResult.absolute_heading, mode: self.runMode)
+                                                        let tuBufferHeading = compensateHeading(heading: tuBuffer[idx][2], mode: self.runMode)
+
+                                                        dh = currentTuResult.absolute_heading - tuBufferHeading
+                                                    } else {
+                                                        dx = currentTuResult.x - pastTuResult.x
+                                                        dy = currentTuResult.y - pastTuResult.y
+                                                        currentTuResult.absolute_heading = compensateHeading(heading: currentTuResult.absolute_heading, mode: self.runMode)
+                                                        pastTuResult.absolute_heading = compensateHeading(heading: pastTuResult.absolute_heading, mode: self.runMode)
+
+                                                        dh = currentTuResult.absolute_heading - pastTuResult.absolute_heading
+                                                    }
                                                 } else {
                                                     dx = currentTuResult.x - pastTuResult.x
                                                     dy = currentTuResult.y - pastTuResult.y
@@ -1822,13 +1857,6 @@ public class ServiceManager: Observation {
 
                                                     dh = currentTuResult.absolute_heading - pastTuResult.absolute_heading
                                                 }
-                                            } else {
-                                                dx = currentTuResult.x - pastTuResult.x
-                                                dy = currentTuResult.y - pastTuResult.y
-                                                currentTuResult.absolute_heading = compensateHeading(heading: currentTuResult.absolute_heading, mode: self.runMode)
-                                                pastTuResult.absolute_heading = compensateHeading(heading: pastTuResult.absolute_heading, mode: self.runMode)
-
-                                                dh = currentTuResult.absolute_heading - pastTuResult.absolute_heading
                                             }
 
                                             resultForMu.x = resultCorrected.xyh[0] + dx
