@@ -502,12 +502,10 @@ public class ServiceManager: Observation {
                                     let requestURL = URLRequest(url: (urlComponents?.url)!)
                                     let dataTask = URLSession.shared.dataTask(with: requestURL, completionHandler: { (data, response, error) in
                                         let statusCode = (response as? HTTPURLResponse)?.statusCode ?? 500
-
                                         if (statusCode == 200) {
                                             if let responseData = data {
                                                 if let utf8Text = String(data: responseData, encoding: .utf8) {
                                                     ( self.Road[key], self.RoadHeading[key] ) = self.parseRoad(data: utf8Text)
-//                                                    self.AbnormalArea[key] = self.loadAbnormalArea(buildingName: buildingName, levelName: levelName)
                                                     self.isMapMatching = true
                                                     
                                                     let log: String = localTime + " , (Jupiter) Success : Load \(buildingName) \(levelName) Path-Point"
@@ -530,9 +528,6 @@ public class ServiceManager: Observation {
                                             self.EntranceArea[key] = result.entrance_area
                                         }
                                     })
-                                    // Entrance Area
-//                                    let key: String = "\(buildingName)_\(levelName)"
-//                                    self.EntranceArea[key] = loadEntranceArea(buildingName: buildingName, levelName: levelName)
                                 }
                             }
                         }
@@ -1353,10 +1348,6 @@ public class ServiceManager: Observation {
                                 self.phase = 1
                             }
                         } else {
-//                            if (result.phase == 4) {
-//                                self.phase2Count = 0
-//                            }
-                            
                             var resultCorrected = self.pathMatching(building: result.building_name, level: result.level_name, x: result.x, y: result.y, heading: result.absolute_heading, tuXY: [0,0], mode: self.runMode, isPast: false, HEADING_RANGE: self.HEADING_RANGE)
                             resultCorrected.xyh[2] = compensateHeading(heading: resultCorrected.xyh[2], mode: self.runMode)
                             
@@ -2250,7 +2241,7 @@ public class ServiceManager: Observation {
     }
     
     func makeRssiBiasArray(bias: Int) -> [Int] {
-        var loadedRssiBias: Int = bias
+        let loadedRssiBias: Int = bias
         let biasRange: Int = 3
         var biasArray: [Int] = [loadedRssiBias, loadedRssiBias-biasRange, loadedRssiBias+biasRange]
         
@@ -3028,15 +3019,6 @@ public class ServiceManager: Observation {
             }
         }
         return ble
-    }
-    
-    func isAddressValid<T>(_ address: UnsafePointer<T>) -> Bool {
-        do {
-            let value = address.pointee
-            return true
-        } catch {
-            return false
-        }
     }
     
     func latestBleData(bleDictionary: Dictionary<String, [[Double]]>) -> Dictionary<String, Double> {
