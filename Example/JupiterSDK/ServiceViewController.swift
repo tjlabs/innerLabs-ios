@@ -53,6 +53,10 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
             print(localTime + " , (Jupiter) Report : Start!! Run Mecury Mode")
         case 4:
             print(localTime + " , (Jupiter) Report : Start!! Run Jupiter Mode")
+        case 5:
+            print(localTime + " , (Jupiter) Report : Waiting Server Result...")
+        case 6:
+            print(localTime + " , (Jupiter) Report : Network Connection Lost")
         default:
             print(localTime + " , (Jupiter) Default Flag")
         }

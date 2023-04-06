@@ -3,7 +3,8 @@ import Foundation
 public class NetworkManager {
     
     static let shared = NetworkManager()
-    let TIMEOUT_VALUE: Double = 5.0
+    let TIMEOUT_VALUE_PUT: Double = 2.0
+    let TIMEOUT_VALUE_POST: Double = 5.0
     
     func putReceivedForce(url: String, input: [ReceivedForce], completion: @escaping (Int, String) -> Void){
         // [http 비동기 방식을 사용해서 http 요청 수행 실시]
@@ -25,8 +26,8 @@ public class NetworkManager {
     //        print("")
             
             let sessionConfig = URLSessionConfiguration.default
-            sessionConfig.timeoutIntervalForResource = TIMEOUT_VALUE
-            sessionConfig.timeoutIntervalForRequest = TIMEOUT_VALUE
+            sessionConfig.timeoutIntervalForResource = TIMEOUT_VALUE_PUT
+            sessionConfig.timeoutIntervalForRequest = TIMEOUT_VALUE_PUT
             let session = URLSession(configuration: sessionConfig)
             let dataTask = session.dataTask(with: requestURL, completionHandler: { (data, response, error) in
                 // [error가 존재하면 종료]
@@ -86,8 +87,8 @@ public class NetworkManager {
     //        print("")
             
             let sessionConfig = URLSessionConfiguration.default
-            sessionConfig.timeoutIntervalForResource = TIMEOUT_VALUE
-            sessionConfig.timeoutIntervalForRequest = TIMEOUT_VALUE
+            sessionConfig.timeoutIntervalForResource = TIMEOUT_VALUE_PUT
+            sessionConfig.timeoutIntervalForRequest = TIMEOUT_VALUE_PUT
             let session = URLSession(configuration: sessionConfig)
             let dataTask = session.dataTask(with: requestURL, completionHandler: { (data, response, error) in
                 // [error가 존재하면 종료]
@@ -141,8 +142,8 @@ public class NetworkManager {
             requestURL.setValue("\(encodingData)", forHTTPHeaderField: "Content-Length")
             
             let sessionConfig = URLSessionConfiguration.default
-            sessionConfig.timeoutIntervalForResource = TIMEOUT_VALUE
-            sessionConfig.timeoutIntervalForRequest = TIMEOUT_VALUE
+            sessionConfig.timeoutIntervalForResource = TIMEOUT_VALUE_POST
+            sessionConfig.timeoutIntervalForRequest = TIMEOUT_VALUE_POST
             let session = URLSession(configuration: sessionConfig)
             let dataTask = session.dataTask(with: requestURL, completionHandler: { (data, response, error) in
                 
@@ -199,8 +200,8 @@ public class NetworkManager {
             requestURL.setValue("\(encodingData)", forHTTPHeaderField: "Content-Length")
             
             let sessionConfig = URLSessionConfiguration.default
-            sessionConfig.timeoutIntervalForResource = TIMEOUT_VALUE
-            sessionConfig.timeoutIntervalForRequest = TIMEOUT_VALUE
+            sessionConfig.timeoutIntervalForResource = TIMEOUT_VALUE_POST
+            sessionConfig.timeoutIntervalForRequest = TIMEOUT_VALUE_POST
             let session = URLSession(configuration: sessionConfig)
             let dataTask = session.dataTask(with: requestURL, completionHandler: { (data, response, error) in
                 
@@ -263,8 +264,8 @@ public class NetworkManager {
             requestURL.setValue("\(encodingData)", forHTTPHeaderField: "Content-Length")
             
             let sessionConfig = URLSessionConfiguration.default
-            sessionConfig.timeoutIntervalForResource = TIMEOUT_VALUE
-            sessionConfig.timeoutIntervalForRequest = TIMEOUT_VALUE
+            sessionConfig.timeoutIntervalForResource = TIMEOUT_VALUE_POST
+            sessionConfig.timeoutIntervalForRequest = TIMEOUT_VALUE_POST
             let session = URLSession(configuration: sessionConfig)
             let dataTask = session.dataTask(with: requestURL, completionHandler: { (data, response, error) in
                 
@@ -331,8 +332,8 @@ public class NetworkManager {
 //            print("")
             
             let sessionConfig = URLSessionConfiguration.default
-            sessionConfig.timeoutIntervalForResource = TIMEOUT_VALUE
-            sessionConfig.timeoutIntervalForRequest = TIMEOUT_VALUE
+            sessionConfig.timeoutIntervalForResource = TIMEOUT_VALUE_POST
+            sessionConfig.timeoutIntervalForRequest = TIMEOUT_VALUE_POST
             let session = URLSession(configuration: sessionConfig)
             let dataTask = session.dataTask(with: requestURL, completionHandler: { (data, response, error) in
                 // [error가 존재하면 종료]
@@ -395,8 +396,8 @@ public class NetworkManager {
             requestURL.setValue("\(encodingData)", forHTTPHeaderField: "Content-Length")
             
             let sessionConfig = URLSessionConfiguration.default
-            sessionConfig.timeoutIntervalForResource = TIMEOUT_VALUE
-            sessionConfig.timeoutIntervalForRequest = TIMEOUT_VALUE
+            sessionConfig.timeoutIntervalForResource = TIMEOUT_VALUE_POST
+            sessionConfig.timeoutIntervalForRequest = TIMEOUT_VALUE_POST
             let session = URLSession(configuration: sessionConfig)
             let dataTask = session.dataTask(with: requestURL, completionHandler: { (data, response, error) in
                 
@@ -460,8 +461,8 @@ public class NetworkManager {
     //        print("")
 
             let sessionConfig = URLSessionConfiguration.default
-            sessionConfig.timeoutIntervalForResource = TIMEOUT_VALUE
-            sessionConfig.timeoutIntervalForRequest = TIMEOUT_VALUE
+            sessionConfig.timeoutIntervalForResource = TIMEOUT_VALUE_POST
+            sessionConfig.timeoutIntervalForRequest = TIMEOUT_VALUE_POST
             let session = URLSession(configuration: sessionConfig)
             let dataTask = session.dataTask(with: requestURL, completionHandler: { (data, response, error) in
                 
@@ -528,8 +529,8 @@ public class NetworkManager {
             requestURL.setValue("\(encodingData)", forHTTPHeaderField: "Content-Length")
             
             let sessionConfig = URLSessionConfiguration.default
-            sessionConfig.timeoutIntervalForResource = TIMEOUT_VALUE
-            sessionConfig.timeoutIntervalForRequest = TIMEOUT_VALUE
+            sessionConfig.timeoutIntervalForResource = TIMEOUT_VALUE_POST*2
+            sessionConfig.timeoutIntervalForRequest = TIMEOUT_VALUE_POST*2
             let session = URLSession(configuration: sessionConfig)
             let dataTask = session.dataTask(with: requestURL, completionHandler: { (data, response, error) in
                 

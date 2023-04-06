@@ -19,7 +19,7 @@ public class ServiceManager: Observation {
     }
     
     // 0 : Release  //  1 : Test
-    var serverType: Int = 0
+    var serverType: Int = 1
     // 0 : Android  //  1 : iOS
     var osType: Int = 1
     var region: String = "Korea"
@@ -147,6 +147,8 @@ public class ServiceManager: Observation {
     
     public var displayOutput = ServiceResult()
     
+    var networkCount: Int = 0
+    var isNetworkConnectReported: Bool = false
     var nowTime: Int = 0
     var RECENT_THRESHOLD: Int = 10000 // 2200
     var INDEX_THRESHOLD: Int = 11
@@ -1005,10 +1007,8 @@ public class ServiceManager: Observation {
     }
     
     @objc func outputTimerUpdate() {
-        let localTime = getLocalTimeString()
         if (self.isActiveReturn && self.isActiveService) {
             let currentTime = getCurrentTimeInMilliseconds()
-            let dt = currentTime - self.lastOutputTime
             
             var resultToReturn = self.resultToReturn
             resultToReturn.mobile_time = currentTime
@@ -1025,7 +1025,7 @@ public class ServiceManager: Observation {
             result.absolute_heading = compensateHeading(heading: result.absolute_heading, mode: runMode)
             result.mode = runMode
             displayOutput.mode = runMode
-//            var updatedResult = result
+
             // Map Matching
             if (self.isMapMatching) {
                 var mapMatchingMode: String = runMode
@@ -1348,7 +1348,8 @@ public class ServiceManager: Observation {
                                 self.phase = 1
                             }
                         } else {
-                            var resultCorrected = self.pathMatching(building: result.building_name, level: result.level_name, x: result.x, y: result.y, heading: result.absolute_heading, tuXY: [0,0], mode: self.runMode, isPast: false, HEADING_RANGE: self.HEADING_RANGE)
+                            let resultHeading = compensateHeading(heading: result.absolute_heading, mode: self.runMode)
+                            var resultCorrected = self.pathMatching(building: result.building_name, level: result.level_name, x: result.x, y: result.y, heading: resultHeading, tuXY: [0,0], mode: self.runMode, isPast: false, HEADING_RANGE: self.HEADING_RANGE)
                             resultCorrected.xyh[2] = compensateHeading(heading: resultCorrected.xyh[2], mode: self.runMode)
                             
                             self.timeUpdatePosition.x = resultCorrected.xyh[0]
@@ -1374,15 +1375,14 @@ public class ServiceManager: Observation {
                             if (result.phase == 4) {
                                 self.phase2Count = 0
                                 self.isEnterPhase2 = true
-                                self.timeUpdatePosition.heading = resultCorrected.xyh[2]
-                                self.timeUpdateOutput.absolute_heading = resultCorrected.xyh[2]
-                                self.measurementPosition.heading = resultCorrected.xyh[2]
-                                self.measurementOutput.absolute_heading = resultCorrected.xyh[2]
-                                self.outputResult.absolute_heading = result.absolute_heading
+//                                self.timeUpdatePosition.heading = resultCorrected.xyh[2]
+//                                self.timeUpdateOutput.absolute_heading = resultCorrected.xyh[2]
+//                                self.measurementPosition.heading = resultCorrected.xyh[2]
+//                                self.measurementOutput.absolute_heading = resultCorrected.xyh[2]
+//                                self.outputResult.absolute_heading = resultHeading
                             }
                             
                             self.resultToReturn = self.makeOutputResult(input: self.outputResult, isPast: self.flagPast, runMode: self.runMode, isVenusMode: self.isVenusMode)
-                            
                             self.phase = result.phase
                         }
                         
@@ -1469,7 +1469,9 @@ public class ServiceManager: Observation {
         self.phase2Count = 0
         let input = FineLocationTracking(user_id: self.user_id, mobile_time: currentTime, sector_id: self.sector_id, building_name: self.currentBuilding, level_name: self.currentLevel, spot_id: self.currentSpot, phase: self.phase, rss_compensation_list: requestBiasArray, sc_compensation_list: [1.0])
 //        print(localTime + " , (Jupiter) Phase 3 Input : \(input.level_name)")
+        self.networkCount += 1
         NetworkManager.shared.postFLT(url: FLT_URL, input: input, completion: { [self] statusCode, returnedString in
+            self.networkCount = 0
             if (statusCode == 200) {
                 let result = jsonToResult(json: returnedString)
                 if (result.x != 0 && result.y != 0) {
@@ -1695,7 +1697,9 @@ public class ServiceManager: Observation {
             }
         }
         let input = FineLocationTracking(user_id: self.user_id, mobile_time: currentTime, sector_id: self.sector_id, building_name: self.currentBuilding, level_name: self.currentLevel, spot_id: self.currentSpot, phase: self.phase, rss_compensation_list: requestBiasArray, sc_compensation_list: requestScArray)
+        self.networkCount += 1
         NetworkManager.shared.postFLT(url: FLT_URL, input: input, completion: { [self] statusCode, returnedString in
+            self.networkCount = 0
             if (statusCode == 200) {
                 let result = jsonToResult(json: returnedString)
                 // Bias Compensation
@@ -1963,6 +1967,20 @@ public class ServiceManager: Observation {
         } else {
             self.travelingOsrDistance = 0
         }
+        
+        if (self.networkCount >= 5 && NetworkCheck.shared.isConnectedToInternet()) {
+            self.reporting(input: NETWORK_WAITING_FLAG)
+        }
+        
+        if (NetworkCheck.shared.isConnectedToInternet()) {
+            self.isNetworkConnectReported = false
+        } else {
+            self.networkCount = 0
+            if (!self.isNetworkConnectReported) {
+                self.isNetworkConnectReported = true
+                self.reporting(input: NETWORK_CONNECTION_FLAG)
+            }
+        }
     }
     
     func isOnSpotRecognition(result: OnSpotRecognitionResult, level: String) -> (isOn: Bool, levelDestination: String, levelDirection: String) {
@@ -1981,7 +1999,6 @@ public class ServiceManager: Observation {
         } else {
             if (self.currentLevel == "") {
                 isOn = false
-                self.reporting(input: ABNORMAL_FLAG)
                 return (isOn, "", "")
             }
             
@@ -2152,7 +2169,6 @@ public class ServiceManager: Observation {
     }
     
     func checkIsEntranceLevel(result: FineLocationTrackingResult) -> Bool {
-        let localTime = getLocalTimeString()
         let lastResult = result
         
         let buildingName = lastResult.building_name
@@ -2353,7 +2369,7 @@ public class ServiceManager: Observation {
         let localTime = getLocalTimeString()
         let validTime = self.BLE_VALID_TIME
         let currentTime = getCurrentTimeInMilliseconds()
-        var bleDictionary: Dictionary<String, [[Double]]>? = bleManager.bleDictionary
+        let bleDictionary: Dictionary<String, [[Double]]>? = bleManager.bleDictionary
         if let bleData = bleDictionary {
             let bleTrimed = trimBleData(bleData: bleData, nowTime: getCurrentTimeInMillisecondsDouble(), validTime: validTime)
             let bleAvg = avgBleData(bleDictionary: bleTrimed)
