@@ -129,17 +129,4 @@ public func setBaseURL(url: String) {
     OSA_URL = BASE_URL + "OSA"
     OSR_URL = BASE_URL + "OSR"
     GEO_URL = BASE_URL + "GEO"
-    
-//    print("(Jupiter) USER_URL Changed : \(USER_URL)")
-//    print("(Jupiter) RF_URL Changed : \(RF_URL)")
-//    print("(Jupiter) UV_URL Changed : \(UV_URL)")
-//    print("(Jupiter) BASE_URL Changed : \(BASE_URL)")
-//    print("(Jupiter) FLT_URL Changed : \(FLT_URL)")
-    
-//    CLD_URL = url + "CLD"
-//    CLE_URL = url + "CLE"
-//    FLT_URL = url + "FLT"
-//    CLC_URL = url + "CLC"
-//    OSA_URL = url + "OSA"
-//    OSR_URL = url + "OSR"
 }

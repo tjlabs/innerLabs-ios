@@ -19,7 +19,7 @@ public class ServiceManager: Observation {
     }
     
     // 0 : Release  //  1 : Test
-    var serverType: Int = 1
+    var serverType: Int = 0
     // 0 : Android  //  1 : iOS
     var osType: Int = 1
     var region: String = "Korea"
@@ -2294,11 +2294,22 @@ public class ServiceManager: Observation {
         let diffScc: Double = SCC_MAX - sccResult
 
         newBiasArray[0] = biasStandard
-
-        var biasRange: Int = Int(round(diffScc*10))
-        if (biasRange < 1) {
+        
+        var biasRange: Int = 1
+        if (diffScc < 0.1) {
             biasRange = 1
+        } else if (diffScc < 0.18) {
+            biasRange = 2
+        } else if (diffScc < 0.25) {
+            biasRange = 3
+        } else {
+            biasRange = 5
         }
+
+//        var biasRange: Int = Int(round(diffScc*10))
+//        if (biasRange < 1) {
+//            biasRange = 1
+//        }
         
         if (sccResult < SCC_THRESHOLD) {
             let biasMinus: Int = biasStandard - biasRange
@@ -2489,26 +2500,6 @@ public class ServiceManager: Observation {
         road = [roadX, roadY]
         
         return (road, roadHeading)
-    }
-    
-    private func loadAbnormalArea(buildingName: String, levelName: String) -> [[Double]] {
-        var abnormalArea = [[Double]]()
-        let key: String = "\(buildingName)_\(levelName)"
-        if (key == "COEX_B2") {
-            abnormalArea.append([115, 291, 165, 303, 0.8])
-            abnormalArea.append([247, 263, 296, 305, 0.8])
-            abnormalArea.append([34, 186, 100, 198, 1.6])
-            abnormalArea.append([179, 7, 191, 32, 1.5])
-            abnormalArea.append([195, 122, 225, 134, 1.5])
-            abnormalArea.append([78, 99, 145, 111, 1.5])
-            abnormalArea.append([214, 383, 226, 410, 0.8])
-        } else if (key == "COEX_B3") {
-            abnormalArea.append([214, 412, 226, 446, 0.8])
-        } else if (key == "COEX_B4") {
-            abnormalArea.append([214, 412, 226, 446, 0.8])
-        }
-        
-        return abnormalArea
     }
     
     private func loadEntranceArea(buildingName: String, levelName: String) -> [[Double]] {
