@@ -104,6 +104,7 @@ public struct ServiceResult {
     public var scc: Double = 0
     public var phase: String = ""
     public var bias: Int = 0
+    public var isConverged: Bool = false
     public var mode: String = ""
     
     public var level: String = ""

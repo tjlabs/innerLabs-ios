@@ -73,6 +73,11 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
         let level = result.level_name
         let x = result.x
         let y = result.y
+        if (result.ble_only_position) {
+            self.isBleOnlyMode = true
+        } else {
+            self.isBleOnlyMode = false
+        }
 
         if (self.buildings.contains(building)) {
             if let levelList: [String] = self.levels[building] {
@@ -118,6 +123,10 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
     var timerCounter: Int = 0
     var timerTimeOut: Int = 10
     let TIMER_INTERVAL: TimeInterval = 1/10 // second
+    var pathPixelTimer: DispatchSourceTimer?
+    let PP_CHECK_INTERVAL: TimeInterval = 2
+    var isReportPpExist: Bool = false
+    
     
     var pastTime: Double = 0
     var elapsedTime: Double = 0
@@ -162,6 +171,7 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
     
     var idToMonitor: String = ""
     var isMonitor: Bool = false
+    var isBleOnlyMode: Bool = false
     
     // Level Collection View
     @IBOutlet weak var levelCollectionView: UICollectionView!
@@ -569,6 +579,12 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
             timer = Timer.scheduledTimer(timeInterval: TIMER_INTERVAL, target: self, selector: #selector(self.timerUpdate), userInfo: nil, repeats: true)
             RunLoop.current.add(self.timer!, forMode: .common)
         }
+        
+        let queue = DispatchQueue(label: Bundle.main.bundleIdentifier! + ".pathPixelTimer")
+        pathPixelTimer = DispatchSource.makeTimerSource(queue: queue)
+        pathPixelTimer!.schedule(deadline: .now(), repeating: PP_CHECK_INTERVAL)
+        pathPixelTimer!.setEventHandler(handler: self.pathPixelTimerUpdate)
+        pathPixelTimer!.activate()
     }
     
     func stopTimer() {
@@ -576,6 +592,9 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
             self.timer!.invalidate()
             self.timer = nil
         }
+        
+        pathPixelTimer?.cancel()
+        self.isReportPpExist = false
     }
     
     @objc func timerUpdate() {
@@ -633,14 +652,42 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
             resultToDisplay.unitLength = serviceManager.displayOutput.length
             resultToDisplay.scc = serviceManager.displayOutput.scc
             resultToDisplay.phase = serviceManager.displayOutput.phase
-
-            self.biasLabel.text = String(serviceManager.displayOutput.bias) + " // " + serviceManager.displayOutput.mode
+            
+            var biasText: String = String(serviceManager.displayOutput.bias) + " // " + serviceManager.displayOutput.mode
+            if (serviceManager.displayOutput.isConverged) {
+                biasText = "_" + String(serviceManager.displayOutput.bias) + "_" + " // " + serviceManager.displayOutput.mode
+            }
+            self.biasLabel.text = biasText
             
             if (isOpen) {
                 UIView.performWithoutAnimation { self.containerTableView.reloadSections(IndexSet(0...0), with: .none) }
             }
         }
     }
+    
+    @objc func pathPixelTimerUpdate() {
+        if (!self.isReportPpExist) {
+            let builidng: String = self.coordToDisplay.building
+            let level: String = self.coordToDisplay.level
+            let key: String = "\(builidng)_\(level)"
+            
+            DispatchQueue.main.async {
+                if (builidng != "" && level != "") {
+                    if let isLoadEnd = self.serviceManager.isLoadEnd[key] {
+                        if (isLoadEnd[0] && !isLoadEnd[1]) {
+                            self.isReportPpExist = true
+
+                            self.serviceManager.stopService()
+                            self.noImageLabel.text = "Cannot load the Path-Pixel"
+                            self.noImageLabel.isHidden = false
+                            self.imageLevel.isHidden = true
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
     
     func jsonToScale(json: String) -> ScaleResponse {
         let result = ScaleResponse(image_scale: "")
@@ -806,13 +853,17 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
         scatterChart.data = chartData
     }
     
-    private func drawUser(XY: [Double], heading: Double, limits: [Double], isMonitor: Bool) {
+    private func drawUser(XY: [Double], heading: Double, limits: [Double], isMonitor: Bool, isBleOnlyMode: Bool) {
         let values1 = (0..<1).map { (i) -> ChartDataEntry in
             return ChartDataEntry(x: XY[0], y: XY[1])
         }
         
         var valueColor = UIColor.systemRed
         if (isMonitor) {
+            valueColor = UIColor.systemBlue
+        }
+        
+        if (isBleOnlyMode) {
             valueColor = UIColor.systemBlue
         }
         let set1 = ScatterChartDataSet(entries: values1, label: "USER")
@@ -877,9 +928,14 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
         scatterChart.data = chartData
     }
     
-    private func drawDebug(XY: [Double], RP_X: [Double], RP_Y: [Double],  serverXY: [Double], tuXY: [Double], heading: Double, limits: [Double]) {
+    private func drawDebug(XY: [Double], RP_X: [Double], RP_Y: [Double],  serverXY: [Double], tuXY: [Double], heading: Double, limits: [Double], isBleOnlyMode: Bool) {
         let xAxisValue: [Double] = RP_X
         let yAxisValue: [Double] = RP_Y
+        
+        var valueColor = UIColor.systemRed
+        if (isBleOnlyMode) {
+            valueColor = UIColor.systemBlue
+        }
         
         let values0 = (0..<xAxisValue.count).map { (i) -> ChartDataEntry in
             return ChartDataEntry(x: xAxisValue[i], y: yAxisValue[i])
@@ -897,7 +953,7 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
         let set1 = ScatterChartDataSet(entries: values1, label: "USER")
         set1.drawValuesEnabled = false
         set1.setScatterShape(.circle)
-        set1.setColor(UIColor.systemRed)
+        set1.setColor(valueColor)
         set1.scatterShapeSize = 16
         
         let values2 = (0..<1).map { (i) -> ChartDataEntry in
@@ -1042,13 +1098,13 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
                     scatterChart.isHidden = true
                 } else {
 //                    drawRP(RP_X: rp[0], RP_Y: rp[1], XY: XY, heading: heading, limits: limits)
-                    drawDebug(XY: XY, RP_X: rp[0], RP_Y: rp[1], serverXY: serviceManager.serverResult, tuXY: serviceManager.timeUpdateResult, heading: heading, limits: limits)
+                    drawDebug(XY: XY, RP_X: rp[0], RP_Y: rp[1], serverXY: serviceManager.serverResult, tuXY: serviceManager.timeUpdateResult, heading: heading, limits: limits, isBleOnlyMode: self.isBleOnlyMode)
                 }
             }
         } else {
             if (buildings.contains(currentBuilding)) {
                 if (XY[0] != 0 && XY[1] != 0) {
-                    drawUser(XY: XY, heading: heading, limits: limits, isMonitor: false)
+                    drawUser(XY: XY, heading: heading, limits: limits, isMonitor: false, isBleOnlyMode: self.isBleOnlyMode)
                 }
             }
         }
@@ -1093,13 +1149,13 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
                     scatterChart.isHidden = true
                 } else {
 //                    drawRP(RP_X: rp[0], RP_Y: rp[1], XY: XY, heading: heading, limits: limits)
-                    drawDebug(XY: XY, RP_X: rp[0], RP_Y: rp[1], serverXY: serviceManager.serverResult, tuXY: serviceManager.timeUpdateResult, heading: heading, limits: limits)
+                    drawDebug(XY: XY, RP_X: rp[0], RP_Y: rp[1], serverXY: serviceManager.serverResult, tuXY: serviceManager.timeUpdateResult, heading: heading, limits: limits, isBleOnlyMode: self.isBleOnlyMode)
                 }
             }
         } else {
             if (buildings.contains(currentBuilding)) {
                 if (XY[0] != 0 && XY[1] != 0) {
-                    drawUser(XY: XY, heading: heading, limits: limits, isMonitor: true)
+                    drawUser(XY: XY, heading: heading, limits: limits, isMonitor: true, isBleOnlyMode: self.isBleOnlyMode)
                 }
             }
         }
@@ -1265,7 +1321,7 @@ extension ServiceViewController : UICollectionViewDelegate{
         } else {
             if (isShowRP) {
 //                drawRP(RP_X: rp[0], RP_Y: rp[1], XY: XY, heading: 0, limits: limits)
-                drawDebug(XY: XY, RP_X: rp[0], RP_Y: rp[1], serverXY: serviceManager.serverResult, tuXY: serviceManager.timeUpdateResult, heading: 0, limits: limits)
+                drawDebug(XY: XY, RP_X: rp[0], RP_Y: rp[1], serverXY: serviceManager.serverResult, tuXY: serviceManager.timeUpdateResult, heading: 0, limits: limits, isBleOnlyMode: self.isBleOnlyMode)
             }
             displayLevelImage(building: currentBuilding, level: currentLevel, flag: isShowRP)
         }

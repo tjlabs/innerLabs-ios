@@ -41,7 +41,8 @@ public class ServiceManager: Observation {
     var RoadHeading = [String: [String]]()
     var AbnormalArea = [String: [[Double]]]()
     var EntranceArea = [String: [[Double]]]()
-    
+    var PathMatchingArea = [String: [[Double]]]()
+    public var isLoadEnd = [String: [Bool]]()
     
     // ----- Sensor & BLE ----- //
     var sensorData = SensorData()
@@ -509,11 +510,13 @@ public class ServiceManager: Observation {
                                                 if let utf8Text = String(data: responseData, encoding: .utf8) {
                                                     ( self.Road[key], self.RoadHeading[key] ) = self.parseRoad(data: utf8Text)
                                                     self.isMapMatching = true
-                                                    
+                                                    self.isLoadEnd[key] = [true, true]
                                                     let log: String = localTime + " , (Jupiter) Success : Load \(buildingName) \(levelName) Path-Point"
                                                     print(log)
                                                 }
                                             }
+                                        } else {
+                                            self.isLoadEnd[key] = [true, false]
                                         }
                                     })
                                     dataTask.resume()
@@ -530,6 +533,9 @@ public class ServiceManager: Observation {
                                             self.EntranceArea[key] = result.entrance_area
                                         }
                                     })
+                                    
+                                    let keyPathMatching: String = "\(buildingName)_\(levelName)"
+                                    self.PathMatchingArea[keyPathMatching] = self.loadPathMatchingArea(buildingName: buildingName, levelName: levelName)
                                 }
                             }
                         }
@@ -541,6 +547,8 @@ public class ServiceManager: Observation {
             print(localTime + " , (Jupiter) Bias Load : \(loadedBias)")
             self.rssiBias = loadedBias.0
             self.isBiasConverged = loadedBias.1
+            displayOutput.bias = self.rssiBias
+            displayOutput.isConverged = self.isBiasConverged
             
             let biasArray = self.makeRssiBiasArray(bias: loadedBias.0)
             self.rssiBiasArray = biasArray
@@ -1105,6 +1113,7 @@ public class ServiceManager: Observation {
                 self.wakeUpFromSleepMode()
                 if (self.isActiveService) {
                     let data = ReceivedForce(user_id: self.user_id, mobile_time: currentTime, ble: bleAvg, pressure: self.pressure)
+//                    let data = ReceivedForce(user_id: self.user_id, mobile_time: currentTime, ble: ["TJ-00CB-0000024C-0000": -80.0], pressure: self.pressure)
                     
                     inputReceivedForce.append(data)
                     if ((inputReceivedForce.count-1) >= RFD_INPUT_NUM) {
@@ -1473,7 +1482,9 @@ public class ServiceManager: Observation {
         NetworkManager.shared.postFLT(url: FLT_URL, input: input, completion: { [self] statusCode, returnedString in
             self.networkCount = 0
             if (statusCode == 200) {
+//                print("Return : \(returnedString)")
                 let result = jsonToResult(json: returnedString)
+//                print("Decoded : \(result)")
                 if (result.x != 0 && result.y != 0) {
                     if (self.isBiasRequested) {
                         let biasCheckTime = abs(result.mobile_time - self.biasRequestTime)
@@ -1486,16 +1497,20 @@ public class ServiceManager: Observation {
                             if (resultEstRssiBias.0) {
                                 self.sccGoodBiasArray.append(result.rss_compensation)
                                 if (self.sccGoodBiasArray.count >= GOOD_BIAS_ARRAY_SIZE) {
-                                    let biasAvg: Int = averageBiasArray(biasArray: self.sccGoodBiasArray)
+                                    let biasAvg = averageBiasArray(biasArray: self.sccGoodBiasArray)
                                     self.sccGoodBiasArray.remove(at: 0)
-                                    self.rssiBias = biasAvg
-                                    self.isBiasConverged = true
+                                    self.rssiBias = biasAvg.0
+                                    self.isBiasConverged = biasAvg.1
+                                    if (!biasAvg.1) {
+                                        self.sccGoodBiasArray = [Int]()
+                                    }
                                     self.saveRssiBias(bias: self.rssiBias, isConverged: self.isBiasConverged, sector_id: self.sector_id)
                                 }
                             }
                             
                             self.isBiasRequested = false
                             displayOutput.bias = self.rssiBias
+                            displayOutput.isConverged = self.isBiasConverged
                         } else if (biasCheckTime > 3000) {
                             self.isBiasRequested = false
                         }
@@ -1513,7 +1528,7 @@ public class ServiceManager: Observation {
                         
                         // Check Bias Re-estimation is needed
                         if (self.isBiasConverged) {
-                            if (result.scc < 0.4) {
+                            if (result.scc < 0.5) {
                                 self.sccBadCount += 1
                                 if (self.sccBadCount > 1) {
                                     reEstimateRssiBias()
@@ -1714,15 +1729,19 @@ public class ServiceManager: Observation {
                         if (resultEstRssiBias.0) {
                             self.sccGoodBiasArray.append(result.rss_compensation)
                             if (self.sccGoodBiasArray.count >= GOOD_BIAS_ARRAY_SIZE) {
-                                let biasAvg: Int = averageBiasArray(biasArray: self.sccGoodBiasArray)
+                                let biasAvg = averageBiasArray(biasArray: self.sccGoodBiasArray)
                                 self.sccGoodBiasArray.remove(at: 0)
-                                self.rssiBias = biasAvg
-                                self.isBiasConverged = true
+                                self.rssiBias = biasAvg.0
+                                self.isBiasConverged = biasAvg.1
+                                if (!biasAvg.1) {
+                                    self.sccGoodBiasArray = [Int]()
+                                }
                                 self.saveRssiBias(bias: self.rssiBias, isConverged: self.isBiasConverged, sector_id: self.sector_id)
                             }
                         }
                         self.isBiasRequested = false
                         displayOutput.bias = self.rssiBias
+                        displayOutput.isConverged = self.isBiasConverged
                     } else if (biasCheckTime > 3000) {
                         self.isBiasRequested = false
                     }
@@ -2202,6 +2221,37 @@ public class ServiceManager: Observation {
         }
     }
     
+    func checkInPathMatchingArea(x: Double, y: Double, building: String, level: String) -> (Bool, [Double]) {
+        var area = [Double]()
+        
+        let buildingName = building
+        let levelName = removeLevelDirectionString(levelName: level)
+        
+        let key = "\(buildingName)_\(levelName)"
+        guard let pathMatchingArea: [[Double]] = PathMatchingArea[key] else {
+            return (false, area)
+        }
+        
+        for i in 0..<pathMatchingArea.count {
+            if (!pathMatchingArea[i].isEmpty) {
+                let xMin = pathMatchingArea[i][0]
+                let yMin = pathMatchingArea[i][1]
+                let xMax = pathMatchingArea[i][2]
+                let yMax = pathMatchingArea[i][3]
+                
+                if (x >= xMin && x <= xMax) {
+                    if (y >= yMin && y <= yMax) {
+                        area = pathMatchingArea[i]
+                        return (true, area)
+                    }
+                }
+            }
+            
+        }
+        
+        return (false, area)
+    }
+    
     func saveRssiBias(bias: Int, isConverged: Bool, sector_id: Int) {
         let currentTime = getCurrentTimeInMilliseconds()
         
@@ -2349,8 +2399,10 @@ public class ServiceManager: Observation {
         return newBiasArray
     }
     
-    func averageBiasArray(biasArray: [Int]) -> Int {
-        var result: Int = 0
+    func averageBiasArray(biasArray: [Int]) -> (Int, Bool) {
+        var bias: Int = 0
+        var isConverge: Bool = false
+        
         let array: [Double] = convertToDoubleArray(intArray: biasArray)
         
         let mean = array.reduce(0, +) / Double(array.count)
@@ -2361,14 +2413,16 @@ public class ServiceManager: Observation {
         if (validValues.count < 17) {
             let avgDouble: Double = biasArray.average
             
-            result = Int(round(avgDouble))
-            return result
+            bias = Int(round(avgDouble))
+            isConverge = false
+            return (bias, isConverge)
         } else {
             let sum = validValues.reduce(0, +)
             let avgDouble: Double = Double(sum) / Double(validValues.count)
             
-            result = Int(round(avgDouble))
-            return result
+            bias = Int(round(avgDouble))
+            isConverge = true
+            return (bias, isConverge)
         }
     }
     
@@ -2522,6 +2576,20 @@ public class ServiceManager: Observation {
         return entranceArea
     }
     
+    private func loadPathMatchingArea(buildingName: String, levelName: String) -> [[Double]] {
+        var entranceArea = [[Double]]()
+        let key: String = "\(buildingName)_\(levelName)"
+        if (key == "COEX_B2") {
+            entranceArea.append([265, 0, 298, 29])
+            entranceArea.append([238, 154, 258, 198])
+            entranceArea.append([284, 270, 296, 305])
+            entranceArea.append([227, 390, 262, 448])
+            entranceArea.append([14, 365, 67, 396])
+        }
+        
+        return entranceArea
+    }
+    
     private func updateAllResult(result: [Double]) {
         self.timeUpdatePosition.x = result[0]
         self.timeUpdatePosition.y = result[1]
@@ -2559,6 +2627,8 @@ public class ServiceManager: Observation {
                 return (isSuccess, xyh)
             }
             
+            let pathhMatchingArea = checkInPathMatchingArea(x: x, y: y, building: building, level: level)
+            
             // Heading 사용
             var idhArray = [[Double]]()
             var pathArray = [[Double]]()
@@ -2567,10 +2637,16 @@ public class ServiceManager: Observation {
                 let roadX = mainRoad[0]
                 let roadY = mainRoad[1]
                 
-                let xMin = x - SQUARE_RANGE
-                let xMax = x + SQUARE_RANGE
-                let yMin = y - SQUARE_RANGE
-                let yMax = y + SQUARE_RANGE
+                var xMin = x - SQUARE_RANGE
+                var xMax = x + SQUARE_RANGE
+                var yMin = y - SQUARE_RANGE
+                var yMax = y + SQUARE_RANGE
+                if (pathhMatchingArea.0) {
+                    xMin = pathhMatchingArea.1[0]
+                    xMax = pathhMatchingArea.1[1]
+                    yMin = pathhMatchingArea.1[2]
+                    yMax = pathhMatchingArea.1[3]
+                }
                 
                 for i in 0..<roadX.count {
                     let xPath = roadX[i]

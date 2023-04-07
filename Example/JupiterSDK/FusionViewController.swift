@@ -33,6 +33,12 @@ class FusionViewController: UIViewController, Observer {
             
             let x = result.x
             let y = result.y
+            
+            if (result.ble_only_position) {
+                self.isBleOnlyMode = true
+            } else {
+                self.isBleOnlyMode = false
+            }
 
             if (self.buildings.contains(building)) {
                 if let levelList: [String] = self.levels[building] {
@@ -91,6 +97,9 @@ class FusionViewController: UIViewController, Observer {
     var timerTimeOut: Int = 10
     let TIMER_INTERVAL: TimeInterval = 1/10 // second
     
+    var pathPixelTimer: DispatchSourceTimer?
+    let PP_CHECK_INTERVAL: TimeInterval = 2
+    
     var pastTime: Double = 0
     var elapsedTime: Double = 0
     
@@ -134,6 +143,8 @@ class FusionViewController: UIViewController, Observer {
     let dropDown = DropDown()
     
     var modeAuto: Bool = false
+    var isBleOnlyMode: Bool = false
+    var isReportPpExist: Bool = false
     
     // Neptune
     @IBOutlet weak var spotContentsView: UIView!
@@ -238,7 +249,7 @@ class FusionViewController: UIViewController, Observer {
                 let input = Scale(sector_id: cardData.sector_id, building_name: buildingName, level_name: levelName)
                 Network.shared.postScale(url: SCALE_URL, input: input, completion: { [self] statusCode, returnedString in
                     let result = jsonToScale(json: returnedString)
-                    
+                    print("Scale Result : \(result)")
                     if (statusCode >= 200 && statusCode <= 300) {
                         let scaleString = result.image_scale
                         
@@ -454,7 +465,14 @@ class FusionViewController: UIViewController, Observer {
     func startTimer() {
         if (timer == nil) {
             self.timer = Timer.scheduledTimer(timeInterval: TIMER_INTERVAL, target: self, selector: #selector(self.timerUpdate), userInfo: nil, repeats: true)
+            RunLoop.current.add(self.timer!, forMode: .common)
         }
+        
+        let queue = DispatchQueue(label: Bundle.main.bundleIdentifier! + ".pathPixelTimer")
+        pathPixelTimer = DispatchSource.makeTimerSource(queue: queue)
+        pathPixelTimer!.schedule(deadline: .now(), repeating: PP_CHECK_INTERVAL)
+        pathPixelTimer!.setEventHandler(handler: self.pathPixelTimerUpdate)
+        pathPixelTimer!.activate()
     }
     
     func stopTimer() {
@@ -462,6 +480,9 @@ class FusionViewController: UIViewController, Observer {
             self.timer!.invalidate()
             self.timer = nil
         }
+        
+        pathPixelTimer?.cancel()
+        self.isReportPpExist = false
     }
     
     @objc func timerUpdate() {
@@ -492,6 +513,29 @@ class FusionViewController: UIViewController, Observer {
             resultToDisplay.unitLength = serviceManager.displayOutput.length
             resultToDisplay.scc = serviceManager.displayOutput.scc
             resultToDisplay.phase = serviceManager.displayOutput.phase
+        }
+    }
+    
+    @objc func pathPixelTimerUpdate() {
+        if (!self.isReportPpExist) {
+            let builidng: String = self.coordToDisplay.building
+            let level: String = self.coordToDisplay.level
+            let key: String = "\(builidng)_\(level)"
+            
+            DispatchQueue.main.async {
+                if (builidng != "" && level != "") {
+                    if let isLoadEnd = self.serviceManager.isLoadEnd[key] {
+                        if (isLoadEnd[0] && !isLoadEnd[1]) {
+                            self.isReportPpExist = true
+
+                            self.serviceManager.stopService()
+                            self.noImageLabel.text = "Cannot load the Path-Pixel"
+                            self.noImageLabel.isHidden = false
+                            self.imageLevel.isHidden = true
+                        }
+                    }
+                }
+            }
         }
     }
     
@@ -571,16 +615,21 @@ class FusionViewController: UIViewController, Observer {
         })
     }
     
-    private func drawUser(XY: [Double], heading: Double, limits: [Double]) {
+    private func drawUser(XY: [Double], heading: Double, limits: [Double], isBleOnlyMode: Bool) {
         let values1 = (0..<1).map { (i) -> ChartDataEntry in
             return ChartDataEntry(x: XY[0], y: XY[1])
+        }
+        
+        var valueColor = UIColor.systemRed
+        if (isBleOnlyMode) {
+            valueColor = UIColor.systemBlue
         }
         
         let set1 = ScatterChartDataSet(entries: values1, label: "USER")
         set1.drawValuesEnabled = false
         set1.setScatterShape(.circle)
 
-        set1.setColor(UIColor.systemRed)
+        set1.setColor(valueColor)
         set1.scatterShapeSize = 16
         
         let chartData = ScatterChartData(dataSet: set1)
@@ -630,12 +679,17 @@ class FusionViewController: UIViewController, Observer {
         scatterChart.data = chartData
     }
     
-    private func drawDebug(XY: [Double], RP_X: [Double], RP_Y: [Double],  serverXY: [Double], tuXY: [Double], heading: Double, limits: [Double]) {
+    private func drawDebug(XY: [Double], RP_X: [Double], RP_Y: [Double],  serverXY: [Double], tuXY: [Double], heading: Double, limits: [Double], isBleOnlyMode: Bool) {
         let xAxisValue: [Double] = RP_X
         let yAxisValue: [Double] = RP_Y
         
         let values0 = (0..<xAxisValue.count).map { (i) -> ChartDataEntry in
             return ChartDataEntry(x: xAxisValue[i], y: yAxisValue[i])
+        }
+        
+        var valueColor = UIColor.systemRed
+        if (isBleOnlyMode) {
+            valueColor = UIColor.systemBlue
         }
         
         let set0 = ScatterChartDataSet(entries: values0, label: "RP")
@@ -650,7 +704,7 @@ class FusionViewController: UIViewController, Observer {
         let set1 = ScatterChartDataSet(entries: values1, label: "USER")
         set1.drawValuesEnabled = false
         set1.setScatterShape(.circle)
-        set1.setColor(UIColor.systemRed)
+        set1.setColor(valueColor)
         set1.scatterShapeSize = 16
         
         let values2 = (0..<1).map { (i) -> ChartDataEntry in
@@ -807,13 +861,13 @@ class FusionViewController: UIViewController, Observer {
                 if (rp.isEmpty) {
                     scatterChart.isHidden = true
                 } else {
-                    drawDebug(XY: XY, RP_X: rp[0], RP_Y: rp[1], serverXY: serviceManager.serverResult, tuXY: serviceManager.timeUpdateResult, heading: heading, limits: limits)
+                    drawDebug(XY: XY, RP_X: rp[0], RP_Y: rp[1], serverXY: serviceManager.serverResult, tuXY: serviceManager.timeUpdateResult, heading: heading, limits: limits, isBleOnlyMode: self.isBleOnlyMode)
                 }
             }
         } else {
             if (buildings.contains(currentBuilding)) {
                 if (XY[0] != 0 && XY[1] != 0) {
-                    drawUser(XY: XY, heading: heading, limits: limits)
+                    drawUser(XY: XY, heading: heading, limits: limits, isBleOnlyMode: self.isBleOnlyMode)
                 }
             }
         }
@@ -1056,7 +1110,7 @@ extension FusionViewController : UICollectionViewDelegate{
             scatterChart.isHidden = true
         } else {
             if (isShowRP) {
-                drawDebug(XY: XY, RP_X: rp[0], RP_Y: rp[1], serverXY: serviceManager.serverResult, tuXY: serviceManager.timeUpdateResult, heading: 0, limits: limits)
+                drawDebug(XY: XY, RP_X: rp[0], RP_Y: rp[1], serverXY: serviceManager.serverResult, tuXY: serviceManager.timeUpdateResult, heading: 0, limits: limits, isBleOnlyMode: self.isBleOnlyMode)
             }
             displayLevelImage(building: currentBuilding, level: currentLevel, flag: isShowRP)
         }
