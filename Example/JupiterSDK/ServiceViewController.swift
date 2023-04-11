@@ -50,7 +50,7 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
                 self.startTimer()
             }
         case 3:
-            print(localTime + " , (Jupiter) Report : Start!! Run Mecury Mode")
+            print(localTime + " , (Jupiter) Report : Start!! Run Venus Mode")
         case 4:
             print(localTime + " , (Jupiter) Report : Start!! Run Jupiter Mode")
         case 5:

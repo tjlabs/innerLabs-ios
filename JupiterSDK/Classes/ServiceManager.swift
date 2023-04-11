@@ -2,6 +2,7 @@ import Foundation
 import CoreMotion
 
 public class ServiceManager: Observation {
+    var sdkVersion: String = "1.11.27"
     
     func tracking(input: FineLocationTrackingResult, isPast: Bool) {
         for observer in observers {
@@ -19,7 +20,7 @@ public class ServiceManager: Observation {
     }
     
     // 0 : Release  //  1 : Test
-    var serverType: Int = 0
+    var serverType: Int = 1
     // 0 : Android  //  1 : iOS
     var osType: Int = 1
     var region: String = "Korea"
@@ -37,8 +38,10 @@ public class ServiceManager: Observation {
     var os: String = "Unknown"
     var osVersion: Int = 0
     
-    var Road = [String: [[Double]]]()
-    var RoadHeading = [String: [String]]()
+    var PathPoint = [String: [[Double]]]()
+    var PathMagScale = [String: [Double]]()
+    var PathHeading = [String: [String]]()
+    
     var AbnormalArea = [String: [[Double]]]()
     var EntranceArea = [String: [[Double]]]()
     var PathMatchingArea = [String: [[Double]]]()
@@ -334,7 +337,6 @@ public class ServiceManager: Observation {
             return (isSuccess, message)
         }
         
-        onStartFlag = false
         if (self.service == "FLT") {
             unitDRInfo = UnitDRInfo()
             unitDRGenerator.setMode(mode: mode)
@@ -352,7 +354,6 @@ public class ServiceManager: Observation {
             }
             setModeParam(mode: self.runMode, phase: self.phase)
         }
-        onStartFlag = true
         
         return (isSuccess, message)
     }
@@ -410,12 +411,13 @@ public class ServiceManager: Observation {
         self.RFD_INPUT_NUM = numInput
         self.RFD_INTERVAL = interval
         
-        if (onStartFlag) {
+        if (self.onStartFlag) {
             isSuccess = false
             message = localTime + " , (Jupiter) Error : Please stop another service"
             
             return (isSuccess, message)
         } else {
+            self.onStartFlag = true
             let initService = self.initService()
             if (!initService.0) {
                 isSuccess = initService.0
@@ -454,6 +456,7 @@ public class ServiceManager: Observation {
                 } else {
                     let log: String = localTime + " , (Jupiter) Error : User Login"
                     print(log)
+                    self.reporting(input: ABNORMAL_FLAG)
                 }
             })
             
@@ -499,8 +502,16 @@ public class ServiceManager: Observation {
                                 for j in 0..<levelList!.count {
                                     let levelName = levelList![j]
                                     let key: String = "\(buildingName)_\(levelName)"
-
-                                    let url = "https://storage.googleapis.com/\(IMAGE_URL)/pp/\(self.sectorIdOrigin)/\(key).csv"
+                                    
+                                    var url = "https://storage.googleapis.com/\(IMAGE_URL)/pp/\(self.sectorIdOrigin)/\(key).csv"
+                                    if (self.serverType == 0) {
+                                        if (BASE_URL.contains("where-run-ios-2")) {
+                                            url = "https://storage.googleapis.com/\(IMAGE_URL)/pp-2/\(self.sectorIdOrigin)/\(key).csv"
+                                        }
+                                    } else {
+                                        url = "https://storage.googleapis.com/\(IMAGE_URL)/pp-test/\(self.sectorIdOrigin)/\(key).csv"
+                                    }
+                                    
                                     let urlComponents = URLComponents(string: url)
                                     let requestURL = URLRequest(url: (urlComponents?.url)!)
                                     let dataTask = URLSession.shared.dataTask(with: requestURL, completionHandler: { (data, response, error) in
@@ -508,7 +519,10 @@ public class ServiceManager: Observation {
                                         if (statusCode == 200) {
                                             if let responseData = data {
                                                 if let utf8Text = String(data: responseData, encoding: .utf8) {
-                                                    ( self.Road[key], self.RoadHeading[key] ) = self.parseRoad(data: utf8Text)
+                                                    ( self.PathPoint[key], self.PathMagScale[key], self.PathHeading[key] ) = self.parseRoad(data: utf8Text)
+//                                                    print("Road \(key) = \(self.Road[key])")
+//                                                    print("RoadScale \(key) = \(self.RoadScale[key])")
+//                                                    print("RoadHeading \(key) = \(self.RoadHeading[key])")
                                                     self.isMapMatching = true
                                                     self.isLoadEnd[key] = [true, true]
                                                     let log: String = localTime + " , (Jupiter) Success : Load \(buildingName) \(levelName) Path-Point"
@@ -517,6 +531,10 @@ public class ServiceManager: Observation {
                                             }
                                         } else {
                                             self.isLoadEnd[key] = [true, false]
+                                            
+                                            let log: String = localTime + " , (Jupiter) Error : Load Path-Point \(buildingName) \(levelName)"
+                                            print(log)
+//                                            self.reporting(input: ABNORMAL_FLAG)
                                         }
                                     })
                                     dataTask.resume()
@@ -531,6 +549,10 @@ public class ServiceManager: Observation {
                                             let key: String = "\(buildingGeo)_\(levelGeo)"
                                             self.AbnormalArea[key] = result.geofences
                                             self.EntranceArea[key] = result.entrance_area
+                                        } else {
+                                            let log: String = localTime + " , (Jupiter) Error : Load Abnormal Area"
+                                            print(log)
+                                            self.reporting(input: ABNORMAL_FLAG)
                                         }
                                     })
                                     
@@ -540,6 +562,10 @@ public class ServiceManager: Observation {
                             }
                         }
                     }
+                } else {
+                    let log: String = localTime + " , (Jupiter) Error : Admin Login"
+                    print(log)
+                    self.reporting(input: ABNORMAL_FLAG)
                 }
             })
             
@@ -584,7 +610,6 @@ public class ServiceManager: Observation {
         
         if (self.service == "FLT") {
             unitDRInfo = UnitDRInfo()
-            onStartFlag = false
             saveRssiBias(bias: self.rssiBias, isConverged: self.isBiasConverged, sector_id: self.sector_id)
         }
         
@@ -619,6 +644,8 @@ public class ServiceManager: Observation {
 
         self.timeUpdateOutput = FineLocationTrackingFromServer()
         self.measurementOutput = FineLocationTrackingFromServer()
+        self.onStartFlag = false
+        self.isActiveReturn = true
     }
     
     public func initCollect() {
@@ -2246,7 +2273,6 @@ public class ServiceManager: Observation {
                     }
                 }
             }
-            
         }
         
         return (false, area)
@@ -2524,8 +2550,9 @@ public class ServiceManager: Observation {
         return result
     }
     
-    private func parseRoad(data: String) -> ( [[Double]], [String] ) {
+    private func parseRoad(data: String) -> ( [[Double]], [Double], [String] ) {
         var road = [[Double]]()
+        var roadScale = [Double]()
         var roadHeading = [String]()
         
         var roadX = [Double]()
@@ -2538,10 +2565,11 @@ public class ServiceManager: Observation {
                 
                 roadX.append(Double(lineData[0])!)
                 roadY.append(Double(lineData[1])!)
+                roadScale.append(Double(lineData[2])!)
                 
                 var headingArray: String = ""
-                if (lineData.count > 2) {
-                    for j in 2..<lineData.count {
+                if (lineData.count > 3) {
+                    for j in 3..<lineData.count {
                         headingArray.append(lineData[j])
                         if (lineData[j] != "") {
                             headingArray.append(",")
@@ -2553,7 +2581,7 @@ public class ServiceManager: Observation {
         }
         road = [roadX, roadY]
         
-        return (road, roadHeading)
+        return (road, roadScale, roadHeading)
     }
     
     private func loadEntranceArea(buildingName: String, levelName: String) -> [[Double]] {
@@ -2577,17 +2605,17 @@ public class ServiceManager: Observation {
     }
     
     private func loadPathMatchingArea(buildingName: String, levelName: String) -> [[Double]] {
-        var entranceArea = [[Double]]()
+        var pathMatchingArea = [[Double]]()
         let key: String = "\(buildingName)_\(levelName)"
         if (key == "COEX_B2") {
-            entranceArea.append([265, 0, 298, 29])
-            entranceArea.append([238, 154, 258, 198])
-            entranceArea.append([284, 270, 296, 305])
-            entranceArea.append([227, 390, 262, 448])
-            entranceArea.append([14, 365, 67, 396])
+            pathMatchingArea.append([265, 0, 298, 29])
+            pathMatchingArea.append([238, 154, 258, 198])
+            pathMatchingArea.append([284, 270, 296, 305])
+            pathMatchingArea.append([227, 390, 262, 448])
+            pathMatchingArea.append([14, 365, 67, 396])
         }
         
-        return entranceArea
+        return pathMatchingArea
     }
     
     private func updateAllResult(result: [Double]) {
@@ -2620,10 +2648,10 @@ public class ServiceManager: Observation {
         }
         
         if (!(building.isEmpty) && !(level.isEmpty)) {
-            guard let mainRoad: [[Double]] = Road[key] else {
+            guard let mainRoad: [[Double]] = PathPoint[key] else {
                 return (isSuccess, xyh)
             }
-            guard let mainHeading: [String] = RoadHeading[key] else {
+            guard let mainHeading: [String] = PathHeading[key] else {
                 return (isSuccess, xyh)
             }
             
@@ -2643,8 +2671,8 @@ public class ServiceManager: Observation {
                 var yMax = y + SQUARE_RANGE
                 if (pathhMatchingArea.0) {
                     xMin = pathhMatchingArea.1[0]
-                    xMax = pathhMatchingArea.1[1]
-                    yMin = pathhMatchingArea.1[2]
+                    yMin = pathhMatchingArea.1[1]
+                    xMax = pathhMatchingArea.1[2]
                     yMax = pathhMatchingArea.1[3]
                 }
                 

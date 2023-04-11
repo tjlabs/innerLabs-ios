@@ -21,6 +21,7 @@ public class NetworkManager {
             // [http 요청 수행 실시]
 //            print("")
 //            print("====================================")
+//            print("PUT RF URL :: ", url)
 //            print("PUT RF 데이터 :: ", input)
 //            print("====================================")
 //            print("")

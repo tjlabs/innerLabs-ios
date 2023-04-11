@@ -18,9 +18,34 @@ class FusionViewController: UIViewController, Observer {
         
         switch(flag) {
         case 0:
-            print(localTime + " , (Jupiter) Stop : Out of the Service Area")
+            print(localTime + " , (Jupiter) Report : Stop!! Out of the Service Area")
         case 1:
-            print(localTime + " , (Jupiter) Start : Enter the Service Area")
+            print(localTime + " , (Jupiter) Report : Start!! Enter the Service Area")
+        case 2:
+            print(localTime + " , (Jupiter) Report : BLE is Off")
+        case -1:
+            print(localTime + " , (Jupiter) Report : Abnormal!! Restart the Service")
+//            self.stopTimer()
+//            serviceManager.stopService()
+//
+//            var inputMode: String = "auto"
+//            if (self.sectorID == 6) {
+//                inputMode = "auto"
+//            } else {
+//                inputMode = cardData!.mode
+//            }
+//            let initService = serviceManager.startService(id: uuid, sector_id: cardData!.sector_id, service: serviceName, mode: inputMode)
+//            if (initService.0) {
+//                self.startTimer()
+//            }
+        case 3:
+            print(localTime + " , (Jupiter) Report : Start!! Run Venus Mode")
+        case 4:
+            print(localTime + " , (Jupiter) Report : Start!! Run Jupiter Mode")
+        case 5:
+            print(localTime + " , (Jupiter) Report : Waiting Server Result...")
+        case 6:
+            print(localTime + " , (Jupiter) Report : Network Connection Lost")
         default:
             print(localTime + " , (Jupiter) Default Flag")
         }
@@ -28,6 +53,9 @@ class FusionViewController: UIViewController, Observer {
     
     func update(result: FineLocationTrackingResult) {
         DispatchQueue.main.async {
+            let localTime: String = self.getLocalTimeString()
+            let dt = result.mobile_time - self.observerTime
+            
             let building = result.building_name
             let level = result.level_name
             
@@ -40,6 +68,9 @@ class FusionViewController: UIViewController, Observer {
                 self.isBleOnlyMode = false
             }
 
+//            let log: String = localTime + " , (FusionVC) : dt = \(dt) // time = \(result.mobile_time) // befor = \(self.observerTime) // x = \(result.x) // y = \(result.y) // h = \(result.absolute_heading) // phase = \(result.phase) // Venus = \(result.ble_only_position)"
+//            print(log)
+            
             if (self.buildings.contains(building)) {
                 if let levelList: [String] = self.levels[building] {
                     if (levelList.contains(level)) {
@@ -249,7 +280,7 @@ class FusionViewController: UIViewController, Observer {
                 let input = Scale(sector_id: cardData.sector_id, building_name: buildingName, level_name: levelName)
                 Network.shared.postScale(url: SCALE_URL, input: input, completion: { [self] statusCode, returnedString in
                     let result = jsonToScale(json: returnedString)
-                    print("Scale Result : \(result)")
+//                    print("Scale Result : \(result)")
                     if (statusCode >= 200 && statusCode <= 300) {
                         let scaleString = result.image_scale
                         
