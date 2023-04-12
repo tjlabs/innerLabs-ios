@@ -98,7 +98,8 @@ class NeptuneViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
         super.viewDidLoad()
         scatterChart.isHidden = true
         serviceManager.changeRegion(regionName: self.region)
-        serviceManager.startService(id: userId, sector_id: cardData!.sector_id, service: cardData!.service, mode: cardData!.mode)
+        serviceManager.startService(id: userId, sector_id: cardData!.sector_id, service: cardData!.service, mode: cardData!.mode, completion: { isStart, message in
+        })
         
         let tapRecognizer = UITapGestureRecognizer()
         tapRecognizer.addTarget(self, action: #selector(self.showRP))

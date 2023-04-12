@@ -36,19 +36,6 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
             print(localTime + " , (Jupiter) Report : BLE is Off")
         case -1:
             print(localTime + " , (Jupiter) Report : Abnormal!! Restart the Service")
-            self.stopTimer()
-            serviceManager.stopService()
-
-            var inputMode: String = "auto"
-            if (self.sectorID == 6) {
-                inputMode = "auto"
-            } else {
-                inputMode = cardData!.mode
-            }
-            let initService = serviceManager.startService(id: uuid, sector_id: cardData!.sector_id, service: serviceName, mode: inputMode)
-            if (initService.0) {
-                self.startTimer()
-            }
         case 3:
             print(localTime + " , (Jupiter) Report : Start!! Run Venus Mode")
         case 4:
@@ -1280,26 +1267,26 @@ extension ServiceViewController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-            if indexPath.section == 0 {
-                let serviceInfoTVC = tableView.dequeueReusableCell(withIdentifier: ServiceInfoTableViewCell.identifier) as!
-                ServiceInfoTableViewCell
+        if indexPath.section == 0 {
+            let serviceInfoTVC = tableView.dequeueReusableCell(withIdentifier: ServiceInfoTableViewCell.identifier) as!
+            ServiceInfoTableViewCell
                 
-                serviceInfoTVC.backgroundColor = .systemGray6
-                serviceInfoTVC.infoOfLevelsLabel.text = infoOfLevels
-                serviceInfoTVC.velocityLabel.text = "0"
+            serviceInfoTVC.backgroundColor = .systemGray6
+            serviceInfoTVC.infoOfLevelsLabel.text = infoOfLevels
+            serviceInfoTVC.velocityLabel.text = "0"
                 
-                serviceInfoTVC.updateResult(data: resultToDisplay)
+            serviceInfoTVC.updateResult(data: resultToDisplay)
                 
-                return serviceInfoTVC
-            } else {
-                let robotTVC = tableView.dequeueReusableCell(withIdentifier: RobotTableViewCell.identifier) as!
-                RobotTableViewCell
+            return serviceInfoTVC
+        } else {
+            let robotTVC = tableView.dequeueReusableCell(withIdentifier: RobotTableViewCell.identifier) as!
+            RobotTableViewCell
                 
-                robotTVC.delegate = self
-                robotTVC.backgroundColor = .systemGray6
+            robotTVC.delegate = self
+            robotTVC.backgroundColor = .systemGray6
                 
-                return robotTVC
-            }
+            return robotTVC
+        }
     }
 }
 
@@ -1392,12 +1379,17 @@ extension ServiceViewController: CustomSwitchButtonDelegate {
             } else {
                 inputMode = cardData!.mode
             }
-            let initService = serviceManager.startService(id: uuid, sector_id: cardData!.sector_id, service: serviceName, mode: inputMode)
-//            let initService = serviceManager.startService(id: uuid, sector_id: cardData!.sector_id, service: serviceName, mode: cardData!.mode)
-            if (initService.0) {
-                self.startTimer()
-            }
-            print(initService.1)
+            
+            serviceManager.startService(id: uuid, sector_id: cardData!.sector_id, service: serviceName, mode: inputMode, completion: { isStart, message in
+                if (isStart) {
+                    print("(SeviceVC) Success : \(message)")
+                    self.startTimer()
+                } else {
+                    print("(SeviceVC) Fail : \(message)")
+                    self.delegate?.sendPage(data: self.page)
+                    self.navigationController?.popViewController(animated: true)
+                }
+            })
             
         } else {
             self.hideDropDown(flag: false)

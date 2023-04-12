@@ -25,19 +25,6 @@ class FusionViewController: UIViewController, Observer {
             print(localTime + " , (Jupiter) Report : BLE is Off")
         case -1:
             print(localTime + " , (Jupiter) Report : Abnormal!! Restart the Service")
-//            self.stopTimer()
-//            serviceManager.stopService()
-//
-//            var inputMode: String = "auto"
-//            if (self.sectorID == 6) {
-//                inputMode = "auto"
-//            } else {
-//                inputMode = cardData!.mode
-//            }
-//            let initService = serviceManager.startService(id: uuid, sector_id: cardData!.sector_id, service: serviceName, mode: inputMode)
-//            if (initService.0) {
-//                self.startTimer()
-//            }
         case 3:
             print(localTime + " , (Jupiter) Report : Start!! Run Venus Mode")
         case 4:
@@ -1205,9 +1192,14 @@ extension FusionViewController: CustomSwitchButtonDelegate {
             serviceManager = ServiceManager()
             serviceManager.changeRegion(regionName: self.region)
             serviceManager.addObserver(self)
-            serviceManager.startService(id: uuid, sector_id: cardData!.sector_id, service: serviceName, mode: cardData!.mode)
-            
-            self.startTimer()
+            serviceManager.startService(id: uuid, sector_id: cardData!.sector_id, service: serviceName, mode: cardData!.mode, completion: { isStart, message in
+                if (isStart) {
+                    self.startTimer()
+                } else {
+                    self.delegate?.sendPage(data: self.page)
+                    self.navigationController?.popViewController(animated: true)
+                }
+            })
         } else {
             self.hideDropDown(flag: false)
             

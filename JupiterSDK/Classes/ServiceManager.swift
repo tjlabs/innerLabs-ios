@@ -2,7 +2,7 @@ import Foundation
 import CoreMotion
 
 public class ServiceManager: Observation {
-    var sdkVersion: String = "1.11.27"
+    var sdkVersion: String = "1.11.28"
     
     func tracking(input: FineLocationTrackingResult, isPast: Bool) {
         for observer in observers {
@@ -113,7 +113,6 @@ public class ServiceManager: Observation {
 
     var updateTimer: DispatchSourceTimer?
     var UPDATE_INTERVAL: TimeInterval = 1/5 // second
-    var updateTimerStartTime: Int = 0
 
     var osrTimer: DispatchSourceTimer?
     var OSR_INTERVAL: TimeInterval = 2
@@ -363,7 +362,7 @@ public class ServiceManager: Observation {
         settingURL(server: self.serverType, os: self.osType)
     }
 
-    public func startService(id: String, sector_id: Int, service: String, mode: String) -> (Bool, String) {
+    public func startService(id: String, sector_id: Int, service: String, mode: String, completion: @escaping (Bool, String) -> Void) {
         let localTime = getLocalTimeString()
         let log: String = localTime + " , (Jupiter) Success : Service Initalization"
         
@@ -405,7 +404,8 @@ public class ServiceManager: Observation {
         default:
             let log: String = localTime + " , (Jupiter) Error : Invalid Service Name"
             message = log
-            return (isSuccess, message)
+            
+            completion(false, message)
         }
         
         self.RFD_INPUT_NUM = numInput
@@ -415,7 +415,7 @@ public class ServiceManager: Observation {
             isSuccess = false
             message = localTime + " , (Jupiter) Error : Please stop another service"
             
-            return (isSuccess, message)
+            completion(isSuccess, message)
         } else {
             self.onStartFlag = true
             let initService = self.initService()
@@ -423,7 +423,7 @@ public class ServiceManager: Observation {
                 isSuccess = initService.0
                 message = initService.1
                 
-                return (isSuccess, message)
+                completion(isSuccess, message)
             }
         }
         
@@ -435,17 +435,8 @@ public class ServiceManager: Observation {
             let log: String = localTime + " , (Jupiter) Error : User ID cannot be empty or contain space"
             message = log
             
-            return (isSuccess, message)
+            completion(isSuccess, message)
         } else {
-            if (!NetworkCheck.shared.isConnectedToInternet()) {
-                isSuccess = false
-                
-                let log: String = localTime + " , (Jupiter) Error : Network is not connected"
-                message = log
-                
-                return (isSuccess, message)
-            }
-            
             // Login Success
             let userInfo = UserInfo(user_id: self.user_id, device_model: deviceModel, os_version: osVersion)
             postUser(url: USER_URL, input: userInfo, completion: { [self] statusCode, returnedString in
@@ -453,25 +444,12 @@ public class ServiceManager: Observation {
                     let log: String = localTime + " , (Jupiter) Success : User Login"
                     print(log)
                     self.startTimer()
-                } else {
-                    let log: String = localTime + " , (Jupiter) Error : User Login"
-                    print(log)
-                    self.reporting(input: ABNORMAL_FLAG)
-                }
-            })
-            
-            let adminInfo = UserInfo(user_id: "tjlabsAdmin", device_model: deviceModel, os_version: osVersion)
-            postUser(url: USER_URL, input: adminInfo, completion: { [self] statusCode, returnedString in
-                if (statusCode == 200) {
-                    let list = jsonToCardList(json: returnedString)
-                    let myCard = list.sectors
-
-                    for card in 0..<myCard.count {
-                        let cardInfo: CardInfo = myCard[card]
-                        let id: Int = cardInfo.sector_id
-
-                        if (id == self.sector_id) {
-                            let buildings_n_levels: [[String]] = cardInfo.building_level
+                    
+                    let sectorInfo = SectorInfo(sector_id: sector_id)
+                    postSector(url: SECTOR_URL, input: sectorInfo, completion: { [self] statusCode, returnedString in
+                        if (statusCode == 200) {
+                            let buildingLevelInfo = jsonToBuildingLevel(json: returnedString)
+                            let buildings_n_levels: [[String]] = buildingLevelInfo.building_level
 
                             var infoBuilding = [String]()
                             var infoLevel = [String:[String]]()
@@ -520,9 +498,6 @@ public class ServiceManager: Observation {
                                             if let responseData = data {
                                                 if let utf8Text = String(data: responseData, encoding: .utf8) {
                                                     ( self.PathPoint[key], self.PathMagScale[key], self.PathHeading[key] ) = self.parseRoad(data: utf8Text)
-//                                                    print("Road \(key) = \(self.Road[key])")
-//                                                    print("RoadScale \(key) = \(self.RoadScale[key])")
-//                                                    print("RoadHeading \(key) = \(self.RoadHeading[key])")
                                                     self.isMapMatching = true
                                                     self.isLoadEnd[key] = [true, true]
                                                     let log: String = localTime + " , (Jupiter) Success : Load \(buildingName) \(levelName) Path-Point"
@@ -532,9 +507,8 @@ public class ServiceManager: Observation {
                                         } else {
                                             self.isLoadEnd[key] = [true, false]
                                             
-                                            let log: String = localTime + " , (Jupiter) Error : Load Path-Point \(buildingName) \(levelName)"
+                                            let log: String = localTime + " , (Jupiter) Warnings : Load Path-Point \(buildingName) \(levelName)"
                                             print(log)
-//                                            self.reporting(input: ABNORMAL_FLAG)
                                         }
                                     })
                                     dataTask.resume()
@@ -550,9 +524,18 @@ public class ServiceManager: Observation {
                                             self.AbnormalArea[key] = result.geofences
                                             self.EntranceArea[key] = result.entrance_area
                                         } else {
-                                            let log: String = localTime + " , (Jupiter) Error : Load Abnormal Area"
-                                            print(log)
-                                            self.reporting(input: ABNORMAL_FLAG)
+                                            isSuccess = false
+                                            if (!NetworkCheck.shared.isConnectedToInternet()) {
+                                                isSuccess = false
+                                                let log: String = localTime + " , (Jupiter) Error : Network is not connected"
+                                                message = log
+                                                completion(isSuccess, message)
+                                            } else {
+                                                let log: String = localTime + " , (Jupiter) Error : Load Abnormal Area"
+                                                message = log
+                                                
+                                                completion(isSuccess, message)
+                                            }
                                         }
                                     })
                                     
@@ -560,30 +543,61 @@ public class ServiceManager: Observation {
                                     self.PathMatchingArea[keyPathMatching] = self.loadPathMatchingArea(buildingName: buildingName, levelName: levelName)
                                 }
                             }
+                            
+                            if (bleManager.bluetoothReady) {
+                                // Load Bias
+                                let loadedBias = self.loadRssiBias(sector_id: self.sector_id)
+                                print(localTime + " , (Jupiter) Bias Load : \(loadedBias)")
+                                self.rssiBias = loadedBias.0
+                                self.isBiasConverged = loadedBias.1
+                                displayOutput.bias = self.rssiBias
+                                displayOutput.isConverged = self.isBiasConverged
+                                
+                                let biasArray = self.makeRssiBiasArray(bias: loadedBias.0)
+                                self.rssiBiasArray = biasArray
+                                
+                                self.isActiveReturn = true
+                                
+                                completion(true, message)
+                            } else {
+                                let log: String = localTime + " , (Jupiter) Error : Bluetooth is not enabled"
+                                message = log
+                                
+                                completion(false, message)
+                            }
+                        } else {
+                            isSuccess = false
+                            if (!NetworkCheck.shared.isConnectedToInternet()) {
+                                isSuccess = false
+                                let log: String = localTime + " , (Jupiter) Error : Load Building & Level Information"
+                                message = log
+                                completion(isSuccess, message)
+                            } else {
+                                let log: String = localTime + " , (Jupiter) Error : Admin Login"
+                                message = log
+                                
+                                completion(isSuccess, message)
+                            }
                         }
-                    }
+                    })
                 } else {
-                    let log: String = localTime + " , (Jupiter) Error : Admin Login"
-                    print(log)
-                    self.reporting(input: ABNORMAL_FLAG)
+                    isSuccess = false
+                    if (!NetworkCheck.shared.isConnectedToInternet()) {
+                        isSuccess = false
+                        let log: String = localTime + " , (Jupiter) Error : Network is not connected"
+                        message = log
+                        completion(isSuccess, message)
+                    } else {
+                        let log: String = localTime + " , (Jupiter) Error : User Login"
+                        message = log
+                        
+                        completion(isSuccess, message)
+                    }
                 }
             })
-            
-            let loadedBias = self.loadRssiBias(sector_id: self.sector_id)
-            print(localTime + " , (Jupiter) Bias Load : \(loadedBias)")
-            self.rssiBias = loadedBias.0
-            self.isBiasConverged = loadedBias.1
-            displayOutput.bias = self.rssiBias
-            displayOutput.isConverged = self.isBiasConverged
-            
-            let biasArray = self.makeRssiBiasArray(bias: loadedBias.0)
-            self.rssiBiasArray = biasArray
-            
-            self.isActiveReturn = true
-            
-            return (isSuccess, message)
         }
     }
+    
     
     func settingURL(server: Int, os: Int) {
         // (server) 0 : Release  //  1 : Test
@@ -602,8 +616,9 @@ public class ServiceManager: Observation {
         setBaseURL(url: BASE_URL)
     }
     
-    public func stopService() {
+    public func stopService() -> (Bool, String) {
         let localTime: String = getLocalTimeString()
+        let message: String = localTime + " , (Jupiter) Success : Stop Service"
         
         stopTimer()
         stopBLE()
@@ -617,8 +632,7 @@ public class ServiceManager: Observation {
         displayOutput.phase = String(0)
         self.isMapMatching = false
         
-        let log: String = localTime + " , (Jupiter) Stop Service"
-        print(log)
+        return (true, message)
     }
     
     private func initVariables() {
@@ -992,7 +1006,6 @@ public class ServiceManager: Observation {
         updateTimer!.schedule(deadline: .now(), repeating: UPDATE_INTERVAL)
         updateTimer!.setEventHandler(handler: self.outputTimerUpdate)
         updateTimer!.activate()
-        updateTimerStartTime = getCurrentTimeInMilliseconds()
         
         let queueOSR = DispatchQueue(label: Bundle.main.bundleIdentifier! + ".osrTimer")
         osrTimer = DispatchSource.makeTimerSource(queue: queueOSR)
@@ -2826,6 +2839,50 @@ public class ServiceManager: Observation {
         dataTask.resume()
     }
     
+    func postSector(url: String, input: SectorInfo, completion: @escaping (Int, String) -> Void) {
+        // [http 비동기 방식을 사용해서 http 요청 수행 실시]
+        let urlComponents = URLComponents(string: url)
+        var requestURL = URLRequest(url: (urlComponents?.url)!)
+        
+        requestURL.httpMethod = "POST"
+        let encodingData = JSONConverter.encodeJson(param: input)
+        requestURL.httpBody = encodingData
+        requestURL.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        requestURL.setValue("\(encodingData)", forHTTPHeaderField: "Content-Length")
+        
+        let dataTask = URLSession.shared.dataTask(with: requestURL, completionHandler: { (data, response, error) in
+            
+            // [error가 존재하면 종료]
+            guard error == nil else {
+                // [콜백 반환]
+                completion(500, error?.localizedDescription ?? "Fail")
+                return
+            }
+            
+            // [status 코드 체크 실시]
+            let successsRange = 200..<300
+            guard let statusCode = (response as? HTTPURLResponse)?.statusCode, successsRange.contains(statusCode)
+            else {
+                // [콜백 반환]
+                completion(500, (response as? HTTPURLResponse)?.description ?? "Fail")
+                return
+            }
+            
+            // [response 데이터 획득]
+            let resultCode = (response as? HTTPURLResponse)?.statusCode ?? 500 // [상태 코드]
+            let resultLen = data! // [데이터 길이]
+            let resultData = String(data: resultLen, encoding: .utf8) ?? "" // [데이터 확인]
+            
+            // [콜백 반환]
+            DispatchQueue.main.async {
+                completion(resultCode, resultData)
+            }
+        })
+        
+        // [network 통신 실행]
+        dataTask.resume()
+    }
+    
     func jsonToCardList(json: String) -> CardList {
         let result = CardList(sectors: [])
         let decoder = JSONDecoder()
@@ -2833,6 +2890,19 @@ public class ServiceManager: Observation {
         let jsonString = json
         
         if let data = jsonString.data(using: .utf8), let decoded = try? decoder.decode(CardList.self, from: data) {
+            return decoded
+        }
+        
+        return result
+    }
+    
+    func jsonToBuildingLevel(json: String) -> BuildingLevelInfo {
+        let result = BuildingLevelInfo(building_level: [[]])
+        let decoder = JSONDecoder()
+        
+        let jsonString = json
+        
+        if let data = jsonString.data(using: .utf8), let decoded = try? decoder.decode(BuildingLevelInfo.self, from: data) {
             return decoded
         }
         

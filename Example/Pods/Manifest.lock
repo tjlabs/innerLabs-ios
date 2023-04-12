@@ -43,7 +43,7 @@ PODS:
   - "GoogleUtilities/NSData+zlib (7.10.0)"
   - GoogleUtilities/UserDefaults (7.10.0):
     - GoogleUtilities/Logger
-  - JupiterSDK (1.11.15)
+  - JupiterSDK (1.11.28)
   - Kingfisher (7.4.1)
   - PromisesObjC (2.1.1)
   - SnapKit (5.6.0)
@@ -111,7 +111,7 @@ SPEC CHECKSUMS:
   GoogleMaps: b7f7fc569a9b354a3af0d9729dbec40957b7d41e
   GooglePlaces: ca8d4aba09ba79e0a829cf1dca03a41de6a09016
   GoogleUtilities: bad72cb363809015b1f7f19beb1f1cd23c589f95
-  JupiterSDK: dcd86262387614a6ea93816e869792353bec94bf
+  JupiterSDK: cfe859c56559ab4db8900d7d2e26b13e4986b07d
   Kingfisher: cd762a593a61b2fbecf7645c00f9a801a3ebfc9c
   PromisesObjC: ab77feca74fa2823e7af4249b8326368e61014cb
   SnapKit: e01d52ebb8ddbc333eefe2132acf85c8227d9c25
@@ -121,4 +121,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 07c20e70fa033b0ae71a20b38a04732041538b32
 
-COCOAPODS: 1.11.3
+COCOAPODS: 1.12.0

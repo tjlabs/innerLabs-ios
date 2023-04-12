@@ -5,6 +5,8 @@ var REGION = "-skrgq3jc5a-du.a.run.app"
 var IMAGE_URL = "jupiter_image"
 
 var USER_URL = "https://where-run-user" + REGION + "/user"
+var SECTOR_URL = "https://where-run-user" + REGION + "/sector"
+
 var RF_URL = "https://where-run-record" + REGION + "/recordRF"
 var UV_URL = "https://where-run-record" + REGION + "/recordUV"
 var RECENT_URL = "https://where-run-user" + REGION + "/recent"
@@ -112,6 +114,8 @@ public func setBaseURL(url: String) {
     BASE_URL = url
     
     USER_URL = "https://where-run-user" + REGION + "/user"
+    SECTOR_URL = "https://where-run-user" + REGION + "/sector"
+    
     RF_URL = "https://where-run-record" + REGION + "/recordRF"
     UV_URL = "https://where-run-record" + REGION + "/recordUV"
     RECENT_URL = "https://where-run-user" + REGION + "/recent"

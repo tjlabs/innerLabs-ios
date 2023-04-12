@@ -67,11 +67,11 @@ class TipsTownViewController: UIViewController {
         runMode = cardData!.mode
         
         // Service Manger
-        serviceManager.startService(id: userId, sector_id: cardData!.sector_id, service: serviceName, mode: cardData!.mode)
-//        self.startTimer()
-        
-        // Floating Button
-//        setFloatingButton()
+        serviceManager.startService(id: userId, sector_id: cardData!.sector_id, service: serviceName, mode: cardData!.mode, completion: { isStart, message in
+            if (isStart) {
+                self.startTimer()
+            }
+        })
         
         configureScrollView()
         

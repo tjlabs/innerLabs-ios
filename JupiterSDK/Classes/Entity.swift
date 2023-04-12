@@ -6,6 +6,14 @@ struct UserInfo: Codable {
     var os_version: Int
 }
 
+struct SectorInfo: Codable {
+    var sector_id: Int
+}
+
+struct BuildingLevelInfo: Codable {
+    var building_level: [[String]]
+}
+ 
 struct CardList: Codable {
     var sectors: [CardInfo]
 }
