@@ -19,6 +19,9 @@ class FusionViewController: UIViewController, Observer {
         switch(flag) {
         case 0:
             print(localTime + " , (Jupiter) Report : Stop!! Out of the Service Area")
+            DispatchQueue.main.async { [self] in
+                self.switchButton.isOn = false
+            }
         case 1:
             print(localTime + " , (Jupiter) Report : Start!! Enter the Service Area")
         case 2:
@@ -1184,28 +1187,45 @@ extension FusionViewController : UICollectionViewDelegateFlowLayout{
 
 extension FusionViewController: CustomSwitchButtonDelegate {
     func isOnValueChange(isOn: Bool) {
-        self.modeAuto = isOn
-        
-        if (isOn) {
-            self.hideDropDown(flag: true)
+        DispatchQueue.main.async { [self] in
+            self.modeAuto = isOn
             
-            serviceManager = ServiceManager()
-            serviceManager.changeRegion(regionName: self.region)
-            serviceManager.addObserver(self)
-            serviceManager.startService(id: uuid, sector_id: cardData!.sector_id, service: serviceName, mode: cardData!.mode, completion: { isStart, message in
-                if (isStart) {
-                    self.startTimer()
+            if (isOn) {
+                self.hideDropDown(flag: true)
+                
+                serviceManager = ServiceManager()
+                serviceManager.changeRegion(regionName: self.region)
+                serviceManager.addObserver(self)
+                serviceManager.startService(id: uuid, sector_id: cardData!.sector_id, service: serviceName, mode: cardData!.mode, completion: { isStart, message in
+                    if (isStart) {
+                        print("(FusionVC) Success : \(message)")
+                        self.startTimer()
+                    } else {
+                        print("(FusionVC) Fail : \(message)")
+                        self.delegate?.sendPage(data: self.page)
+                        self.navigationController?.popViewController(animated: true)
+                    }
+                })
+            } else {
+                self.hideDropDown(flag: false)
+                
+                let isStop = serviceManager.stopService()
+                if (isStop.0) {
+                    self.currentBuilding = ""
+                    self.currentLevel = ""
+                    self.pastBuilding = ""
+                    self.pastLevel = ""
+                    self.displayLevelImage(building: currentBuilding, level: currentLevel, flag: isShowRP)
+                    
+                    print("(FusionVC) Success : \(isStop.1)")
+                    serviceManager.removeObserver(self)
+                    self.stopTimer()
                 } else {
+                    print("(FusionVC) Fail : \(isStop.1)")
                     self.delegate?.sendPage(data: self.page)
                     self.navigationController?.popViewController(animated: true)
                 }
-            })
-        } else {
-            self.hideDropDown(flag: false)
-            
-            serviceManager.removeObserver(self)
-            serviceManager.stopService()
-            self.stopTimer()
+            }
         }
     }
 }

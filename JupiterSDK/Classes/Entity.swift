@@ -10,7 +10,7 @@ struct SectorInfo: Codable {
     var sector_id: Int
 }
 
-struct BuildingLevelInfo: Codable {
+struct SectorInfoResult: Codable {
     var building_level: [[String]]
 }
  
@@ -136,6 +136,13 @@ struct UserVelocity: Encodable {
     var length: Double
     var heading: Double
     var looking: Bool
+}
+
+struct RssiBias: Encodable {
+    var os_version: Int
+    var device_model: String
+    var rssi_scale: Double
+    var rssi_bias: Int
 }
 
 // Sector Detection

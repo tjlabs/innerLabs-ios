@@ -30,6 +30,9 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
         switch(flag) {
         case 0:
             print(localTime + " , (Jupiter) Report : Stop!! Out of the Service Area")
+            DispatchQueue.main.async { [self] in
+                self.switchButton.isOn = false
+            }
         case 1:
             print(localTime + " , (Jupiter) Report : Start!! Enter the Service Area")
         case 2:
@@ -548,11 +551,6 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
                 }
             }
             rpXY = [rpX, rpY]
-            
-            let xMin = rpXY[0].min()!
-            let xMax = rpXY[0].max()!
-            let yMin = rpXY[1].min()!
-            let yMax = rpXY[1].max()!
         } catch {
             print("Error reading .csv file")
         }
@@ -1364,39 +1362,54 @@ extension ServiceViewController : UICollectionViewDelegateFlowLayout{
 
 extension ServiceViewController: CustomSwitchButtonDelegate {
     func isOnValueChange(isOn: Bool) {
-        self.modeAuto = isOn
-        
-        if (isOn) {
-            self.hideDropDown(flag: true)
+        DispatchQueue.main.async { [self] in
+            self.modeAuto = isOn
             
-            serviceManager = ServiceManager()
-            serviceManager.changeRegion(regionName: self.region)
-            serviceManager.addObserver(self)
-            
-            var inputMode: String = "auto"
-            if (self.sectorID == 6) {
-                inputMode = "auto"
-            } else {
-                inputMode = cardData!.mode
-            }
-            
-            serviceManager.startService(id: uuid, sector_id: cardData!.sector_id, service: serviceName, mode: inputMode, completion: { isStart, message in
-                if (isStart) {
-                    print("(SeviceVC) Success : \(message)")
-                    self.startTimer()
+            if (isOn) {
+                self.hideDropDown(flag: true)
+                
+                serviceManager = ServiceManager()
+                serviceManager.changeRegion(regionName: self.region)
+                serviceManager.addObserver(self)
+                
+                var inputMode: String = "auto"
+                if (self.sectorID == 6) {
+                    inputMode = "auto"
                 } else {
-                    print("(SeviceVC) Fail : \(message)")
+                    inputMode = cardData!.mode
+                }
+                
+                serviceManager.startService(id: uuid, sector_id: cardData!.sector_id, service: serviceName, mode: inputMode, completion: { isStart, message in
+                    if (isStart) {
+                        print("(ServiceVC) Success : \(message)")
+                        self.startTimer()
+                    } else {
+                        print("(ServiceVC) Fail : \(message)")
+                        self.delegate?.sendPage(data: self.page)
+                        self.navigationController?.popViewController(animated: true)
+                    }
+                })
+                
+            } else {
+                self.hideDropDown(flag: false)
+                
+                serviceManager.removeObserver(self)
+                let isStop = serviceManager.stopService()
+                if (isStop.0) {
+                    self.currentBuilding = ""
+                    self.currentLevel = ""
+                    self.pastBuilding = ""
+                    self.pastLevel = ""
+                    self.displayLevelImage(building: currentBuilding, level: currentLevel, flag: isShowRP)
+                    
+                    print("(SeviceVC) Success : \(isStop.1)")
+                    self.stopTimer()
+                } else {
+                    print("(SeviceVC) Fail : \(isStop.1)")
                     self.delegate?.sendPage(data: self.page)
                     self.navigationController?.popViewController(animated: true)
                 }
-            })
-            
-        } else {
-            self.hideDropDown(flag: false)
-            
-            serviceManager.removeObserver(self)
-            serviceManager.stopService()
-            self.stopTimer()
+            }
         }
     }
 }

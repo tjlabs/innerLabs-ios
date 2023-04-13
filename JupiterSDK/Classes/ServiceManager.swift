@@ -20,7 +20,7 @@ public class ServiceManager: Observation {
     }
     
     // 0 : Release  //  1 : Test
-    var serverType: Int = 1
+    var serverType: Int = 0
     // 0 : Android  //  1 : iOS
     var osType: Int = 1
     var region: String = "Korea"
@@ -143,7 +143,8 @@ public class ServiceManager: Observation {
     var unitDRGenerator = UnitDRGenerator()
     
     var unitDistane: Double = 0
-    var onStartFlag: Bool = false
+    var isStartFlag: Bool = false
+    var isStartComplete: Bool = false
     
     var preOutputMobileTime: Int = 0
     var preUnitHeading: Double = 0
@@ -376,6 +377,8 @@ public class ServiceManager: Observation {
         self.service = service
         self.mode = mode
         
+        var countBuildingLevel: Int = 0
+        
         var interval: Double = 1/2
         var numInput = 6
         
@@ -411,13 +414,13 @@ public class ServiceManager: Observation {
         self.RFD_INPUT_NUM = numInput
         self.RFD_INTERVAL = interval
         
-        if (self.onStartFlag) {
+        if (self.isStartFlag) {
             isSuccess = false
             message = localTime + " , (Jupiter) Error : Please stop another service"
             
             completion(isSuccess, message)
         } else {
-            self.onStartFlag = true
+            self.isStartFlag = true
             let initService = self.initService()
             if (!initService.0) {
                 isSuccess = initService.0
@@ -448,7 +451,7 @@ public class ServiceManager: Observation {
                     let sectorInfo = SectorInfo(sector_id: sector_id)
                     postSector(url: SECTOR_URL, input: sectorInfo, completion: { [self] statusCode, returnedString in
                         if (statusCode == 200) {
-                            let buildingLevelInfo = jsonToBuildingLevel(json: returnedString)
+                            let buildingLevelInfo = jsonToSectorInfoResult(json: returnedString)
                             let buildings_n_levels: [[String]] = buildingLevelInfo.building_level
 
                             var infoBuilding = [String]()
@@ -472,6 +475,8 @@ public class ServiceManager: Observation {
                                     infoLevel[buildingName] = levels
                                 }
                             }
+                            
+                            let countAll = countAllValuesInDictionary(infoLevel)
 
                             // Key-Value Saved
                             for i in 0..<infoBuilding.count {
@@ -481,13 +486,13 @@ public class ServiceManager: Observation {
                                     let levelName = levelList![j]
                                     let key: String = "\(buildingName)_\(levelName)"
                                     
-                                    var url = "https://storage.googleapis.com/\(IMAGE_URL)/pp/\(self.sectorIdOrigin)/\(key).csv"
+                                    var url = "https://storage.googleapis.com/\(IMAGE_URL)/ios/pp/\(self.sectorIdOrigin)/\(key).csv"
                                     if (self.serverType == 0) {
                                         if (BASE_URL.contains("where-run-ios-2")) {
-                                            url = "https://storage.googleapis.com/\(IMAGE_URL)/pp-2/\(self.sectorIdOrigin)/\(key).csv"
+                                            url = "https://storage.googleapis.com/\(IMAGE_URL)/ios/pp-2/\(self.sectorIdOrigin)/\(key).csv"
                                         }
                                     } else {
-                                        url = "https://storage.googleapis.com/\(IMAGE_URL)/pp-test/\(self.sectorIdOrigin)/\(key).csv"
+                                        url = "https://storage.googleapis.com/\(IMAGE_URL)/ios/pp-test/\(self.sectorIdOrigin)/\(key).csv"
                                     }
                                     
                                     let urlComponents = URLComponents(string: url)
@@ -500,6 +505,9 @@ public class ServiceManager: Observation {
                                                     ( self.PathPoint[key], self.PathMagScale[key], self.PathHeading[key] ) = self.parseRoad(data: utf8Text)
                                                     self.isMapMatching = true
                                                     self.isLoadEnd[key] = [true, true]
+//                                                    print("PathPoint \(key) = \(self.PathPoint[key])")
+//                                                    print("PathMagScale \(key) = \(self.PathMagScale[key])")
+//                                                    print("PathHeading \(key) = \(self.PathHeading[key])")
                                                     let log: String = localTime + " , (Jupiter) Success : Load \(buildingName) \(levelName) Path-Point"
                                                     print(log)
                                                 }
@@ -523,8 +531,38 @@ public class ServiceManager: Observation {
                                             let key: String = "\(buildingGeo)_\(levelGeo)"
                                             self.AbnormalArea[key] = result.geofences
                                             self.EntranceArea[key] = result.entrance_area
+                                            
+                                            countBuildingLevel += 1
+                                            
+                                            if (countBuildingLevel == countAll) {
+                                                if (bleManager.bluetoothReady) {
+                                                    // Load Bias
+                                                    let loadedBias = self.loadRssiBias(sector_id: self.sector_id)
+                                                    print(localTime + " , (Jupiter) Bias Load : \(loadedBias)")
+                                                    self.rssiBias = loadedBias.0
+                                                    self.isBiasConverged = loadedBias.1
+                                                    displayOutput.bias = self.rssiBias
+                                                    displayOutput.isConverged = self.isBiasConverged
+                                                    
+                                                    let biasArray = self.makeRssiBiasArray(bias: loadedBias.0)
+                                                    self.rssiBiasArray = biasArray
+                                                    
+                                                    self.isActiveReturn = true
+                                                    
+                                                    self.isStartComplete = true
+
+                                                    completion(true, message)
+                                                } else {
+                                                    let log: String = localTime + " , (Jupiter) Error : Bluetooth is not enabled"
+                                                    message = log
+                                                    
+                                                    self.stopTimer()
+                                                    completion(false, message)
+                                                }
+                                            }
                                         } else {
                                             isSuccess = false
+                                            self.stopTimer()
                                             if (!NetworkCheck.shared.isConnectedToInternet()) {
                                                 isSuccess = false
                                                 let log: String = localTime + " , (Jupiter) Error : Network is not connected"
@@ -543,37 +581,16 @@ public class ServiceManager: Observation {
                                     self.PathMatchingArea[keyPathMatching] = self.loadPathMatchingArea(buildingName: buildingName, levelName: levelName)
                                 }
                             }
-                            
-                            if (bleManager.bluetoothReady) {
-                                // Load Bias
-                                let loadedBias = self.loadRssiBias(sector_id: self.sector_id)
-                                print(localTime + " , (Jupiter) Bias Load : \(loadedBias)")
-                                self.rssiBias = loadedBias.0
-                                self.isBiasConverged = loadedBias.1
-                                displayOutput.bias = self.rssiBias
-                                displayOutput.isConverged = self.isBiasConverged
-                                
-                                let biasArray = self.makeRssiBiasArray(bias: loadedBias.0)
-                                self.rssiBiasArray = biasArray
-                                
-                                self.isActiveReturn = true
-                                
-                                completion(true, message)
-                            } else {
-                                let log: String = localTime + " , (Jupiter) Error : Bluetooth is not enabled"
-                                message = log
-                                
-                                completion(false, message)
-                            }
                         } else {
                             isSuccess = false
+                            self.stopTimer()
                             if (!NetworkCheck.shared.isConnectedToInternet()) {
                                 isSuccess = false
-                                let log: String = localTime + " , (Jupiter) Error : Load Building & Level Information"
+                                let log: String = localTime + " , (Jupiter) Error : Network is not connected"
                                 message = log
                                 completion(isSuccess, message)
                             } else {
-                                let log: String = localTime + " , (Jupiter) Error : Admin Login"
+                                let log: String = localTime + " , (Jupiter) Error : Load Building & Level Information"
                                 message = log
                                 
                                 completion(isSuccess, message)
@@ -582,6 +599,7 @@ public class ServiceManager: Observation {
                     })
                 } else {
                     isSuccess = false
+                    self.stopTimer()
                     if (!NetworkCheck.shared.isConnectedToInternet()) {
                         isSuccess = false
                         let log: String = localTime + " , (Jupiter) Error : Network is not connected"
@@ -590,7 +608,7 @@ public class ServiceManager: Observation {
                     } else {
                         let log: String = localTime + " , (Jupiter) Error : User Login"
                         message = log
-                        
+
                         completion(isSuccess, message)
                     }
                 }
@@ -618,21 +636,27 @@ public class ServiceManager: Observation {
     
     public func stopService() -> (Bool, String) {
         let localTime: String = getLocalTimeString()
-        let message: String = localTime + " , (Jupiter) Success : Stop Service"
+        var message: String = localTime + " , (Jupiter) Success : Stop Service"
         
-        stopTimer()
-        stopBLE()
-        
-        if (self.service == "FLT") {
-            unitDRInfo = UnitDRInfo()
-            saveRssiBias(bias: self.rssiBias, isConverged: self.isBiasConverged, sector_id: self.sector_id)
+        if (self.isStartComplete) {
+            stopTimer()
+            stopBLE()
+            
+            if (self.service == "FLT") {
+                unitDRInfo = UnitDRInfo()
+                saveRssiBias(bias: self.rssiBias, isConverged: self.isBiasConverged, sector_id: self.sector_id)
+            }
+            
+            self.initVariables()
+            self.isStartComplete = false
+            displayOutput.phase = String(0)
+            self.isMapMatching = false
+            
+            return (true, message)
+        } else {
+            message = localTime + " , (Jupiter) Fail : After the service has fully started, it can be stop "
+            return (false, message)
         }
-        
-        self.initVariables()
-        displayOutput.phase = String(0)
-        self.isMapMatching = false
-        
-        return (true, message)
     }
     
     private func initVariables() {
@@ -658,7 +682,7 @@ public class ServiceManager: Observation {
 
         self.timeUpdateOutput = FineLocationTrackingFromServer()
         self.measurementOutput = FineLocationTrackingFromServer()
-        self.onStartFlag = false
+        self.isStartFlag = false
         self.isActiveReturn = true
     }
     
@@ -671,14 +695,14 @@ public class ServiceManager: Observation {
     }
     
     public func startCollect() {
-        onStartFlag = true
+        isStartFlag = true
     }
     
     public func stopCollect() {
         stopCollectTimer()
         stopBLE()
         
-        onStartFlag = false
+        isStartFlag = false
     }
     
     public func getResult(completion: @escaping (Int, String) -> Void) {
@@ -1220,7 +1244,7 @@ public class ServiceManager: Observation {
         // UV Control
         setModeParam(mode: self.runMode, phase: self.phase)
         
-        if (onStartFlag && self.service == "FLT") {
+        if (isStartFlag && self.service == "FLT") {
             unitDRInfo = unitDRGenerator.generateDRInfo(sensorData: sensorData)
         }
         
@@ -2015,11 +2039,6 @@ public class ServiceManager: Observation {
                 }
             })
             
-            // Check Abnormal Area
-            let lastResult = self.lastResult
-            let scaleFactor = self.checkInAbnormalArea(result: lastResult)
-            unitDRGenerator.setVelocityScaleFactor(scaleFactor: scaleFactor)
-            
             // Check Entrance Level
             let isEntrance = self.checkIsEntranceLevel(result: lastResult)
             unitDRGenerator.setIsEntranceLevel(flag: isEntrance)
@@ -2319,6 +2338,10 @@ public class ServiceManager: Observation {
         }
     }
     
+    func putRssiBias() {
+        
+    }
+    
     func loadRssiBias(sector_id: Int) -> (Int, Bool) {
         var bias: Int = 2
         var isConverged: Bool = false
@@ -2487,7 +2510,7 @@ public class ServiceManager: Observation {
             print(log)
         }
         
-        if (onStartFlag) {
+        if (isStartFlag) {
             unitDRInfo = unitDRGenerator.generateDRInfo(sensorData: sensorData)
         }
         
@@ -2664,6 +2687,11 @@ public class ServiceManager: Observation {
             guard let mainRoad: [[Double]] = PathPoint[key] else {
                 return (isSuccess, xyh)
             }
+            
+            guard let mainMagScale: [Double] = PathMagScale[key] else {
+                return (isSuccess, xyh)
+            }
+            
             guard let mainHeading: [String] = PathHeading[key] else {
                 return (isSuccess, xyh)
             }
@@ -2671,7 +2699,7 @@ public class ServiceManager: Observation {
             let pathhMatchingArea = checkInPathMatchingArea(x: x, y: y, building: building, level: level)
             
             // Heading 사용
-            var idhArray = [[Double]]()
+            var idshArray = [[Double]]()
             var pathArray = [[Double]]()
             var failArray = [[Double]]()
             if (!mainRoad.isEmpty) {
@@ -2698,7 +2726,9 @@ public class ServiceManager: Observation {
                         if (yPath >= yMin && yPath <= yMax) {
                             let index = Double(i)
                             let distance = sqrt(pow(x-xPath, 2) + pow(y-yPath, 2))
-                            var idh: [Double] = [index, distance, heading]
+                            
+                            let magScale = mainMagScale[i]
+                            var idsh: [Double] = [index, distance, magScale, heading]
                             var path: [Double] = [xPath, yPath, 0, 0]
                             
                             let headingArray = mainHeading[i]
@@ -2722,7 +2752,7 @@ public class ServiceManager: Observation {
                                 if (!diffHeading.isEmpty) {
                                     let idxHeading = diffHeading.firstIndex(of: diffHeading.min()!)
                                     let minHeading = Double(headingData[idxHeading!])!
-                                    idh[2] = minHeading
+                                    idsh[3] = minHeading
                                     if (mode == "pdr") {
                                         
                                     } else {
@@ -2745,31 +2775,36 @@ public class ServiceManager: Observation {
                                 }
                             }
                             if (isValidIdh) {
-                                idhArray.append(idh)
+                                idshArray.append(idsh)
                                 pathArray.append(path)
                             } else {
-                                failArray.append(idh)
+                                failArray.append(idsh)
                             }
                         }
                     }
                 }
                 
-                if (!idhArray.isEmpty) {
-                    let sortedIdh = idhArray.sorted(by: {$0[1] < $1[1] })
+                if (!idshArray.isEmpty) {
+                    let sortedIdsh = idshArray.sorted(by: {$0[1] < $1[1] })
                     var index: Int = 0
                     var correctedHeading: Double = heading
+                    var correctedScale = 1.0
                     
-                    if (!sortedIdh.isEmpty) {
-                        let minData: [Double] = sortedIdh[0]
+                    if (!sortedIdsh.isEmpty) {
+                        let minData: [Double] = sortedIdsh[0]
                         index = Int(minData[0])
                         if (mode == "pdr") {
                             correctedHeading = heading
                         } else {
-                            correctedHeading = minData[2]
+                            correctedScale = minData[2]
+                            correctedHeading = minData[3]
                         }
                     }
                     
                     isSuccess = true
+                    
+                    unitDRGenerator.setVelocityScaleFactor(scaleFactor: correctedScale)
+//                    print(getLocalTimeString() + " , (Jupiter) Set Mag Scale : x = \(roadX[index]) , y = \(roadY[index]) , scale = \(correctedScale)")
                     xyh = [roadX[index], roadY[index], correctedHeading]
                 }
             }
@@ -2896,13 +2931,13 @@ public class ServiceManager: Observation {
         return result
     }
     
-    func jsonToBuildingLevel(json: String) -> BuildingLevelInfo {
-        let result = BuildingLevelInfo(building_level: [[]])
+    func jsonToSectorInfoResult(json: String) -> SectorInfoResult {
+        let result = SectorInfoResult(building_level: [[]])
         let decoder = JSONDecoder()
         
         let jsonString = json
         
-        if let data = jsonString.data(using: .utf8), let decoded = try? decoder.decode(BuildingLevelInfo.self, from: data) {
+        if let data = jsonString.data(using: .utf8), let decoded = try? decoder.decode(SectorInfoResult.self, from: data) {
             return decoded
         }
         
@@ -2938,6 +2973,14 @@ public class ServiceManager: Observation {
                 self.INDEX_THRESHOLD = UVD_INPUT_NUM+1
             }
         }
+    }
+    
+    func countAllValuesInDictionary(_ dictionary: [String: [String]]) -> Int {
+        var count = 0
+        for (_, value) in dictionary {
+            count += value.count
+        }
+        return count
     }
     
     // Kalman Filter
