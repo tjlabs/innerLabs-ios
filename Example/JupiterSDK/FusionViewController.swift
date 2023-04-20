@@ -1203,7 +1203,9 @@ extension FusionViewController: CustomSwitchButtonDelegate {
                     } else {
                         print("(FusionVC) Fail : \(message)")
                         self.delegate?.sendPage(data: self.page)
-                        self.navigationController?.popViewController(animated: true)
+                        DispatchQueue.main.async {
+                            self.navigationController?.popViewController(animated: true)
+                        }
                     }
                 })
             } else {
@@ -1223,7 +1225,9 @@ extension FusionViewController: CustomSwitchButtonDelegate {
                 } else {
                     print("(FusionVC) Fail : \(isStop.1)")
                     self.delegate?.sendPage(data: self.page)
-                    self.navigationController?.popViewController(animated: true)
+                    DispatchQueue.main.async {
+                        self.navigationController?.popViewController(animated: true)
+                    }
                 }
             }
         }

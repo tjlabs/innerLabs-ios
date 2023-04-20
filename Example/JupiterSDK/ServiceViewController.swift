@@ -1386,7 +1386,9 @@ extension ServiceViewController: CustomSwitchButtonDelegate {
                     } else {
                         print("(ServiceVC) Fail : \(message)")
                         self.delegate?.sendPage(data: self.page)
-                        self.navigationController?.popViewController(animated: true)
+                        DispatchQueue.main.async {
+                            self.navigationController?.popViewController(animated: true)
+                        }
                     }
                 })
                 
@@ -1407,7 +1409,9 @@ extension ServiceViewController: CustomSwitchButtonDelegate {
                 } else {
                     print("(SeviceVC) Fail : \(isStop.1)")
                     self.delegate?.sendPage(data: self.page)
-                    self.navigationController?.popViewController(animated: true)
+                    DispatchQueue.main.async {
+                        self.navigationController?.popViewController(animated: true)
+                    }
                 }
             }
         }
