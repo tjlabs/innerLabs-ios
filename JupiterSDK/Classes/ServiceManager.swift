@@ -20,7 +20,7 @@ public class ServiceManager: Observation {
     }
     
     // 1 ~ 2 : Release  //  0 : Test
-    var serverType: Int = 0
+    var serverType: Int = 1
     var region: String = "Korea"
     
     let G: Double = 9.81
@@ -102,7 +102,7 @@ public class ServiceManager: Observation {
     var receivedForceTimer: DispatchSourceTimer?
     var RFD_INTERVAL: TimeInterval = 1/2 // second
     var BLE_VALID_TIME: Double = 1000
-    var bleTrimed = Dictionary<String, [[Double]]>()
+    var bleTrimed = [String: [[Double]]]()
 
     var userVelocityTimer: DispatchSourceTimer?
     var UVD_INTERVAL: TimeInterval = 1/40 // second
@@ -137,7 +137,7 @@ public class ServiceManager: Observation {
     
     
     // ----- Fine Location Tracking ----- //
-    var bleData: Dictionary<String, [[Double]]>?
+    var bleData: [String: [[Double]]]?
     var unitDRInfo = UnitDRInfo()
     var unitDRGenerator = UnitDRGenerator()
     
@@ -363,7 +363,7 @@ public class ServiceManager: Observation {
     
     public func changeRegion(regionName: String) {
         setRegion(regionName: regionName)
-        settingUrl(server: self.serverType)
+        setServerUrl(server: self.serverType)
     }
     
     
@@ -434,7 +434,7 @@ public class ServiceManager: Observation {
             }
         }
         
-        settingUrl(server: self.serverType)
+        setServerUrl(server: self.serverType)
         
         if (self.user_id.isEmpty || self.user_id.contains(" ")) {
             isSuccess = false
@@ -726,7 +726,7 @@ public class ServiceManager: Observation {
     }
     
     
-    public func settingUrl(server: Int) {
+    public func setServerUrl(server: Int) {
         switch (server) {
         case 0:
             SERVER_TYPE = "-t"
@@ -764,8 +764,8 @@ public class ServiceManager: Observation {
         var message: String = localTime + " , (Jupiter) Success : Stop Service"
         
         if (self.isStartComplete) {
-            stopTimer()
-            stopBLE()
+            self.stopTimer()
+            self.stopBLE()
             
             if (self.service == "FLT") {
                 unitDRInfo = UnitDRInfo()
@@ -1249,7 +1249,6 @@ public class ServiceManager: Observation {
                     if let mainRoad: [[Double]] = self.PathPoint[key] {
                         self.LoadPathPoint[key] = true
                     } else {
-                        print(localTime + " , (Jupiter) Start Download PP \(key) , \(self.LoadPathPoint[key])")
                         if (isLoadPathPoint) {
                             self.LoadPathPoint[key] = false
                             let url = self.getPpUrl(server: self.serverType, key: key)
@@ -1323,9 +1322,8 @@ public class ServiceManager: Observation {
         self.setValidTime(mode: self.runMode)
         let validTime = self.BLE_VALID_TIME
         let currentTime = getCurrentTimeInMilliseconds() - (Int(validTime)/2)
-        let bleDictionary: Dictionary<String, [[Double]]>? = bleManager.bleDictionary
+        let bleDictionary: [String: [[Double]]]? = bleManager.bleDictionary
         if let bleData = bleDictionary {
-//            let bleTrimed = trimBleData(bleInput: bleData, nowTime: getCurrentTimeInMillisecondsDouble(), validTime: validTime)
             self.bleTrimed = trimBleData(bleInput: bleData, nowTime: getCurrentTimeInMillisecondsDouble(), validTime: validTime)
             let bleAvg = avgBleData(bleDictionary: self.bleTrimed)
             
@@ -1343,7 +1341,6 @@ public class ServiceManager: Observation {
                 self.wakeUpFromSleepMode()
                 if (self.isActiveService) {
                     let data = ReceivedForce(user_id: self.user_id, mobile_time: currentTime, ble: bleAvg, pressure: self.pressure)
-//                    let data = ReceivedForce(user_id: self.user_id, mobile_time: currentTime, ble: ["TJ-00CB-0000024C-0000": -80.0], pressure: self.pressure)
                     
                     inputReceivedForce.append(data)
                     if ((inputReceivedForce.count-1) >= RFD_INPUT_NUM) {
@@ -2631,7 +2628,7 @@ public class ServiceManager: Observation {
         let localTime = getLocalTimeString()
         let validTime = self.BLE_VALID_TIME
         let currentTime = getCurrentTimeInMilliseconds()
-        let bleDictionary: Dictionary<String, [[Double]]>? = bleManager.bleDictionary
+        let bleDictionary: [String: [[Double]]]? = bleManager.bleDictionary
         if let bleData = bleDictionary {
             let bleTrimed = trimBleData(bleInput: bleData, nowTime: getCurrentTimeInMillisecondsDouble(), validTime: validTime)
             let bleAvg = avgBleData(bleDictionary: bleTrimed)
@@ -3333,32 +3330,50 @@ public class ServiceManager: Observation {
     }
     
     // BLUETOOTH //
-    func trimBleData(bleInput: Dictionary<String, [[Double]]>, nowTime: Double, validTime: Double) -> Dictionary<String, [[Double]]> {
+//    func trimBleData(bleInput: Dictionary<String, [[Double]]>, nowTime: Double, validTime: Double) -> Dictionary<String, [[Double]]> {
+//        var trimmedData = [String: [[Double]]]()
+//
+//        for (bleID, bleData) in bleInput {
+//            var newValue = [[Double]]()
+//            for data in bleData {
+//                let rssi = data[0]
+//                let time = data[1]
+//
+//                if ((nowTime - time <= validTime) && (rssi >= -100)) {
+//                    let dataToAdd: [Double] = [rssi, time]
+//                    newValue.append(dataToAdd)
+//                }
+//            }
+//
+//            if (newValue.count > 0) {
+//                trimmedData[bleID] = newValue
+//            }
+//        }
+//
+//        return trimmedData
+//    }
+    
+    func trimBleData(bleInput: [String: [[Double]]], nowTime: Double, validTime: Double) -> [String: [[Double]]] {
         var trimmedData = [String: [[Double]]]()
-        trimmedData.reserveCapacity(bleInput.count)
         
         for (bleID, bleData) in bleInput {
-            var newValue = [[Double]]()
-            newValue.reserveCapacity(bleInput.count)
-            for data in bleData {
+            let newValue = bleData.filter { data in
                 let rssi = data[0]
                 let time = data[1]
                 
-                if ((nowTime - time <= validTime) && (rssi >= -100)) {
-                    let dataToAdd: [Double] = [rssi, time]
-                    newValue.append(dataToAdd)
-                }
+                return (nowTime - time <= validTime) && (rssi >= -100)
             }
             
-            if (newValue.count > 0) {
+            if !newValue.isEmpty {
                 trimmedData[bleID] = newValue
             }
         }
         
         return trimmedData
     }
+
     
-    func avgBleData(bleDictionary: Dictionary<String, [[Double]]>) -> Dictionary<String, Double> {
+    func avgBleData(bleDictionary: [String: [[Double]]]) -> [String: Double] {
         let digit: Double = pow(10, 2)
         var ble = [String: Double]()
         
@@ -3385,7 +3400,7 @@ public class ServiceManager: Observation {
         return ble
     }
     
-    func latestBleData(bleDictionary: Dictionary<String, [[Double]]>) -> Dictionary<String, Double> {
+    func latestBleData(bleDictionary: [String: [[Double]]]) -> [String: Double] {
         var ble = [String: Double]()
         
         let keys: [String] = Array(bleDictionary.keys)

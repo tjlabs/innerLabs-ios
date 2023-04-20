@@ -1213,6 +1213,9 @@ extension FusionViewController: CustomSwitchButtonDelegate {
                 
                 let isStop = serviceManager.stopService()
                 if (isStop.0) {
+                    self.coordToDisplay = CoordToDisplay()
+                    self.resultToDisplay = ResultToDisplay()
+                    
                     self.currentBuilding = ""
                     self.currentLevel = ""
                     self.pastBuilding = ""
