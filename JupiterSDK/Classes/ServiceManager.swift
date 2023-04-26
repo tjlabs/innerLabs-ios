@@ -9,6 +9,25 @@ public class ServiceManager: Observation {
             let result = input
             if (result.x != 0 && result.y != 0 && result.building_name != "" && result.level_name != "") {
                 observer.update(result: result)
+                
+                if (self.isSaveFlag) {
+                    let rsCompensation = self.rssiBias
+                    let scCompensation = self.scCompensation
+                    
+                    let data = MobileResult(user_id: self.user_id, mobile_time: result.mobile_time, sector_id: self.sector_id, building_name: result.building_name, level_name: result.level_name, scc: result.scc, x: result.x, y: result.y, absolute_heading: result.absolute_heading, phase: result.phase, calculated_time: result.calculated_time, index: result.index, velocity: result.velocity, ble_only_position: result.ble_only_position, rss_compensation: self.rssiBias, sc_compensation: self.scCompensation)
+                    inputMobileResult.append(data)
+                    if ((inputMobileResult.count-1) >= MR_INPUT_NUM) {
+                        inputMobileResult.remove(at: 0)
+                        NetworkManager.shared.postMobileResult(url: MR_URL, input: inputMobileResult, completion: { [self] statusCode, returnedStrig in
+                            if (statusCode != 200) {
+                                let localTime = getLocalTimeString()
+                                let log: String = localTime + " , (Jupiter) Error : Fail to send mobile result"
+                                print(log)
+                            }
+                        })
+                        inputMobileResult = [MobileResult(user_id: "", mobile_time: 0, sector_id: 0, building_name: "", level_name: "", scc: 0, x: 0, y: 0, absolute_heading: 0, phase: 0, calculated_time: 0, index: 0, velocity: 0, ble_only_position: false, rss_compensation: 0, sc_compensation: 0)]
+                    }
+                }
             }
         }
     }
@@ -19,8 +38,12 @@ public class ServiceManager: Observation {
         }
     }
     
+    public var isSaveFlag: Bool = false
+    var inputMobileResult: [MobileResult] = [MobileResult(user_id: "", mobile_time: 0, sector_id: 0, building_name: "", level_name: "", scc: 0, x: 0, y: 0, absolute_heading: 0, phase: 0, calculated_time: 0, index: 0, velocity: 0, ble_only_position: false, rss_compensation: 0, sc_compensation: 0)]
+    let MR_INPUT_NUM = 20
+    
     // 1 ~ 2 : Release  //  0 : Test
-    var serverType: Int = 1
+    var serverType: Int = 0
     var region: String = "Korea"
     
     let G: Double = 9.81
@@ -386,6 +409,15 @@ public class ServiceManager: Observation {
         var interval: Double = 1/2
         var numInput = 6
         
+        // Check Save Flag
+        let debugInput = MobileDebug(sector_id: sector_id)
+        NetworkManager.shared.postMobileDebug(url: DEBUG_URL, input: debugInput, completion: { [self] statusCode, returnedString in
+            if (statusCode == 200) {
+                let result = decodeMobileDebug(json: returnedString)
+                setSaveFlag(flag: result.sector_debug)
+            }
+        })
+        
         switch(service) {
         case "SD":
             numInput = 3
@@ -535,6 +567,8 @@ public class ServiceManager: Observation {
                                                     // Load Bias
                                                     let inputGetBias = JupiterBiasGet(device_model: self.deviceModel, os_version: self.osVersion, sector_id: self.sector_id)
                                                     NetworkManager.shared.getJupiterBias(url: RC_URL, input: inputGetBias, completion: { [self] statusCode, returnedString in
+                                                        let loadedBias = self.loadRssiBias(sector_id: self.sector_id)
+                                                        print(localTime + " , (Jupiter) Bias Load (Cache) : \(loadedBias)")
                                                         if (statusCode == 200) {
                                                             let result = decodeRC(json: returnedString)
                                                             if (result.rss_compensations.isEmpty) {
@@ -544,8 +578,6 @@ public class ServiceManager: Observation {
                                                                         let result = decodeRC(json: returnedString)
                                                                         if (result.rss_compensations.isEmpty) {
                                                                             // Need Bias Estimation
-                                                                            let loadedBias = self.loadRssiBias(sector_id: self.sector_id)
-                                                                            print(localTime + " , (Jupiter) Bias Load : \(loadedBias)")
                                                                             self.rssiBias = loadedBias.0
                                                                             self.isBiasConverged = loadedBias.1
                                                                             displayOutput.bias = self.rssiBias
@@ -561,18 +593,24 @@ public class ServiceManager: Observation {
                                                                         } else {
                                                                             // Success Load Bias without OS
                                                                             if let closest = findClosestStructure(to: self.osVersion, in: result.rss_compensations) {
-                                                                                let loadedBias: rss_compensation = closest
-                                                                                print(localTime + " , (Jupiter) Bias Load (Device) : \(loadedBias.rss_compensation)")
+                                                                                let biasFromServer: rss_compensation = closest
+                                                                                print(localTime + " , (Jupiter) Bias Load (Device) : \(biasFromServer.rss_compensation)")
                                                                                 
-                                                                                self.rssiScale = loadedBias.scale_factor
+                                                                                self.rssiScale = biasFromServer.scale_factor
                                                                                 bleManager.setRssiScale(scale: self.rssiScale)
-                                                                                self.rssiBias = loadedBias.rss_compensation
-                                                                                self.isBiasConverged = false
+                                                                                
+                                                                                if (loadedBias.1) {
+                                                                                    self.rssiBias = loadedBias.0
+                                                                                    self.isBiasConverged = true
+                                                                                } else {
+                                                                                    self.rssiBias = biasFromServer.rss_compensation
+                                                                                    self.isBiasConverged = false
+                                                                                }
                                                                                 
                                                                                 displayOutput.bias = self.rssiBias
                                                                                 displayOutput.isConverged = self.isBiasConverged
 
-                                                                                let biasArray = self.makeRssiBiasArray(bias: loadedBias.rss_compensation)
+                                                                                let biasArray = self.makeRssiBiasArray(bias: self.rssiBias)
                                                                                 self.rssiBiasArray = biasArray
 
                                                                                 self.isActiveReturn = true
@@ -581,8 +619,6 @@ public class ServiceManager: Observation {
                                                                                 self.startTimer()
                                                                                 completion(true, message)
                                                                             } else {
-                                                                                let loadedBias = self.loadRssiBias(sector_id: self.sector_id)
-                                                                                print(localTime + " , (Jupiter) Bias Load : \(loadedBias)")
                                                                                 self.rssiBias = loadedBias.0
                                                                                 self.isBiasConverged = loadedBias.1
                                                                                 displayOutput.bias = self.rssiBias
@@ -609,18 +645,24 @@ public class ServiceManager: Observation {
                                                                 })
                                                             } else {
                                                                 // Succes Load Bias
-                                                                let loadedBias: rss_compensation = result.rss_compensations[0]
-                                                                print(localTime + " , (Jupiter) Bias Load : \(loadedBias.rss_compensation)")
+                                                                let biasFromServer: rss_compensation = result.rss_compensations[0]
+                                                                print(localTime + " , (Jupiter) Bias Load : \(biasFromServer.rss_compensation)")
                                                                 
-                                                                self.rssiScale = loadedBias.scale_factor
+                                                                self.rssiScale = biasFromServer.scale_factor
                                                                 bleManager.setRssiScale(scale: self.rssiScale)
-                                                                self.rssiBias = loadedBias.rss_compensation
-                                                                self.isBiasConverged = false
+                                                                
+                                                                if (loadedBias.1) {
+                                                                    self.rssiBias = loadedBias.0
+                                                                } else {
+                                                                    self.rssiBias = biasFromServer.rss_compensation
+                                                                    
+                                                                }
+                                                                self.isBiasConverged = true
                                                                 
                                                                 displayOutput.bias = self.rssiBias
                                                                 displayOutput.isConverged = self.isBiasConverged
 
-                                                                let biasArray = self.makeRssiBiasArray(bias: loadedBias.rss_compensation)
+                                                                let biasArray = self.makeRssiBiasArray(bias: self.rssiBias)
                                                                 self.rssiBiasArray = biasArray
 
                                                                 self.isActiveReturn = true
@@ -723,6 +765,11 @@ public class ServiceManager: Observation {
             }
         }
         return closest
+    }
+    
+    public func setSaveFlag(flag: Bool) {
+        self.isSaveFlag = flag
+        print(getLocalTimeString() + " , (Jupiter) Set Save Flag : \(self.isSaveFlag)")
     }
     
     

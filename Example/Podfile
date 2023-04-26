@@ -19,6 +19,8 @@ target 'JupiterSDK_Example' do
   pod 'AWSS3' 
   
   pod 'FirebaseRemoteConfig'
+  pod 'Firebase/Analytics'
+  pod 'Firebase/Crashlytics'
   
   post_install do |installer|
     installer.pods_project.targets.each do |target|

@@ -443,6 +443,36 @@ public struct JupiterBiasPost: Encodable {
     var rss_compensation: Int
 }
 
+public struct MobileDebug: Encodable {
+    var sector_id: Int
+}
+
+public struct MobileDebugResult: Codable {
+    public var sector_debug: Bool
+    
+    public init() {
+        self.sector_debug = false
+    }
+}
+
+public struct MobileResult: Encodable {
+    public var user_id: String
+    public var mobile_time: Int
+    public var sector_id: Int
+    public var building_name: String
+    public var level_name: String
+    public var scc: Double
+    public var x: Double
+    public var y: Double
+    public var absolute_heading: Double
+    public var phase: Int
+    public var calculated_time: Double
+    public var index: Int
+    public var velocity: Double
+    public var ble_only_position: Bool
+    public var rss_compensation: Int
+    public var sc_compensation: Double
+}
 
 // Recent
 struct RecentResult: Encodable {
@@ -498,6 +528,18 @@ public func decodeRC(json: String) -> JupiterBiasResult {
     return result
 }
 
+
+public func decodeMobileDebug(json: String) -> MobileDebugResult {
+    let result = MobileDebugResult.init()
+    let decoder = JSONDecoder()
+    let jsonString = json
+
+    if let data = jsonString.data(using: .utf8), let decoded = try? decoder.decode(MobileDebugResult.self, from: data) {
+        return decoded
+    }
+
+    return result
+}
 
 public func CLDtoSD(json: String) -> String {
     let decoder = JSONDecoder()

@@ -1006,8 +1006,13 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
         let yMin = yAxisValue.min()!
         let yMax = yAxisValue.max()!
         
-//        print("\(currentBuilding) \(currentLevel) MinMax : \(xMin) , \(xMax), \(yMin), \(yMax)")
-//        print("\(currentBuilding) \(currentLevel) Limits : \(limits[0]) , \(limits[1]), \(limits[2]), \(limits[3])")
+        print("\(currentBuilding) \(currentLevel) MinMax : \(xMin) , \(xMax), \(yMin), \(yMax)")
+        print("\(currentBuilding) \(currentLevel) Limits : \(limits[0]) , \(limits[1]), \(limits[2]), \(limits[3])")
+        
+//        scatterChart.xAxis.axisMinimum = -1.3
+//        scatterChart.xAxis.axisMaximum = 18
+//        scatterChart.leftAxis.axisMinimum = -8.2
+//        scatterChart.leftAxis.axisMaximum = 26
         
         // Configure Chart
         if ( limits[0] == 0 && limits[1] == 0 && limits[2] == 0 && limits[3] == 0 ) {
@@ -1098,6 +1103,7 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
     }
     
     func monitorCoord(data: CoordToDisplay, flag: Bool) {
+        print(data)
         self.XY[0] = data.x
         self.XY[1] = data.y
 
@@ -1367,7 +1373,6 @@ extension ServiceViewController: CustomSwitchButtonDelegate {
             
             if (isOn) {
                 self.hideDropDown(flag: true)
-                
                 serviceManager = ServiceManager()
                 serviceManager.changeRegion(regionName: self.region)
                 serviceManager.addObserver(self)

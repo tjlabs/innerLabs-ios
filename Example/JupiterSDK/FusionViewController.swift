@@ -717,7 +717,7 @@ class FusionViewController: UIViewController, Observer {
         set0.drawValuesEnabled = false
         set0.setScatterShape(.square)
         set0.setColor(UIColor.yellow)
-        set0.scatterShapeSize = 4
+        set0.scatterShapeSize = 3
         
         let values1 = (0..<1).map { (i) -> ChartDataEntry in
             return ChartDataEntry(x: XY[0], y: XY[1])
@@ -796,23 +796,16 @@ class FusionViewController: UIViewController, Observer {
         print("\(currentBuilding) \(currentLevel) MinMax : \(xMin) , \(xMax), \(yMin), \(yMax)")
         print("\(currentBuilding) \(currentLevel) Limits : \(limits[0]) , \(limits[1]), \(limits[2]), \(limits[3])")
         
-//        if (currentLevel == "6F") {
-//            scatterChart.xAxis.axisMinimum = xMin - 10.5
-//            scatterChart.xAxis.axisMaximum = xMax + 10.5
-//            scatterChart.leftAxis.axisMinimum = yMin - 3.0
-//            scatterChart.leftAxis.axisMaximum = yMax + 4.2
-//        } else if (currentLevel == "7F") {
-//            scatterChart.xAxis.axisMinimum = xMin - 7.2
-//            scatterChart.xAxis.axisMaximum = xMax + 24.3
-//            scatterChart.leftAxis.axisMinimum = yMin - 27.6
-//            scatterChart.leftAxis.axisMaximum = yMax + 3.2
-//        }
+//        scatterChart.xAxis.axisMinimum = 0.3
+//        scatterChart.xAxis.axisMaximum = 100.75
+//        scatterChart.leftAxis.axisMinimum = 0.5
+//        scatterChart.leftAxis.axisMaximum = 108.2
         
         if ( limits[0] == 0 && limits[1] == 0 && limits[2] == 0 && limits[3] == 0 ) {
-            scatterChart.xAxis.axisMinimum = xMin - 3
-            scatterChart.xAxis.axisMaximum = xMax + 3
-            scatterChart.leftAxis.axisMinimum = yMin - 1.5
-            scatterChart.leftAxis.axisMaximum = yMax + 49.2
+            scatterChart.xAxis.axisMinimum = xMin - 5
+            scatterChart.xAxis.axisMaximum = xMax + 5
+            scatterChart.leftAxis.axisMinimum = yMin - 5
+            scatterChart.leftAxis.axisMaximum = yMax + 5
         } else {
             scatterChart.xAxis.axisMinimum = limits[0]
             scatterChart.xAxis.axisMaximum = limits[1]
