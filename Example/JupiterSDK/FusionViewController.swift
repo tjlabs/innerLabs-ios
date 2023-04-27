@@ -57,6 +57,7 @@ class FusionViewController: UIViewController, Observer {
             } else {
                 self.isBleOnlyMode = false
             }
+            self.isPathMatchingSuccess = self.serviceManager.displayOutput.isPmSuccess
 
 //            let log: String = localTime + " , (FusionVC) : dt = \(dt) // time = \(result.mobile_time) // befor = \(self.observerTime) // x = \(result.x) // y = \(result.y) // h = \(result.absolute_heading) // phase = \(result.phase) // Venus = \(result.ble_only_position)"
 //            print(log)
@@ -165,6 +166,7 @@ class FusionViewController: UIViewController, Observer {
     
     var modeAuto: Bool = false
     var isBleOnlyMode: Bool = false
+    var isPathMatchingSuccess: Bool = false
     var isReportPpExist: Bool = false
     
     // Neptune
@@ -636,12 +638,16 @@ class FusionViewController: UIViewController, Observer {
         })
     }
     
-    private func drawUser(XY: [Double], heading: Double, limits: [Double], isBleOnlyMode: Bool) {
+    private func drawUser(XY: [Double], heading: Double, limits: [Double], isBleOnlyMode: Bool, isPmSuccess: Bool) {
         let values1 = (0..<1).map { (i) -> ChartDataEntry in
             return ChartDataEntry(x: XY[0], y: XY[1])
         }
         
         var valueColor = UIColor.systemRed
+        if (!isPmSuccess) {
+            valueColor = UIColor.systemPink
+        }
+        
         if (isBleOnlyMode) {
             valueColor = UIColor.systemBlue
         }
@@ -700,7 +706,7 @@ class FusionViewController: UIViewController, Observer {
         scatterChart.data = chartData
     }
     
-    private func drawDebug(XY: [Double], RP_X: [Double], RP_Y: [Double],  serverXY: [Double], tuXY: [Double], heading: Double, limits: [Double], isBleOnlyMode: Bool) {
+    private func drawDebug(XY: [Double], RP_X: [Double], RP_Y: [Double],  serverXY: [Double], tuXY: [Double], heading: Double, limits: [Double], isBleOnlyMode: Bool, isPmSuccess: Bool) {
         let xAxisValue: [Double] = RP_X
         let yAxisValue: [Double] = RP_Y
         
@@ -709,6 +715,9 @@ class FusionViewController: UIViewController, Observer {
         }
         
         var valueColor = UIColor.systemRed
+        if (!isPmSuccess) {
+            valueColor = UIColor.systemPink
+        }
         if (isBleOnlyMode) {
             valueColor = UIColor.systemBlue
         }
@@ -875,13 +884,13 @@ class FusionViewController: UIViewController, Observer {
                 if (rp.isEmpty) {
                     scatterChart.isHidden = true
                 } else {
-                    drawDebug(XY: XY, RP_X: rp[0], RP_Y: rp[1], serverXY: serviceManager.serverResult, tuXY: serviceManager.timeUpdateResult, heading: heading, limits: limits, isBleOnlyMode: self.isBleOnlyMode)
+                    drawDebug(XY: XY, RP_X: rp[0], RP_Y: rp[1], serverXY: serviceManager.serverResult, tuXY: serviceManager.timeUpdateResult, heading: heading, limits: limits, isBleOnlyMode: self.isBleOnlyMode, isPmSuccess: self.isPathMatchingSuccess)
                 }
             }
         } else {
             if (buildings.contains(currentBuilding)) {
                 if (XY[0] != 0 && XY[1] != 0) {
-                    drawUser(XY: XY, heading: heading, limits: limits, isBleOnlyMode: self.isBleOnlyMode)
+                    drawUser(XY: XY, heading: heading, limits: limits, isBleOnlyMode: self.isBleOnlyMode, isPmSuccess: self.isPathMatchingSuccess)
                 }
             }
         }
@@ -1124,7 +1133,7 @@ extension FusionViewController : UICollectionViewDelegate{
             scatterChart.isHidden = true
         } else {
             if (isShowRP) {
-                drawDebug(XY: XY, RP_X: rp[0], RP_Y: rp[1], serverXY: serviceManager.serverResult, tuXY: serviceManager.timeUpdateResult, heading: 0, limits: limits, isBleOnlyMode: self.isBleOnlyMode)
+                drawDebug(XY: XY, RP_X: rp[0], RP_Y: rp[1], serverXY: serviceManager.serverResult, tuXY: serviceManager.timeUpdateResult, heading: 0, limits: limits, isBleOnlyMode: self.isBleOnlyMode, isPmSuccess: self.isPathMatchingSuccess)
             }
             displayLevelImage(building: currentBuilding, level: currentLevel, flag: isShowRP)
         }

@@ -114,6 +114,7 @@ public struct ServiceResult {
     public var bias: Int = 0
     public var isConverged: Bool = false
     public var mode: String = ""
+    public var isPmSuccess: Bool = false
     
     public var level: String = ""
     public var building: String = ""

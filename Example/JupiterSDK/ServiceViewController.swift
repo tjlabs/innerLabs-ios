@@ -53,30 +53,33 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
     }
     
     func update(result: FineLocationTrackingResult) {
-        let localTime: String = self.getLocalTimeString()
-        let dt = result.mobile_time - self.observerTime
-        let log: String = localTime + " , (JupiterVC) : dt = \(dt) // time = \(result.mobile_time) // befor = \(self.observerTime) // x = \(result.x) // y = \(result.y) // phase = \(result.phase)"
-//        print(log)
-        
-        self.observerTime = result.mobile_time
-        let building = result.building_name
-        let level = result.level_name
-        let x = result.x
-        let y = result.y
-        if (result.ble_only_position) {
-            self.isBleOnlyMode = true
-        } else {
-            self.isBleOnlyMode = false
-        }
+        DispatchQueue.main.async {
+            let localTime: String = self.getLocalTimeString()
+            let dt = result.mobile_time - self.observerTime
+            let log: String = localTime + " , (JupiterVC) : dt = \(dt) // time = \(result.mobile_time) // befor = \(self.observerTime) // x = \(result.x) // y = \(result.y) // phase = \(result.phase)"
+            print(log)
+            
+            self.observerTime = result.mobile_time
+            let building = result.building_name
+            let level = result.level_name
+            let x = result.x
+            let y = result.y
+            if (result.ble_only_position) {
+                self.isBleOnlyMode = true
+            } else {
+                self.isBleOnlyMode = false
+            }
+            self.isPathMatchingSuccess = self.serviceManager.displayOutput.isPmSuccess
 
-        if (self.buildings.contains(building)) {
-            if let levelList: [String] = self.levels[building] {
-                if (levelList.contains(level)) {
-                    self.coordToDisplay.building = building
-                    self.coordToDisplay.level = level
-                    self.coordToDisplay.x = x
-                    self.coordToDisplay.y = y
-                    self.coordToDisplay.heading = result.absolute_heading
+            if (self.buildings.contains(building)) {
+                if let levelList: [String] = self.levels[building] {
+                    if (levelList.contains(level)) {
+                        self.coordToDisplay.building = building
+                        self.coordToDisplay.level = level
+                        self.coordToDisplay.x = x
+                        self.coordToDisplay.y = y
+                        self.coordToDisplay.heading = result.absolute_heading
+                    }
                 }
             }
         }
@@ -162,6 +165,7 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
     var idToMonitor: String = ""
     var isMonitor: Bool = false
     var isBleOnlyMode: Bool = false
+    var isPathMatchingSuccess: Bool = false
     
     // Level Collection View
     @IBOutlet weak var levelCollectionView: UICollectionView!
@@ -838,12 +842,16 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
         scatterChart.data = chartData
     }
     
-    private func drawUser(XY: [Double], heading: Double, limits: [Double], isMonitor: Bool, isBleOnlyMode: Bool) {
+    private func drawUser(XY: [Double], heading: Double, limits: [Double], isMonitor: Bool, isBleOnlyMode: Bool, isPmSuccess: Bool) {
         let values1 = (0..<1).map { (i) -> ChartDataEntry in
             return ChartDataEntry(x: XY[0], y: XY[1])
         }
         
         var valueColor = UIColor.systemRed
+        if (!isPmSuccess) {
+            valueColor = UIColor.systemPink
+        }
+        
         if (isMonitor) {
             valueColor = UIColor.systemBlue
         }
@@ -851,6 +859,7 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
         if (isBleOnlyMode) {
             valueColor = UIColor.systemBlue
         }
+        
         let set1 = ScatterChartDataSet(entries: values1, label: "USER")
         set1.drawValuesEnabled = false
         set1.setScatterShape(.circle)
@@ -913,11 +922,16 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
         scatterChart.data = chartData
     }
     
-    private func drawDebug(XY: [Double], RP_X: [Double], RP_Y: [Double],  serverXY: [Double], tuXY: [Double], heading: Double, limits: [Double], isBleOnlyMode: Bool) {
+    private func drawDebug(XY: [Double], RP_X: [Double], RP_Y: [Double],  serverXY: [Double], tuXY: [Double], heading: Double, limits: [Double], isBleOnlyMode: Bool, isPmSuccess: Bool) {
         let xAxisValue: [Double] = RP_X
         let yAxisValue: [Double] = RP_Y
         
         var valueColor = UIColor.systemRed
+        
+        if (!isPmSuccess) {
+            valueColor = UIColor.systemPink
+        }
+        
         if (isBleOnlyMode) {
             valueColor = UIColor.systemBlue
         }
@@ -1088,13 +1102,13 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
                     scatterChart.isHidden = true
                 } else {
 //                    drawRP(RP_X: rp[0], RP_Y: rp[1], XY: XY, heading: heading, limits: limits)
-                    drawDebug(XY: XY, RP_X: rp[0], RP_Y: rp[1], serverXY: serviceManager.serverResult, tuXY: serviceManager.timeUpdateResult, heading: heading, limits: limits, isBleOnlyMode: self.isBleOnlyMode)
+                    drawDebug(XY: XY, RP_X: rp[0], RP_Y: rp[1], serverXY: serviceManager.serverResult, tuXY: serviceManager.timeUpdateResult, heading: heading, limits: limits, isBleOnlyMode: self.isBleOnlyMode, isPmSuccess: self.isPathMatchingSuccess)
                 }
             }
         } else {
             if (buildings.contains(currentBuilding)) {
                 if (XY[0] != 0 && XY[1] != 0) {
-                    drawUser(XY: XY, heading: heading, limits: limits, isMonitor: false, isBleOnlyMode: self.isBleOnlyMode)
+                    drawUser(XY: XY, heading: heading, limits: limits, isMonitor: false, isBleOnlyMode: self.isBleOnlyMode, isPmSuccess: self.isPathMatchingSuccess)
                 }
             }
         }
@@ -1140,13 +1154,13 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
                     scatterChart.isHidden = true
                 } else {
 //                    drawRP(RP_X: rp[0], RP_Y: rp[1], XY: XY, heading: heading, limits: limits)
-                    drawDebug(XY: XY, RP_X: rp[0], RP_Y: rp[1], serverXY: serviceManager.serverResult, tuXY: serviceManager.timeUpdateResult, heading: heading, limits: limits, isBleOnlyMode: self.isBleOnlyMode)
+                    drawDebug(XY: XY, RP_X: rp[0], RP_Y: rp[1], serverXY: serviceManager.serverResult, tuXY: serviceManager.timeUpdateResult, heading: heading, limits: limits, isBleOnlyMode: self.isBleOnlyMode, isPmSuccess: self.isPathMatchingSuccess)
                 }
             }
         } else {
             if (buildings.contains(currentBuilding)) {
                 if (XY[0] != 0 && XY[1] != 0) {
-                    drawUser(XY: XY, heading: heading, limits: limits, isMonitor: true, isBleOnlyMode: self.isBleOnlyMode)
+                    drawUser(XY: XY, heading: heading, limits: limits, isMonitor: true, isBleOnlyMode: self.isBleOnlyMode, isPmSuccess: self.isPathMatchingSuccess)
                 }
             }
         }
@@ -1312,7 +1326,7 @@ extension ServiceViewController : UICollectionViewDelegate{
         } else {
             if (isShowRP) {
 //                drawRP(RP_X: rp[0], RP_Y: rp[1], XY: XY, heading: 0, limits: limits)
-                drawDebug(XY: XY, RP_X: rp[0], RP_Y: rp[1], serverXY: serviceManager.serverResult, tuXY: serviceManager.timeUpdateResult, heading: 0, limits: limits, isBleOnlyMode: self.isBleOnlyMode)
+                drawDebug(XY: XY, RP_X: rp[0], RP_Y: rp[1], serverXY: serviceManager.serverResult, tuXY: serviceManager.timeUpdateResult, heading: 0, limits: limits, isBleOnlyMode: self.isBleOnlyMode, isPmSuccess: self.isPathMatchingSuccess)
             }
             displayLevelImage(building: currentBuilding, level: currentLevel, flag: isShowRP)
         }

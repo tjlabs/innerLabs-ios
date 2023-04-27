@@ -162,6 +162,7 @@ public class ServiceManager: Observation {
     // ----- Fine Location Tracking ----- //
     var bleData: [String: [[Double]]]?
     var unitDRInfo = UnitDRInfo()
+    var unitDrInfoIndex: Int = 0
     var unitDRGenerator = UnitDRGenerator()
     
     var unitDistane: Double = 0
@@ -1266,6 +1267,7 @@ public class ServiceManager: Observation {
     func makeOutputResult(input: FineLocationTrackingResult, isPast: Bool, runMode: String, isVenusMode: Bool) -> FineLocationTrackingResult {
         var result = input
         if (result.x != 0 && result.y != 0 && result.building_name != "" && result.level_name != "") {
+            result.index = self.unitDrInfoIndex
             result.absolute_heading = compensateHeading(heading: result.absolute_heading, mode: runMode)
             result.mode = runMode
             displayOutput.mode = runMode
@@ -1282,10 +1284,12 @@ public class ServiceManager: Observation {
                 let correctResult = pathMatching(building: buildingName, level: levelName, x: result.x, y: result.y, heading: result.absolute_heading, tuXY: [0,0], mode: mapMatchingMode, isPast: isPast, HEADING_RANGE: self.HEADING_RANGE)
                 
                 if (correctResult.isSuccess) {
+                    displayOutput.isPmSuccess = true
                     result.x = correctResult.xyh[0]
                     result.y = correctResult.xyh[1]
                     result.absolute_heading = correctResult.xyh[2]
                 } else {
+                    displayOutput.isPmSuccess = false
                     // Map Matching 실패 시 PP 다운로드
                     let localTime: String = getLocalTimeString()
                     
@@ -1373,8 +1377,8 @@ public class ServiceManager: Observation {
         if let bleData = bleDictionary {
             self.bleTrimed = trimBleData(bleInput: bleData, nowTime: getCurrentTimeInMillisecondsDouble(), validTime: validTime)
             let bleAvg = avgBleData(bleDictionary: self.bleTrimed)
-//            let bleAvg = ["TJ-00CB-000003E8-0000":-76.0]
             
+            print(bleAvg)
             if (!bleAvg.isEmpty) {
                 self.timeBleOff = 0
                 self.timeActiveRF = 0
@@ -1474,6 +1478,8 @@ public class ServiceManager: Observation {
             displayOutput.indexTx = unitDRInfo.index
             displayOutput.length = unitDRInfo.length
             displayOutput.velocity = unitDRInfo.velocity * 3.6
+            
+            self.unitDrInfoIndex = unitDRInfo.index
             
             if (self.mode == "auto") {
                 let autoMode = unitDRInfo.autoMode
