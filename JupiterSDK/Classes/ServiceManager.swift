@@ -68,6 +68,7 @@ public class ServiceManager: Observation {
     var EntranceArea = [String: [[Double]]]()
     var PathMatchingArea = [String: [[Double]]]()
     public var isLoadEnd = [String: [Bool]]()
+    var isBackground: Bool = false
     
     // ----- Sensor & BLE ----- //
     var sensorData = SensorData()
@@ -122,6 +123,10 @@ public class ServiceManager: Observation {
     
     
     // ----- Timer ----- //
+    var backgroundUpTimer: DispatchSourceTimer?
+    var backgroundUvTimer: DispatchSourceTimer?
+    var backgroundTaskIdentifier: UIBackgroundTaskIdentifier?
+    
     var receivedForceTimer: DispatchSourceTimer?
     var RFD_INTERVAL: TimeInterval = 1/2 // second
     var BLE_VALID_TIME: Double = 1000
@@ -324,6 +329,8 @@ public class ServiceManager: Observation {
     var pastOutputTime: Int = 0
     
     public override init() {
+        super.init()
+        
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd-HH-mm-ss"
         dateFormatter.locale = Locale(identifier:"ko_KR")
@@ -382,6 +389,7 @@ public class ServiceManager: Observation {
             setModeParam(mode: self.runMode, phase: self.phase)
         }
         
+        notificationCenterAddOberver()
         return (isSuccess, message)
     }
     
@@ -569,7 +577,6 @@ public class ServiceManager: Observation {
                                                     let inputGetBias = JupiterBiasGet(device_model: self.deviceModel, os_version: self.osVersion, sector_id: self.sector_id)
                                                     NetworkManager.shared.getJupiterBias(url: RC_URL, input: inputGetBias, completion: { [self] statusCode, returnedString in
                                                         let loadedBias = self.loadRssiBias(sector_id: self.sector_id)
-                                                        print(localTime + " , (Jupiter) Bias Load (Cache) : \(loadedBias)")
                                                         if (statusCode == 200) {
                                                             let result = decodeRC(json: returnedString)
                                                             if (result.rss_compensations.isEmpty) {
@@ -588,14 +595,13 @@ public class ServiceManager: Observation {
                                                                             self.rssiBiasArray = biasArray
                                                                             self.isActiveReturn = true
                                                                             self.isStartComplete = true
-                                                                                                                                
+                                                                            
                                                                             self.startTimer()
                                                                             completion(true, message)
                                                                         } else {
                                                                             // Success Load Bias without OS
                                                                             if let closest = findClosestStructure(to: self.osVersion, in: result.rss_compensations) {
                                                                                 let biasFromServer: rss_compensation = closest
-                                                                                print(localTime + " , (Jupiter) Bias Load (Device) : \(biasFromServer.rss_compensation)")
                                                                                 
                                                                                 self.rssiScale = biasFromServer.scale_factor
                                                                                 bleManager.setRssiScale(scale: self.rssiScale)
@@ -603,9 +609,11 @@ public class ServiceManager: Observation {
                                                                                 if (loadedBias.1) {
                                                                                     self.rssiBias = loadedBias.0
                                                                                     self.isBiasConverged = true
+                                                                                    print(localTime + " , (Jupiter) Bias Load (Device // Cache) : \(loadedBias.0)")
                                                                                 } else {
                                                                                     self.rssiBias = biasFromServer.rss_compensation
                                                                                     self.isBiasConverged = false
+                                                                                    print(localTime + " , (Jupiter) Bias Load (Device) : \(biasFromServer.rss_compensation)")
                                                                                 }
                                                                                 
                                                                                 displayOutput.bias = self.rssiBias
@@ -616,7 +624,7 @@ public class ServiceManager: Observation {
 
                                                                                 self.isActiveReturn = true
                                                                                 self.isStartComplete = true
-
+                                                                                
                                                                                 self.startTimer()
                                                                                 completion(true, message)
                                                                             } else {
@@ -629,7 +637,7 @@ public class ServiceManager: Observation {
                                                                                 self.rssiBiasArray = biasArray
                                                                                 self.isActiveReturn = true
                                                                                 self.isStartComplete = true
-                                                                                                                                    
+                                                                                
                                                                                 self.startTimer()
                                                                                 completion(true, message)
                                                                             }
@@ -641,22 +649,23 @@ public class ServiceManager: Observation {
                                                                         isSuccess = false
                                                                         self.stopTimer()
                                                                         self.isStartFlag = false
+                                                                        NotificationCenter.default.removeObserver(self)
                                                                         completion(isSuccess, message)
                                                                     }
                                                                 })
                                                             } else {
                                                                 // Succes Load Bias
                                                                 let biasFromServer: rss_compensation = result.rss_compensations[0]
-                                                                print(localTime + " , (Jupiter) Bias Load : \(biasFromServer.rss_compensation)")
                                                                 
                                                                 self.rssiScale = biasFromServer.scale_factor
                                                                 bleManager.setRssiScale(scale: self.rssiScale)
                                                                 
                                                                 if (loadedBias.1) {
                                                                     self.rssiBias = loadedBias.0
+                                                                    print(localTime + " , (Jupiter) Bias Load (Device & OS // Cache) : \(loadedBias.0)")
                                                                 } else {
                                                                     self.rssiBias = biasFromServer.rss_compensation
-                                                                    
+                                                                    print(localTime + " , (Jupiter) Bias Load (Device & OS) : \(biasFromServer.rss_compensation)")
                                                                 }
                                                                 self.isBiasConverged = true
                                                                 
@@ -668,7 +677,7 @@ public class ServiceManager: Observation {
 
                                                                 self.isActiveReturn = true
                                                                 self.isStartComplete = true
-
+                                                                
                                                                 self.startTimer()
                                                                 completion(true, message)
                                                             }
@@ -679,6 +688,7 @@ public class ServiceManager: Observation {
                                                             isSuccess = false
                                                             self.stopTimer()
                                                             self.isStartFlag = false
+                                                            NotificationCenter.default.removeObserver(self)
                                                             completion(isSuccess, message)
                                                         }
                                                     })
@@ -687,6 +697,7 @@ public class ServiceManager: Observation {
                                                     message = log
                                                     self.stopTimer()
                                                     self.isStartFlag = false
+                                                    NotificationCenter.default.removeObserver(self)
                                                     completion(false, message)
                                                 }
                                             }
@@ -698,11 +709,13 @@ public class ServiceManager: Observation {
                                                 let log: String = localTime + " , (Jupiter) Error : Network is not connected"
                                                 message = log
                                                 self.isStartFlag = false
+                                                NotificationCenter.default.removeObserver(self)
                                                 completion(isSuccess, message)
                                             } else {
                                                 let log: String = localTime + " , (Jupiter) Error : Load Abnormal Area"
                                                 message = log
                                                 self.isStartFlag = false
+                                                NotificationCenter.default.removeObserver(self)
                                                 completion(isSuccess, message)
                                             }
                                         }
@@ -720,11 +733,13 @@ public class ServiceManager: Observation {
                                 let log: String = localTime + " , (Jupiter) Error : Network is not connected"
                                 message = log
                                 self.isStartFlag = false
+                                NotificationCenter.default.removeObserver(self)
                                 completion(isSuccess, message)
                             } else {
                                 let log: String = localTime + " , (Jupiter) Error : Load Building & Level Information"
                                 message = log
                                 self.isStartFlag = false
+                                NotificationCenter.default.removeObserver(self)
                                 completion(isSuccess, message)
                             }
                         }
@@ -737,14 +752,14 @@ public class ServiceManager: Observation {
                         isSuccess = false
                         let log: String = localTime + " , (Jupiter) Error : Network is not connected"
                         message = log
-                        
                         self.isStartFlag = false
+                        NotificationCenter.default.removeObserver(self)
                         completion(isSuccess, message)
                     } else {
                         let log: String = localTime + " , (Jupiter) Error : User Login"
                         message = log
-                        
                         self.isStartFlag = false
+                        NotificationCenter.default.removeObserver(self)
                         completion(isSuccess, message)
                     }
                 }
@@ -812,6 +827,8 @@ public class ServiceManager: Observation {
         var message: String = localTime + " , (Jupiter) Success : Stop Service"
         
         if (self.isStartComplete) {
+            NotificationCenter.default.removeObserver(self)
+            
             self.stopTimer()
             self.stopBLE()
             
@@ -830,6 +847,53 @@ public class ServiceManager: Observation {
         } else {
             message = localTime + " , (Jupiter) Fail : After the service has fully started, it can be stop "
             return (false, message)
+        }
+    }
+    
+    public func enterBackground() {
+        if (!self.isBackground) {
+            let localTime = getLocalTimeString()
+            self.isBackground = true
+            self.bleManager.stopScan()
+            self.stopTimer()
+            backgroundTaskIdentifier = .invalid
+            backgroundTaskIdentifier = UIApplication.shared.beginBackgroundTask(withName: "BackgroundOutputTimer") {
+                UIApplication.shared.endBackgroundTask(self.backgroundTaskIdentifier!)
+                self.backgroundTaskIdentifier = .invalid
+            }
+
+            self.backgroundUpTimer = DispatchSource.makeTimerSource(queue: DispatchQueue.global())
+            self.backgroundUpTimer!.schedule(deadline: .now(), repeating: UPDATE_INTERVAL)
+            self.backgroundUpTimer!.setEventHandler(handler: self.outputTimerUpdate)
+            self.backgroundUpTimer!.resume()
+
+            self.backgroundUvTimer = DispatchSource.makeTimerSource(queue: DispatchQueue.global())
+            self.backgroundUvTimer!.schedule(deadline: .now(), repeating: UVD_INTERVAL)
+            self.backgroundUvTimer!.setEventHandler(handler: self.userVelocityTimerUpdate)
+            self.backgroundUvTimer!.resume()
+            
+            self.reporting(input: BACKGROUND_FLAG)
+        }
+    }
+    
+    public func enterForeground() {
+        if (self.isBackground) {
+            let localTime = getLocalTimeString()
+            self.isBackground = false
+            self.bleManager.startScan(option: .Foreground)
+            
+            if backgroundTaskIdentifier != .invalid {
+                UIApplication.shared.endBackgroundTask(backgroundTaskIdentifier!)
+                backgroundTaskIdentifier = .invalid
+            }
+            self.backgroundUpTimer?.cancel()
+            self.backgroundUpTimer = nil
+            
+            self.backgroundUvTimer?.cancel()
+            self.backgroundUvTimer = nil
+            
+            self.startTimer()
+            self.reporting(input: FOREGROUND_FLAG)
         }
     }
     
@@ -857,6 +921,11 @@ public class ServiceManager: Observation {
         self.timeUpdateOutput = FineLocationTrackingFromServer()
         self.measurementOutput = FineLocationTrackingFromServer()
         self.isActiveReturn = true
+    }
+    
+    func notificationCenterAddOberver() {
+        NotificationCenter.default.addObserver(self, selector: #selector(self.onDidReceiveNotification), name: .didEnterBackground, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.onDidReceiveNotification), name: .didBecomeActive, object: nil)
     }
     
     public func initCollect() {
@@ -925,12 +994,11 @@ public class ServiceManager: Observation {
         
         if (self.user_id != "") {
             let input = OnSpotAuthorization(user_id: self.user_id, mobile_time: currentTime)
-            print("getSpotResult : \(input)")
             NetworkManager.shared.postOSA(url: OSA_URL, input: input, completion: { statusCode, returnedString in
                 completion(statusCode, returnedString)
             })
         } else {
-            completion(500, "(Jupiter) Error : Invalid User ID")
+            completion(500, " , (Jupiter) Error : Invalid User ID")
         }
     }
     
@@ -1180,59 +1248,84 @@ public class ServiceManager: Observation {
     }
     
     func startTimer() {
-        let queueRFD = DispatchQueue(label: Bundle.main.bundleIdentifier! + ".receivedForceTimer")
-        receivedForceTimer = DispatchSource.makeTimerSource(queue: queueRFD)
-        receivedForceTimer!.schedule(deadline: .now(), repeating: RFD_INTERVAL)
-        receivedForceTimer!.setEventHandler(handler: self.receivedForceTimerUpdate)
-        receivedForceTimer!.activate()
+        if (self.requestTimer == nil) {
+            let queueRFD = DispatchQueue(label: Bundle.main.bundleIdentifier! + ".receivedForceTimer")
+            self.receivedForceTimer = DispatchSource.makeTimerSource(queue: queueRFD)
+    //        self.receivedForceTimer = DispatchSource.makeTimerSource(queue: DispatchQueue.global())
+            self.receivedForceTimer!.schedule(deadline: .now(), repeating: RFD_INTERVAL)
+            self.receivedForceTimer!.setEventHandler(handler: self.receivedForceTimerUpdate)
+            self.receivedForceTimer!.resume()
+        }
+
+        if (self.userVelocityTimer == nil) {
+            let queueUVD = DispatchQueue(label: Bundle.main.bundleIdentifier! + ".userVelocityTimer")
+            self.userVelocityTimer = DispatchSource.makeTimerSource(queue: queueUVD)
+    //        self.userVelocityTimer = DispatchSource.makeTimerSource(queue: DispatchQueue.global())
+            self.userVelocityTimer!.schedule(deadline: .now(), repeating: UVD_INTERVAL)
+            self.userVelocityTimer!.setEventHandler(handler: self.userVelocityTimerUpdate)
+            self.userVelocityTimer!.resume()
+        }
         
-        let queueUVD = DispatchQueue(label: Bundle.main.bundleIdentifier! + ".userVelocityTimer")
-        userVelocityTimer = DispatchSource.makeTimerSource(queue: queueUVD)
-        userVelocityTimer!.schedule(deadline: .now(), repeating: UVD_INTERVAL)
-        userVelocityTimer!.setEventHandler(handler: self.userVelocityTimerUpdate)
-        userVelocityTimer!.activate()
         
-        let queueRQ = DispatchQueue(label: Bundle.main.bundleIdentifier! + ".requestTimer")
-        requestTimer = DispatchSource.makeTimerSource(queue: queueRQ)
-        requestTimer!.schedule(deadline: .now(), repeating: RQ_INTERVAL)
-        requestTimer!.setEventHandler(handler: self.requestTimerUpdate)
-        requestTimer!.activate()
+        if (self.requestTimer == nil) {
+            let queueRQ = DispatchQueue(label: Bundle.main.bundleIdentifier! + ".requestTimer")
+            self.requestTimer = DispatchSource.makeTimerSource(queue: queueRQ)
+    //        self.requestTimer = DispatchSource.makeTimerSource(queue: DispatchQueue.global())
+            self.requestTimer!.schedule(deadline: .now(), repeating: RQ_INTERVAL)
+            self.requestTimer!.setEventHandler(handler: self.requestTimerUpdate)
+            self.requestTimer!.resume()
+        }
         
-        let queueUP = DispatchQueue(label: Bundle.main.bundleIdentifier! + ".updateTimer")
-        updateTimer = DispatchSource.makeTimerSource(queue: queueUP)
-        updateTimer!.schedule(deadline: .now(), repeating: UPDATE_INTERVAL)
-        updateTimer!.setEventHandler(handler: self.outputTimerUpdate)
-        updateTimer!.activate()
         
-        let queueOSR = DispatchQueue(label: Bundle.main.bundleIdentifier! + ".osrTimer")
-        osrTimer = DispatchSource.makeTimerSource(queue: queueOSR)
-        osrTimer!.schedule(deadline: .now(), repeating: OSR_INTERVAL)
-        osrTimer!.setEventHandler(handler: self.osrTimerUpdate)
-        osrTimer!.activate()
+        if (self.updateTimer == nil) {
+            let queueUP = DispatchQueue(label: Bundle.main.bundleIdentifier! + ".updateTimer")
+            self.updateTimer = DispatchSource.makeTimerSource(queue: queueUP)
+    //        self.updateTimer = DispatchSource.makeTimerSource(queue: DispatchQueue.global())
+            self.updateTimer!.schedule(deadline: .now(), repeating: UPDATE_INTERVAL)
+            self.updateTimer!.setEventHandler(handler: self.outputTimerUpdate)
+            self.updateTimer!.resume()
+        }
+        
+        
+        if (self.osrTimer == nil) {
+            let queueOSR = DispatchQueue(label: Bundle.main.bundleIdentifier! + ".osrTimer")
+            self.osrTimer = DispatchSource.makeTimerSource(queue: queueOSR)
+    //        self.osrTimer = DispatchSource.makeTimerSource(queue: DispatchQueue.global())
+            self.osrTimer!.schedule(deadline: .now(), repeating: OSR_INTERVAL)
+            self.osrTimer!.setEventHandler(handler: self.osrTimerUpdate)
+            self.osrTimer!.resume()
+        }
     }
 
     func stopTimer() {
-        receivedForceTimer?.cancel()
-        userVelocityTimer?.cancel()
-        osrTimer?.cancel()
-        requestTimer?.cancel()
-        updateTimer?.cancel()
+        self.receivedForceTimer?.cancel()
+        self.userVelocityTimer?.cancel()
+        self.osrTimer?.cancel()
+        self.requestTimer?.cancel()
+        self.updateTimer?.cancel()
+        
+        self.receivedForceTimer = nil
+        self.userVelocityTimer = nil
+        self.osrTimer = nil
+        self.requestTimer = nil
+        self.updateTimer = nil
     }
     
     func enterSleepMode() {
         let localTime: String = getLocalTimeString()
         print(localTime + " , (Jupiter) Enter Sleep Mode")
         self.updateTimer?.cancel()
+        self.updateTimer = nil
     }
     
     func wakeUpFromSleepMode() {
         if (self.service == "FLT") {
-            if (updateTimer!.isCancelled) {
+            if (self.updateTimer == nil && !self.isBackground) {
                 let queue = DispatchQueue(label: Bundle.main.bundleIdentifier! + ".updateTimer")
-                updateTimer = DispatchSource.makeTimerSource(queue: queue)
-                updateTimer!.schedule(deadline: .now(), repeating: UPDATE_INTERVAL)
-                updateTimer!.setEventHandler(handler: self.outputTimerUpdate)
-                updateTimer!.activate()
+                self.updateTimer = DispatchSource.makeTimerSource(queue: queue)
+                self.updateTimer!.schedule(deadline: .now(), repeating: UPDATE_INTERVAL)
+                self.updateTimer!.setEventHandler(handler: self.outputTimerUpdate)
+                self.updateTimer!.resume()
             }
         }
     }
@@ -1252,6 +1345,7 @@ public class ServiceManager: Observation {
     }
     
     @objc func outputTimerUpdate() {
+//        print(getLocalTimeString() + " , (Jupiter) OutputTimer is running")
         if (self.isActiveReturn && self.isActiveService) {
             let currentTime = getCurrentTimeInMilliseconds()
             
@@ -1376,9 +1470,9 @@ public class ServiceManager: Observation {
         let bleDictionary: [String: [[Double]]]? = bleManager.bleDictionary
         if let bleData = bleDictionary {
             self.bleTrimed = trimBleData(bleInput: bleData, nowTime: getCurrentTimeInMillisecondsDouble(), validTime: validTime)
-            let bleAvg = avgBleData(bleDictionary: self.bleTrimed)
+//            let bleAvg = avgBleData(bleDictionary: self.bleTrimed)
+            let bleAvg = ["TJ-00CB-0000031A-0000":-76.0]
             
-            print(bleAvg)
             if (!bleAvg.isEmpty) {
                 self.timeBleOff = 0
                 self.timeActiveRF = 0
@@ -1398,8 +1492,8 @@ public class ServiceManager: Observation {
                     if ((inputReceivedForce.count-1) >= RFD_INPUT_NUM) {
                         let sufficientRfd: Bool = checkSufficientRfd(bleDict: bleAvg, CONDITION: -95, COUNT: 3)
                         self.isSufficientRfd = sufficientRfd
-                        
                         inputReceivedForce.remove(at: 0)
+//                        print(localTime + " (Jupiter) RFD Timer is working // isBackground = \(self.isBackground)")
                         NetworkManager.shared.putReceivedForce(url: RF_URL, input: inputReceivedForce, completion: { [self] statusCode, returnedStrig in
                             if (statusCode != 200) {
                                 let localTime = getLocalTimeString()
@@ -1455,7 +1549,7 @@ public class ServiceManager: Observation {
     @objc func userVelocityTimerUpdate() {
         let currentTime = getCurrentTimeInMilliseconds()
         let localTime = getLocalTimeString()
-        
+//        print(localTime + " , (Jupiter) UvdTimer is running")
         // UV Control
         setModeParam(mode: self.runMode, phase: self.phase)
         
@@ -1570,7 +1664,9 @@ public class ServiceManager: Observation {
                 // Phase 4 Request
                 if (self.isAnswered && (self.phase == 4)) {
                     self.isAnswered = false
-                    processPhase4(currentTime: currentTime, localTime: localTime)
+                    if (!self.isBackground) {
+                        processPhase4(currentTime: currentTime, localTime: localTime)
+                    }
                 }
             }
         } else {
@@ -1707,7 +1803,7 @@ public class ServiceManager: Observation {
         
         self.phase2Count = 0
         let input = FineLocationTracking(user_id: self.user_id, mobile_time: currentTime, sector_id: self.sector_id, building_name: self.currentBuilding, level_name: self.currentLevel, spot_id: self.currentSpot, phase: self.phase, rss_compensation_list: requestBiasArray, sc_compensation_list: [1.0])
-//        print(localTime + " , (Jupiter) Phase 3 Input : \(input.level_name)")
+//        print(localTime + " , (Jupiter) Phase 3 Input : \(input)")
         self.networkCount += 1
         NetworkManager.shared.postFLT(url: FLT_URL, input: input, completion: { [self] statusCode, returnedString in
             self.networkCount = 0
@@ -2215,6 +2311,20 @@ public class ServiceManager: Observation {
                     }
                 }
             })
+            
+//            getSpotResult(completion: { [self] statusCode, returnedString in
+//                if (statusCode == 200) {
+//                    let result = decodeOSA(json: returnedString)
+//                    let spots = result.spots
+//                    for i in 0..<spots.count {
+//                        print(localTime + " , (Jupiter) OSA Result = \(spots[i])")
+//                    }
+//                    print(localTime + " , (Jupiter) OSA Result -------------------------")
+//
+//                } else {
+//                    print(localTime + " , (Jupiter) Error : Fail to get spot result")
+//                }
+//            })
             
             // Check Entrance Level
             let isEntrance = self.checkIsEntranceLevel(result: lastResult)
@@ -3466,5 +3576,15 @@ public class ServiceManager: Observation {
             ble.updateValue(rssiFinal, forKey: bleID)
         }
         return ble
+    }
+    
+    @objc func onDidReceiveNotification(_ notification: Notification) {
+        if notification.name == .didEnterBackground {
+            self.enterBackground()
+        }
+
+        if notification.name == .didBecomeActive {
+            self.enterForeground()
+        }
     }
 }
