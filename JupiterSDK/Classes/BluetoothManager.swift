@@ -142,7 +142,7 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
         if let bleName = discoveredPeripheral.name {
             
             if bleName.contains("TJ-") {
-                print(getLocalTimeString() + " BLE is scanning")
+//                print(getLocalTimeString() + " BLE is scanning")
                 let deviceIDString = bleName.substring(from: 8, to: 15)
                 
                 var userInfo = [String:String]()

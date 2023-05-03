@@ -31,7 +31,7 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
         case 0:
             print(localTime + " , (JupiterVC) Report : Stop!! Out of the Service Area")
             DispatchQueue.main.async { [self] in
-                self.switchButton.isOn = false
+//                self.switchButton.isOn = false
             }
         case 1:
             print(localTime + " , (JupiterVC) Report : Start!! Enter the Service Area")
@@ -61,7 +61,7 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
             let localTime: String = self.getLocalTimeString()
             let dt = result.mobile_time - self.observerTime
             let log: String = localTime + " , (JupiterVC) : dt = \(dt) // time = \(result.mobile_time) // befor = \(self.observerTime) // x = \(result.x) // y = \(result.y) // phase = \(result.phase)"
-            print(log)
+//            print(log)
             
             self.observerTime = result.mobile_time
             let building = result.building_name

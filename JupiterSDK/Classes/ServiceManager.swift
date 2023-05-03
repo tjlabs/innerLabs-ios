@@ -14,7 +14,7 @@ public class ServiceManager: Observation {
                     let rsCompensation = self.rssiBias
                     let scCompensation = self.scCompensation
                     
-                    let data = MobileResult(user_id: self.user_id, mobile_time: result.mobile_time, sector_id: self.sector_id, building_name: result.building_name, level_name: result.level_name, scc: result.scc, x: result.x, y: result.y, absolute_heading: result.absolute_heading, phase: result.phase, calculated_time: result.calculated_time, index: result.index, velocity: result.velocity, ble_only_position: result.ble_only_position, rss_compensation: self.rssiBias, sc_compensation: self.scCompensation)
+                    let data = MobileResult(user_id: self.user_id, mobile_time: result.mobile_time, sector_id: self.sector_id, building_name: result.building_name, level_name: result.level_name, scc: result.scc, x: result.x, y: result.y, absolute_heading: result.absolute_heading, phase: result.phase, calculated_time: result.calculated_time, index: result.index, velocity: result.velocity, ble_only_position: result.ble_only_position, rss_compensation: rsCompensation, sc_compensation: scCompensation)
                     inputMobileResult.append(data)
                     if ((inputMobileResult.count-1) >= MR_INPUT_NUM) {
                         inputMobileResult.remove(at: 0)
@@ -43,7 +43,7 @@ public class ServiceManager: Observation {
     let MR_INPUT_NUM = 20
     
     // 1 ~ 2 : Release  //  0 : Test
-    var serverType: Int = 0
+    var serverType: Int = 1
     var region: String = "Korea"
     
     let G: Double = 9.81
@@ -134,6 +134,7 @@ public class ServiceManager: Observation {
 
     var userVelocityTimer: DispatchSourceTimer?
     var UVD_INTERVAL: TimeInterval = 1/40 // second
+    var pastUvdTime: Int = 0
 
     var requestTimer: DispatchSourceTimer?
     var RQ_INTERVAL: TimeInterval = 2 // second
@@ -169,6 +170,8 @@ public class ServiceManager: Observation {
     var unitDRInfo = UnitDRInfo()
     var unitDrInfoIndex: Int = 0
     var unitDRGenerator = UnitDRGenerator()
+    var userTrajectoryInfo: [UnitDRInfo] = []
+    var USER_TRAJECTORY_LENGTH: Double = 50
     
     var unitDistane: Double = 0
     var isStartFlag: Bool = false
@@ -853,6 +856,7 @@ public class ServiceManager: Observation {
     public func enterBackground() {
         if (!self.isBackground) {
             let localTime = getLocalTimeString()
+            
             self.isBackground = true
             self.bleManager.stopScan()
             self.stopTimer()
@@ -872,6 +876,7 @@ public class ServiceManager: Observation {
             self.backgroundUvTimer!.setEventHandler(handler: self.userVelocityTimerUpdate)
             self.backgroundUvTimer!.resume()
             
+            self.bleTrimed = [String: [[Double]]]()
             self.reporting(input: BACKGROUND_FLAG)
         }
     }
@@ -898,7 +903,7 @@ public class ServiceManager: Observation {
     }
     
     private func initVariables() {
-        self.inputReceivedForce = [ReceivedForce(user_id: "", mobile_time: 0, ble: [:], pressure: 0)]
+        self.inputReceivedForce = [ReceivedForce(user_id: user_id, mobile_time: 0, ble: [:], pressure: 0)]
         self.inputUserVelocity = [UserVelocity(user_id: user_id, mobile_time: 0, index: 0, length: 0, heading: 0, looking: true)]
         self.indexAfterResponse = 0
         self.lastOsrId = 0
@@ -1034,6 +1039,7 @@ public class ServiceManager: Observation {
                     sensorData.acc[2] = -accZ*G
                     collectData.acc[2] = -accZ*G
                 }
+//                print(getLocalTimeString() + " , (Jupiter) Sensor : \(self.accX) , \(self.accY) , \(self.accZ)")
             }
         } else {
             let localTime: String = getLocalTimeString()
@@ -1470,8 +1476,8 @@ public class ServiceManager: Observation {
         let bleDictionary: [String: [[Double]]]? = bleManager.bleDictionary
         if let bleData = bleDictionary {
             self.bleTrimed = trimBleData(bleInput: bleData, nowTime: getCurrentTimeInMillisecondsDouble(), validTime: validTime)
-//            let bleAvg = avgBleData(bleDictionary: self.bleTrimed)
-            let bleAvg = ["TJ-00CB-0000031A-0000":-76.0]
+            let bleAvg = avgBleData(bleDictionary: self.bleTrimed)
+//            let bleAvg = ["TJ-00CB-0000031A-0000":-76.0]
             
             if (!bleAvg.isEmpty) {
                 self.timeBleOff = 0
@@ -1493,7 +1499,6 @@ public class ServiceManager: Observation {
                         let sufficientRfd: Bool = checkSufficientRfd(bleDict: bleAvg, CONDITION: -95, COUNT: 3)
                         self.isSufficientRfd = sufficientRfd
                         inputReceivedForce.remove(at: 0)
-//                        print(localTime + " (Jupiter) RFD Timer is working // isBackground = \(self.isBackground)")
                         NetworkManager.shared.putReceivedForce(url: RF_URL, input: inputReceivedForce, completion: { [self] statusCode, returnedStrig in
                             if (statusCode != 200) {
                                 let localTime = getLocalTimeString()
@@ -1542,6 +1547,12 @@ public class ServiceManager: Observation {
                 }
             }
         }
+        
+        for value in bleDict.values {
+            if value >= (CONDITION+12) {
+                return true
+            }
+        }
         return false
     }
 
@@ -1549,13 +1560,20 @@ public class ServiceManager: Observation {
     @objc func userVelocityTimerUpdate() {
         let currentTime = getCurrentTimeInMilliseconds()
         let localTime = getLocalTimeString()
-//        print(localTime + " , (Jupiter) UvdTimer is running")
         // UV Control
         setModeParam(mode: self.runMode, phase: self.phase)
         
         if (self.service == "FLT") {
             unitDRInfo = unitDRGenerator.generateDRInfo(sensorData: sensorData)
         }
+        
+        var backgroundScale: Double = 1.0
+        if (self.isBackground) {
+            let diffTime = currentTime - self.pastUvdTime
+//            print(localTime + " , (Jupiter) UvdTimer // dt = \(diffTime)")
+            backgroundScale = Double(diffTime)/(1000/SAMPLE_HZ)
+        }
+        self.pastUvdTime = currentTime
         
         if (unitDRInfo.isIndexChanged) {
             self.headingBuffer.append(unitDRInfo.heading)
@@ -1573,6 +1591,10 @@ public class ServiceManager: Observation {
             displayOutput.length = unitDRInfo.length
             displayOutput.velocity = unitDRInfo.velocity * 3.6
             
+            if (self.isBackground) {
+                unitDRInfo.length = unitDRInfo.length*backgroundScale
+            }
+//            print(localTime + " , (Jupiter) UvdTimer // isIndexChanged : index = \(unitDRInfo.index) , length = \(unitDRInfo.length)")
             self.unitDrInfoIndex = unitDRInfo.index
             
             if (self.mode == "auto") {
@@ -1612,6 +1634,10 @@ public class ServiceManager: Observation {
                         }
                     }
                 }
+                
+                // Make User Trajectory Buffer
+                self.userTrajectoryInfo.append(self.unitDRInfo)
+                self.accumulateLengthAndRemoveOldest()
                 
                 inputUserVelocity.append(data)
                 // Time Update
@@ -1690,6 +1716,21 @@ public class ServiceManager: Observation {
                 self.enterSleepMode()
             }
         }
+    }
+    
+    func accumulateLengthAndRemoveOldest() {
+        var accumulatedLength = 0.0
+        
+        for unitDRInfo in self.userTrajectoryInfo {
+            accumulatedLength += unitDRInfo.length
+        }
+        
+        if accumulatedLength > USER_TRAJECTORY_LENGTH {
+            self.userTrajectoryInfo.removeFirst()
+        }
+        
+        let utiCount = self.userTrajectoryInfo.count
+//        print("User Trajectory : length = \(accumulatedLength) , index = \(self.userTrajectoryInfo[0].index) , \(self.userTrajectoryInfo[utiCount-1].index)")
     }
     
     @objc func requestTimerUpdate() {
@@ -1801,6 +1842,9 @@ public class ServiceManager: Observation {
             }
         }
         
+        //  userTrajectoryInfo의 0 Index의 헤딩 을 이용한 Search 방향
+        //  내 현재 위치 기준의 Search 영역
+        
         self.phase2Count = 0
         let input = FineLocationTracking(user_id: self.user_id, mobile_time: currentTime, sector_id: self.sector_id, building_name: self.currentBuilding, level_name: self.currentLevel, spot_id: self.currentSpot, phase: self.phase, rss_compensation_list: requestBiasArray, sc_compensation_list: [1.0])
 //        print(localTime + " , (Jupiter) Phase 3 Input : \(input)")
@@ -1910,9 +1954,6 @@ public class ServiceManager: Observation {
                             
                             let levelArray: [String] = [resultLevelName, currentLevelName]
                             var TIME_CONDITION = VALID_BL_CHANGE_TIME
-                            if (levelArray.contains("B0") && levelArray.contains("B2")) {
-                                TIME_CONDITION = 7000*3
-                            }
                             
                             if (result.building_name != self.currentBuilding || result.level_name != self.currentLevel) {
                                 if ((result.mobile_time - self.buildingLevelChangedTime) > TIME_CONDITION) {
@@ -1951,9 +1992,6 @@ public class ServiceManager: Observation {
                             
                             let levelArray: [String] = [resultLevelName, currentLevelName]
                             var TIME_CONDITION = VALID_BL_CHANGE_TIME
-                            if (levelArray.contains("B0") && levelArray.contains("B2")) {
-                                TIME_CONDITION = 7000*3
-                            }
                             
                             if (result.building_name != self.currentBuilding || result.level_name != self.currentLevel) {
                                 if ((result.mobile_time - self.buildingLevelChangedTime) > TIME_CONDITION) {
@@ -2222,9 +2260,6 @@ public class ServiceManager: Observation {
                                         
                                         let levelArray: [String] = [resultLevelName, currentLevelName]
                                         var TIME_CONDITION = VALID_BL_CHANGE_TIME
-                                        if (levelArray.contains("B0") && levelArray.contains("B2")) {
-                                            TIME_CONDITION = 7000*3
-                                        }
                                         
                                         if (result.building_name != self.currentBuilding || result.level_name != self.currentLevel) {
                                             if ((result.mobile_time - self.buildingLevelChangedTime) > TIME_CONDITION) {
@@ -2275,7 +2310,7 @@ public class ServiceManager: Observation {
             if (!self.isActiveReturn) {
                 let validTime = self.BLE_VALID_TIME
                 let bleAvg = avgBleData(bleDictionary: self.bleTrimed)
-                let isStrong = checkSufficientRfd(bleDict: bleAvg, CONDITION: -87, COUNT: 2)
+                let isStrong = checkSufficientRfd(bleDict: bleAvg, CONDITION: -90, COUNT: 2)
                 if (isStrong) {
                     self.reporting(input: INDOOR_FLAG)
                     self.isActiveReturn = true
@@ -2404,9 +2439,6 @@ public class ServiceManager: Observation {
         
         let levelArray: [String] = [result.level_name, result.linked_level_name]
         var TIME_CONDITION = VALID_BL_CHANGE_TIME
-        if (levelArray.contains("B0") && levelArray.contains("B2")) {
-            TIME_CONDITION = 7000*3
-        }
         
         if (result.spot_id != lastSpotId) {
             // Different Spot Detected
@@ -3299,7 +3331,7 @@ public class ServiceManager: Observation {
         var dy = length*sin(updateHeading*D2R)
         
         if (self.phase != 4) {
-            if (runMode != "pdr") {
+            if (runMode != "pdr" && !self.isBackground) {
                 dx = dx * TU_SCALE_VALUE
                 dy = dy * TU_SCALE_VALUE
             }
