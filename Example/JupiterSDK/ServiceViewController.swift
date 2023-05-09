@@ -926,7 +926,7 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
         scatterChart.data = chartData
     }
     
-    private func drawDebug(XY: [Double], RP_X: [Double], RP_Y: [Double],  serverXY: [Double], tuXY: [Double], heading: Double, limits: [Double], isBleOnlyMode: Bool, isPmSuccess: Bool) {
+    private func drawDebug(XY: [Double], RP_X: [Double], RP_Y: [Double],  serverXY: [Double], tuXY: [Double], heading: Double, limits: [Double], isBleOnlyMode: Bool, isPmSuccess: Bool, tailXY: [Double], trajectroyFromTail: [[Double]], headXY: [Double], trajectoryFromHead: [[Double]]) {
         let xAxisValue: [Double] = RP_X
         let yAxisValue: [Double] = RP_Y
         
@@ -979,10 +979,52 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
         set3.setColor(.systemGreen)
         set3.scatterShapeSize = 12
         
+        let values4 = (0..<1).map { (i) -> ChartDataEntry in
+            return ChartDataEntry(x: tailXY[0], y: tailXY[1])
+        }
+        
+        let set4 = ScatterChartDataSet(entries: values4, label: "Coord1")
+        set4.drawValuesEnabled = false
+        set4.setScatterShape(.circle)
+        set4.setColor(.systemBrown)
+        set4.scatterShapeSize = 6
+        
+        let values5 = (0..<trajectroyFromTail.count).map { (i) -> ChartDataEntry in
+            return ChartDataEntry(x: trajectroyFromTail[i][0], y: trajectroyFromTail[i][1])
+        }
+        let set5 = ScatterChartDataSet(entries: values5, label: "Trajectory1")
+        set5.drawValuesEnabled = false
+        set5.setScatterShape(.circle)
+        set5.setColor(.systemBrown)
+        set5.scatterShapeSize = 6
+        
+        let values6 = (0..<1).map { (i) -> ChartDataEntry in
+            return ChartDataEntry(x: headXY[0], y: headXY[1])
+        }
+        
+        let set6 = ScatterChartDataSet(entries: values6, label: "Coord2")
+        set6.drawValuesEnabled = false
+        set6.setScatterShape(.circle)
+        set6.setColor(.systemTeal)
+        set6.scatterShapeSize = 6
+        
+        let values7 = (0..<trajectoryFromHead.count).map { (i) -> ChartDataEntry in
+            return ChartDataEntry(x: trajectoryFromHead[i][0], y: trajectoryFromHead[i][1])
+        }
+        let set7 = ScatterChartDataSet(entries: values7, label: "Trajectory2")
+        set7.drawValuesEnabled = false
+        set7.setScatterShape(.circle)
+        set7.setColor(.systemTeal)
+        set7.scatterShapeSize = 6
+        
         let chartData = ScatterChartData(dataSet: set0)
         chartData.append(set1)
         chartData.append(set2)
         chartData.append(set3)
+//        chartData.append(set4)
+        chartData.append(set5)
+        chartData.append(set6)
+        chartData.append(set7)
         chartData.setDrawValues(false)
         
         // Heading
@@ -1024,8 +1066,8 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
         let yMin = yAxisValue.min()!
         let yMax = yAxisValue.max()!
         
-        print("\(currentBuilding) \(currentLevel) MinMax : \(xMin) , \(xMax), \(yMin), \(yMax)")
-        print("\(currentBuilding) \(currentLevel) Limits : \(limits[0]) , \(limits[1]), \(limits[2]), \(limits[3])")
+//        print("\(currentBuilding) \(currentLevel) MinMax : \(xMin) , \(xMax), \(yMin), \(yMax)")
+//        print("\(currentBuilding) \(currentLevel) Limits : \(limits[0]) , \(limits[1]), \(limits[2]), \(limits[3])")
         
 //        scatterChart.xAxis.axisMinimum = -1.3
 //        scatterChart.xAxis.axisMaximum = 18
@@ -1106,7 +1148,7 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
                     scatterChart.isHidden = true
                 } else {
 //                    drawRP(RP_X: rp[0], RP_Y: rp[1], XY: XY, heading: heading, limits: limits)
-                    drawDebug(XY: XY, RP_X: rp[0], RP_Y: rp[1], serverXY: serviceManager.serverResult, tuXY: serviceManager.timeUpdateResult, heading: heading, limits: limits, isBleOnlyMode: self.isBleOnlyMode, isPmSuccess: self.isPathMatchingSuccess)
+                    drawDebug(XY: XY, RP_X: rp[0], RP_Y: rp[1], serverXY: serviceManager.serverResult, tuXY: serviceManager.timeUpdateResult, heading: heading, limits: limits, isBleOnlyMode: self.isBleOnlyMode, isPmSuccess: self.isPathMatchingSuccess, tailXY: serviceManager.displayOutput.tailCoord, trajectroyFromTail: serviceManager.displayOutput.trajectoryFromTail, headXY: serviceManager.displayOutput.headCoord, trajectoryFromHead: serviceManager.displayOutput.trajectoryFromHead)
                 }
             }
         } else {
@@ -1158,7 +1200,7 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
                     scatterChart.isHidden = true
                 } else {
 //                    drawRP(RP_X: rp[0], RP_Y: rp[1], XY: XY, heading: heading, limits: limits)
-                    drawDebug(XY: XY, RP_X: rp[0], RP_Y: rp[1], serverXY: serviceManager.serverResult, tuXY: serviceManager.timeUpdateResult, heading: heading, limits: limits, isBleOnlyMode: self.isBleOnlyMode, isPmSuccess: self.isPathMatchingSuccess)
+                    drawDebug(XY: XY, RP_X: rp[0], RP_Y: rp[1], serverXY: serviceManager.serverResult, tuXY: serviceManager.timeUpdateResult, heading: heading, limits: limits, isBleOnlyMode: self.isBleOnlyMode, isPmSuccess: self.isPathMatchingSuccess, tailXY: serviceManager.displayOutput.tailCoord, trajectroyFromTail: serviceManager.displayOutput.trajectoryFromTail, headXY: serviceManager.displayOutput.headCoord, trajectoryFromHead: serviceManager.displayOutput.trajectoryFromHead)
                 }
             }
         } else {
@@ -1330,7 +1372,7 @@ extension ServiceViewController : UICollectionViewDelegate{
         } else {
             if (isShowRP) {
 //                drawRP(RP_X: rp[0], RP_Y: rp[1], XY: XY, heading: 0, limits: limits)
-                drawDebug(XY: XY, RP_X: rp[0], RP_Y: rp[1], serverXY: serviceManager.serverResult, tuXY: serviceManager.timeUpdateResult, heading: 0, limits: limits, isBleOnlyMode: self.isBleOnlyMode, isPmSuccess: self.isPathMatchingSuccess)
+                drawDebug(XY: XY, RP_X: rp[0], RP_Y: rp[1], serverXY: serviceManager.serverResult, tuXY: serviceManager.timeUpdateResult, heading: 0, limits: limits, isBleOnlyMode: self.isBleOnlyMode, isPmSuccess: self.isPathMatchingSuccess, tailXY: serviceManager.displayOutput.tailCoord, trajectroyFromTail: serviceManager.displayOutput.trajectoryFromTail, headXY: serviceManager.displayOutput.headCoord, trajectoryFromHead: serviceManager.displayOutput.trajectoryFromHead)
             }
             displayLevelImage(building: currentBuilding, level: currentLevel, flag: isShowRP)
         }

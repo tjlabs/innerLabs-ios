@@ -374,7 +374,7 @@ public class NetworkManager {
         }
     }
     
-    func postFLT(url: String, input: FineLocationTracking, completion: @escaping (Int, String) -> Void) {
+    func postFLT(url: String, input: FineLocationTracking, isSufficientRfd: Bool, completion: @escaping (Int, String,  Bool) -> Void) {
         // [http 비동기 방식을 사용해서 http 요청 수행 실시]
         let urlComponents = URLComponents(string: url)
         var requestURL = URLRequest(url: (urlComponents?.url)!)
@@ -402,7 +402,7 @@ public class NetworkManager {
                 guard error == nil else {
                     // [콜백 반환]
                     DispatchQueue.main.async {
-                        completion(500, error?.localizedDescription ?? "Fail")
+                        completion(500, error?.localizedDescription ?? "Fail", false)
                     }
                     return
                 }
@@ -413,7 +413,7 @@ public class NetworkManager {
                 else {
                     // [콜백 반환]
                     DispatchQueue.main.async {
-                        completion(500, (response as? HTTPURLResponse)?.description ?? "Fail")
+                        completion(500, (response as? HTTPURLResponse)?.description ?? "Fail", false)
                     }
                     return
                 }
@@ -421,7 +421,7 @@ public class NetworkManager {
                 // [response 데이터 획득]
                 let resultCode = (response as? HTTPURLResponse)?.statusCode ?? 500 // [상태 코드]
                 guard let resultLen = data else {
-                    completion(500, (response as? HTTPURLResponse)?.description ?? "Fail")
+                    completion(500, (response as? HTTPURLResponse)?.description ?? "Fail", false)
                     return
                 }
                 let resultData = String(data: resultLen, encoding: .utf8) ?? "" // [데이터 확인]
@@ -434,14 +434,14 @@ public class NetworkManager {
 //                    print("                 :: ", resultData)
 //                    print("====================================")
 //                    print("")
-                    completion(resultCode, resultData)
+                    completion(resultCode, resultData, isSufficientRfd)
                 }
             })
 
             // [network 통신 실행]
             dataTask.resume()
         } else {
-            completion(500, "Fail to encode")
+            completion(500, "Fail to encode", false)
         }
     }
     

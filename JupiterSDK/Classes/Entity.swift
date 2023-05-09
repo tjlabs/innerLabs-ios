@@ -101,6 +101,23 @@ public struct UnitDRInfo {
     }
 }
 
+public struct TrajectoryInfo {
+    public var index: Int = 0
+    public var length: Double = 0
+    public var heading: Double = 0
+    public var velocity: Double = 0
+    public var lookingFlag: Bool = false
+    public var isIndexChanged: Bool = false
+    public var numChannels: Int = 0
+    public var scc: Double = 0
+    public var userBuilding: String = ""
+    public var userLevel: String = ""
+    public var userX: Double = 0
+    public var userY: Double = 0
+    public var userHeading: Double = 0
+    public var userPmSuccess: Bool = false
+}
+
 public struct ServiceResult {
     public var isIndexChanged: Bool = false
     
@@ -118,6 +135,12 @@ public struct ServiceResult {
     
     public var level: String = ""
     public var building: String = ""
+    
+    public var trajectoryFromHead: [[Double]] = [[0, 0]]
+    public var headCoord: [Double] = [0, 0]
+    
+    public var trajectoryFromTail: [[Double]] = [[0, 0]]
+    public var tailCoord: [Double] = [0, 0]
 }
 
 // ------------------------------------------------- //
@@ -301,6 +324,7 @@ public struct FineLocationTrackingResult: Codable {
     public var velocity: Double
     public var mode: String
     public var ble_only_position: Bool
+    public var isIndoor: Bool
     
     public init() {
         self.mobile_time = 0
@@ -316,6 +340,7 @@ public struct FineLocationTrackingResult: Codable {
         self.velocity = 0
         self.mode = ""
         self.ble_only_position = false
+        self.isIndoor = false
     }
 }
 
