@@ -60,8 +60,8 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
         DispatchQueue.main.async {
             let localTime: String = self.getLocalTimeString()
             let dt = result.mobile_time - self.observerTime
-            let log: String = localTime + " , (JupiterVC) : dt = \(dt) // time = \(result.mobile_time) // befor = \(self.observerTime) // x = \(result.x) // y = \(result.y) // phase = \(result.phase)"
-//            print(log)
+            let log: String = localTime + " , (JupiterVC) : isIndoor = \(result.isIndoor), dt = \(dt) // time = \(result.mobile_time) // befor = \(self.observerTime) // x = \(result.x) // y = \(result.y) // phase = \(result.phase)"
+            print(log)
             
             self.observerTime = result.mobile_time
             let building = result.building_name

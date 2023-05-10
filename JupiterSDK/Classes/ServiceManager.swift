@@ -959,10 +959,10 @@ public class ServiceManager: Observation {
         self.lastOsrId = 0
         self.phase = 0
         
-        self.currentBuilding = ""
-        self.currentLevel = "0F"
-        self.outputResult = FineLocationTrackingResult()
-        self.resultToReturn = FineLocationTrackingResult()
+//        self.currentBuilding = ""
+//        self.currentLevel = "0F"
+//        self.outputResult = FineLocationTrackingResult()
+//        self.resultToReturn = FineLocationTrackingResult()
         
         self.isGetFirstResponse = false
         
@@ -1406,6 +1406,7 @@ public class ServiceManager: Observation {
             var resultToReturn = self.resultToReturn
             resultToReturn.mobile_time = currentTime
             resultToReturn.ble_only_position = self.isVenusMode
+            resultToReturn.isIndoor = self.isIndoor
             
             self.tracking(input: resultToReturn, isPast: self.flagPast)
             self.lastOutputTime = currentTime
@@ -1418,7 +1419,11 @@ public class ServiceManager: Observation {
             result.index = self.unitDrInfoIndex
             result.absolute_heading = compensateHeading(heading: result.absolute_heading, mode: runMode)
             result.mode = runMode
-            result.isIndoor = self.isIndoor
+            
+            displayOutput.heading = result.absolute_heading
+            displayOutput.building = result.building_name
+            displayOutput.level = result.level_name
+            displayOutput.phase = String(result.phase)
             displayOutput.mode = runMode
             displayOutput.scc = result.scc
             
@@ -1493,12 +1498,6 @@ public class ServiceManager: Observation {
             if (isVenusMode) {
                 result.phase = 1
             }
-            
-            displayOutput.heading = result.absolute_heading
-            displayOutput.building = result.building_name
-            displayOutput.level = result.level_name
-            displayOutput.phase = String(result.phase)
-            
             self.lastResult = result
         }
         
@@ -1548,7 +1547,7 @@ public class ServiceManager: Observation {
 //                        let sufficientRfd: Bool = checkSufficientRfd(bleDict: self.bleAvg, CONDITION: -95, COUNT: 3)
 //                        self.isSufficientRfd = sufficientRfd
                         inputReceivedForce.remove(at: 0)
-                        NetworkManager.shared.putReceivedForce(url: RF_URL, input: inputReceivedForce, completion: { [self] statusCode, returnedStrig in
+                        NetworkManager.shared.postReceivedForce(url: RF_URL, input: inputReceivedForce, completion: { [self] statusCode, returnedStrig in
                             if (statusCode != 200) {
                                 let localTime = getLocalTimeString()
                                 let log: String = localTime + " , (Jupiter) Error : Fail to send bluetooth data"
@@ -1569,20 +1568,20 @@ public class ServiceManager: Observation {
                             let isInPathMatchingArea = self.checkInPathMatchingArea(x: lastResult.x, y: lastResult.y, building: lastResult.building_name, level: lastResult.level_name)
                             
                             if (lastResult.building_name != "" && lastResult.level_name == "B0") {
-                                print(localTime + " , (Jupiter) Outdoor : Last Level was B0")
                                 self.initVariables()
                                 self.isIndoor = false
+                                print(localTime + " , (Jupiter) Outdoor : Last Level was B0 // isIndoor = \(self.isIndoor)")
                                 self.reporting(input: OUTDOOR_FLAG)
                             } else if (isInPathMatchingArea.0) {
-                                print(localTime + " , (Jupiter) Outdoor : In Entrance Area")
                                 self.initVariables()
                                 self.isIndoor = false
+                                print(localTime + " , (Jupiter) Outdoor : In Entrance Area // isIndoor = \(self.isIndoor)")
                                 self.reporting(input: OUTDOOR_FLAG)
                             } else {
                                 if (self.timeActiveRF >= SLEEP_THRESHOLD_RF*3) {
-                                    print(localTime + " , (Jupiter) Outdoor : BLE was empty over 18s")
                                     self.initVariables()
                                     self.isIndoor = false
+                                    print(localTime + " , (Jupiter) Outdoor : BLE was empty over 18s // isIndoor = \(self.isIndoor)")
                                     self.reporting(input: OUTDOOR_FLAG)
                                 }
                             }
@@ -1779,7 +1778,7 @@ public class ServiceManager: Observation {
                 // Put UV
                 if ((inputUserVelocity.count-1) >= UVD_INPUT_NUM) {
                     inputUserVelocity.remove(at: 0)
-                    NetworkManager.shared.putUserVelocity(url: UV_URL, input: inputUserVelocity, completion: { [self] statusCode, returnedString in
+                    NetworkManager.shared.postUserVelocity(url: UV_URL, input: inputUserVelocity, completion: { [self] statusCode, returnedString in
                         if (statusCode == 200) {
                             self.pastTuResult = self.currentTuResult
                             self.indexSend = Int(returnedString) ?? 0
@@ -1926,7 +1925,6 @@ public class ServiceManager: Observation {
                 headingInfo.append(compensateHeading(heading: value.heading, mode: "dr"))
             }
             
-            // Double(userTrajectory.count) < USER_TRAJECTORY_LENGTH
             if (!self.isActiveKf) {
                 let userBuilding = userTrajectory[userTrajectory.count-1].userBuilding
                 let userLevel = userTrajectory[userTrajectory.count-1].userLevel
@@ -2031,9 +2029,13 @@ public class ServiceManager: Observation {
                     var searchHeadings: [Double] = []
                     
                     if (diffHeading < 90) {
-                        searchHeadings.append(headingEnd-diffHeading)
-                        searchHeadings.append(headingEnd)
-                        searchHeadings.append(headingEnd+diffHeading)
+                        if (diffHeading > 5) {
+                            searchHeadings.append(headingEnd-diffHeading)
+                            searchHeadings.append(headingEnd)
+                            searchHeadings.append(headingEnd+diffHeading)
+                        } else {
+                            searchHeadings.append(headingEnd)
+                        }
                     } else {
                         searchHeadings.append(headingEnd-10)
                         searchHeadings.append(headingEnd)
@@ -2066,8 +2068,8 @@ public class ServiceManager: Observation {
                     let RANGE = Double(userTrajectory.count)*1.2
                     
                     // Search Area
-                    let areaMinMax: [Double] = [userX - RANGE, userY - RANGE, userX + RANGE, userY + RANGE]
-                    let searchArea = getSearchCoordinates(areaMinMax: areaMinMax, interval: 1.0)
+//                    let areaMinMax: [Double] = [userX - RANGE, userY - RANGE, userX + RANGE, userY + RANGE]
+//                    let searchArea = getSearchCoordinates(areaMinMax: areaMinMax, interval: 1.0)
                     
                     let headInfo = userTrajectory[userTrajectory.count-1]
                     let headInfoHeading = tuHeading
@@ -2087,6 +2089,10 @@ public class ServiceManager: Observation {
                         xyFromHead[1] = xyFromHead[1] + userTrajectory[i].length*sin(headAngle*D2R)
                         trajectoryFromHead.append(xyFromHead)
                     }
+                    
+                    let xyMinMax: [Double] = getMinMaxValues(for: trajectoryFromHead)
+                    let areaMinMax: [Double] = getSearchAreaMinMax(xyMinMax: xyMinMax, trajectory: trajectoryFromHead, heading: headingFromHead, recentScc: recentScc)
+                    let searchArea = getSearchCoordinates(areaMinMax: areaMinMax, interval: 1.0)
                     
                     // Search Direction
                     let aroundHeadings = getPathMatchingHeadings(building: userBuilding, level: userLevel, x: userX, y: userY, heading: userH, RANGE: RANGE/2)
@@ -2114,7 +2120,9 @@ public class ServiceManager: Observation {
                             searchHeadings.append(compensateHeading(heading: ppHeadings[i], mode: "dr"))
                             searchHeadings.append(compensateHeading(heading: ppHeadings[i]+10, mode: "dr"))
                         }
-                        searchHeadings.append(headingEnd - 180)
+                        if (recentScc < 0.55) {
+                            searchHeadings.append(headingEnd - 180)
+                        }
                     } else {
                         searchHeadings.append(headingEnd-10)
                         searchHeadings.append(headingEnd)
@@ -2129,6 +2137,18 @@ public class ServiceManager: Observation {
                     displayOutput.trajectoryFromTail = searchArea
                     
                     print("Search Direction (KF O 곡선): \(resultDirection) // index = \(userTrajectory[userTrajectory.count-1].index)")
+                }
+                if (self.phase <= 1) {
+                    let userBuilding = userTrajectory[userTrajectory.count-1].userBuilding
+                    let userLevel = userTrajectory[userTrajectory.count-1].userLevel
+                    let userX = userTrajectory[userTrajectory.count-1].userX
+                    let userY = userTrajectory[userTrajectory.count-1].userY
+                    let userH = userTrajectory[userTrajectory.count-1].userHeading
+                    let RANGE = Double(userTrajectory.count)*1.2
+                    
+                    let ppHeadings = getPathMatchingHeadings(building: userBuilding, level: userLevel, x: userX, y: userY, heading: userH, RANGE: RANGE/2)
+                    resultDirection = ppHeadings.map { Int($0) }
+                    print("Search Direction (KF O Phase 1): \(resultDirection) // index = \(userTrajectory[userTrajectory.count-1].index)")
                 }
             }
         }

@@ -6,12 +6,12 @@ public class NetworkManager {
     let TIMEOUT_VALUE_PUT: Double = 5.0
     let TIMEOUT_VALUE_POST: Double = 5.0
     
-    func putReceivedForce(url: String, input: [ReceivedForce], completion: @escaping (Int, String) -> Void){
+    func postReceivedForce(url: String, input: [ReceivedForce], completion: @escaping (Int, String) -> Void){
         // [http 비동기 방식을 사용해서 http 요청 수행 실시]
         let urlComponents = URLComponents(string: url)
         var requestURL = URLRequest(url: (urlComponents?.url)!)
 
-        requestURL.httpMethod = "PUT"
+        requestURL.httpMethod = "POST"
         let encodingData = JSONConverter.encodeJson(param: input)
         if (encodingData != nil) {
             requestURL.httpBody = encodingData
@@ -68,12 +68,12 @@ public class NetworkManager {
         }
     }
 
-    func putUserVelocity(url: String, input: [UserVelocity], completion: @escaping (Int, String) -> Void) {
+    func postUserVelocity(url: String, input: [UserVelocity], completion: @escaping (Int, String) -> Void) {
         // [http 비동기 방식을 사용해서 http 요청 수행 실시]
         let urlComponents = URLComponents(string: url)
         var requestURL = URLRequest(url: (urlComponents?.url)!)
 
-        requestURL.httpMethod = "PUT"
+        requestURL.httpMethod = "POST"
         let encodingData = JSONConverter.encodeJson(param: input)
         if (encodingData != nil) {
             requestURL.httpBody = encodingData

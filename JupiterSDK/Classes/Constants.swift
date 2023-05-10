@@ -13,8 +13,8 @@ var RC_URL = "https://where-run-param" + REGION + "/rc"
 var TRAJ_URL = "https://where-run-param" + REGION + "/traj"
 var DEBUG_URL = "https://where-run-param" + REGION + "/md"
 
-var RF_URL = "https://where-run-record" + REGION + "/recordRF"
-var UV_URL = "https://where-run-record" + REGION + "/recordUV"
+var RF_URL = "https://where-run-record" + SERVER_TYPE + REGION + "/recordRF"
+var UV_URL = "https://where-run-record" + SERVER_TYPE + REGION + "/recordUV"
 var MR_URL = "https://where-run-record" + SERVER_TYPE + REGION + "/recordMR"
 var RECENT_URL = "https://where-run-user" + REGION + "/recent"
 
@@ -104,9 +104,9 @@ public func setBaseURL(url: String) {
     TRAJ_URL = "https://where-run-param" + REGION + "/traj"
     DEBUG_URL = "https://where-run-param" + REGION + "/md"
     
-    RF_URL = "https://where-run-record" + REGION + "/recordRF"
-    UV_URL = "https://where-run-record" + REGION + "/recordUV"
-    RECENT_URL = "https://where-run-user" + REGION + "/recent"
+    RF_URL = "https://where-run-record" + SERVER_TYPE + REGION + "/recordRF"
+    UV_URL = "https://where-run-record" + SERVER_TYPE + REGION + "/recordUV"
+    RECENT_URL = "https://where-run-user" + SERVER_TYPE + REGION + "/recent"
 
     CLD_URL = BASE_URL + "CLD"
     CLE_URL = BASE_URL + "CLE"
