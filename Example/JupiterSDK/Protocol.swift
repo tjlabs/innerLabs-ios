@@ -119,6 +119,7 @@ struct CoordToDisplay {
     var heading: Double = 0
     var building: String = ""
     var level: String = ""
+    var isIndoor: Bool = false
 }
 
 public func setRegion(regionName: String) {

@@ -242,6 +242,7 @@ struct CoarseLocationEstimation: Encodable {
     var user_id: String
     var mobile_time: Int
     var sector_id: Int
+    var search_direction_list: [Int]
 }
 
 public struct CoarseLocationEstimationResult: Codable {
@@ -276,8 +277,11 @@ struct FineLocationTracking: Encodable {
     var level_name: String
     var spot_id: Int
     var phase: Int
+    var search_range: [Int]
+    var search_direction_list: [Int]
     var rss_compensation_list: [Int]
     var sc_compensation_list: [Double]
+    var tail_index: Int
 }
 
 public struct FineLocationTrackingFromServer: Codable {
@@ -469,6 +473,22 @@ public struct JupiterBiasPost: Encodable {
     var rss_compensation: Int
 }
 
+// Traj
+public struct JupiterTraj: Encodable {
+    var sector_id: Int
+}
+
+public struct JupiterTrajResult: Codable {
+    var trajectory_length: Int
+    var trajectory_diagonal: Int
+    
+    public init() {
+        self.trajectory_length = 0
+        self.trajectory_diagonal = 0
+    }
+}
+
+// Debug
 public struct MobileDebug: Encodable {
     var sector_id: Int
 }
@@ -500,6 +520,7 @@ public struct MobileResult: Encodable {
     public var sc_compensation: Double
 }
 
+
 // Recent
 struct RecentResult: Encodable {
     var user_id: String
@@ -530,12 +551,24 @@ public func decodeOSR(json: String) -> OnSpotRecognitionResult {
     return result
 }
 
-public func decodeGEO(json: String) -> JupiterGeoResult {
+public func decodeGeo(json: String) -> JupiterGeoResult {
     let result = JupiterGeoResult.init()
     let decoder = JSONDecoder()
     let jsonString = json
 
     if let data = jsonString.data(using: .utf8), let decoded = try? decoder.decode(JupiterGeoResult.self, from: data) {
+        return decoded
+    }
+
+    return result
+}
+
+public func decodeTraj(json: String) -> JupiterTrajResult {
+    let result = JupiterTrajResult.init()
+    let decoder = JSONDecoder()
+    let jsonString = json
+
+    if let data = jsonString.data(using: .utf8), let decoded = try? decoder.decode(JupiterTrajResult.self, from: data) {
         return decoded
     }
 

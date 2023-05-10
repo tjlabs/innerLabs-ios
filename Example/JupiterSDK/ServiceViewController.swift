@@ -83,6 +83,7 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
                         self.coordToDisplay.x = x
                         self.coordToDisplay.y = y
                         self.coordToDisplay.heading = result.absolute_heading
+                        self.coordToDisplay.isIndoor = result.isIndoor
                     }
                 }
             }
@@ -846,7 +847,7 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
         scatterChart.data = chartData
     }
     
-    private func drawUser(XY: [Double], heading: Double, limits: [Double], isMonitor: Bool, isBleOnlyMode: Bool, isPmSuccess: Bool) {
+    private func drawUser(XY: [Double], heading: Double, limits: [Double], isMonitor: Bool, isBleOnlyMode: Bool, isPmSuccess: Bool, isIndoor: Bool) {
         let values1 = (0..<1).map { (i) -> ChartDataEntry in
             return ChartDataEntry(x: XY[0], y: XY[1])
         }
@@ -862,6 +863,10 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
         
         if (isBleOnlyMode) {
             valueColor = UIColor.systemBlue
+        }
+        
+        if (!isIndoor) {
+            valueColor = .systemGray
         }
         
         let set1 = ScatterChartDataSet(entries: values1, label: "USER")
@@ -926,7 +931,7 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
         scatterChart.data = chartData
     }
     
-    private func drawDebug(XY: [Double], RP_X: [Double], RP_Y: [Double],  serverXY: [Double], tuXY: [Double], heading: Double, limits: [Double], isBleOnlyMode: Bool, isPmSuccess: Bool, tailXY: [Double], trajectroyFromTail: [[Double]], headXY: [Double], trajectoryFromHead: [[Double]]) {
+    private func drawDebug(XY: [Double], RP_X: [Double], RP_Y: [Double],  serverXY: [Double], tuXY: [Double], heading: Double, limits: [Double], isBleOnlyMode: Bool, isPmSuccess: Bool, tailXY: [Double], trajectroyFromTail: [[Double]], headXY: [Double], trajectoryFromHead: [[Double]], isIndoor: Bool) {
         let xAxisValue: [Double] = RP_X
         let yAxisValue: [Double] = RP_Y
         
@@ -938,6 +943,10 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
         
         if (isBleOnlyMode) {
             valueColor = UIColor.systemBlue
+        }
+        
+        if (!isIndoor) {
+            valueColor = .systemGray
         }
         
         let values0 = (0..<xAxisValue.count).map { (i) -> ChartDataEntry in
@@ -1113,6 +1122,7 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
     func updateCoord(data: CoordToDisplay, flag: Bool) {
         self.XY[0] = data.x
         self.XY[1] = data.y
+        let isIndoor = data.isIndoor
         
         if (data.building == "") {
             currentBuilding = buildings[0]
@@ -1148,13 +1158,13 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
                     scatterChart.isHidden = true
                 } else {
 //                    drawRP(RP_X: rp[0], RP_Y: rp[1], XY: XY, heading: heading, limits: limits)
-                    drawDebug(XY: XY, RP_X: rp[0], RP_Y: rp[1], serverXY: serviceManager.serverResult, tuXY: serviceManager.timeUpdateResult, heading: heading, limits: limits, isBleOnlyMode: self.isBleOnlyMode, isPmSuccess: self.isPathMatchingSuccess, tailXY: serviceManager.displayOutput.tailCoord, trajectroyFromTail: serviceManager.displayOutput.trajectoryFromTail, headXY: serviceManager.displayOutput.headCoord, trajectoryFromHead: serviceManager.displayOutput.trajectoryFromHead)
+                    drawDebug(XY: XY, RP_X: rp[0], RP_Y: rp[1], serverXY: serviceManager.serverResult, tuXY: serviceManager.timeUpdateResult, heading: heading, limits: limits, isBleOnlyMode: self.isBleOnlyMode, isPmSuccess: self.isPathMatchingSuccess, tailXY: serviceManager.displayOutput.tailCoord, trajectroyFromTail: serviceManager.displayOutput.trajectoryFromTail, headXY: serviceManager.displayOutput.headCoord, trajectoryFromHead: serviceManager.displayOutput.trajectoryFromHead, isIndoor: isIndoor)
                 }
             }
         } else {
             if (buildings.contains(currentBuilding)) {
                 if (XY[0] != 0 && XY[1] != 0) {
-                    drawUser(XY: XY, heading: heading, limits: limits, isMonitor: false, isBleOnlyMode: self.isBleOnlyMode, isPmSuccess: self.isPathMatchingSuccess)
+                    drawUser(XY: XY, heading: heading, limits: limits, isMonitor: false, isBleOnlyMode: self.isBleOnlyMode, isPmSuccess: self.isPathMatchingSuccess, isIndoor: isIndoor)
                 }
             }
         }
@@ -1163,10 +1173,10 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
     }
     
     func monitorCoord(data: CoordToDisplay, flag: Bool) {
-        print(data)
         self.XY[0] = data.x
         self.XY[1] = data.y
-
+        let isIndoor = data.isIndoor
+        
         if (data.building == "") {
             currentBuilding = buildings[0]
         } else {
@@ -1200,13 +1210,13 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
                     scatterChart.isHidden = true
                 } else {
 //                    drawRP(RP_X: rp[0], RP_Y: rp[1], XY: XY, heading: heading, limits: limits)
-                    drawDebug(XY: XY, RP_X: rp[0], RP_Y: rp[1], serverXY: serviceManager.serverResult, tuXY: serviceManager.timeUpdateResult, heading: heading, limits: limits, isBleOnlyMode: self.isBleOnlyMode, isPmSuccess: self.isPathMatchingSuccess, tailXY: serviceManager.displayOutput.tailCoord, trajectroyFromTail: serviceManager.displayOutput.trajectoryFromTail, headXY: serviceManager.displayOutput.headCoord, trajectoryFromHead: serviceManager.displayOutput.trajectoryFromHead)
+                    drawDebug(XY: XY, RP_X: rp[0], RP_Y: rp[1], serverXY: serviceManager.serverResult, tuXY: serviceManager.timeUpdateResult, heading: heading, limits: limits, isBleOnlyMode: self.isBleOnlyMode, isPmSuccess: self.isPathMatchingSuccess, tailXY: serviceManager.displayOutput.tailCoord, trajectroyFromTail: serviceManager.displayOutput.trajectoryFromTail, headXY: serviceManager.displayOutput.headCoord, trajectoryFromHead: serviceManager.displayOutput.trajectoryFromHead, isIndoor: isIndoor)
                 }
             }
         } else {
             if (buildings.contains(currentBuilding)) {
                 if (XY[0] != 0 && XY[1] != 0) {
-                    drawUser(XY: XY, heading: heading, limits: limits, isMonitor: true, isBleOnlyMode: self.isBleOnlyMode, isPmSuccess: self.isPathMatchingSuccess)
+                    drawUser(XY: XY, heading: heading, limits: limits, isMonitor: true, isBleOnlyMode: self.isBleOnlyMode, isPmSuccess: self.isPathMatchingSuccess, isIndoor: isIndoor)
                 }
             }
         }
@@ -1372,7 +1382,7 @@ extension ServiceViewController : UICollectionViewDelegate{
         } else {
             if (isShowRP) {
 //                drawRP(RP_X: rp[0], RP_Y: rp[1], XY: XY, heading: 0, limits: limits)
-                drawDebug(XY: XY, RP_X: rp[0], RP_Y: rp[1], serverXY: serviceManager.serverResult, tuXY: serviceManager.timeUpdateResult, heading: 0, limits: limits, isBleOnlyMode: self.isBleOnlyMode, isPmSuccess: self.isPathMatchingSuccess, tailXY: serviceManager.displayOutput.tailCoord, trajectroyFromTail: serviceManager.displayOutput.trajectoryFromTail, headXY: serviceManager.displayOutput.headCoord, trajectoryFromHead: serviceManager.displayOutput.trajectoryFromHead)
+                drawDebug(XY: XY, RP_X: rp[0], RP_Y: rp[1], serverXY: serviceManager.serverResult, tuXY: serviceManager.timeUpdateResult, heading: 0, limits: limits, isBleOnlyMode: self.isBleOnlyMode, isPmSuccess: self.isPathMatchingSuccess, tailXY: serviceManager.displayOutput.tailCoord, trajectroyFromTail: serviceManager.displayOutput.trajectoryFromTail, headXY: serviceManager.displayOutput.headCoord, trajectoryFromHead: serviceManager.displayOutput.trajectoryFromHead, isIndoor: false)
             }
             displayLevelImage(building: currentBuilding, level: currentLevel, flag: isShowRP)
         }

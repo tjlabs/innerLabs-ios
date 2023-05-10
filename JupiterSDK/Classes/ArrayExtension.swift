@@ -78,6 +78,18 @@ public func getMinMaxValues(for array: [[Double]]) -> [Double] {
     return [xMin, yMin, xMax, yMax]
 }
 
+public func subtractConstant(from array: [Double], constant: Double) -> [Double] {
+    let newArray = array.map { abs($0 - constant) }
+    if let minIndex = newArray.enumerated().min(by: { $0.element < $1.element })?.offset {
+        var mutableArray = array
+        mutableArray.remove(at: minIndex)
+        return mutableArray
+    } else {
+        return array
+    }
+}
+
+
 extension Array where Element: BinaryInteger {
 
     public var average: Double {

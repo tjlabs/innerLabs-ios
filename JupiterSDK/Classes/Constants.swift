@@ -10,6 +10,7 @@ var SECTOR_URL = "https://where-run-user" + REGION + "/sector"
 var GEO_URL = "https://where-run-param" + REGION + "/geo"
 var RCR_URL = "https://where-run-param" + REGION + "/rcr"
 var RC_URL = "https://where-run-param" + REGION + "/rc"
+var TRAJ_URL = "https://where-run-param" + REGION + "/traj"
 var DEBUG_URL = "https://where-run-param" + REGION + "/md"
 
 var RF_URL = "https://where-run-record" + REGION + "/recordRF"
@@ -100,6 +101,7 @@ public func setBaseURL(url: String) {
     GEO_URL = "https://where-run-param" + REGION + "/geo"
     RCR_URL = "https://where-run-param" + REGION + "/rcr"
     RC_URL = "https://where-run-param" + REGION + "/rc"
+    TRAJ_URL = "https://where-run-param" + REGION + "/traj"
     DEBUG_URL = "https://where-run-param" + REGION + "/md"
     
     RF_URL = "https://where-run-record" + REGION + "/recordRF"

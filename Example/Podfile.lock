@@ -1,5 +1,5 @@
 PODS:
-  - Alamofire (5.6.4)
+  - Alamofire (5.7.0)
   - AWSCore (2.31.1)
   - AWSS3 (2.31.1):
     - AWSCore (= 2.31.1)
@@ -95,7 +95,7 @@ PODS:
     - GoogleUtilities/Network (~> 7.11)
     - "GoogleUtilities/NSData+zlib (~> 7.11)"
     - nanopb (< 2.30910.0, >= 2.30908.0)
-  - GoogleDataTransport (9.2.2):
+  - GoogleDataTransport (9.2.3):
     - GoogleUtilities/Environment (~> 7.7)
     - nanopb (< 2.30910.0, >= 2.30908.0)
     - PromisesObjC (< 3.0, >= 1.2)
@@ -196,7 +196,7 @@ EXTERNAL SOURCES:
     :path: "../"
 
 SPEC CHECKSUMS:
-  Alamofire: 4e95d97098eacb88856099c4fc79b526a299e48c
+  Alamofire: ad60cc5d76abe294f672f51f5aaa4a6ef164ede3
   AWSCore: 3fa19af1810d4430cfb735cc5323b68d8674fb5b
   AWSS3: 7d3338838bb1c144c0c57511ea661a588f439398
   Charts: 354f86803d11d9c35de280587fef50d1af063978
@@ -214,7 +214,7 @@ SPEC CHECKSUMS:
   FirebaseSessions: 44a6782502eb279a214d4adca20891353278760c
   Floaty: e2bd5a0f6f7f70899e26ff2da31081c8bee8d1b0
   GoogleAppMeasurement: 373bcbead1bb6a85be7a64d5d8f96284b762ea9c
-  GoogleDataTransport: 8378d1fa8ac49753ea6ce70d65a7cb70ce5f66e6
+  GoogleDataTransport: f0308f5905a745f94fb91fea9c6cbaf3831cb1bd
   GoogleMaps: b7f7fc569a9b354a3af0d9729dbec40957b7d41e
   GooglePlaces: ca8d4aba09ba79e0a829cf1dca03a41de6a09016
   GoogleUtilities: 9aa0ad5a7bc171f8bae016300bfcfa3fb8425749

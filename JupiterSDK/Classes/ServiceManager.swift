@@ -173,8 +173,10 @@ public class ServiceManager: Observation {
     var unitDRGenerator = UnitDRGenerator()
     var userTrajectory = TrajectoryInfo()
     var userTrajectoryInfo: [TrajectoryInfo] = []
-    var USER_TRAJECTORY_LENGTH: Double = 10
-    let NUM_STRAIGHT_INDEX = 4
+    var phase2Trajectory: [TrajectoryInfo] = []
+    var USER_TRAJECTORY_LENGTH: Double = 60
+    var USER_TRAJECTORY_DIAGONAL: Double = 200
+    var NUM_STRAIGHT_INDEX = 10
     
     var unitDistane: Double = 0
     var isStartFlag: Bool = false
@@ -196,6 +198,7 @@ public class ServiceManager: Observation {
     var lastOsrId: Int = 0
     var buildingLevelChangedTime: Int = 0
     var travelingOsrDistance: Double = 0
+    var isDetermineSpot: Bool = false
     
     var isGetFirstResponse: Bool = false
     var indexAfterResponse: Int = 0
@@ -267,7 +270,7 @@ public class ServiceManager: Observation {
     var timeUpdateOutput = FineLocationTrackingFromServer()
     var measurementOutput = FineLocationTrackingFromServer()
     
-    var pastResult = [Double]()
+    var headingBeforePm: Double = 0
     var currentBuilding: String = ""
     var currentLevel: String = "0F"
     var currentSpot: Int = 0
@@ -461,7 +464,7 @@ public class ServiceManager: Observation {
             numInput = 3
             interval = 1/2
         default:
-            let log: String = localTime + " , (Jupiter) Error : Invalid Service Name"
+            let log: String = getLocalTimeString() + " , (Jupiter) Error : Invalid Service Name"
             message = log
             
             completion(false, message)
@@ -472,8 +475,7 @@ public class ServiceManager: Observation {
         
         if (self.isStartFlag) {
             isSuccess = false
-            let localTime = getLocalTimeString()
-            message = localTime + " , (Jupiter) Error : Please stop another service"
+            message = getLocalTimeString() + " , (Jupiter) Error : Please stop another service"
             
             completion(isSuccess, message)
         } else {
@@ -491,9 +493,8 @@ public class ServiceManager: Observation {
         
         if (self.user_id.isEmpty || self.user_id.contains(" ")) {
             isSuccess = false
-            let localTime = getLocalTimeString()
             
-            let log: String = localTime + " , (Jupiter) Error : User ID cannot be empty or contain space"
+            let log: String = getLocalTimeString() + " , (Jupiter) Error : User ID cannot be empty or contain space"
             message = log
             self.isStartFlag = false
             completion(isSuccess, message)
@@ -502,7 +503,7 @@ public class ServiceManager: Observation {
             let userInfo = UserInfo(user_id: self.user_id, device_model: deviceModel, os_version: osVersion)
             postUser(url: USER_URL, input: userInfo, completion: { [self] statusCode, returnedString in
                 if (statusCode == 200) {
-                    let log: String = localTime + " , (Jupiter) Success : User Login"
+                    let log: String = getLocalTimeString() + " , (Jupiter) Success : User Login"
                     print(log)
                     
                     let sectorInfo = SectorInfo(sector_id: sector_id)
@@ -550,7 +551,6 @@ public class ServiceManager: Observation {
                                     let requestURL = URLRequest(url: (urlComponents?.url)!)
                                     let dataTask = URLSession.shared.dataTask(with: requestURL, completionHandler: { (data, response, error) in
                                         let statusCode = (response as? HTTPURLResponse)?.statusCode ?? 500
-                                        let localTime = getLocalTimeString()
                                         
                                         if (statusCode == 200) {
                                             if let responseData = data {
@@ -561,14 +561,14 @@ public class ServiceManager: Observation {
 //                                                    print("PathPoint \(key) = \(self.PathPoint[key])")
 //                                                    print("PathMagScale \(key) = \(self.PathMagScale[key])")
 //                                                    print("PathHeading \(key) = \(self.PathHeading[key])")
-                                                    let log: String = localTime + " , (Jupiter) Success : Load \(buildingName) \(levelName) Path-Point"
+                                                    let log: String = getLocalTimeString() + " , (Jupiter) Success : Load \(buildingName) \(levelName) Path-Point"
                                                     print(log)
                                                 }
                                             }
                                         } else {
                                             self.isLoadEnd[key] = [true, false]
                                             
-                                            let log: String = localTime + " , (Jupiter) Warnings : Load \(buildingName) \(levelName) Path-Point"
+                                            let log: String = getLocalTimeString() + " , (Jupiter) Warnings : Load \(buildingName) \(levelName) Path-Point"
                                             print(log)
                                         }
                                     })
@@ -579,9 +579,8 @@ public class ServiceManager: Observation {
                                     let levelName = levelList![j]
                                     let input = JupiterGeo(sector_id: self.sector_id, building_name: buildingName, level_name: levelName)
                                     NetworkManager.shared.postGEO(url: GEO_URL, input: input, completion: { [self] statusCode, returnedString, buildingGeo, levelGeo in
-                                        let localTime = getLocalTimeString()
                                         if (statusCode >= 200 && statusCode <= 300) {
-                                            let result = decodeGEO(json: returnedString)
+                                            let result = decodeGeo(json: returnedString)
                                             let key: String = "\(buildingGeo)_\(levelGeo)"
                                             self.AbnormalArea[key] = result.geofences
                                             self.EntranceArea[key] = result.entrance_area
@@ -590,118 +589,147 @@ public class ServiceManager: Observation {
                                             
                                             if (countBuildingLevel == countAll) {
                                                 if (bleManager.bluetoothReady) {
-                                                    // Load Bias
-                                                    let inputGetBias = JupiterBiasGet(device_model: self.deviceModel, os_version: self.osVersion, sector_id: self.sector_id)
-                                                    NetworkManager.shared.getJupiterBias(url: RC_URL, input: inputGetBias, completion: { [self] statusCode, returnedString in
-                                                        let loadedBias = self.loadRssiBias(sector_id: self.sector_id)
+                                                    // Load Trajectory Info
+                                                    let inputGetTraj = JupiterTraj(sector_id: sector_id)
+                                                    NetworkManager.shared.postTraj(url: TRAJ_URL, input: inputGetTraj, completion: { [self] statusCode, returnedString in
                                                         if (statusCode == 200) {
-                                                            let result = decodeRC(json: returnedString)
-                                                            if (result.rss_compensations.isEmpty) {
-                                                                let inputGetDeviceBias = JupiterDeviceBiasGet(device_model: self.deviceModel, sector_id: self.sector_id)
-                                                                NetworkManager.shared.getJupiterDeviceBias(url: RC_URL, input: inputGetDeviceBias, completion: { [self] statusCode, returnedString in
-                                                                    if (statusCode == 200) {
-                                                                        let result = decodeRC(json: returnedString)
-                                                                        if (result.rss_compensations.isEmpty) {
-                                                                            // Need Bias Estimation
-                                                                            self.rssiBias = loadedBias.0
-                                                                            self.sccGoodBiasArray = loadedBias.1
-                                                                            self.isBiasConverged = loadedBias.2
-                                                                            displayOutput.bias = self.rssiBias
-                                                                            displayOutput.isConverged = self.isBiasConverged
-                                                                            
-                                                                            let biasArray = self.makeRssiBiasArray(bias: loadedBias.0)
-                                                                            self.rssiBiasArray = biasArray
-                                                                            self.isStartComplete = true
-                                                                            
-                                                                            self.startTimer()
-                                                                            completion(true, message)
-                                                                        } else {
-                                                                            // Success Load Bias without OS
-                                                                            if let closest = findClosestStructure(to: self.osVersion, in: result.rss_compensations) {
-                                                                                let biasFromServer: rss_compensation = closest
-                                                                                
-                                                                                self.rssiScale = biasFromServer.scale_factor
-                                                                                bleManager.setRssiScale(scale: self.rssiScale)
-                                                                                
-                                                                                if (loadedBias.2) {
+                                                            let resultTraj = decodeTraj(json: returnedString)
+                                                            self.USER_TRAJECTORY_LENGTH = Double(resultTraj.trajectory_length)
+                                                            self.USER_TRAJECTORY_DIAGONAL = Double(resultTraj.trajectory_diagonal)
+                                                            self.NUM_STRAIGHT_INDEX = Int(ceil(self.USER_TRAJECTORY_LENGTH/6))
+                                                            print(getLocalTimeString() + " , (Jupiter) Trajectory Info Load : \(self.USER_TRAJECTORY_LENGTH) // \(self.USER_TRAJECTORY_DIAGONAL) // \(self.NUM_STRAIGHT_INDEX)")
+                                                            
+                                                            // Load Bias
+                                                            let inputGetBias = JupiterBiasGet(device_model: self.deviceModel, os_version: self.osVersion, sector_id: self.sector_id)
+                                                            NetworkManager.shared.getJupiterBias(url: RC_URL, input: inputGetBias, completion: { [self] statusCode, returnedString in
+                                                                let loadedBias = self.loadRssiBias(sector_id: self.sector_id)
+                                                                if (statusCode == 200) {
+                                                                    let result = decodeRC(json: returnedString)
+                                                                    if (result.rss_compensations.isEmpty) {
+                                                                        let inputGetDeviceBias = JupiterDeviceBiasGet(device_model: self.deviceModel, sector_id: self.sector_id)
+                                                                        NetworkManager.shared.getJupiterDeviceBias(url: RC_URL, input: inputGetDeviceBias, completion: { [self] statusCode, returnedString in
+                                                                            if (statusCode == 200) {
+                                                                                let result = decodeRC(json: returnedString)
+                                                                                if (result.rss_compensations.isEmpty) {
+                                                                                    // Need Bias Estimation
                                                                                     self.rssiBias = loadedBias.0
                                                                                     self.sccGoodBiasArray = loadedBias.1
-                                                                                    self.isBiasConverged = true
-                                                                                    print(localTime + " , (Jupiter) Bias Load (Device // Cache) : \(loadedBias.0)")
+                                                                                    self.isBiasConverged = loadedBias.2
+                                                                                    displayOutput.bias = self.rssiBias
+                                                                                    displayOutput.isConverged = self.isBiasConverged
+                                                                                    
+                                                                                    let biasArray = self.makeRssiBiasArray(bias: loadedBias.0)
+                                                                                    self.rssiBiasArray = biasArray
+                                                                                    self.isStartComplete = true
+                                                                                    
+                                                                                    self.startTimer()
+                                                                                    
+                                                                                    let log: String = localTime + " , (Jupiter) Success : Service Initalization"
+                                                                                    message = log
+                                                                                    
+                                                                                    completion(true, message)
                                                                                 } else {
-                                                                                    self.rssiBias = biasFromServer.rss_compensation
-                                                                                    self.sccGoodBiasArray = loadedBias.1
-                                                                                    self.isBiasConverged = false
-                                                                                    print(localTime + " , (Jupiter) Bias Load (Device) : \(biasFromServer.rss_compensation)")
+                                                                                    // Success Load Bias without OS
+                                                                                    if let closest = findClosestStructure(to: self.osVersion, in: result.rss_compensations) {
+                                                                                        let biasFromServer: rss_compensation = closest
+                                                                                        
+                                                                                        self.rssiScale = biasFromServer.scale_factor
+                                                                                        bleManager.setRssiScale(scale: self.rssiScale)
+                                                                                        
+                                                                                        if (loadedBias.2) {
+                                                                                            self.rssiBias = loadedBias.0
+                                                                                            self.sccGoodBiasArray = loadedBias.1
+                                                                                            self.isBiasConverged = true
+                                                                                            print(localTime + " , (Jupiter) Bias Load (Device // Cache) : \(loadedBias.0)")
+                                                                                        } else {
+                                                                                            self.rssiBias = biasFromServer.rss_compensation
+                                                                                            self.sccGoodBiasArray = loadedBias.1
+                                                                                            self.isBiasConverged = false
+                                                                                            print(localTime + " , (Jupiter) Bias Load (Device) : \(biasFromServer.rss_compensation)")
+                                                                                        }
+                                                                                        
+                                                                                        displayOutput.bias = self.rssiBias
+                                                                                        displayOutput.isConverged = self.isBiasConverged
+                                                                                        
+                                                                                        let biasArray = self.makeRssiBiasArray(bias: self.rssiBias)
+                                                                                        self.rssiBiasArray = biasArray
+                                                                                        self.isStartComplete = true
+                                                                                        self.startTimer()
+                                                                                        
+                                                                                        let log: String = localTime + " , (Jupiter) Success : Service Initalization"
+                                                                                        message = log
+                                                                                        completion(true, message)
+                                                                                    } else {
+                                                                                        self.rssiBias = loadedBias.0
+                                                                                        self.sccGoodBiasArray = loadedBias.1
+                                                                                        self.isBiasConverged = loadedBias.2
+                                                                                        displayOutput.bias = self.rssiBias
+                                                                                        displayOutput.isConverged = self.isBiasConverged
+                                                                                        
+                                                                                        let biasArray = self.makeRssiBiasArray(bias: loadedBias.0)
+                                                                                        self.rssiBiasArray = biasArray
+                                                                                        self.isStartComplete = true
+                                                                                        self.startTimer()
+                                                                                        
+                                                                                        let log: String = localTime + " , (Jupiter) Success : Service Initalization"
+                                                                                        message = log
+                                                                                        completion(true, message)
+                                                                                    }
                                                                                 }
-                                                                                
-                                                                                displayOutput.bias = self.rssiBias
-                                                                                displayOutput.isConverged = self.isBiasConverged
-                                                                                
-                                                                                let biasArray = self.makeRssiBiasArray(bias: self.rssiBias)
-                                                                                self.rssiBiasArray = biasArray
-                                                                                
-                                                                                self.isStartComplete = true
-                                                                                
-                                                                                self.startTimer()
-                                                                                completion(true, message)
                                                                             } else {
-                                                                                self.rssiBias = loadedBias.0
-                                                                                self.sccGoodBiasArray = loadedBias.1
-                                                                                self.isBiasConverged = loadedBias.2
-                                                                                displayOutput.bias = self.rssiBias
-                                                                                displayOutput.isConverged = self.isBiasConverged
+                                                                                let log: String = getLocalTimeString() + " , (Jupiter) Error : Bias Load (Device)"
+                                                                                message = log
                                                                                 
-                                                                                let biasArray = self.makeRssiBiasArray(bias: loadedBias.0)
-                                                                                self.rssiBiasArray = biasArray
-                                                                                self.isStartComplete = true
-                                                                                
-                                                                                self.startTimer()
-                                                                                completion(true, message)
+                                                                                isSuccess = false
+                                                                                self.stopTimer()
+                                                                                self.isStartFlag = false
+                                                                                NotificationCenter.default.removeObserver(self)
+                                                                                completion(isSuccess, message)
                                                                             }
-                                                                        }
+                                                                        })
                                                                     } else {
-                                                                        let log: String = localTime + " , (Jupiter) Error : Bias Load (Device)"
-                                                                        message = log
+                                                                        // Succes Load Bias
+                                                                        let biasFromServer: rss_compensation = result.rss_compensations[0]
                                                                         
-                                                                        isSuccess = false
-                                                                        self.stopTimer()
-                                                                        self.isStartFlag = false
-                                                                        NotificationCenter.default.removeObserver(self)
-                                                                        completion(isSuccess, message)
+                                                                        self.rssiScale = biasFromServer.scale_factor
+                                                                        bleManager.setRssiScale(scale: self.rssiScale)
+                                                                        
+                                                                        if (loadedBias.2) {
+                                                                            self.rssiBias = loadedBias.0
+                                                                            self.sccGoodBiasArray = loadedBias.1
+                                                                            print(getLocalTimeString() + " , (Jupiter) Bias Load (Device & OS // Cache) : \(loadedBias.0)")
+                                                                        } else {
+                                                                            self.rssiBias = biasFromServer.rss_compensation
+                                                                            self.sccGoodBiasArray = loadedBias.1
+                                                                            print(getLocalTimeString() + " , (Jupiter) Bias Load (Device & OS) : \(biasFromServer.rss_compensation)")
+                                                                        }
+                                                                        self.isBiasConverged = true
+                                                                        
+                                                                        displayOutput.bias = self.rssiBias
+                                                                        displayOutput.isConverged = self.isBiasConverged
+                                                                        
+                                                                        let biasArray = self.makeRssiBiasArray(bias: self.rssiBias)
+                                                                        self.rssiBiasArray = biasArray
+                                                                        self.isStartComplete = true
+                                                                        self.startTimer()
+                                                                        
+                                                                        let log: String = localTime + " , (Jupiter) Success : Service Initalization"
+                                                                        message = log
+                                                                        completion(true, message)
                                                                     }
-                                                                })
-                                                            } else {
-                                                                // Succes Load Bias
-                                                                let biasFromServer: rss_compensation = result.rss_compensations[0]
-                                                                
-                                                                self.rssiScale = biasFromServer.scale_factor
-                                                                bleManager.setRssiScale(scale: self.rssiScale)
-                                                                
-                                                                if (loadedBias.2) {
-                                                                    self.rssiBias = loadedBias.0
-                                                                    self.sccGoodBiasArray = loadedBias.1
-                                                                    print(localTime + " , (Jupiter) Bias Load (Device & OS // Cache) : \(loadedBias.0)")
                                                                 } else {
-                                                                    self.rssiBias = biasFromServer.rss_compensation
-                                                                    self.sccGoodBiasArray = loadedBias.1
-                                                                    print(localTime + " , (Jupiter) Bias Load (Device & OS) : \(biasFromServer.rss_compensation)")
+                                                                    let log: String = getLocalTimeString() + " , (Jupiter) Error : Load Bias"
+                                                                    message = log
+                                                                    
+                                                                    isSuccess = false
+                                                                    self.stopTimer()
+                                                                    self.isStartFlag = false
+                                                                    NotificationCenter.default.removeObserver(self)
+                                                                    completion(isSuccess, message)
                                                                 }
-                                                                self.isBiasConverged = true
-                                                                
-                                                                displayOutput.bias = self.rssiBias
-                                                                displayOutput.isConverged = self.isBiasConverged
-                                                                
-                                                                let biasArray = self.makeRssiBiasArray(bias: self.rssiBias)
-                                                                self.rssiBiasArray = biasArray
-                                                                
-                                                                self.isStartComplete = true
-                                                                
-                                                                self.startTimer()
-                                                                completion(true, message)
-                                                            }
+                                                            })
                                                         } else {
-                                                            let log: String = localTime + " , (Jupiter) Error : Load Bias"
+                                                            let log: String = getLocalTimeString() + " , (Jupiter) Error : Load Trajectory Info"
                                                             message = log
                                                             
                                                             isSuccess = false
@@ -712,7 +740,7 @@ public class ServiceManager: Observation {
                                                         }
                                                     })
                                                 } else {
-                                                    let log: String = localTime + " , (Jupiter) Error : Bluetooth is not enabled"
+                                                    let log: String = getLocalTimeString() + " , (Jupiter) Error : Bluetooth is not enabled"
                                                     message = log
                                                     self.stopTimer()
                                                     self.isStartFlag = false
@@ -725,13 +753,13 @@ public class ServiceManager: Observation {
                                             self.stopTimer()
                                             if (!NetworkCheck.shared.isConnectedToInternet()) {
                                                 isSuccess = false
-                                                let log: String = localTime + " , (Jupiter) Error : Network is not connected"
+                                                let log: String = getLocalTimeString() + " , (Jupiter) Error : Network is not connected"
                                                 message = log
                                                 self.isStartFlag = false
                                                 NotificationCenter.default.removeObserver(self)
                                                 completion(isSuccess, message)
                                             } else {
-                                                let log: String = localTime + " , (Jupiter) Error : Load Abnormal Area"
+                                                let log: String = getLocalTimeString() + " , (Jupiter) Error : Load Abnormal Area"
                                                 message = log
                                                 self.isStartFlag = false
                                                 NotificationCenter.default.removeObserver(self)
@@ -749,13 +777,13 @@ public class ServiceManager: Observation {
                             self.stopTimer()
                             if (!NetworkCheck.shared.isConnectedToInternet()) {
                                 isSuccess = false
-                                let log: String = localTime + " , (Jupiter) Error : Network is not connected"
+                                let log: String = getLocalTimeString() + " , (Jupiter) Error : Network is not connected"
                                 message = log
                                 self.isStartFlag = false
                                 NotificationCenter.default.removeObserver(self)
                                 completion(isSuccess, message)
                             } else {
-                                let log: String = localTime + " , (Jupiter) Error : Load Building & Level Information"
+                                let log: String = getLocalTimeString() + " , (Jupiter) Error : Load Building & Level Information"
                                 message = log
                                 self.isStartFlag = false
                                 NotificationCenter.default.removeObserver(self)
@@ -769,13 +797,13 @@ public class ServiceManager: Observation {
                     self.stopTimer()
                     if (!NetworkCheck.shared.isConnectedToInternet()) {
                         isSuccess = false
-                        let log: String = localTime + " , (Jupiter) Error : Network is not connected"
+                        let log: String = getLocalTimeString() + " , (Jupiter) Error : Network is not connected"
                         message = log
                         self.isStartFlag = false
                         NotificationCenter.default.removeObserver(self)
                         completion(isSuccess, message)
                     } else {
-                        let log: String = localTime + " , (Jupiter) Error : User Login"
+                        let log: String = getLocalTimeString() + " , (Jupiter) Error : User Login"
                         message = log
                         self.isStartFlag = false
                         NotificationCenter.default.removeObserver(self)
@@ -992,13 +1020,13 @@ public class ServiceManager: Observation {
                 completion(statusCode, returnedString)
             })
         case "FLD":
-            let input = CoarseLocationEstimation(user_id: self.user_id, mobile_time: currentTime, sector_id: self.sector_id)
+            let input = CoarseLocationEstimation(user_id: self.user_id, mobile_time: currentTime, sector_id: self.sector_id, search_direction_list: [0, 90, 180, 270])
             NetworkManager.shared.postCLE(url: CLE_URL, input: input, completion: { statusCode, returnedString in
                 let fldString = CLEtoFLD(json: returnedString)
                 completion(statusCode, fldString)
             })
         case "CLE":
-            let input = CoarseLocationEstimation(user_id: self.user_id, mobile_time: currentTime, sector_id: self.sector_id)
+            let input = CoarseLocationEstimation(user_id: self.user_id, mobile_time: currentTime, sector_id: self.sector_id, search_direction_list: [0, 90, 180, 270])
             NetworkManager.shared.postCLE(url: CLE_URL, input: input, completion: { statusCode, returnedString in
                 completion(statusCode, returnedString)
             })
@@ -1400,7 +1428,8 @@ public class ServiceManager: Observation {
                 if (isVenusMode) {
                     mapMatchingMode = "pdr"
                 }
-                mapMatchingMode = "dr"
+//                mapMatchingMode = "dr"
+                self.headingBeforePm = result.absolute_heading
                 let correctResult = pathMatching(building: buildingName, level: levelName, x: result.x, y: result.y, heading: result.absolute_heading, tuXY: [0,0], mode: mapMatchingMode, isPast: isPast, HEADING_RANGE: self.HEADING_RANGE)
                 
                 if (correctResult.isSuccess) {
@@ -1534,9 +1563,27 @@ public class ServiceManager: Observation {
                     // Here
                     if (self.isIndoor && self.isGetFirstResponse) {
                         if (!self.isBleOff) {
-                            self.initVariables()
-                            self.isIndoor = false
-                            self.reporting(input: OUTDOOR_FLAG)
+                            let lastResult = self.resultToReturn
+                            let isInPathMatchingArea = self.checkInPathMatchingArea(x: lastResult.x, y: lastResult.y, building: lastResult.building_name, level: lastResult.level_name)
+                            
+                            if (lastResult.building_name != "" && lastResult.level_name == "B0") {
+                                print(localTime + " , (Jupiter) Outdoor : Last Level was B0")
+                                self.initVariables()
+                                self.isIndoor = false
+                                self.reporting(input: OUTDOOR_FLAG)
+                            } else if (isInPathMatchingArea.0) {
+                                print(localTime + " , (Jupiter) Outdoor : In Entrance Area")
+                                self.initVariables()
+                                self.isIndoor = false
+                                self.reporting(input: OUTDOOR_FLAG)
+                            } else {
+                                if (self.timeActiveRF >= SLEEP_THRESHOLD_RF*3) {
+                                    print(localTime + " , (Jupiter) Outdoor : BLE was empty over 18s")
+                                    self.initVariables()
+                                    self.isIndoor = false
+                                    self.reporting(input: OUTDOOR_FLAG)
+                                }
+                            }
                         }
                     }
                 }
@@ -1775,7 +1822,18 @@ public class ServiceManager: Observation {
         }
     }
     
-    func accumulateLengthAndRemoveOldest() {
+    func accumulateLengthAndRemoveOldest(isDetermineSpot: Bool) {
+        if (isDetermineSpot) {
+            var tailIndex = 1
+            if (!self.phase2Trajectory.isEmpty) {
+                tailIndex = self.phase2Trajectory[0].index
+            }
+            let inputTrajectory = getTrajectoryFromIndex(from: self.userTrajectoryInfo, index: tailIndex)
+            self.userTrajectoryInfo = inputTrajectory
+            
+            self.isDetermineSpot = false
+        }
+        
         var accumulatedLength = 0.0
         
         for userTrajectory in self.userTrajectoryInfo {
@@ -1808,11 +1866,50 @@ public class ServiceManager: Observation {
             self.userTrajectory.userPmSuccess = isPmSuccess
             
             self.userTrajectoryInfo.append(self.userTrajectory)
-            self.accumulateLengthAndRemoveOldest()
+            self.accumulateLengthAndRemoveOldest(isDetermineSpot: self.isDetermineSpot)
         }
     }
     
-    func makeSearchAreaAndDirection(userTrajectory: [TrajectoryInfo]) {
+    func getTrajectoryFromIndex(from userTrajectory: [TrajectoryInfo], index: Int) -> [TrajectoryInfo] {
+        var result: [TrajectoryInfo] = []
+        
+        let currentTrajectory = userTrajectory
+        var closestIndex = Int(USER_TRAJECTORY_LENGTH)
+        for i in 0..<currentTrajectory.count {
+            let currentIndex = currentTrajectory[i].index
+            let diffIndex = abs(currentIndex - index)
+            if (diffIndex < closestIndex) {
+                closestIndex = currentIndex
+            }
+        }
+        for i in closestIndex..<currentTrajectory.count {
+            result.append(currentTrajectory[i])
+        }
+        
+        return result
+    }
+    
+    func getTrajectoryFromLast(from userTrajectory: [TrajectoryInfo], N: Int) -> [TrajectoryInfo] {
+        let size = userTrajectory.count
+        guard size >= N else {
+            return userTrajectory
+        }
+        
+        let startIndex = size - N
+        let endIndex = size
+        
+        var result: [TrajectoryInfo] = []
+        for i in startIndex..<endIndex {
+            result.append(userTrajectory[i])
+        }
+
+        return result
+    }
+    
+    func makeSearchAreaAndDirection(userTrajectory: [TrajectoryInfo]) -> ([Int], [Int]) {
+        var resultRange: [Int] = []
+        var resultDirection: [Int] = [0, 90, 180, 270]
+        
         if (!userTrajectory.isEmpty) {
             var headingInfo = [Double]()
             for value in userTrajectory {
@@ -1829,7 +1926,7 @@ public class ServiceManager: Observation {
                 let userH = userTrajectory[userTrajectory.count-1].userHeading
                 
                 // Search Area
-                let RANGE = Double(userTrajectory.count)
+                let RANGE = Double(userTrajectory.count)*1.5
                 let areaMinMax: [Double] = [userX - RANGE, userY - RANGE, userX + RANGE, userY + RANGE]
                 let searchArea = getSearchCoordinates(areaMinMax: areaMinMax, interval: 1.0)
                 
@@ -1850,10 +1947,22 @@ public class ServiceManager: Observation {
                 }
                 
                 // Search Direction
-                let searchHeadings = getPathMatchingHeadings(building: userBuilding, level: userLevel, x: userX, y: userY, heading: userH, RANGE: RANGE)
+                let ppHeadings = getPathMatchingHeadings(building: userBuilding, level: userLevel, x: userX, y: userY, heading: userH, RANGE: RANGE/2)
+                var searchHeadings: [Double] = []
+                for i in 0..<ppHeadings.count {
+                    searchHeadings.append(compensateHeading(heading: ppHeadings[i]-10, mode: "dr"))
+                    searchHeadings.append(compensateHeading(heading: ppHeadings[i], mode: "dr"))
+                    searchHeadings.append(compensateHeading(heading: ppHeadings[i]+10, mode: "dr"))
+                }
                 
+                resultRange = areaMinMax.map { Int($0) }
+                resultDirection = searchHeadings.map { Int($0) }
+                
+                displayOutput.headCoord = [headInfo.userX, headInfo.userY]
                 displayOutput.trajectoryFromHead = trajectoryFromHead
                 displayOutput.trajectoryFromTail = searchArea
+                
+                print("Search Direction (KF X) : \(resultDirection) // index = \(userTrajectory[userTrajectory.count-1].index)")
             } else {
                 // User Long
                 let headInfo = userTrajectory[userTrajectory.count-1]
@@ -1862,6 +1971,7 @@ public class ServiceManager: Observation {
                 
                 if (isStraight) {
                     // Search Area
+                    var recentScc: Double = headInfo.scc
                     var xyFromHead: [Double] = [headInfo.userX, headInfo.userY]
                     var xyFromTail: [Double] = [tailInfo.userX, tailInfo.userY]
                     
@@ -1898,16 +2008,33 @@ public class ServiceManager: Observation {
                     }
                     
                     let xyMinMax: [Double] = getMinMaxValues(for: trajectoryFromHead)
-                    let areaMinMax: [Double] = getSearchAreaMinMax(xyMinMax: xyMinMax, trajectory: trajectoryFromHead, heading: headingFromHead)
+                    let areaMinMax: [Double] = getSearchAreaMinMax(xyMinMax: xyMinMax, trajectory: trajectoryFromHead, heading: headingFromHead, recentScc: recentScc)
                     let searchArea = getSearchCoordinates(areaMinMax: areaMinMax, interval: 1.0)
                     
                     // Search Direction
-                    let searchHeadings: [Double] = [headInfo.userHeading-10, headInfo.userHeading, headInfo.userHeading+10]
+                    let headingStart = compensateHeading(heading: headingFromHead[headingFromHead.count-1]-180, mode: "dr")
+                    let headingEnd = compensateHeading(heading: headingFromHead[0]-180, mode: "dr")
+                    let diffHeading = abs(90 - abs(headingStart - headingEnd))
+                    
+                    var searchHeadings: [Double] = [0, 0, 0]
+                    if (diffHeading < 90) {
+                        searchHeadings = [headingEnd-diffHeading, headingEnd, headingEnd+diffHeading]
+                    } else {
+                        searchHeadings = [headingEnd-10, headingEnd, headingEnd+10]
+                    }
+                    for i in 0..<searchHeadings.count {
+                        searchHeadings[i] = compensateHeading(heading: searchHeadings[i], mode: "dr")
+                    }
+                    
+                    resultRange = areaMinMax.map { Int($0) }
+                    resultDirection = searchHeadings.map { Int($0) }
                     
                     displayOutput.headCoord = [headInfo.userX, headInfo.userY]
                     displayOutput.tailCoord = [tailInfo.userX, tailInfo.userY]
                     displayOutput.trajectoryFromHead = trajectoryFromHead
                     displayOutput.trajectoryFromTail = searchArea
+                    
+                    print("Search Direction (KF O 직선): \(resultDirection) // index = \(userTrajectory[userTrajectory.count-1].index)")
                 } else {
                     let userBuilding = userTrajectory[userTrajectory.count-1].userBuilding
                     let userLevel = userTrajectory[userTrajectory.count-1].userLevel
@@ -1916,7 +2043,7 @@ public class ServiceManager: Observation {
                     let userH = userTrajectory[userTrajectory.count-1].userHeading
                     
                     // Search Area
-                    let RANGE = Double(userTrajectory.count)
+                    let RANGE = Double(userTrajectory.count)+1
                     let areaMinMax: [Double] = [userX - RANGE, userY - RANGE, userX + RANGE, userY + RANGE]
                     let searchArea = getSearchCoordinates(areaMinMax: areaMinMax, interval: 1.0)
                     
@@ -1937,15 +2064,41 @@ public class ServiceManager: Observation {
                     }
                     
                     // Search Direction
-                    let searchHeadings: [Double] = [headInfo.userHeading-10, headInfo.userHeading, headInfo.userHeading+10]
+                    let aroundHeadings = getPathMatchingHeadings(building: userBuilding, level: userLevel, x: userX, y: userY, heading: userH, RANGE: RANGE/2)
+                    let headingStart = compensateHeading(heading: headingFromHead[headingFromHead.count-1]-180, mode: "dr")
+                    let headingEnd = compensateHeading(heading: headingFromHead[0]-180, mode: "dr")
                     
+                    var updatedHeadings = removeOppositeHeading(aroundHeadings, subtractConstant: headingStart)
+                    updatedHeadings = updatedHeadings.map { compensateHeading(heading: ($0 - (headingStart - headingEnd)), mode: "dr") }
+                    var ppHeadings: [Double] = updatedHeadings
+                    
+                    var searchHeadings: [Double] = []
+                    for i in 0..<ppHeadings.count {
+                        searchHeadings.append(compensateHeading(heading: ppHeadings[i]-5, mode: "dr"))
+                        searchHeadings.append(compensateHeading(heading: ppHeadings[i], mode: "dr"))
+                        searchHeadings.append(compensateHeading(heading: ppHeadings[i]+5, mode: "dr"))
+                    }
+                    
+                    resultRange = areaMinMax.map { Int($0) }
+                    resultDirection = searchHeadings.map { Int($0) }
+                    
+                    displayOutput.headCoord = [headInfo.userX, headInfo.userY]
                     displayOutput.trajectoryFromHead = trajectoryFromHead
                     displayOutput.trajectoryFromTail = searchArea
+                    
+                    print("Search Direction (KF O 곡선): \(resultDirection) // index = \(userTrajectory[userTrajectory.count-1].index)")
                 }
             }
-        } else {
-            // 초기 시작인 경우 : phase = 0
         }
+        
+        return (resultRange, resultDirection)
+    }
+    
+    func removeOppositeHeading(_ arrayA: [Double], subtractConstant c: Double) -> [Double] {
+        let arrayB = arrayA.map { abs($0 - c) }
+        let indicesToRemove = arrayB.indices.filter { arrayB[$0] > 140 }
+        let newArray = arrayA.enumerated().filter { !indicesToRemove.contains($0.offset) }.map { $0.element }
+        return newArray
     }
     
     func isTrajectoryStraight(for array: [Double], size: Int) -> Bool {
@@ -1961,7 +2114,7 @@ public class ServiceManager: Observation {
         return circularStandardDeviationHead <= 10.0
     }
     
-    func getSearchAreaMinMax(xyMinMax: [Double], trajectory: [[Double]], heading: [Double]) -> [Double] {
+    func getSearchAreaMinMax(xyMinMax: [Double], trajectory: [[Double]], heading: [Double], recentScc: Double) -> [Double] {
         var areaMinMax: [Double] = []
         
         var xMin = xyMinMax[0]
@@ -1969,7 +2122,7 @@ public class ServiceManager: Observation {
         var xMax = xyMinMax[2]
         var yMax = xyMinMax[3]
         
-        let SEARCH_LENGTH: Double = 3.0
+        let SEARCH_LENGTH: Double = USER_TRAJECTORY_LENGTH*(0.3)
 
         let headingStart = compensateHeading(heading: heading[heading.count-1]-180, mode: "dr")
         let headingEnd = compensateHeading(heading: heading[0]-180, mode: "dr")
@@ -2025,9 +2178,17 @@ public class ServiceManager: Observation {
             if (diffX > diffY) {
                 yMin = yMin - 0.7*diffXy
                 yMax = yMax + 0.7*diffXy
+                if (recentScc < 0.7) {
+                    yMin = yMin - (0.7-recentScc)*USER_TRAJECTORY_LENGTH
+                    yMax = yMax + (0.7-recentScc)*USER_TRAJECTORY_LENGTH
+                }
             } else {
                 xMin = xMin - 0.7*diffXy
                 xMax = xMax + 0.7*diffXy
+                if (recentScc < 0.7) {
+                    xMin = xMin - (0.7-recentScc)*USER_TRAJECTORY_LENGTH
+                    xMax = xMax + (0.7-recentScc)*USER_TRAJECTORY_LENGTH
+                }
             }
         }
 
@@ -2081,14 +2242,23 @@ public class ServiceManager: Observation {
     
     private func processPhase2(currentTime: Int, localTime: String) {
         let localTime = getLocalTimeString()
-        let input = FineLocationTracking(user_id: self.user_id, mobile_time: currentTime, sector_id: self.sector_id, building_name: self.currentBuilding, level_name: self.currentLevel, spot_id: self.currentSpot, phase: self.phase, rss_compensation_list: [self.rssiBias], sc_compensation_list: [1.0])
+        
+        var tailIndex = 1
+        if (!self.phase2Trajectory.isEmpty) {
+            tailIndex = self.phase2Trajectory[0].index
+        }
+        
+        let inputTrajectory = getTrajectoryFromIndex(from: self.userTrajectoryInfo, index: tailIndex)
+        tailIndex = inputTrajectory[0].index
+        
+        let searchInfo = makeSearchAreaAndDirection(userTrajectory: inputTrajectory)
+        let input = FineLocationTracking(user_id: self.user_id, mobile_time: currentTime, sector_id: self.sector_id, building_name: self.currentBuilding, level_name: self.currentLevel, spot_id: self.currentSpot, phase: self.phase, search_range: searchInfo.0, search_direction_list: searchInfo.1, rss_compensation_list: [self.rssiBias], sc_compensation_list: [1.0], tail_index: tailIndex)
         //        print(localTime + " , (Jupiter) Phase 2 Input : \(input.level_name)")
         NetworkManager.shared.postFLT(url: FLT_URL, input: input, isSufficientRfd: self.isSufficientRfd, completion: { [self] statusCode, returnedString, rfdCondition in
             if (statusCode == 200) {
                 var result = jsonToResult(json: returnedString)
                 if (result.x != 0 && result.y != 0) {
                     if (result.mobile_time > self.preOutputMobileTime) {
-                        //                        print(localTime + " , (Jupiter) Phase 2 Result : \(result.level_name) , \(result.phase) , \(result.scc)")
                         displayOutput.indexRx = result.index
                         if (self.isVenusMode) {
                             result.phase = 1
@@ -2180,9 +2350,14 @@ public class ServiceManager: Observation {
             }
         }
         
-        makeSearchAreaAndDirection(userTrajectory: self.userTrajectoryInfo)
         self.phase2Count = 0
-        let input = FineLocationTracking(user_id: self.user_id, mobile_time: currentTime, sector_id: self.sector_id, building_name: self.currentBuilding, level_name: self.currentLevel, spot_id: self.currentSpot, phase: self.phase, rss_compensation_list: requestBiasArray, sc_compensation_list: [1.0])
+        
+        var tailIndex = 1
+        if (!self.userTrajectoryInfo.isEmpty) {
+            tailIndex = self.userTrajectoryInfo[0].index
+        }
+        let searchInfo = makeSearchAreaAndDirection(userTrajectory: self.userTrajectoryInfo)
+        let input = FineLocationTracking(user_id: self.user_id, mobile_time: currentTime, sector_id: self.sector_id, building_name: self.currentBuilding, level_name: self.currentLevel, spot_id: self.currentSpot, phase: self.phase, search_range: searchInfo.0, search_direction_list: searchInfo.1, rss_compensation_list: requestBiasArray, sc_compensation_list: [1.0], tail_index: tailIndex)
 //        print(localTime + " , (Jupiter) Phase 3 Input : \(input)")
         self.networkCount += 1
         NetworkManager.shared.postFLT(url: FLT_URL, input: input, isSufficientRfd: self.isSufficientRfd, completion: { [self] statusCode, returnedString, rfdCondition in
@@ -2225,7 +2400,7 @@ public class ServiceManager: Observation {
                     }
                     
                     if (result.mobile_time > self.preOutputMobileTime) {
-                        //                        print(localTime + " , (Jupiter) Phase 3 Result : \(result.level_name) , \(result.phase)")
+//                        print(localTime + " , (Jupiter) Phase 3 Result : \(result.level_name) , \(result.phase)")
                         if (!self.isGetFirstResponse) {
                             self.isGetFirstResponse = true
                             if (!self.isIndoor && (self.timeForInit >= TIME_INIT_THRESHOLD)) {
@@ -2410,8 +2585,9 @@ public class ServiceManager: Observation {
             }
         }
         
-        makeSearchAreaAndDirection(userTrajectory: self.userTrajectoryInfo)
-        let input = FineLocationTracking(user_id: self.user_id, mobile_time: currentTime, sector_id: self.sector_id, building_name: self.currentBuilding, level_name: self.currentLevel, spot_id: self.currentSpot, phase: self.phase, rss_compensation_list: requestBiasArray, sc_compensation_list: requestScArray)
+        var tailIndex = self.userTrajectoryInfo[0].index
+        let searchInfo = makeSearchAreaAndDirection(userTrajectory: self.userTrajectoryInfo)
+        let input = FineLocationTracking(user_id: self.user_id, mobile_time: currentTime, sector_id: self.sector_id, building_name: self.currentBuilding, level_name: self.currentLevel, spot_id: self.currentSpot, phase: self.phase, search_range: searchInfo.0, search_direction_list: searchInfo.1, rss_compensation_list: requestBiasArray, sc_compensation_list: requestScArray, tail_index: tailIndex)
         self.networkCount += 1
         NetworkManager.shared.postFLT(url: FLT_URL, input: input, isSufficientRfd: self.isSufficientRfd, completion: { [self] statusCode, returnedString, rfdCondition in
             self.networkCount = 0
@@ -2736,8 +2912,11 @@ public class ServiceManager: Observation {
                     self.measurementOutput.building_name = result.building_name
                     self.measurementOutput.level_name = levelDestination
                     self.outputResult.level_name = levelDestination
+                    
+                    self.phase2Trajectory = getTrajectoryFromLast(from: self.userTrajectoryInfo, N: 15)
                     self.phase = 2
                     self.outputResult.phase = 2
+                    self.isDetermineSpot = true
                     
                     self.resultToReturn = self.makeOutputResult(input: self.outputResult, isPast: self.flagPast, runMode: self.runMode, isVenusMode: self.isVenusMode)
                 }
@@ -2748,7 +2927,7 @@ public class ServiceManager: Observation {
             self.isPossibleEstBias = false
             self.buildingLevelChangedTime = currentTime
             self.preOutputMobileTime = currentTime
-            //            print(localTime + " , (Jupiter) Spot Determined : Different Spot // levelDestination = \(levelDestination) , dist = \(spotDistance)")
+//            print(localTime + " , (Jupiter) Spot Determined : Different Spot // levelDestination = \(levelDestination) , dist = \(spotDistance)")
         } else {
             // Same Spot Detected
             if (self.travelingOsrDistance >= spotDistance) {
@@ -2763,8 +2942,11 @@ public class ServiceManager: Observation {
                         self.measurementOutput.building_name = result.building_name
                         self.measurementOutput.level_name = levelDestination
                         self.outputResult.level_name = levelDestination
+                        
+                        self.phase2Trajectory = getTrajectoryFromLast(from: self.userTrajectoryInfo, N: 15)
                         self.phase = 2
                         self.outputResult.phase = 2
+                        self.isDetermineSpot = true
                         
                         self.resultToReturn = self.makeOutputResult(input: self.outputResult, isPast: self.flagPast, runMode: self.runMode, isVenusMode: self.isVenusMode)
                     }
@@ -2775,7 +2957,7 @@ public class ServiceManager: Observation {
                 self.isPossibleEstBias = false
                 self.buildingLevelChangedTime = currentTime
                 self.preOutputMobileTime = currentTime
-                //                print(localTime + " , (Jupiter) Spot Determined : Same Spot // levelDestination = \(levelDestination) , dist = \(spotDistance)")
+//                print(localTime + " , (Jupiter) Spot Determined : Same Spot // levelDestination = \(levelDestination) , dist = \(spotDistance)")
             }
         }
     }
@@ -2876,7 +3058,6 @@ public class ServiceManager: Observation {
                 }
                 
             }
-            
             return false
         }
     }
@@ -3457,10 +3638,10 @@ public class ServiceManager: Observation {
                 let roadX = mainRoad[0]
                 let roadY = mainRoad[1]
                 
-                var xMin = x - RANGE
-                var xMax = x + RANGE
-                var yMin = y - RANGE
-                var yMax = y + RANGE
+                let xMin = x - RANGE
+                let xMax = x + RANGE
+                let yMin = y - RANGE
+                let yMax = y + RANGE
                 
                 for i in 0..<roadX.count {
                     let xPath = roadX[i]
