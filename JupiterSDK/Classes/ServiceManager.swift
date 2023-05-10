@@ -177,6 +177,8 @@ public class ServiceManager: Observation {
     var USER_TRAJECTORY_LENGTH: Double = 60
     var USER_TRAJECTORY_DIAGONAL: Double = 200
     var NUM_STRAIGHT_INDEX = 10
+    var preTailHeading: Double = 0
+    var preTuMmHeading: Double = 0
     
     var unitDistane: Double = 0
     var isStartFlag: Bool = false
@@ -594,7 +596,7 @@ public class ServiceManager: Observation {
                                                     NetworkManager.shared.postTraj(url: TRAJ_URL, input: inputGetTraj, completion: { [self] statusCode, returnedString in
                                                         if (statusCode == 200) {
                                                             let resultTraj = decodeTraj(json: returnedString)
-                                                            self.USER_TRAJECTORY_LENGTH = Double(resultTraj.trajectory_length)
+                                                            self.USER_TRAJECTORY_LENGTH = Double(resultTraj.trajectory_length + 10)
                                                             self.USER_TRAJECTORY_DIAGONAL = Double(resultTraj.trajectory_diagonal)
                                                             self.NUM_STRAIGHT_INDEX = Int(ceil(self.USER_TRAJECTORY_LENGTH/6))
                                                             print(getLocalTimeString() + " , (Jupiter) Trajectory Info Load : \(self.USER_TRAJECTORY_LENGTH) // \(self.USER_TRAJECTORY_DIAGONAL) // \(self.NUM_STRAIGHT_INDEX)")
@@ -1418,6 +1420,7 @@ public class ServiceManager: Observation {
             result.mode = runMode
             result.isIndoor = self.isIndoor
             displayOutput.mode = runMode
+            displayOutput.scc = result.scc
             
             let buildingName: String = result.building_name
             let levelName: String = self.removeLevelDirectionString(levelName: result.level_name)
@@ -1494,7 +1497,6 @@ public class ServiceManager: Observation {
             displayOutput.heading = result.absolute_heading
             displayOutput.building = result.building_name
             displayOutput.level = result.level_name
-            displayOutput.scc = result.scc
             displayOutput.phase = String(result.phase)
             
             self.lastResult = result
@@ -1874,17 +1876,24 @@ public class ServiceManager: Observation {
         var result: [TrajectoryInfo] = []
         
         let currentTrajectory = userTrajectory
-        var closestIndex = Int(USER_TRAJECTORY_LENGTH)
+        var closestIndex = 0
+        var startIndex = currentTrajectory.count-15
         for i in 0..<currentTrajectory.count {
             let currentIndex = currentTrajectory[i].index
             let diffIndex = abs(currentIndex - index)
-            if (diffIndex < closestIndex) {
+            let compareIndex = abs(closestIndex - index)
+            
+            if (diffIndex < compareIndex) {
                 closestIndex = currentIndex
+                startIndex = i
             }
         }
-        for i in closestIndex..<currentTrajectory.count {
+        
+        for i in startIndex..<currentTrajectory.count {
             result.append(currentTrajectory[i])
         }
+        
+        print("getTrajectoryFromIndex : indexFrom = \(index) // closestIndex = \(closestIndex) // inputTrajectory = \(userTrajectory[0].index) , \(userTrajectory[userTrajectory.count-1].index) // outputTrajectory = \(result[0].index) , \(result[result.count-1].index)")
         
         return result
     }
@@ -1910,6 +1919,7 @@ public class ServiceManager: Observation {
         var resultRange: [Int] = []
         var resultDirection: [Int] = [0, 90, 180, 270]
         
+        let tuHeading = self.preTuMmHeading
         if (!userTrajectory.isEmpty) {
             var headingInfo = [Double]()
             for value in userTrajectory {
@@ -1918,15 +1928,14 @@ public class ServiceManager: Observation {
             
             // Double(userTrajectory.count) < USER_TRAJECTORY_LENGTH
             if (!self.isActiveKf) {
-                // User Short
                 let userBuilding = userTrajectory[userTrajectory.count-1].userBuilding
                 let userLevel = userTrajectory[userTrajectory.count-1].userLevel
                 let userX = userTrajectory[userTrajectory.count-1].userX
                 let userY = userTrajectory[userTrajectory.count-1].userY
                 let userH = userTrajectory[userTrajectory.count-1].userHeading
+                let RANGE = Double(userTrajectory.count)*1.5
                 
                 // Search Area
-                let RANGE = Double(userTrajectory.count)*1.5
                 let areaMinMax: [Double] = [userX - RANGE, userY - RANGE, userX + RANGE, userY + RANGE]
                 let searchArea = getSearchCoordinates(areaMinMax: areaMinMax, interval: 1.0)
                 
@@ -1966,8 +1975,11 @@ public class ServiceManager: Observation {
             } else {
                 // User Long
                 let headInfo = userTrajectory[userTrajectory.count-1]
+                let headInfoHeading = tuHeading
                 let tailInfo = userTrajectory[0]
                 let isStraight = isTrajectoryStraight(for: headingInfo, size: headingInfo.count)
+                
+                let compensationHeading = tuHeading - headInfo.heading
                 
                 if (isStraight) {
                     // Search Area
@@ -1975,7 +1987,7 @@ public class ServiceManager: Observation {
                     var xyFromHead: [Double] = [headInfo.userX, headInfo.userY]
                     var xyFromTail: [Double] = [tailInfo.userX, tailInfo.userY]
                     
-                    let headingCorrectionForHead: Double = headInfo.userHeading - headingInfo[headingInfo.count-1]
+                    let headingCorrectionForHead: Double = headInfoHeading - headingInfo[headingInfo.count-1]
                     let headingCorrectionForTail: Double = tailInfo.userHeading - headingInfo[0]
                     
                     var headingFromHead = [Double] (repeating: 0, count: headingInfo.count)
@@ -2016,12 +2028,22 @@ public class ServiceManager: Observation {
                     let headingEnd = compensateHeading(heading: headingFromHead[0]-180, mode: "dr")
                     let diffHeading = abs(90 - abs(headingStart - headingEnd))
                     
-                    var searchHeadings: [Double] = [0, 0, 0]
+                    var searchHeadings: [Double] = []
+                    
                     if (diffHeading < 90) {
-                        searchHeadings = [headingEnd-diffHeading, headingEnd, headingEnd+diffHeading]
+                        searchHeadings.append(headingEnd-diffHeading)
+                        searchHeadings.append(headingEnd)
+                        searchHeadings.append(headingEnd+diffHeading)
                     } else {
-                        searchHeadings = [headingEnd-10, headingEnd, headingEnd+10]
+                        searchHeadings.append(headingEnd-10)
+                        searchHeadings.append(headingEnd)
+                        searchHeadings.append(headingEnd+10)
                     }
+                    
+                    if (recentScc < 0.7) {
+                        searchHeadings.append(headingEnd - 180)
+                    }
+                    
                     for i in 0..<searchHeadings.count {
                         searchHeadings[i] = compensateHeading(heading: searchHeadings[i], mode: "dr")
                     }
@@ -2041,15 +2063,18 @@ public class ServiceManager: Observation {
                     let userX = userTrajectory[userTrajectory.count-1].userX
                     let userY = userTrajectory[userTrajectory.count-1].userY
                     let userH = userTrajectory[userTrajectory.count-1].userHeading
+                    let RANGE = Double(userTrajectory.count)*1.2
                     
                     // Search Area
-                    let RANGE = Double(userTrajectory.count)+1
                     let areaMinMax: [Double] = [userX - RANGE, userY - RANGE, userX + RANGE, userY + RANGE]
                     let searchArea = getSearchCoordinates(areaMinMax: areaMinMax, interval: 1.0)
                     
                     let headInfo = userTrajectory[userTrajectory.count-1]
+                    let headInfoHeading = tuHeading
+                    var recentScc: Double = headInfo.scc
+                    
                     var xyFromHead: [Double] = [headInfo.userX, headInfo.userY]
-                    let headingCorrectionForHead: Double = headInfo.userHeading - headingInfo[headingInfo.count-1]
+                    let headingCorrectionForHead: Double = headInfoHeading - headingInfo[headingInfo.count-1]
                     var headingFromHead = [Double] (repeating: 0, count: headingInfo.count)
                     for i in 0..<headingInfo.count {
                         headingFromHead[i] = (headingInfo[i] + headingCorrectionForHead) - 180
@@ -2073,10 +2098,27 @@ public class ServiceManager: Observation {
                     var ppHeadings: [Double] = updatedHeadings
                     
                     var searchHeadings: [Double] = []
-                    for i in 0..<ppHeadings.count {
-                        searchHeadings.append(compensateHeading(heading: ppHeadings[i]-5, mode: "dr"))
-                        searchHeadings.append(compensateHeading(heading: ppHeadings[i], mode: "dr"))
-                        searchHeadings.append(compensateHeading(heading: ppHeadings[i]+5, mode: "dr"))
+//                    for i in 0..<ppHeadings.count {
+//                        searchHeadings.append(compensateHeading(heading: ppHeadings[i]-10, mode: "dr"))
+//                        searchHeadings.append(compensateHeading(heading: ppHeadings[i], mode: "dr"))
+//                        searchHeadings.append(compensateHeading(heading: ppHeadings[i]+10, mode: "dr"))
+//                    }
+                    
+//                    searchHeadings.append(headingEnd-10)
+//                    searchHeadings.append(headingEnd)
+//                    searchHeadings.append(headingEnd+10)
+                    
+                    if (recentScc < 0.7) {
+                        for i in 0..<ppHeadings.count {
+                            searchHeadings.append(compensateHeading(heading: ppHeadings[i]-10, mode: "dr"))
+                            searchHeadings.append(compensateHeading(heading: ppHeadings[i], mode: "dr"))
+                            searchHeadings.append(compensateHeading(heading: ppHeadings[i]+10, mode: "dr"))
+                        }
+                        searchHeadings.append(headingEnd - 180)
+                    } else {
+                        searchHeadings.append(headingEnd-10)
+                        searchHeadings.append(headingEnd)
+                        searchHeadings.append(headingEnd+10)
                     }
                     
                     resultRange = areaMinMax.map { Int($0) }
@@ -2102,15 +2144,15 @@ public class ServiceManager: Observation {
     }
     
     func isTrajectoryStraight(for array: [Double], size: Int) -> Bool {
+        if (size < NUM_STRAIGHT_INDEX) {
+            return false
+        }
         let firstTenValues = Array(array[0..<NUM_STRAIGHT_INDEX])
         let circularStandardDeviationTail = circularStandardDeviation(for: firstTenValues)
         
         let lastTenValues = Array(array[(size-NUM_STRAIGHT_INDEX)..<size])
         let circularStandardDeviationHead = circularStandardDeviation(for: lastTenValues)
         
-//        print("isTrajectoryStraight : stdTail = \(circularStandardDeviationTail) // stdHead = \(circularStandardDeviationHead)")
-        
-//        return (circularStandardDeviationTail <= 10.0 && circularStandardDeviationHead <= 10.0)
         return circularStandardDeviationHead <= 10.0
     }
     
@@ -2158,14 +2200,23 @@ public class ServiceManager: Observation {
         }
 
         if (abs(xMin - xMax) < 5.0) {
-            xMin = xMin - 1
-            xMax = xMax + 1
+            xMin = xMin - USER_TRAJECTORY_LENGTH*0.05
+            xMax = xMax + USER_TRAJECTORY_LENGTH*0.05
+            
+            if (recentScc < 0.7) {
+                xMin = xMin - (0.7-recentScc)*USER_TRAJECTORY_LENGTH
+                xMax = xMax + (0.7-recentScc)*USER_TRAJECTORY_LENGTH
+            }
         }
 
         if (abs(yMin - yMax) < 5.0) {
-            yMin = yMin - 1
-            yMax = yMax + 1
-
+            yMin = yMin - USER_TRAJECTORY_LENGTH*0.05
+            yMax = yMax + USER_TRAJECTORY_LENGTH*0.05
+            
+            if (recentScc < 0.7) {
+                yMin = yMin - (0.7-recentScc)*USER_TRAJECTORY_LENGTH
+                yMax = yMax + (0.7-recentScc)*USER_TRAJECTORY_LENGTH
+            }
         }
         
         let diffHeading = compensateHeading(heading: abs(headingStart - headingEnd), mode: "dr")
@@ -2356,6 +2407,7 @@ public class ServiceManager: Observation {
         if (!self.userTrajectoryInfo.isEmpty) {
             tailIndex = self.userTrajectoryInfo[0].index
         }
+        
         let searchInfo = makeSearchAreaAndDirection(userTrajectory: self.userTrajectoryInfo)
         let input = FineLocationTracking(user_id: self.user_id, mobile_time: currentTime, sector_id: self.sector_id, building_name: self.currentBuilding, level_name: self.currentLevel, spot_id: self.currentSpot, phase: self.phase, search_range: searchInfo.0, search_direction_list: searchInfo.1, rss_compensation_list: requestBiasArray, sc_compensation_list: [1.0], tail_index: tailIndex)
 //        print(localTime + " , (Jupiter) Phase 3 Input : \(input)")
@@ -2860,11 +2912,16 @@ public class ServiceManager: Observation {
         
         let levelArray: [String] = [level_name, linked_level_name]
         var levelDestination: String = ""
-        
+
         if (linked_level_name == "") {
             isOn = false
             return (isOn, levelDestination, "")
         } else {
+            if (level_name == linked_level_name) {
+                isOn = false
+                return (isOn, "", "")
+            }
+            
             if (self.currentLevel == "") {
                 isOn = false
                 return (isOn, "", "")
@@ -3869,7 +3926,7 @@ public class ServiceManager: Observation {
         timeUpdatePosition.x = timeUpdatePosition.x + dx
         timeUpdatePosition.y = timeUpdatePosition.y + dy
         timeUpdatePosition.heading = updateHeading
-        
+        self.preTuMmHeading = compensateHeading(heading: updateHeading, mode: "dr")
         
         var timeUpdateCopy = timeUpdatePosition
         let correctedTuCopy = self.pathMatching(building: timeUpdateOutput.building_name, level: timeUpdateOutput.level_name, x: timeUpdateCopy.x, y: timeUpdateCopy.y, heading: timeUpdateCopy.heading, tuXY: [0,0], mode: "dr", isPast: false, HEADING_RANGE: self.HEADING_RANGE)
