@@ -33,7 +33,7 @@ public class NetworkManager {
             let dataTask = session.dataTask(with: requestURL, completionHandler: { (data, response, error) in
                 // [error가 존재하면 종료]
                 guard error == nil else {
-                    completion(500, error?.localizedDescription ?? "Fail")
+                    completion(500, error?.localizedDescription ?? "Fail to send bluetooth data")
                     return
                 }
 
@@ -41,14 +41,14 @@ public class NetworkManager {
                 let successsRange = 200..<300
                 guard let statusCode = (response as? HTTPURLResponse)?.statusCode, successsRange.contains(statusCode)
                 else {
-                    completion(500, (response as? HTTPURLResponse)?.description ?? "Fail")
+                    completion(500, (response as? HTTPURLResponse)?.description ?? "Fail to send bluetooth data")
                     return
                 }
 
                 // [response 데이터 획득]
                 let resultCode = (response as? HTTPURLResponse)?.statusCode ?? 500 // [상태 코드]
                 guard let resultLen = data else {
-                    completion(500, (response as? HTTPURLResponse)?.description ?? "Fail")
+                    completion(500, (response as? HTTPURLResponse)?.description ?? "Fail to send bluetooth data")
                     return
                 }
 
@@ -59,12 +59,12 @@ public class NetworkManager {
 //                    print("RESPONSE RF 데이터 :: ", resultCode)
 //                    print("====================================")
 //                    print("")
-                    completion(resultCode, "(Jupiter) Success Send RFD")
+                    completion(resultCode, "Fail to send bluetooth data")
                 }
             })
             dataTask.resume()
         } else {
-            completion(500, "(Jupiter) Fail to encode RFD")
+            completion(406, "Fail to encode RFD")
         }
     }
 
@@ -94,7 +94,7 @@ public class NetworkManager {
             let dataTask = session.dataTask(with: requestURL, completionHandler: { (data, response, error) in
                 // [error가 존재하면 종료]
                 guard error == nil else {
-                    completion(500, error?.localizedDescription ?? "Fail")
+                    completion(500, error?.localizedDescription ?? "Fail to send sensor measurements")
                     return
                 }
 
@@ -102,14 +102,14 @@ public class NetworkManager {
                 let successsRange = 200..<300
                 guard let statusCode = (response as? HTTPURLResponse)?.statusCode, successsRange.contains(statusCode)
                 else {
-                    completion(500, (response as? HTTPURLResponse)?.description ?? "Fail")
+                    completion(500, (response as? HTTPURLResponse)?.description ?? "Fail to send sensor measurements")
                     return
                 }
 
                 // [response 데이터 획득]
                 let resultCode = (response as? HTTPURLResponse)?.statusCode ?? 500 // [상태 코드]
                 guard let resultLen = data else {
-                    completion(500, (response as? HTTPURLResponse)?.description ?? "Fail")
+                    completion(500, (response as? HTTPURLResponse)?.description ?? "Fail to send sensor measurements")
                     return
                 }
 
@@ -125,7 +125,7 @@ public class NetworkManager {
             })
             dataTask.resume()
         } else {
-            completion(500, "(Jupiter) Fail to encode UVD")
+            completion(406, "Fail to encode UVD")
         }
     }
     

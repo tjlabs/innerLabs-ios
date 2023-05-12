@@ -116,6 +116,7 @@ public struct TrajectoryInfo {
     public var userY: Double = 0
     public var userHeading: Double = 0
     public var userPmSuccess: Bool = false
+    public var userTuHeading: Double = 0
 }
 
 public struct ServiceResult {
@@ -136,11 +137,10 @@ public struct ServiceResult {
     public var level: String = ""
     public var building: String = ""
     
-    public var trajectoryFromHead: [[Double]] = [[0, 0]]
-    public var headCoord: [Double] = [0, 0]
-    
-    public var trajectoryFromTail: [[Double]] = [[0, 0]]
-    public var tailCoord: [Double] = [0, 0]
+    public var userTrajectory: [[Double]] = [[0, 0]]
+    public var trajectoryStartCoord: [Double] = [0, 0]
+    public var searchArea: [[Double]] = [[0, 0]]
+    public var searchType: Int = 0
 }
 
 // ------------------------------------------------- //
