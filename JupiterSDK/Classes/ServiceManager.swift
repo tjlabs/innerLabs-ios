@@ -43,7 +43,7 @@ public class ServiceManager: Observation {
     let MR_INPUT_NUM = 20
     
     // 1 ~ 2 : Release  //  0 : Test
-    var serverType: Int = 0
+    var serverType: Int = 2
     var region: String = "Korea"
     
     let G: Double = 9.81
@@ -195,7 +195,7 @@ public class ServiceManager: Observation {
     var nowTime: Int = 0
     var RECENT_THRESHOLD: Int = 10000 // 2200
     var INDEX_THRESHOLD: Int = 11
-    let VALID_BL_CHANGE_TIME = 7000 // 10000
+    let VALID_BL_CHANGE_TIME = 7000
     
     let DEFAULT_SPOT_DISTANCE: Double = 80
     var lastOsrId: Int = 0
@@ -606,6 +606,7 @@ public class ServiceManager: Observation {
                                                             self.USER_TRAJECTORY_DIAGONAL = Double(resultTraj.trajectory_diagonal)
                                                             
                                                             self.NUM_STRAIGHT_INDEX = Int(ceil(self.USER_TRAJECTORY_LENGTH/6))
+//                                                            self.NUM_STRAIGHT_INDEX = 10
                                                             print(getLocalTimeString() + " , (Jupiter) Trajectory Info Load : \(self.USER_TRAJECTORY_LENGTH) // \(self.USER_TRAJECTORY_DIAGONAL) // \(self.NUM_STRAIGHT_INDEX)")
                                                             
                                                             // Load Bias
@@ -1984,8 +1985,6 @@ public class ServiceManager: Observation {
                 accumulatedLength += unitTraj.length
             }
             
-//            if (accumulatedLength < USER_TRAJECTORY_LENGTH-1)
-//            accumulatedLength < USER_TRAJECTORY_LENGTH/2
             if (accumulatedLength < USER_TRAJECTORY_LENGTH*0.7) {
                 let userBuilding = userTrajectory[userTrajectory.count-1].userBuilding
                 let userLevel = userTrajectory[userTrajectory.count-1].userLevel
@@ -1993,7 +1992,7 @@ public class ServiceManager: Observation {
                 let userY = userTrajectory[userTrajectory.count-1].userY
                 let userH = userTrajectory[userTrajectory.count-1].userHeading
                 
-                var RANGE = USER_TRAJECTORY_LENGTH*1.5
+                var RANGE = USER_TRAJECTORY_LENGTH*1.2
                 if (phase == 2) {
                     RANGE = accumulatedLength*1.5
                 }
@@ -2012,7 +2011,6 @@ public class ServiceManager: Observation {
                     headingCorrectionForHead = 0
                 } else {
                     headingCorrectionForHead = headInfoHeading - headInfo.userHeading
-//                    headingCorrectionForHead = headInfo.userHeading - headInfoHeading
                 }
                 
                 print(getLocalTimeString() + " , Search Direction (Short) : 내 머리 TU 위치 헤딩 = \(headInfoHeading)")
@@ -2042,7 +2040,7 @@ public class ServiceManager: Observation {
                 let headingEnd = compensateHeading(heading: headingFromHead[0]-180, mode: "dr")
                 
                 // Search Direction
-                let ppHeadings = getPathMatchingHeadings(building: userBuilding, level: userLevel, x: userX, y: userY, heading: userH, RANGE: RANGE/2)
+                let ppHeadings = getPathMatchingHeadings(building: userBuilding, level: userLevel, x: userX, y: userY, heading: userH, RANGE: RANGE)
                 var searchHeadings: [Double] = []
                 for i in 0..<ppHeadings.count {
                     searchHeadings.append(compensateHeading(heading: ppHeadings[i]-10, mode: "dr"))
@@ -2098,7 +2096,7 @@ public class ServiceManager: Observation {
                     let diffHeading = abs(headingStart - headingEnd)
                     
                     // Search Direction
-                    let ppHeadings = getPathMatchingHeadings(building: userBuilding, level: userLevel, x: userX, y: userY, heading: userH, RANGE: RANGE/2)
+                    let ppHeadings = getPathMatchingHeadings(building: userBuilding, level: userLevel, x: userX, y: userY, heading: userH, RANGE: RANGE)
                     var searchHeadings: [Double] = []
                     for i in 0..<ppHeadings.count {
                         searchHeadings.append(compensateHeading(heading: ppHeadings[i]-10-diffHeading, mode: "dr"))
@@ -2114,6 +2112,7 @@ public class ServiceManager: Observation {
                     displayOutput.userTrajectory = trajectoryFromHead
                     displayOutput.searchArea = searchArea
                     displayOutput.searchType = -1
+                    
                     searchType = 0
                     
                     print(getLocalTimeString() + " , Search Direction (Long Phase <= 1) : \(resultDirection) // index = \(userTrajectory[userTrajectory.count-1].index)")
@@ -2138,7 +2137,6 @@ public class ServiceManager: Observation {
                             headingCorrectionForHead = 0
                         } else {
                             headingCorrectionForHead = headInfoHeading - headInfo.userHeading
-//                            headingCorrectionForHead = headInfo.userHeading - headInfoHeading
                         }
                          
                         print(getLocalTimeString() + " , Search Direction (Long & All 직선) : 내 머리 TU 위치 헤딩 = \(headInfoHeading)")
@@ -2217,7 +2215,6 @@ public class ServiceManager: Observation {
                             headingCorrectionForHead = 0
                         } else {
                             headingCorrectionForHead = headInfoHeading - headInfo.userHeading
-//                            headingCorrectionForHead = headInfo.userHeading - headInfoHeading
                         }
                         
                         var headingFromHead = [Double] (repeating: 0, count: uvHeading.count)
@@ -2327,10 +2324,10 @@ public class ServiceManager: Observation {
                         
                         let diffX = xyMinMax[2] - xyMinMax[0]
                         let diffY = xyMinMax[3] - xyMinMax[1]
-                        xyMinMax[0] = xyMinMax[0] - 0.4*diffX
-                        xyMinMax[1] = xyMinMax[1] - 0.4*diffY
-                        xyMinMax[2] = xyMinMax[2] + 0.4*diffX
-                        xyMinMax[3] = xyMinMax[3] + 0.4*diffY
+//                        xyMinMax[0] = xyMinMax[0] - 0.4*diffX
+//                        xyMinMax[1] = xyMinMax[1] - 0.4*diffY
+//                        xyMinMax[2] = xyMinMax[2] + 0.4*diffX
+//                        xyMinMax[3] = xyMinMax[3] + 0.4*diffY
                         
                         var areaMinMax: [Double] = getSearchAreaMinMax(xyMinMax: xyMinMax, heading: [headingStart, headingEnd], recentScc: recentScc, searchType: isStraight)
                         if (!self.isActiveKf) {
@@ -2392,8 +2389,8 @@ public class ServiceManager: Observation {
                         let diffY_ = trajectoryFromTail[trajectoryFromTail.count-1][1] - headInfo.userY
                         let diffXY_ = sqrt(diffX_*diffX_ + diffY_*diffY_)
                         
-                        if (self.isActiveKf) {
-                            searchType = 0
+                        if (self.isActiveKf && diffXY_ <= 30) {
+                            searchType = isStraight
                         } else if (diffXY_ > 30) {
                             searchType = 0
                             print(getLocalTimeString() + " , Search Direction (Long & Tail 직선): diff User and Tail coord = \(diffXY_)")
@@ -2436,18 +2433,17 @@ public class ServiceManager: Observation {
                         var recentScc: Double = headInfo.scc
                         
                         // From Head
-                        let headInfo = turnTrajectory[turnTrajectory.count-1]
-                        let headInfoHeading = headInfo.userTuHeading
+                        let turnHeadInfo = turnTrajectory[turnTrajectory.count-1]
+                        let headInfoHeading = turnHeadInfo.userTuHeading
                         
-                        var xyFromHead: [Double] = [headInfo.userX, headInfo.userY]
+                        var xyFromHead: [Double] = [turnHeadInfo.userX, turnHeadInfo.userY]
                         
                         var headingCorrectionForHead: Double = 0
-                        var headingCorrectionFromServerH: Double = headInfo.userHeading - turnUvHeading[turnUvHeading.count-1]
+                        let headingCorrectionFromServerH: Double = turnHeadInfo.userHeading - turnUvHeading[turnUvHeading.count-1]
                         if (!self.isActiveKf) {
                             headingCorrectionForHead = 0
                         } else {
-                            headingCorrectionForHead = headInfoHeading - headInfo.userHeading
-//                            headingCorrectionForHead = headInfo.userHeading - headInfoHeading
+                            headingCorrectionForHead = headInfoHeading - turnHeadInfo.userHeading
                         }
                         
                         
@@ -2470,7 +2466,6 @@ public class ServiceManager: Observation {
                         let tailInfoHeading = tailInfo.userTuHeading
                         
                         var xyFromTail: [Double] = [tailInfo.userX, tailInfo.userY]
-//                        let headingCorrectionForTail: Double = tailInfoHeading - turnHeadingInfo[0]
                         var headingCorrectionForTail: Double = 0
                         var headingCorrectionFromServerT: Double = tailInfo.userHeading - uvHeading[0]
                         if (!self.isActiveKf) {
@@ -2516,11 +2511,21 @@ public class ServiceManager: Observation {
                     }
                 }
             }
+            
+            if (resultRange.isEmpty) {
+                let userX = userTrajectory[userTrajectory.count-1].userX
+                let userY = userTrajectory[userTrajectory.count-1].userY
+                let userH = userTrajectory[userTrajectory.count-1].userHeading
+                let RANGE = USER_TRAJECTORY_LENGTH*1.2
+                let areaMinMax = [userX - RANGE, userY - RANGE, userX + RANGE, userY + RANGE]
+                resultRange = areaMinMax.map { Int($0) }
+            }
         }
         
         if (resultDirection.isEmpty) {
             resultDirection = [0, 90, 180, 270]
         }
+        
         
         return (resultRange, resultDirection, tailIndex, searchType)
     }
@@ -2601,36 +2606,36 @@ public class ServiceManager: Observation {
             }
 
             if (endCos > 0) {
-                xMin = xMin - 1.4*SEARCH_LENGTH*endCos // Add
-                xMax = xMax + 1.4*SEARCH_LENGTH*endCos
+                xMin = xMin - 1.2*SEARCH_LENGTH*endCos // Add
+                xMax = xMax + 1.2*SEARCH_LENGTH*endCos
             } else {
-                xMin = xMin + 1.4*SEARCH_LENGTH*endCos
-                xMax = xMax - 1.4*SEARCH_LENGTH*endCos // Add
+                xMin = xMin + 1.2*SEARCH_LENGTH*endCos
+                xMax = xMax - 1.2*SEARCH_LENGTH*endCos // Add
             }
 
             if (endSin > 0) {
-                yMin = yMin - 1.4*SEARCH_LENGTH*endSin // Add
-                yMax = yMax + 1.4*SEARCH_LENGTH*endSin
+                yMin = yMin - 1.2*SEARCH_LENGTH*endSin // Add
+                yMax = yMax + 1.2*SEARCH_LENGTH*endSin
             } else {
-                yMin = yMin + 1.4*SEARCH_LENGTH*endSin
-                yMax = yMax - 1.4*SEARCH_LENGTH*endSin // Add
+                yMin = yMin + 1.2*SEARCH_LENGTH*endSin
+                yMax = yMax - 1.2*SEARCH_LENGTH*endSin // Add
             }
         } else {
             // All & Head Straight
             if (startCos > 0) {
-                xMin = xMin - 1.4*SEARCH_LENGTH*startCos // Add
-                xMax = xMax + 1.4*SEARCH_LENGTH*startCos
+                xMin = xMin - 1.2*SEARCH_LENGTH*startCos // Add
+                xMax = xMax + 1.2*SEARCH_LENGTH*startCos
             } else {
-                xMin = xMin + 1.4*SEARCH_LENGTH*startCos
-                xMax = xMax - 1.4*SEARCH_LENGTH*startCos // Ad
+                xMin = xMin + 1.2*SEARCH_LENGTH*startCos
+                xMax = xMax - 1.2*SEARCH_LENGTH*startCos // Ad
             }
 
             if (startSin > 0) {
-                yMin = yMin - 1.4*SEARCH_LENGTH*startSin // Add
-                yMax = yMax + 1.4*SEARCH_LENGTH*startSin
+                yMin = yMin - 1.2*SEARCH_LENGTH*startSin // Add
+                yMax = yMax + 1.2*SEARCH_LENGTH*startSin
             } else {
-                yMin = yMin + 1.4*SEARCH_LENGTH*startSin
-                yMax = yMax - 1.4*SEARCH_LENGTH*startSin // Add
+                yMin = yMin + 1.2*SEARCH_LENGTH*startSin
+                yMax = yMax - 1.2*SEARCH_LENGTH*startSin // Add
             }
 
             if (endCos > 0) {
@@ -2642,7 +2647,7 @@ public class ServiceManager: Observation {
             }
 
             if (endSin > 0) {
-                yMin = yMin -  SEARCH_LENGTH*endSin // Add
+                yMin = yMin - SEARCH_LENGTH*endSin // Add
                 yMax = yMax + SEARCH_LENGTH*endSin
             } else {
                 yMin = yMin + SEARCH_LENGTH*endSin
@@ -2667,7 +2672,7 @@ public class ServiceManager: Observation {
             let diffX = abs(xMax - xMin)
             let diffY = abs(yMax - yMin)
             
-            let diffXy = abs(diffX - diffY)*0.5
+            let diffXy = abs(diffX - diffY)*0.25
             
             if (diffX < diffY) {
                 xMin = xMin - diffXy
@@ -2775,6 +2780,7 @@ public class ServiceManager: Observation {
                             }
                             
                             if (self.currentLevel == "0F") {
+                                self.isNeedTrajInit = true
                                 self.phase = 1
                             } else {
                                 self.phase = result.phase
@@ -2786,7 +2792,9 @@ public class ServiceManager: Observation {
                         self.serverResult[2] = result.absolute_heading
                         
                         if (!self.isActiveKf) {
-                            self.updateAllResult(result: resultCorrected.xyh)
+                            self.outputResult.x = resultCorrected.xyh[0]
+                            self.outputResult.y = resultCorrected.xyh[1]
+                            self.outputResult.absolute_heading = resultCorrected.xyh[2]
                         }
                         
                         self.outputResult.scc = result.scc
@@ -2881,7 +2889,6 @@ public class ServiceManager: Observation {
                     if (result.mobile_time > self.preOutputMobileTime) {
                         if (!self.isGetFirstResponse) {
                             if (!self.isIndoor && (self.timeForInit >= TIME_INIT_THRESHOLD)) {
-//                                print("Check re-enter : Report Indoor !! timeForInit = \(self.timeForInit)")
                                 self.isGetFirstResponse = true
                                 self.isIndoor = true
                                 self.reporting(input: INDOOR_FLAG)
@@ -2945,7 +2952,7 @@ public class ServiceManager: Observation {
                             let levelArray: [String] = [resultLevelName, currentLevelName]
                             var TIME_CONDITION = VALID_BL_CHANGE_TIME
                             if (levelArray.contains("B0") && levelArray.contains("B2")) {
-                                TIME_CONDITION = VALID_BL_CHANGE_TIME*3
+                                TIME_CONDITION = VALID_BL_CHANGE_TIME*4
                             }
                             
                             if (result.building_name != self.currentBuilding || result.level_name != self.currentLevel) {
@@ -2982,7 +2989,7 @@ public class ServiceManager: Observation {
                             let levelArray: [String] = [resultLevelName, currentLevelName]
                             var TIME_CONDITION = VALID_BL_CHANGE_TIME
                             if (levelArray.contains("B0") && levelArray.contains("B2")) {
-                                TIME_CONDITION = VALID_BL_CHANGE_TIME*3
+                                TIME_CONDITION = VALID_BL_CHANGE_TIME*4
                             }
                             
                             if (result.building_name != self.currentBuilding || result.level_name != self.currentLevel) {
@@ -3253,7 +3260,7 @@ public class ServiceManager: Observation {
                                         let levelArray: [String] = [resultLevelName, currentLevelName]
                                         var TIME_CONDITION = VALID_BL_CHANGE_TIME
                                         if (levelArray.contains("B0") && levelArray.contains("B2")) {
-                                            TIME_CONDITION = VALID_BL_CHANGE_TIME*3
+                                            TIME_CONDITION = VALID_BL_CHANGE_TIME*4
                                         }
                                         
                                         if (result.building_name != self.currentBuilding || result.level_name != self.currentLevel) {
@@ -3278,13 +3285,10 @@ public class ServiceManager: Observation {
                                 }
                             } else if (self.isActiveKf) {
                                 self.SQUARE_RANGE = self.SQUARE_RANGE_LARGE
-                                
                                 self.kalmanR = 0.01
                                 self.headingKalmanR = 0.01
-                                
                                 self.indexAfterResponse = 0
                                 self.isPossibleEstBias = false
-                                
                                 self.isNeedTrajInit = true
                                 self.isPhaseBreak = true
                             }
@@ -3393,7 +3397,7 @@ public class ServiceManager: Observation {
         let levelArray: [String] = [result.level_name, result.linked_level_name]
         var TIME_CONDITION = VALID_BL_CHANGE_TIME
         if (levelArray.contains("B0") && levelArray.contains("B2")) {
-            TIME_CONDITION = VALID_BL_CHANGE_TIME*3
+            TIME_CONDITION = VALID_BL_CHANGE_TIME*4
         }
         
         if (result.spot_id != lastSpotId) {
@@ -3410,7 +3414,7 @@ public class ServiceManager: Observation {
                     self.measurementOutput.level_name = levelDestination
                     self.outputResult.level_name = levelDestination
                     
-                    self.phase2Trajectory = getTrajectoryFromLast(from: self.userTrajectoryInfo, N: 15)
+                    self.phase2Trajectory = getTrajectoryFromLast(from: self.userTrajectoryInfo, N: 20)
 //                    var accumulatedLength = 0.0
 //                    for unitTraj in self.userTrajectoryInfo {
 //                        accumulatedLength += unitTraj.length
@@ -3446,7 +3450,7 @@ public class ServiceManager: Observation {
                         self.measurementOutput.level_name = levelDestination
                         self.outputResult.level_name = levelDestination
                         
-                        self.phase2Trajectory = getTrajectoryFromLast(from: self.userTrajectoryInfo, N: 15)
+                        self.phase2Trajectory = getTrajectoryFromLast(from: self.userTrajectoryInfo, N: 20)
 //                        var accumulatedLength = 0.0
 //                        for unitTraj in self.userTrajectoryInfo {
 //                            accumulatedLength += unitTraj.length
@@ -3980,18 +3984,17 @@ public class ServiceManager: Observation {
         self.outputResult.y = result[1]
         
         var accumulatedLength = 0.0
-        for unitTraj in self.userTrajectoryInfo {
-            accumulatedLength += unitTraj.length
+        for userTrajectory in self.userTrajectoryInfo {
+            accumulatedLength += userTrajectory.length
         }
         
-        if (accumulatedLength > USER_TRAJECTORY_LENGTH*0.7) {
+        if (accumulatedLength > USER_TRAJECTORY_LENGTH*0.5) {
             self.timeUpdatePosition.heading = result[2]
             self.timeUpdateOutput.absolute_heading = result[2]
             self.measurementPosition.heading = result[2]
             self.measurementOutput.absolute_heading = result[2]
             self.outputResult.absolute_heading = result[2]
         }
-        
         self.resultToReturn = self.makeOutputResult(input: self.outputResult, isPast: self.flagPast, runMode: self.runMode, isVenusMode: self.isVenusMode)
     }
     
