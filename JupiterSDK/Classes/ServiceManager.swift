@@ -1634,25 +1634,6 @@ public class ServiceManager: Observation {
         return numChannels
     }
     
-//    func checkSufficientRfd(bleDict: [String: Double], CONDITION: Double, COUNT: Int) -> Bool {
-//        var count = 0
-//        for value in bleDict.values {
-//            if value >= CONDITION {
-//                count += 1
-//                if count >= COUNT {
-//                    return true
-//                }
-//            }
-//        }
-//
-//        for value in bleDict.values {
-//            if value >= (CONDITION+12) {
-//                return true
-//            }
-//        }
-//        return false
-//    }
-    
     func checkSufficientRfd(userTrajectory: [TrajectoryInfo]) -> Bool {
         if (!userTrajectory.isEmpty) {
             var countOneChannel: Int = 0
@@ -1724,7 +1705,7 @@ public class ServiceManager: Observation {
             if (self.isBackground) {
                 unitDRInfo.length = unitDRInfo.length*backgroundScale
             }
-            //            print(localTime + " , (Jupiter) UvdTimer // isIndexChanged : index = \(unitDRInfo.index) , length = \(unitDRInfo.length)")
+//            print(localTime + " , (Jupiter) UvdTimer // isIndexChanged : index = \(unitDRInfo.index) , length = \(unitDRInfo.length)")
             self.unitDrInfoIndex = unitDRInfo.index
             
             if (self.mode == "auto") {
@@ -1876,23 +1857,6 @@ public class ServiceManager: Observation {
         if accumulatedLength > USER_TRAJECTORY_LENGTH {
             self.userTrajectoryInfo.removeFirst()
         }
-        
-//        var newTrajectory: [TrajectoryInfo] = []
-//        let headX = self.userTrajectoryInfo[self.userTrajectoryInfo.count-1].userX
-//        let headY = self.userTrajectoryInfo[self.userTrajectoryInfo.count-1].userY
-//        for userTrajectory in self.userTrajectoryInfo {
-//            let trajX = userTrajectory.userX
-//            let trajY = userTrajectory.userY
-//
-//            let distance = sqrt((headX - trajX)*(headX - trajX) + (headY - trajY)*(headY - trajY))
-//            if (distance < USER_TRAJECTORY_LENGTH) {
-//                newTrajectory.append(userTrajectory)
-//            }
-//        }
-//        self.userTrajectoryInfo = newTrajectory
-        
-        let utiCount = self.userTrajectoryInfo.count
-//        print("User Trajectory : length = \(accumulatedLength) // index = \(self.userTrajectoryInfo[0].index) , \(self.userTrajectoryInfo[utiCount-1].index) // x = \(self.userTrajectoryInfo[0].userX) , \(self.userTrajectoryInfo[utiCount-1].userX) // y = \(self.userTrajectoryInfo[0].userY) , \(self.userTrajectoryInfo[utiCount-1].userY) // h = \(self.userTrajectoryInfo[0].userHeading) , \(self.userTrajectoryInfo[utiCount-1].userHeading) // success = \(self.userTrajectoryInfo[0].userPmSuccess) , \(self.userTrajectoryInfo[utiCount-1].userPmSuccess)")
     }
     
     func makeTrajectoryInfo(unitDRInfo: UnitDRInfo, resultToReturn: FineLocationTrackingResult, tuHeading: Double, isPmSuccess: Bool, bleChannels: Int) {
@@ -1953,6 +1917,13 @@ public class ServiceManager: Observation {
     }
     
     func getTrajectoryFromLast(from userTrajectory: [TrajectoryInfo], N: Int) -> [TrajectoryInfo] {
+        let cutLength: Double = 15
+        
+        var accumulatedLength = 0.0
+        for unitTraj in userTrajectory {
+            accumulatedLength += unitTraj.length
+        }
+        
         let size = userTrajectory.count
         guard size >= N else {
             return userTrajectory
@@ -1969,6 +1940,26 @@ public class ServiceManager: Observation {
         return result
     }
     
+//    func cutTrajectoryFromLast(from userTrajectory: [TrajectoryInfo], userLength: Double, cutLength: Double) -> [TrajectoryInfo] {
+//        let accumulatedLength = userLength
+//
+//
+//        let size = userTrajectory.count
+//        guard size >= N else {
+//            return userTrajectory
+//        }
+//
+//        let startIndex = size - N
+//        let endIndex = size
+//
+//        var result: [TrajectoryInfo] = []
+//        for i in startIndex..<endIndex {
+//            result.append(userTrajectory[i])
+//        }
+//
+//        return result
+//    }
+    
     func makeSearchAreaAndDirection(userTrajectory: [TrajectoryInfo], phase: Int) -> ([Int], [Int], Int, Int) {
         var resultRange: [Int] = []
         var resultDirection: [Int] = [0, 90, 180, 270]
@@ -1976,9 +1967,9 @@ public class ServiceManager: Observation {
         var searchType = 0
         
         if (!userTrajectory.isEmpty) {
-            var headingInfo = [Double]()
+            var uvHeading = [Double]()
             for value in userTrajectory {
-                headingInfo.append(compensateHeading(heading: value.heading, mode: "dr"))
+                uvHeading.append(compensateHeading(heading: value.heading, mode: "dr"))
             }
             
             var accumulatedLength = 0.0
@@ -1988,7 +1979,7 @@ public class ServiceManager: Observation {
             
 //            if (accumulatedLength < USER_TRAJECTORY_LENGTH-1)
 //            accumulatedLength < USER_TRAJECTORY_LENGTH/2
-            if (accumulatedLength < USER_TRAJECTORY_LENGTH-1) {
+            if (accumulatedLength < USER_TRAJECTORY_LENGTH) {
                 let userBuilding = userTrajectory[userTrajectory.count-1].userBuilding
                 let userLevel = userTrajectory[userTrajectory.count-1].userLevel
                 let userX = userTrajectory[userTrajectory.count-1].userX
@@ -2007,28 +1998,26 @@ public class ServiceManager: Observation {
                 let headInfo = userTrajectory[userTrajectory.count-1]
                 let headInfoHeading = headInfo.userTuHeading
                 var xyFromHead: [Double] = [headInfo.userX, headInfo.userY]
-//                let headingCorrectionForHead: Double = headInfo.userHeading - headingInfo[headingInfo.count-1]
                 
+                var headingCorrectionFromServer: Double = headInfo.userHeading - uvHeading[uvHeading.count-1]
                 var headingCorrectionForHead: Double = 0
-                var headingCorrectionFromServer: Double = headInfo.userHeading - headingInfo[headingInfo.count-1]
                 if (!self.isActiveKf) {
-                    headingCorrectionForHead = headInfoHeading - headingInfo[headingInfo.count-1]
+                    headingCorrectionForHead = 0
                 } else {
                     headingCorrectionForHead = headInfoHeading - headInfo.userHeading
                 }
                 
                 print(getLocalTimeString() + " , Search Direction (KF X) : 내 머리 TU 위치 헤딩 = \(headInfoHeading)")
-                print(getLocalTimeString() + " , Search Direction (KF X) : UVD 머리 헤딩 = \(headingInfo[headingInfo.count-1])")
+                print(getLocalTimeString() + " , Search Direction (KF X) : UVD 머리 헤딩 = \(uvHeading[uvHeading.count-1])")
                 print(getLocalTimeString() + " , Search Direction (KF X) : 헤딩 보상 1 = \(headingCorrectionForHead)")
                 
                 print(getLocalTimeString() + " , Search Direction (KF X) : 내 마지막 위치 헤딩 = \(headInfo.userHeading)")
-                print(getLocalTimeString() + " , Search Direction (KF X) : UVD 머리 헤딩 = \(headingInfo[headingInfo.count-1])")
+                print(getLocalTimeString() + " , Search Direction (KF X) : UVD 머리 헤딩 = \(uvHeading[uvHeading.count-1])")
                 print(getLocalTimeString() + " , Search Direction (KF X) : 헤딩 보상 2 = \(headingCorrectionFromServer)")
                 
-                var headingFromHead = [Double] (repeating: 0, count: headingInfo.count)
-                for i in 0..<headingInfo.count {
-//                    headingFromHead[i] = (headingInfo[i] + headingCorrectionForHead) - 180
-                    headingFromHead[i] = compensateHeading(heading: (headingInfo[i] + headingCorrectionForHead) - 180 + headingCorrectionFromServer, mode: "dr")
+                var headingFromHead = [Double] (repeating: 0, count: uvHeading.count)
+                for i in 0..<uvHeading.count {
+                    headingFromHead[i] = compensateHeading(heading: (uvHeading[i] + headingCorrectionForHead) - 180 + headingCorrectionFromServer, mode: "dr")
                 }
                 print(getLocalTimeString() + " , Search Direction (KF X) : 머리부터 거꾸로 헤딩 = \(headingFromHead)")
                 
@@ -2043,24 +2032,6 @@ public class ServiceManager: Observation {
                 
                 let headingStart = compensateHeading(heading: headingFromHead[headingFromHead.count-1]-180, mode: "dr")
                 let headingEnd = compensateHeading(heading: headingFromHead[0]-180, mode: "dr")
-                let diffHeading = abs(90 - abs(headingStart - headingEnd))
-                
-//                var searchHeadings: [Double] = []
-//
-//                if (diffHeading < 90) {
-//                    if (diffHeading > 5) {
-//                        searchHeadings.append(headingEnd-diffHeading)
-//                        searchHeadings.append(headingEnd)
-//                        searchHeadings.append(headingEnd+diffHeading)
-//                    } else {
-//                        searchHeadings.append(headingEnd)
-//                    }
-//                } else {
-//                    searchHeadings.append(headingEnd-10)
-//                    searchHeadings.append(headingEnd)
-//                    searchHeadings.append(headingEnd+10)
-//                }
-                
                 
                 // Search Direction
                 let ppHeadings = getPathMatchingHeadings(building: userBuilding, level: userLevel, x: userX, y: userY, heading: userH, RANGE: RANGE/2)
@@ -2098,12 +2069,12 @@ public class ServiceManager: Observation {
                     
                     let headInfo = userTrajectory[userTrajectory.count-1]
                     var xyFromHead: [Double] = [headInfo.userX, headInfo.userY]
-                    let headingCorrectionForHead: Double = headInfo.userHeading - headingInfo[headingInfo.count-1]
-                    var headingCorrectionFromServer: Double = headInfo.userHeading - headingInfo[headingInfo.count-1]
+                    let headingCorrectionForHead: Double = headInfo.userHeading - uvHeading[uvHeading.count-1]
+                    var headingCorrectionFromServer: Double = headInfo.userHeading - uvHeading[uvHeading.count-1]
                     
-                    var headingFromHead = [Double] (repeating: 0, count: headingInfo.count)
-                    for i in 0..<headingInfo.count {
-                        headingFromHead[i] = (headingInfo[i] + headingCorrectionForHead) - 180 + headingCorrectionFromServer
+                    var headingFromHead = [Double] (repeating: 0, count: uvHeading.count)
+                    for i in 0..<uvHeading.count {
+                        headingFromHead[i] = (uvHeading[i] + headingCorrectionForHead) - 180 + headingCorrectionFromServer
                     }
                     
                     var trajectoryFromHead = [[Double]]()
@@ -2146,7 +2117,7 @@ public class ServiceManager: Observation {
                     let tailInfo = userTrajectory[0]
                     let tailInfoHeading = tailInfo.userTuHeading
                     
-                    let isStraight = isTrajectoryStraight(for: headingInfo, size: headingInfo.count)
+                    let isStraight = isTrajectoryStraight(for: uvHeading, size: uvHeading.count)
                     
                     if (isStraight == 1) {
                         // All Straight
@@ -2154,25 +2125,26 @@ public class ServiceManager: Observation {
                         var xyFromHead: [Double] = [headInfo.userX, headInfo.userY]
                         
                         var headingCorrectionForHead: Double = 0
-                        var headingCorrectionFromServer: Double = headInfo.userHeading - headingInfo[headingInfo.count-1]
+                        var headingCorrectionFromServer: Double = headInfo.userHeading - uvHeading[uvHeading.count-1]
                         if (!self.isActiveKf) {
-                            headingCorrectionForHead = headInfoHeading - headingInfo[headingInfo.count-1]
+//                            headingCorrectionForHead = headInfoHeading - headingInfo[headingInfo.count-1]
+                            headingCorrectionForHead = 0
                         } else {
                             headingCorrectionForHead = headInfoHeading - headInfo.userHeading
                         }
                          
                         print(getLocalTimeString() + " , Search Direction (KF O & All 직선) : 내 머리 TU 위치 헤딩 = \(headInfoHeading)")
-                        print(getLocalTimeString() + " , Search Direction (KF O & All 직선) : UVD 머리 헤딩 = \(headingInfo[headingInfo.count-1])")
+                        print(getLocalTimeString() + " , Search Direction (KF O & All 직선) : UVD 머리 헤딩 = \(uvHeading[uvHeading.count-1])")
                         print(getLocalTimeString() + " , Search Direction (KF O & All 직선) : 헤딩 보상 1 = \(headingCorrectionForHead)")
                         
                         print(getLocalTimeString() + " , Search Direction (KF O & All 직선) : 내 마지막 위치 헤딩 = \(headInfo.userHeading)")
-                        print(getLocalTimeString() + " , Search Direction (KF O & All 직선) : UVD 머리 헤딩 = \(headingInfo[headingInfo.count-1])")
+                        print(getLocalTimeString() + " , Search Direction (KF O & All 직선) : UVD 머리 헤딩 = \(uvHeading[uvHeading.count-1])")
                         print(getLocalTimeString() + " , Search Direction (KF O & All 직선) : 헤딩 보상 2 = \(headingCorrectionFromServer)")
                         
                         
-                        var headingFromHead = [Double] (repeating: 0, count: headingInfo.count)
-                        for i in 0..<headingInfo.count {
-                            headingFromHead[i] = compensateHeading(heading: (headingInfo[i] + headingCorrectionForHead) - 180 + headingCorrectionFromServer, mode: "dr")
+                        var headingFromHead = [Double] (repeating: 0, count: uvHeading.count)
+                        for i in 0..<uvHeading.count {
+                            headingFromHead[i] = compensateHeading(heading: (uvHeading[i] + headingCorrectionForHead) - 180 + headingCorrectionFromServer, mode: "dr")
                         }
                         print(getLocalTimeString() + " , Search Direction (KF O & All 직선) : 머리부터 거꾸로 헤딩 = \(headingFromHead)")
                         
@@ -2232,24 +2204,25 @@ public class ServiceManager: Observation {
                         var xyFromHead: [Double] = [headInfo.userX, headInfo.userY]
                         
                         var headingCorrectionForHead: Double = 0
-                        var headingCorrectionFromServer: Double = headInfo.userHeading - headingInfo[headingInfo.count-1]
+                        var headingCorrectionFromServer: Double = headInfo.userHeading - uvHeading[uvHeading.count-1]
                         if (!self.isActiveKf) {
-                            headingCorrectionForHead = headInfoHeading - headingInfo[headingInfo.count-1]
+//                            headingCorrectionForHead = headInfoHeading - headingInfo[headingInfo.count-1]
+                            headingCorrectionForHead = 0
                         } else {
                             headingCorrectionForHead = headInfoHeading - headInfo.userHeading
                         }
                         
-                        var headingFromHead = [Double] (repeating: 0, count: headingInfo.count)
-                        for i in 0..<headingInfo.count {
-                            headingFromHead[i] = (headingInfo[i] + headingCorrectionForHead) - 180 + headingCorrectionFromServer
+                        var headingFromHead = [Double] (repeating: 0, count: uvHeading.count)
+                        for i in 0..<uvHeading.count {
+                            headingFromHead[i] = (uvHeading[i] + headingCorrectionForHead) - 180 + headingCorrectionFromServer
                         }
                         
                         print(getLocalTimeString() + " , Search Direction (KF O & Head 직선) : 내 머리 TU 위치 헤딩 = \(headInfoHeading)")
-                        print(getLocalTimeString() + " , Search Direction (KF O & Head 직선) : UVD 머리 헤딩 = \(headingInfo[headingInfo.count-1])")
+                        print(getLocalTimeString() + " , Search Direction (KF O & Head 직선) : UVD 머리 헤딩 = \(uvHeading[uvHeading.count-1])")
                         print(getLocalTimeString() + " , Search Direction (KF O & Head 직선) : 헤딩 보상 1 = \(headingCorrectionForHead)")
                         
                         print(getLocalTimeString() + " , Search Direction (KF O & Head 직선) : 내 마지막 위치 헤딩 = \(headInfo.userHeading)")
-                        print(getLocalTimeString() + " , Search Direction (KF O & Head 직선) : UVD 머리 헤딩 = \(headingInfo[headingInfo.count-1])")
+                        print(getLocalTimeString() + " , Search Direction (KF O & Head 직선) : UVD 머리 헤딩 = \(uvHeading[uvHeading.count-1])")
                         print(getLocalTimeString() + " , Search Direction (KF O & Head 직선) : 헤딩 보상 2 = \(headingCorrectionFromServer)")
                         
                         // Head 기준 back propagation
@@ -2309,22 +2282,22 @@ public class ServiceManager: Observation {
                         var xyFromTail: [Double] = [tailInfo.userX, tailInfo.userY]
                         
                         var headingCorrectionForTail: Double = 0
-                        var headingCorrectionFromServer: Double = tailInfo.userHeading - headingInfo[0]
+                        var headingCorrectionFromServer: Double = tailInfo.userHeading - uvHeading[0]
                         if (!self.isActiveKf) {
-                            headingCorrectionForTail = tailInfoHeading - headingInfo[0]
+                            headingCorrectionForTail = tailInfoHeading - uvHeading[0]
                         }
                         
                         print(getLocalTimeString() + " , Search Direction (KF O & Tail 직선) : 내 꼬리 TU 위치 헤딩 = \(tailInfoHeading)")
-                        print(getLocalTimeString() + " , Search Direction (KF O & Tail 직선) : UVD 꼬리 헤딩 = \(headingInfo[0])")
+                        print(getLocalTimeString() + " , Search Direction (KF O & Tail 직선) : UVD 꼬리 헤딩 = \(uvHeading[0])")
                         print(getLocalTimeString() + " , Search Direction (KF O & Tail 직선) : 헤딩 보상 1 = \(headingCorrectionForTail)")
                         
                         print(getLocalTimeString() + " , Search Direction (KF O & Tail 직선) : 내 마지막 위치 헤딩 = \(tailInfo.userHeading)")
-                        print(getLocalTimeString() + " , Search Direction (KF O & Tail 직선) : UVD 꼬리 헤딩 = \(headingInfo[0])")
+                        print(getLocalTimeString() + " , Search Direction (KF O & Tail 직선) : UVD 꼬리 헤딩 = \(uvHeading[0])")
                         print(getLocalTimeString() + " , Search Direction (KF O & Tail 직선) : 헤딩 보상 2 = \(headingCorrectionFromServer)")
                         
-                        var headingFromTail = [Double] (repeating: 0, count: headingInfo.count)
-                        for i in 0..<headingInfo.count {
-                            headingFromTail[i] = headingInfo[i] + headingCorrectionForTail + headingCorrectionFromServer
+                        var headingFromTail = [Double] (repeating: 0, count: uvHeading.count)
+                        for i in 0..<uvHeading.count {
+                            headingFromTail[i] = uvHeading[i] + headingCorrectionForTail + headingCorrectionFromServer
                         }
                         print(getLocalTimeString() + " , Search Direction (KF O & Tail 직선) : 꼬리부터 헤딩 = \(headingFromTail)")
                         
@@ -2351,23 +2324,46 @@ public class ServiceManager: Observation {
                         xyMinMax[2] = xyMinMax[2] + 0.4*diffX
                         xyMinMax[3] = xyMinMax[3] + 0.4*diffY
                         
-                        let areaMinMax: [Double] = getSearchAreaMinMax(xyMinMax: xyMinMax, heading: [headingStart, headingEnd], recentScc: recentScc, searchType: isStraight)
+                        var areaMinMax: [Double] = getSearchAreaMinMax(xyMinMax: xyMinMax, heading: [headingStart, headingEnd], recentScc: recentScc, searchType: isStraight)
+                        if (!self.isActiveKf) {
+                            areaMinMax[0] = areaMinMax[0] - USER_TRAJECTORY_LENGTH/2
+                            areaMinMax[1] = areaMinMax[1] - USER_TRAJECTORY_LENGTH/2
+                            areaMinMax[2] = areaMinMax[2] + USER_TRAJECTORY_LENGTH/2
+                            areaMinMax[3] = areaMinMax[3] + USER_TRAJECTORY_LENGTH/2
+                        }
                         let searchArea = getSearchCoordinates(areaMinMax: areaMinMax, interval: 1.0)
                         
                         var searchHeadings: [Double] = []
                         
-                        if (diffHeading < 90) {
-                            if (diffHeading > 5) {
-                                searchHeadings.append(headingEnd-diffHeading)
-                                searchHeadings.append(headingEnd)
-                                searchHeadings.append(headingEnd+diffHeading)
-                            } else {
-                                searchHeadings.append(headingEnd)
+                        if (!self.isActiveKf) {
+                            // Search Direction
+                            let userBuilding = userTrajectory[userTrajectory.count-1].userBuilding
+                            let userLevel = userTrajectory[userTrajectory.count-1].userLevel
+                            let userX = userTrajectory[userTrajectory.count-1].userX
+                            let userY = userTrajectory[userTrajectory.count-1].userY
+                            let userH = userTrajectory[userTrajectory.count-1].userHeading
+                            let RANGE = USER_TRAJECTORY_LENGTH*1.5
+                            
+                            let ppHeadings = getPathMatchingHeadings(building: userBuilding, level: userLevel, x: userX, y: userY, heading: userH, RANGE: RANGE)
+                            for i in 0..<ppHeadings.count {
+                                searchHeadings.append(compensateHeading(heading: ppHeadings[i]-10-diffHeading, mode: "dr"))
+                                searchHeadings.append(compensateHeading(heading: ppHeadings[i]-diffHeading, mode: "dr"))
+                                searchHeadings.append(compensateHeading(heading: ppHeadings[i]+10-diffHeading, mode: "dr"))
                             }
                         } else {
-                            searchHeadings.append(headingEnd-10)
-                            searchHeadings.append(headingEnd)
-                            searchHeadings.append(headingEnd+10)
+                            if (diffHeading < 90) {
+                                if (diffHeading > 5) {
+                                    searchHeadings.append(headingEnd-diffHeading)
+                                    searchHeadings.append(headingEnd)
+                                    searchHeadings.append(headingEnd+diffHeading)
+                                } else {
+                                    searchHeadings.append(headingEnd)
+                                }
+                            } else {
+                                searchHeadings.append(headingEnd-10)
+                                searchHeadings.append(headingEnd)
+                                searchHeadings.append(headingEnd+10)
+                            }
                         }
                         
                         
@@ -2424,13 +2420,13 @@ public class ServiceManager: Observation {
                         let headInfoHeading = headInfo.userTuHeading
                         
                         var xyFromHead: [Double] = [headInfo.userX, headInfo.userY]
-                        var headingCorrectionForHead: Double = headInfoHeading - headingInfo[headingInfo.count-1]
+                        var headingCorrectionForHead: Double = headInfoHeading - uvHeading[uvHeading.count-1]
                         headingCorrectionForHead = 0
-                        var headingCorrectionFromServer: Double = headInfo.userHeading - headingInfo[headingInfo.count-1]
+                        var headingCorrectionFromServer: Double = headInfo.userHeading - uvHeading[uvHeading.count-1]
                         
-                        var headingFromHead = [Double] (repeating: 0, count: headingInfo.count)
-                        for i in 0..<headingInfo.count {
-                            headingFromHead[i] = (headingInfo[i] + headingCorrectionForHead) - 180 + headingCorrectionFromServer
+                        var headingFromHead = [Double] (repeating: 0, count: uvHeading.count)
+                        for i in 0..<uvHeading.count {
+                            headingFromHead[i] = (uvHeading[i] + headingCorrectionForHead) - 180 + headingCorrectionFromServer
                         }
                         
                         var trajectoryFromHead = [[Double]]()
@@ -2487,6 +2483,10 @@ public class ServiceManager: Observation {
                     }
                 }
             }
+        }
+        
+        if (resultDirection.isEmpty) {
+            resultDirection = [0, 90, 180, 270]
         }
         
         return (resultRange, resultDirection, tailIndex, searchType)
@@ -2634,7 +2634,7 @@ public class ServiceManager: Observation {
             let diffX = abs(xMax - xMin)
             let diffY = abs(yMax - yMin)
             
-            let diffXy = abs(diffX - diffY)
+            let diffXy = abs(diffX - diffY)*0.5
             
             if (diffX < diffY) {
                 xMin = xMin - diffXy
@@ -2731,40 +2731,39 @@ public class ServiceManager: Observation {
                         resultCorrected.xyh[2] = compensateHeading(heading: resultCorrected.xyh[2], mode: self.runMode)
                         
                         if (result.phase == 2 && result.scc < SCC_FOR_PHASE4) {
-                            if (!self.isActiveKf) {
-                                self.outputResult.x = resultCorrected.xyh[0]
-                                self.outputResult.y = resultCorrected.xyh[1]
-                                
-                                self.resultToReturn = self.makeOutputResult(input: self.outputResult, isPast: self.flagPast, runMode: self.runMode, isVenusMode: self.isVenusMode)
-                            }
+//                            if (!self.isActiveKf) {
+//                                self.outputResult.x = resultCorrected.xyh[0]
+//                                self.outputResult.y = resultCorrected.xyh[1]
+//                                self.outputResult.absolute_heading = resultCorrected.xyh[2]
+//
+//                                self.resultToReturn = self.makeOutputResult(input: self.outputResult, isPast: self.flagPast, runMode: self.runMode, isVenusMode: self.isVenusMode)
+//                            }
                             self.phase2Count += 1
-                            if (self.phase2Count > 4) {
+                            if (self.phase2Count > 6) {
                                 self.isNeedTrajInit = true
                                 self.phase2Count = 0
                                 self.phase = 1
                             }
                         } else {
-                            self.timeUpdatePosition.x = resultCorrected.xyh[0]
-                            self.timeUpdatePosition.y = resultCorrected.xyh[1]
-                            
-                            self.timeUpdateOutput.x = resultCorrected.xyh[0]
-                            self.timeUpdateOutput.y = resultCorrected.xyh[1]
-                            
-                            self.measurementPosition.x = resultCorrected.xyh[0]
-                            self.measurementPosition.y = resultCorrected.xyh[1]
-                            
-                            self.measurementOutput.x = resultCorrected.xyh[0]
-                            self.measurementOutput.y = resultCorrected.xyh[1]
-                            
-                            self.outputResult.x = resultCorrected.xyh[0]
-                            self.outputResult.y = resultCorrected.xyh[1]
+//                            self.timeUpdatePosition.x = resultCorrected.xyh[0]
+//                            self.timeUpdatePosition.y = resultCorrected.xyh[1]
+//
+//                            self.timeUpdateOutput.x = resultCorrected.xyh[0]
+//                            self.timeUpdateOutput.y = resultCorrected.xyh[1]
+//
+//                            self.measurementPosition.x = resultCorrected.xyh[0]
+//                            self.measurementPosition.y = resultCorrected.xyh[1]
+//
+//                            self.measurementOutput.x = resultCorrected.xyh[0]
+//                            self.measurementOutput.y = resultCorrected.xyh[1]
+//
+//                            self.outputResult.x = resultCorrected.xyh[0]
+//                            self.outputResult.y = resultCorrected.xyh[1]
                             
                             if (result.phase == 4) {
                                 self.phase2Count = 0
                                 self.isEnterPhase2 = true
                             }
-                            
-                            self.resultToReturn = self.makeOutputResult(input: self.outputResult, isPast: self.flagPast, runMode: self.runMode, isVenusMode: self.isVenusMode)
                             
                             if (self.currentLevel == "0F") {
                                 self.phase = 1
@@ -2776,6 +2775,11 @@ public class ServiceManager: Observation {
                         self.serverResult[0] = result.x
                         self.serverResult[1] = result.y
                         self.serverResult[2] = result.absolute_heading
+                        
+                        if (!self.isActiveKf) {
+                            self.updateAllResult(result: resultCorrected.xyh)
+                            self.resultToReturn = self.makeOutputResult(input: self.outputResult, isPast: self.flagPast, runMode: self.runMode, isVenusMode: self.isVenusMode)
+                        }
                         
                         self.indexPast = result.index
                     }
@@ -4108,9 +4112,6 @@ public class ServiceManager: Observation {
                     if (correctedScale < 0.7) {
                         correctedScale = 0.7
                     }
-                    if (level == "B0") {
-                        correctedScale = 0.8
-                    }
                     
                     unitDRGenerator.setVelocityScaleFactor(scaleFactor: correctedScale)
                     xyh = [roadX[index], roadY[index], correctedHeading]
@@ -4358,15 +4359,8 @@ public class ServiceManager: Observation {
     func timeUpdate(length: Double, diffHeading: Double, mobileTime: Int, isNeedHeadingCorrection: Bool, runMode: String) -> FineLocationTrackingFromServer {
         updateHeading = timeUpdatePosition.heading + diffHeading
         
-        var dx = length*cos(updateHeading*D2R)
-        var dy = length*sin(updateHeading*D2R)
-        
-//        if (self.phase != 4) {
-//            if (runMode != "pdr" && !self.isBackground) {
-//                dx = dx * TU_SCALE_VALUE
-//                dy = dy * TU_SCALE_VALUE
-//            }
-//        }
+        let dx = length*cos(updateHeading*D2R)
+        let dy = length*sin(updateHeading*D2R)
         
         timeUpdatePosition.x = timeUpdatePosition.x + dx
         timeUpdatePosition.y = timeUpdatePosition.y + dy
