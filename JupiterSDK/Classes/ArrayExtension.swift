@@ -22,7 +22,7 @@ public func + <V>(left: Array<V>, right: V) -> Array<V>
 
 public func circularStandardDeviation(for array: [Double]) -> Double {
     guard !array.isEmpty else {
-        return 0.0
+        return 20.0
     }
     
     let meanAngle = circularMean(for: array)
