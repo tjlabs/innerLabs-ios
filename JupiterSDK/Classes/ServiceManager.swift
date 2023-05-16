@@ -962,6 +962,8 @@ public class ServiceManager: Observation {
         
         self.timeUpdateOutput = FineLocationTrackingFromServer()
         self.measurementOutput = FineLocationTrackingFromServer()
+        
+        self.timeUpdateResult = [0, 0, 0]
     }
     
     func notificationCenterAddOberver() {
@@ -1483,6 +1485,7 @@ public class ServiceManager: Observation {
             displayOutput.heading = result.absolute_heading
             displayOutput.building = buildingName
             displayOutput.level = levelName
+            
             self.lastResult = result
         }
         
@@ -1832,23 +1835,23 @@ public class ServiceManager: Observation {
     
     func accumulateLengthAndRemoveOldest(isDetermineSpot: Bool, LENGTH_CONDITION: Double) {
         if (isDetermineSpot) {
-            var tailIndex = 1
-            if (!self.phase2Trajectory.isEmpty) {
-                tailIndex = self.phase2Trajectory[0].index
-            }
-            let inputTrajectory = getTrajectoryFromIndex(from: self.userTrajectoryInfo, index: tailIndex)
-            self.userTrajectoryInfo = inputTrajectory
-            
             self.isDetermineSpot = false
-        }
-        
-        var accumulatedLength = 0.0
-        for userTrajectory in self.userTrajectoryInfo {
-            accumulatedLength += userTrajectory.length
-        }
-        
-        if accumulatedLength > USER_TRAJECTORY_LENGTH {
-            self.userTrajectoryInfo.removeFirst()
+            
+            let newTraj = getTrajectoryFromLast(from: self.userTrajectoryInfo, N: 15)
+            self.userTrajectoryInfo = newTraj
+            
+            displayOutput.phase = String(2)
+            self.phase = 2
+            self.outputResult.phase = 2
+        } else {
+            var accumulatedLength = 0.0
+            for userTrajectory in self.userTrajectoryInfo {
+                accumulatedLength += userTrajectory.length
+            }
+            
+            if accumulatedLength > USER_TRAJECTORY_LENGTH {
+                self.userTrajectoryInfo.removeFirst()
+            }
         }
     }
     
@@ -1858,7 +1861,9 @@ public class ServiceManager: Observation {
                 if (self.isPhaseBreak) {
                     let cutIdx = Int(ceil(USER_TRAJECTORY_LENGTH*0.5))
                     let newTraj = getTrajectoryFromLast(from: self.userTrajectoryInfo, N: cutIdx)
+                    print(getLocalTimeString() + " , (Jupiter) isPhaseBreak (Before) : \(userTrajectoryInfo.count) // \(userTrajectoryInfo[0].index) , \(userTrajectoryInfo[userTrajectoryInfo.count-1].index)")
                     self.userTrajectoryInfo = newTraj
+                    print(getLocalTimeString() + " , (Jupiter) isPhaseBreak (After) : \(userTrajectoryInfo.count) // \(userTrajectoryInfo[0].index) , \(userTrajectoryInfo[userTrajectoryInfo.count-1].index)")
                 } else {
                     self.userTrajectoryInfo = [TrajectoryInfo]()
                 }
@@ -2632,7 +2637,7 @@ public class ServiceManager: Observation {
         let diffHeading = compensateHeading(heading: abs(headingStart - headingEnd), mode: "dr")
         let diffX = abs(xMax - xMin)
         let diffY = abs(yMax - yMin)
-        let diffXy = abs(diffX - diffY)*0.25
+        let diffXy = abs(diffX - diffY)*0.2
         
         if (diffHeading > 150) {
             if (diffX < diffY) {
@@ -2692,15 +2697,12 @@ public class ServiceManager: Observation {
         if (self.isActiveService) {
             if (!self.isStop) {
                 if (self.phase == 2) {
-                    var tailIndex = 1
-                    if (!self.phase2Trajectory.isEmpty) {
-                        tailIndex = self.phase2Trajectory[0].index
-                    }
-                    let inputTrajectory = getTrajectoryFromIndex(from: self.userTrajectoryInfo, index: tailIndex)
-                    let accumulatedLength = calculateAccumulatedLength(userTrajectory: inputTrajectory)
-                    var searchInfo = makeSearchAreaAndDirection(userTrajectory: inputTrajectory, accumulatedLength: accumulatedLength, phase: self.phase)
+                    let phase2Trajectory = self.userTrajectoryInfo
+                    let accumulatedLength = calculateAccumulatedLength(userTrajectory: phase2Trajectory)
+                    var searchInfo = makeSearchAreaAndDirection(userTrajectory: phase2Trajectory, accumulatedLength: accumulatedLength, phase: self.phase)
                     searchInfo.0 = self.phase2Range
                     displayOutput.searchArea = getSearchCoordinates(areaMinMax: convertIntArrayToDoubleArray(searchInfo.0), interval: 1.0)
+                    displayOutput.searchType = 4
                     
                     let phase2Headings = self.phase2Direction
                     var searchHeadings: [Int] = []
@@ -2709,10 +2711,9 @@ public class ServiceManager: Observation {
                         searchHeadings.append(Int(compensateHeading(heading: Double(phase2Headings[i]), mode: "dr")))
                         searchHeadings.append(Int(compensateHeading(heading: Double(phase2Headings[i]+5), mode: "dr")))
                     }
-                    print(getLocalTimeString() + " , (Jupiter) Phase 2 Search Headings = \(searchHeadings)")
                     searchInfo.1 = searchHeadings
                     
-                    processPhase2(currentTime: currentTime, localTime: localTime, userTrajectory: inputTrajectory, searchInfo: searchInfo)
+                    processPhase2(currentTime: currentTime, localTime: localTime, userTrajectory: phase2Trajectory, searchInfo: searchInfo)
                 } else if (self.phase < 4) {
                     // Phase 1 ~ 3
                     let phase3Trajectory = self.userTrajectoryInfo
@@ -2747,13 +2748,20 @@ public class ServiceManager: Observation {
     private func processPhase2(currentTime: Int, localTime: String, userTrajectory: [TrajectoryInfo], searchInfo: ([Int], [Int], Int, Int)) {
         let localTime = getLocalTimeString()
         
-        let input = FineLocationTracking(user_id: self.user_id, mobile_time: currentTime, sector_id: self.sector_id, building_name: self.currentBuilding, level_name: self.currentLevel, spot_id: self.currentSpot, phase: self.phase, search_range: searchInfo.0, search_direction_list: searchInfo.1, rss_compensation_list: [self.rssiBias], sc_compensation_list: [1.0], tail_index: searchInfo.2)
+        let accumulatedLength = calculateAccumulatedLength(userTrajectory: userTrajectory)
+        var scCompenasation: [Double] = [1.0]
+        if (accumulatedLength >= USER_TRAJECTORY_LENGTH*2) {
+            scCompenasation = [0.8, 1.0, 1.2]
+        }
+        let input = FineLocationTracking(user_id: self.user_id, mobile_time: currentTime, sector_id: self.sector_id, building_name: self.currentBuilding, level_name: self.currentLevel, spot_id: self.currentSpot, phase: 2, search_range: searchInfo.0, search_direction_list: searchInfo.1, rss_compensation_list: [self.rssiBias], sc_compensation_list: scCompenasation, tail_index: searchInfo.2)
         NetworkManager.shared.postFLT(url: FLT_URL, input: input, isSufficientRfd: self.isSufficientRfd, completion: { [self] statusCode, returnedString, rfdCondition in
             if (statusCode == 200) {
                 var result = jsonToResult(json: returnedString)
+//                print(getLocalTimeString() + " , (Jupiter) Phase2 Result : \(result)")
                 if (result.x != 0 && result.y != 0) {
                     displayOutput.indexRx = result.index
                     displayOutput.scc = result.scc
+                    displayOutput.phase = String(result.phase)
                     
                     if (result.mobile_time > self.preOutputMobileTime) {
                         if (self.isVenusMode) {
@@ -2777,6 +2785,7 @@ public class ServiceManager: Observation {
                                 self.phase2Count = 0
                                 self.isMovePhase2To4 = true
                                 self.isEnterPhase2 = true
+                                print(getLocalTimeString() + " , (Jupiter) Phase 2->4 : isMovePhase2To4 = \(self.isMovePhase2To4)")
                             }
                             
                             if (self.currentLevel == "0F") {
@@ -2852,6 +2861,7 @@ public class ServiceManager: Observation {
             if (statusCode == 200) {
                 let result = jsonToResult(json: returnedString)
                 if (result.x != 0 && result.y != 0) {
+//                    print(getLocalTimeString() + " , (Jupiter) Phase3 Result : \(result)")
                     if (self.isBiasRequested) {
                         let biasCheckTime = abs(result.mobile_time - self.biasRequestTime)
                         if (biasCheckTime < 100) {
@@ -2889,6 +2899,7 @@ public class ServiceManager: Observation {
                     if (result.mobile_time > self.preOutputMobileTime) {
                         displayOutput.indexRx = result.index
                         displayOutput.scc = result.scc
+                        displayOutput.phase = String(result.phase)
                         if (!self.isGetFirstResponse) {
                             if (!self.isIndoor && (self.timeForInit >= TIME_INIT_THRESHOLD)) {
                                 self.isGetFirstResponse = true
@@ -3146,6 +3157,7 @@ public class ServiceManager: Observation {
                 if ((self.nowTime - result.mobile_time) <= RECENT_THRESHOLD) {
                     if ((result.index - self.indexPast) < INDEX_THRESHOLD) {
                         if (result.mobile_time > self.preOutputMobileTime) {
+//                            print(getLocalTimeString() + " , (Jupiter) Phase4 Result : \(result)")
                             if (result.phase == 4) {
                                 if (self.isIndoor) {
                                     let outputBuilding = self.outputResult.building_name
@@ -3185,6 +3197,7 @@ public class ServiceManager: Observation {
                                     if (measurementUpdateFlag && (diffIndex<UVD_BUFFER_SIZE)) {
                                         displayOutput.indexRx = result.index
                                         displayOutput.scc = result.scc
+                                        displayOutput.phase = String(result.phase)
                                         // Measurement Update 하기전에 현재 Time Update 위치를 고려
                                         var resultForMu = result
                                         resultForMu.absolute_heading = compensateHeading(heading: resultForMu.absolute_heading, mode: self.runMode)
@@ -3413,18 +3426,10 @@ public class ServiceManager: Observation {
                     self.measurementOutput.building_name = result.building_name
                     self.measurementOutput.level_name = levelDestination
                     self.outputResult.level_name = levelDestination
-                    
-                    self.phase2Trajectory = getTrajectoryFromLast(from: self.userTrajectoryInfo, N: 15)
+
                     self.phase2Range = result.spot_range
                     self.phase2Direction = result.spot_direction_list
-//                    var accumulatedLength = 0.0
-//                    for unitTraj in self.userTrajectoryInfo {
-//                        accumulatedLength += unitTraj.length
-//                    }
-//                    let cutLength: Double = USER_TRAJECTORY_LENGTH*0.2
-//                    self.phase2Trajectory = cutTrajectoryFromLast(from: self.userTrajectoryInfo, userLength: accumulatedLength, cutLength: cutLength)
-                    self.phase = 2
-                    self.outputResult.phase = 2
+                    
                     self.isDetermineSpot = true
                     
                     self.resultToReturn = self.makeOutputResult(input: self.outputResult, isPast: self.flagPast, runMode: self.runMode, isVenusMode: self.isVenusMode)
@@ -3451,17 +3456,9 @@ public class ServiceManager: Observation {
                         self.measurementOutput.level_name = levelDestination
                         self.outputResult.level_name = levelDestination
                         
-                        self.phase2Trajectory = getTrajectoryFromLast(from: self.userTrajectoryInfo, N: 15)
                         self.phase2Range = result.spot_range
                         self.phase2Direction = result.spot_direction_list
-//                        var accumulatedLength = 0.0
-//                        for unitTraj in self.userTrajectoryInfo {
-//                            accumulatedLength += unitTraj.length
-//                        }
-//                        let cutLength: Double = USER_TRAJECTORY_LENGTH*0.2
-//                        self.phase2Trajectory = cutTrajectoryFromLast(from: self.userTrajectoryInfo, userLength: accumulatedLength, cutLength: cutLength)
-                        self.phase = 2
-                        self.outputResult.phase = 2
+                        
                         self.isDetermineSpot = true
                         
                         self.resultToReturn = self.makeOutputResult(input: self.outputResult, isPast: self.flagPast, runMode: self.runMode, isVenusMode: self.isVenusMode)
@@ -3962,7 +3959,7 @@ public class ServiceManager: Observation {
             pathMatchingArea.append([265, 0, 298, 29])
             pathMatchingArea.append([238, 154, 258, 198])
             pathMatchingArea.append([284, 270, 296, 305])
-            pathMatchingArea.append([227, 390, 262, 448])
+            pathMatchingArea.append([238, 390, 262, 448])
             pathMatchingArea.append([14, 365, 67, 396])
         }
         

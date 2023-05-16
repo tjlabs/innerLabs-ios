@@ -1030,6 +1030,8 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
         case 3:
             // Tail 직선
             set6.setColor(.blue3)
+        case 4:
+            set6.setColor(.systemOrange)
         case -1:
             // KF 진입 후 Phase <= 1
             set6.setColor(.systemRed)
