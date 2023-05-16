@@ -2782,6 +2782,29 @@ public class ServiceManager: Observation {
                             }
                         } else {
                             if (result.phase == 4) {
+                                if (!self.isActiveKf) {
+                                    self.timeUpdatePosition.x = resultCorrected.xyh[0]
+                                    self.timeUpdatePosition.y = resultCorrected.xyh[1]
+                                    self.timeUpdatePosition.heading = resultCorrected.xyh[2]
+                                    
+                                    self.timeUpdateOutput.x = resultCorrected.xyh[0]
+                                    self.timeUpdateOutput.y = resultCorrected.xyh[1]
+                                    self.timeUpdateOutput.absolute_heading = resultCorrected.xyh[2]
+                                    
+                                    self.measurementPosition.x = resultCorrected.xyh[0]
+                                    self.measurementPosition.y = resultCorrected.xyh[1]
+                                    self.measurementPosition.heading = resultCorrected.xyh[2]
+                                    
+                                    self.measurementOutput.x = resultCorrected.xyh[0]
+                                    self.measurementOutput.y = resultCorrected.xyh[1]
+                                    self.measurementOutput.absolute_heading = resultCorrected.xyh[2]
+                                    
+                                    self.outputResult.x = resultCorrected.xyh[0]
+                                    self.outputResult.y = resultCorrected.xyh[1]
+                                    self.outputResult.absolute_heading = resultCorrected.xyh[2]
+                                    
+                                    self.resultToReturn = self.makeOutputResult(input: self.outputResult, isPast: self.flagPast, runMode: self.runMode, isVenusMode: self.isVenusMode)
+                                }
                                 self.phase2Count = 0
                                 self.isMovePhase2To4 = true
                                 self.isEnterPhase2 = true
