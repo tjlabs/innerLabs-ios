@@ -43,7 +43,7 @@ public class ServiceManager: Observation {
     let MR_INPUT_NUM = 20
     
     // 1 ~ 2 : Release  //  0 : Test
-    var serverType: Int = 2
+    var serverType: Int = 0
     var region: String = "Korea"
     
     let G: Double = 9.81
@@ -2006,9 +2006,6 @@ public class ServiceManager: Observation {
                 let userH = userTrajectory[userTrajectory.count-1].userHeading
                 
                 var RANGE = USER_TRAJECTORY_LENGTH*1.2
-                if (phase == 2) {
-                    RANGE = accumulatedLength*1.5
-                }
                 
                 // Search Area
                 let areaMinMax: [Double] = [userX - RANGE, userY - RANGE, userX + RANGE, userY + RANGE]
