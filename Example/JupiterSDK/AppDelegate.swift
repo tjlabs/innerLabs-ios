@@ -1,15 +1,6 @@
-//
-//  AppDelegate.swift
-//  JupiterSDK
-//
-//  Created by Leo on 03/22/2022.
-//  Copyright (c) 2022 Leo. All rights reserved.
-//
-
 import UIKit
 import GoogleMaps
 import FirebaseCore
-import JupiterSDK
 //import FirebaseAuth
 
 @UIApplicationMain
@@ -47,6 +38,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     func applicationWillEnterForeground(_ application: UIApplication) {
+        
         // Called as part of the transition from the background to the inactive state; here you can undo many of the changes made on entering the background.
     }
     

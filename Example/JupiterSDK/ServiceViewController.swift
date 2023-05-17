@@ -235,11 +235,13 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
         
         runMode = cardData!.mode
         
+        
         self.hideKeyboardWhenTappedAround()
     }
     
     
     @IBAction func tapBackButton(_ sender: UIButton) {
+        NotificationCenter.default.removeObserver(self)
         self.delegate?.sendPage(data: page)
         serviceManager.stopService()
         self.navigationController?.popViewController(animated: true)
@@ -1253,6 +1255,16 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
         return levelToReturn
     }
     
+    func notificationCenterAddOberver() {
+        _ = NotificationCenter.default.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: .main) { _ in
+            self.serviceManager.enterBackground()
+        }
+        
+        _ = NotificationCenter.default.addObserver(forName: UIApplication.didBecomeActiveNotification, object: nil, queue: .main) { _ in
+            self.serviceManager.enterForeground()
+        }
+    }
+    
     func hideDropDown(flag: Bool) {
         if (flag) {
             // Hide
@@ -1473,9 +1485,11 @@ extension ServiceViewController: CustomSwitchButtonDelegate {
                 serviceManager.startService(id: uuid, sector_id: cardData!.sector_id, service: serviceName, mode: inputMode, completion: { isStart, message in
                     if (isStart) {
                         print("(ServiceVC) Success : \(message)")
+                        self.notificationCenterAddOberver()
                         self.startTimer()
                     } else {
                         print("(ServiceVC) Fail : \(message)")
+                        NotificationCenter.default.removeObserver(self)
                         self.delegate?.sendPage(data: self.page)
                         DispatchQueue.main.async {
                             self.navigationController?.popViewController(animated: true)
@@ -1503,6 +1517,7 @@ extension ServiceViewController: CustomSwitchButtonDelegate {
                     self.stopTimer()
                 } else {
                     print("(SeviceVC) Fail : \(isStop.1)")
+                    NotificationCenter.default.removeObserver(self)
                     self.delegate?.sendPage(data: self.page)
                     DispatchQueue.main.async {
                         self.navigationController?.popViewController(animated: true)
