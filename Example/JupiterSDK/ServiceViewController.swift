@@ -64,8 +64,8 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
         DispatchQueue.main.async {
             let localTime: String = self.getLocalTimeString()
             let dt = result.mobile_time - self.observerTime
-            let log: String = localTime + " , (JupiterVC) : isIndoor = \(result.isIndoor), dt = \(dt) // time = \(result.mobile_time) // befor = \(self.observerTime) // x = \(result.x) // y = \(result.y) // phase = \(result.phase)"
-//            print(log)
+            let log: String = localTime + " , (JupiterVC) : isIndoor = \(result.isIndoor), dt = \(dt) // time = \(result.mobile_time) // befor = \(self.observerTime) // x = \(result.x) // y = \(result.y) // index = \(result.index) // phase = \(result.phase)"
+            print(log)
             
             self.observerTime = result.mobile_time
             let building = result.building_name
@@ -1034,9 +1034,6 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
             set6.setColor(.blue3)
         case 4:
             set6.setColor(.systemOrange)
-        case -1:
-            // KF 진입 후 Phase <= 1
-            set6.setColor(.systemRed)
         case -2:
             // KF 진입 전
             set6.setColor(.systemBrown)
