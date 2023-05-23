@@ -27,9 +27,19 @@ class RemoteConfigManager: NSObject {
                 appConfig.isOn = remoteConfig["splash_message_caps"].boolValue
                 appConfig.message = remoteConfig["splash_message"].stringValue
                 
+                var titleServer: String = "Server Maintenance"
+                var messageServer: String = "We will come back with a better look"
+                var buttonTitle: String = "OK"
+                let locale = Locale.current
+                if let countryCode = locale.regionCode, countryCode == "KR" {
+                    titleServer = "서버 점검"
+                    messageServer = "더 나은 모습으로 찾아뵙겠습니다"
+                    buttonTitle = "확인"
+                }
+                
                 if (appConfig.isOn!) {
-                    let alertController = UIAlertController.init(title: "서버 점검", message: appConfig.message, preferredStyle: UIAlertController.Style.alert)
-                    alertController.addAction(UIAlertAction.init(title: "확인", style: UIAlertAction.Style.default, handler: { (action) in
+                    let alertController = UIAlertController.init(title: titleServer, message: messageServer, preferredStyle: UIAlertController.Style.alert)
+                    alertController.addAction(UIAlertAction.init(title: buttonTitle, style: UIAlertAction.Style.default, handler: { (action) in
                         // 앱 종료하기
                         
                         UIApplication.shared.perform(#selector(NSXPCConnection.suspend))
@@ -68,9 +78,28 @@ class RemoteConfigManager: NSObject {
 
                 completionHandler(appConfig)
                 
+                var titleServer: String = "Server Maintenance"
+                var messageServer: String = "We will come back with a better look"
+                var buttonTitle: String = "OK"
+                
+                var titleUpdate: String = "Update"
+                var messageUpdateForce: String = "There are essential updates. Would you like to update?"
+                var messageUpdateSelect: String = "We have the latest updates. Would you like to update?"
+                var buttonTitleUpdate: String = "Update"
+                var buttonTitleUpdateSelect: String = "Later"
+                
+                let locale = Locale.current
+                if let countryCode = locale.regionCode, countryCode == "KR" {
+                    titleUpdate = "업데이트"
+                    messageUpdateForce = "더 나은 모습으로 찾아뵙겠습니다"
+                    messageUpdateSelect = "최신 업데이트가 있습니다. 업데이트 하시겠습니까?"
+                    buttonTitleUpdate = "업데이트"
+                    buttonTitleUpdateSelect = "나중에"
+                }
+                
                 if (appConfig.isOn!) {
-                    let alertController = UIAlertController.init(title: "서버 점검", message: appConfig.message, preferredStyle: UIAlertController.Style.alert)
-                    alertController.addAction(UIAlertAction.init(title: "확인", style: UIAlertAction.Style.default, handler: { (action) in
+                    let alertController = UIAlertController.init(title: titleServer, message: messageServer, preferredStyle: UIAlertController.Style.alert)
+                    alertController.addAction(UIAlertAction.init(title: buttonTitle, style: UIAlertAction.Style.default, handler: { (action) in
                         // 앱 종료하기
                         
                         UIApplication.shared.perform(#selector(NSXPCConnection.suspend))
@@ -98,8 +127,8 @@ class RemoteConfigManager: NSObject {
                     let needForcedUpdate:Bool = (self.compareVersion(versionA: currentVersion, versionB: appConfig.minVersion) == ComparisonResult.orderedAscending)
                     forceUpdate(needForcedUpdate)
                     if needForcedUpdate {
-                        let alertController = UIAlertController.init(title: "업데이트", message: "필수 업데이트가 있습니다. 업데이트하시겠습니까?", preferredStyle: UIAlertController.Style.alert)
-                        alertController.addAction(UIAlertAction.init(title: "업데이트", style: UIAlertAction.Style.default, handler: { (action) in
+                        let alertController = UIAlertController.init(title: titleUpdate, message: messageUpdateForce, preferredStyle: UIAlertController.Style.alert)
+                        alertController.addAction(UIAlertAction.init(title: buttonTitleUpdate, style: UIAlertAction.Style.default, handler: { (action) in
                             // 앱스토어마켓으로 이동
                             self.openAppStore()
                         }))
@@ -117,12 +146,12 @@ class RemoteConfigManager: NSObject {
                     // 선택업데이트
                     let needUpdate:Bool = (self.compareVersion(versionA: currentVersion, versionB: appConfig.minVersion) != ComparisonResult.orderedAscending) && (self.compareVersion(versionA: currentVersion, versionB: appConfig.latestVersion) == ComparisonResult.orderedAscending)
                     if needUpdate {
-                        let alertController = UIAlertController.init(title: "업데이트", message: "최신 업데이트가 있습니다. 업데이트하시겠습니까?", preferredStyle: UIAlertController.Style.alert)
-                        alertController.addAction(UIAlertAction.init(title: "업데이트", style: UIAlertAction.Style.default, handler: { (action) in
+                        let alertController = UIAlertController.init(title: titleUpdate, message: messageUpdateSelect, preferredStyle: UIAlertController.Style.alert)
+                        alertController.addAction(UIAlertAction.init(title: buttonTitleUpdate, style: UIAlertAction.Style.default, handler: { (action) in
                             // 앱스토어마켓으로 이동
                             self.openAppStore()
                         }))
-                        alertController.addAction(UIAlertAction.init(title: "나중에", style: UIAlertAction.Style.default, handler: { (action) in
+                        alertController.addAction(UIAlertAction.init(title: buttonTitleUpdateSelect, style: UIAlertAction.Style.default, handler: { (action) in
                             // 앱으로 진입
                         }))
                         var topController = UIApplication.shared.keyWindow?.rootViewController

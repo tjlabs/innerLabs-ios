@@ -64,8 +64,8 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
         DispatchQueue.main.async {
             let localTime: String = self.getLocalTimeString()
             let dt = result.mobile_time - self.observerTime
-            let log: String = localTime + " , (JupiterVC) : isIndoor = \(result.isIndoor), dt = \(dt) // mode = \(result.mode) // x = \(result.x) // y = \(result.y) // index = \(result.index) // phase = \(result.phase)"
-            print(log)
+            let log: String = localTime + " , (JupiterVC) : dt = \(dt) // mode = \(result.mode) // x = \(result.x) // y = \(result.y) // index = \(result.index) // phase = \(result.phase)"
+//            print(log)
             
             self.observerTime = result.mobile_time
             let building = result.building_name
@@ -87,7 +87,6 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
                         self.coordToDisplay.x = x
                         self.coordToDisplay.y = y
                         self.coordToDisplay.heading = result.absolute_heading
-                        self.coordToDisplay.isIndoor = result.isIndoor
                     }
                 }
             }
@@ -174,7 +173,7 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
     var idToMonitor: String = ""
     var isMonitor: Bool = false
     var isBleOnlyMode: Bool = false
-    var isPathMatchingSuccess: Bool = false
+    var isPathMatchingSuccess: Bool = true
     
     // Level Collection View
     @IBOutlet weak var levelCollectionView: UICollectionView!
@@ -937,7 +936,7 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
         scatterChart.data = chartData
     }
     
-    private func drawDebug(XY: [Double], RP_X: [Double], RP_Y: [Double],  serverXY: [Double], tuXY: [Double], heading: Double, limits: [Double], isBleOnlyMode: Bool, isPmSuccess: Bool, trajectoryStartCoord: [Double], userTrajectory: [[Double]], searchArea: [[Double]], searchType: Int, isIndoor: Bool) {
+    private func drawDebug(XY: [Double], RP_X: [Double], RP_Y: [Double],  serverXY: [Double], tuXY: [Double], heading: Double, limits: [Double], isBleOnlyMode: Bool, isPmSuccess: Bool) {
         let xAxisValue: [Double] = RP_X
         let yAxisValue: [Double] = RP_Y
         
@@ -949,10 +948,6 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
         
         if (isBleOnlyMode) {
             valueColor = UIColor.systemBlue
-        }
-        
-        if (!isIndoor) {
-            valueColor = .systemGray
         }
         
         let values0 = (0..<xAxisValue.count).map { (i) -> ChartDataEntry in
@@ -994,61 +989,10 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
         set3.setColor(.systemGreen)
         set3.scatterShapeSize = 12
         
-        let values4 = (0..<1).map { (i) -> ChartDataEntry in
-            return ChartDataEntry(x: trajectoryStartCoord[0], y: trajectoryStartCoord[1])
-        }
-        
-        let set4 = ScatterChartDataSet(entries: values4, label: "startCoord")
-        set4.drawValuesEnabled = false
-        set4.setScatterShape(.circle)
-        set4.setColor(.black)
-        set4.scatterShapeSize = 6
-        
-        let values5 = (0..<userTrajectory.count).map { (i) -> ChartDataEntry in
-            return ChartDataEntry(x: userTrajectory[i][0], y: userTrajectory[i][1])
-        }
-        let set5 = ScatterChartDataSet(entries: values5, label: "Trajectory")
-        set5.drawValuesEnabled = false
-        set5.setScatterShape(.circle)
-        set5.setColor(.black)
-        set5.scatterShapeSize = 6
-        
-        let values6 = (0..<searchArea.count).map { (i) -> ChartDataEntry in
-            return ChartDataEntry(x: searchArea[i][0], y: searchArea[i][1])
-        }
-        let set6 = ScatterChartDataSet(entries: values6, label: "SearchArea")
-        set6.drawValuesEnabled = false
-        set6.setScatterShape(.circle)
-        switch (searchType) {
-        case 0:
-            // 곡선
-            set6.setColor(.systemYellow)
-        case 1:
-            // All 직선
-            set6.setColor(.systemGreen)
-        case 2:
-            // Head 직선
-            set6.setColor(.systemBlue)
-        case 3:
-            // Tail 직선
-            set6.setColor(.blue3)
-        case 4:
-            set6.setColor(.systemOrange)
-        case -2:
-            // KF 진입 전
-            set6.setColor(.systemBrown)
-        default:
-            set6.setColor(.systemTeal)
-        }
-        set6.scatterShapeSize = 6
-        
         let chartData = ScatterChartData(dataSet: set0)
         chartData.append(set1)
         chartData.append(set2)
         chartData.append(set3)
-        chartData.append(set4)
-        chartData.append(set5)
-        chartData.append(set6)
         chartData.setDrawValues(false)
         
         // Heading
@@ -1173,7 +1117,7 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
                     scatterChart.isHidden = true
                 } else {
 //                    drawRP(RP_X: rp[0], RP_Y: rp[1], XY: XY, heading: heading, limits: limits)
-                    drawDebug(XY: XY, RP_X: rp[0], RP_Y: rp[1], serverXY: serviceManager.serverResult, tuXY: serviceManager.timeUpdateResult, heading: heading, limits: limits, isBleOnlyMode: self.isBleOnlyMode, isPmSuccess: self.isPathMatchingSuccess, trajectoryStartCoord: serviceManager.displayOutput.trajectoryStartCoord, userTrajectory: serviceManager.displayOutput.userTrajectory, searchArea: serviceManager.displayOutput.searchArea, searchType: serviceManager.displayOutput.searchType, isIndoor: isIndoor)
+                    drawDebug(XY: XY, RP_X: rp[0], RP_Y: rp[1], serverXY: serviceManager.serverResult, tuXY: serviceManager.timeUpdateResult, heading: heading, limits: limits, isBleOnlyMode: self.isBleOnlyMode, isPmSuccess: self.isPathMatchingSuccess)
                 }
             }
         } else {
@@ -1225,7 +1169,7 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
                     scatterChart.isHidden = true
                 } else {
 //                    drawRP(RP_X: rp[0], RP_Y: rp[1], XY: XY, heading: heading, limits: limits)
-                    drawDebug(XY: XY, RP_X: rp[0], RP_Y: rp[1], serverXY: serviceManager.serverResult, tuXY: serviceManager.timeUpdateResult, heading: heading, limits: limits, isBleOnlyMode: self.isBleOnlyMode, isPmSuccess: self.isPathMatchingSuccess, trajectoryStartCoord: serviceManager.displayOutput.trajectoryStartCoord, userTrajectory: serviceManager.displayOutput.userTrajectory, searchArea: serviceManager.displayOutput.searchArea, searchType: serviceManager.displayOutput.searchType, isIndoor: isIndoor)
+                    drawDebug(XY: XY, RP_X: rp[0], RP_Y: rp[1], serverXY: serviceManager.serverResult, tuXY: serviceManager.timeUpdateResult, heading: heading, limits: limits, isBleOnlyMode: self.isBleOnlyMode, isPmSuccess: self.isPathMatchingSuccess)
                 }
             }
         } else {
@@ -1252,15 +1196,15 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
         return levelToReturn
     }
     
-    func notificationCenterAddOberver() {
-        _ = NotificationCenter.default.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: .main) { _ in
-            self.serviceManager.enterBackground()
-        }
-        
-        _ = NotificationCenter.default.addObserver(forName: UIApplication.didBecomeActiveNotification, object: nil, queue: .main) { _ in
-            self.serviceManager.enterForeground()
-        }
-    }
+//    func notificationCenterAddOberver() {
+//        _ = NotificationCenter.default.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: .main) { _ in
+//            self.serviceManager.enterBackground()
+//        }
+//
+//        _ = NotificationCenter.default.addObserver(forName: UIApplication.didBecomeActiveNotification, object: nil, queue: .main) { _ in
+//            self.serviceManager.enterForeground()
+//        }
+//    }
     
     func hideDropDown(flag: Bool) {
         if (flag) {
@@ -1407,7 +1351,7 @@ extension ServiceViewController : UICollectionViewDelegate{
         } else {
             if (isShowRP) {
 //                drawRP(RP_X: rp[0], RP_Y: rp[1], XY: XY, heading: 0, limits: limits)
-                drawDebug(XY: XY, RP_X: rp[0], RP_Y: rp[1], serverXY: serviceManager.serverResult, tuXY: serviceManager.timeUpdateResult, heading: 0, limits: limits, isBleOnlyMode: self.isBleOnlyMode, isPmSuccess: self.isPathMatchingSuccess, trajectoryStartCoord: serviceManager.displayOutput.trajectoryStartCoord, userTrajectory: serviceManager.displayOutput.userTrajectory, searchArea: serviceManager.displayOutput.searchArea, searchType: serviceManager.displayOutput.searchType, isIndoor: false)
+                drawDebug(XY: XY, RP_X: rp[0], RP_Y: rp[1], serverXY: serviceManager.serverResult, tuXY: serviceManager.timeUpdateResult, heading: 0, limits: limits, isBleOnlyMode: self.isBleOnlyMode, isPmSuccess: self.isPathMatchingSuccess)
             }
             displayLevelImage(building: currentBuilding, level: currentLevel, flag: isShowRP)
         }
@@ -1482,7 +1426,7 @@ extension ServiceViewController: CustomSwitchButtonDelegate {
                 serviceManager.startService(id: uuid, sector_id: cardData!.sector_id, service: serviceName, mode: inputMode, completion: { isStart, message in
                     if (isStart) {
                         print("(ServiceVC) Success : \(message)")
-                        self.notificationCenterAddOberver()
+//                        self.notificationCenterAddOberver()
                         self.startTimer()
                     } else {
                         print("(ServiceVC) Fail : \(message)")

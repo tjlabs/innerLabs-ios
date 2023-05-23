@@ -57,7 +57,7 @@ class FusionViewController: UIViewController, Observer {
             } else {
                 self.isBleOnlyMode = false
             }
-            self.isPathMatchingSuccess = self.serviceManager.displayOutput.isPmSuccess
+//            self.isPathMatchingSuccess = self.serviceManager.displayOutput.isPmSuccess
 
 //            let log: String = localTime + " , (FusionVC) : dt = \(dt) // time = \(result.mobile_time) // befor = \(self.observerTime) // x = \(result.x) // y = \(result.y) // h = \(result.absolute_heading) // phase = \(result.phase) // Venus = \(result.ble_only_position)"
 //            print(log)
@@ -166,7 +166,7 @@ class FusionViewController: UIViewController, Observer {
     
     var modeAuto: Bool = false
     var isBleOnlyMode: Bool = false
-    var isPathMatchingSuccess: Bool = false
+    var isPathMatchingSuccess: Bool = true
     var isReportPpExist: Bool = false
     
     // Neptune
