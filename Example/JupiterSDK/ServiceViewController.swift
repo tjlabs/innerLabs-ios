@@ -64,8 +64,8 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
         DispatchQueue.main.async {
             let localTime: String = self.getLocalTimeString()
             let dt = result.mobile_time - self.observerTime
-            let log: String = localTime + " , (JupiterVC) : isIndoor = \(result.isIndoor) // dt = \(dt) // mode = \(result.mode) // x = \(result.x) // y = \(result.y) // index = \(result.index) // phase = \(result.phase)"
-            //            print(log)
+            let log: String = localTime + " , (JupiterVC) : dt = \(dt) // mode = \(result.mode) // x = \(result.x) // y = \(result.y) // index = \(result.index) // phase = \(result.phase)"
+//            print(log)
             
             self.observerTime = result.mobile_time
             let building = result.building_name
@@ -78,7 +78,7 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
                 self.isBleOnlyMode = false
             }
             self.isPathMatchingSuccess = self.serviceManager.displayOutput.isPmSuccess
-            
+
             if (self.buildings.contains(building)) {
                 if let levelList: [String] = self.levels[building] {
                     if (levelList.contains(level)) {
@@ -87,7 +87,7 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
                         self.coordToDisplay.x = x
                         self.coordToDisplay.y = y
                         self.coordToDisplay.heading = result.absolute_heading
-                        self.coordToDisplay.isIndoor = result.isIndoor
+                        self.coordToDisplay.isIndoor = self.serviceManager.displayOutput.isIndoor
                     }
                 }
             }
@@ -219,7 +219,7 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
             displayLevelInfo(infoLevel: firstBuildingLevels)
             
             levelList = firstBuildingLevels
-            
+
             isRadioMap = true
         } else {
             isRadioMap = false
@@ -271,7 +271,7 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
     func setCardData(cardData: CardItemData) {
         self.sectorID = cardData.sector_id
         self.sectorNameLabel.text = cardData.sector_name
-        
+
         let imageName: String = cardData.cardColor + "CardTop"
         if let topImage = UIImage(named: imageName) {
             self.cardTopImage.image = topImage
@@ -506,10 +506,10 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
         
         // anchorView를 통해 UI와 연결
         dropDown.anchorView = self.dropView
-        
+            
         // View를 갖리지 않고 View아래에 Item 팝업이 붙도록 설정
         dropDown.bottomOffset = CGPoint(x: 0, y: dropView.bounds.height)
-        
+            
         // Item 선택 시 처리
         dropDown.selectionAction = { [weak self] (index, item) in
             //선택한 Item을 TextField에 넣어준다.
@@ -518,7 +518,7 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
             self!.levelCollectionView.reloadData()
             self!.dropImage.image = UIImage.init(named: "showInfoToggle")
         }
-        
+            
         // 취소 시 처리
         dropDown.cancelAction = { [weak self] in
             //빈 화면 터치 시 DropDown이 사라지고 아이콘을 원래대로 변경
@@ -676,7 +676,7 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
                     if let isLoadEnd = self.serviceManager.isLoadEnd[key] {
                         if (isLoadEnd[0] && !isLoadEnd[1]) {
                             self.isReportPpExist = true
-                            
+
                             self.serviceManager.stopService()
                             self.noImageLabel.text = "Cannot load the Path-Pixel"
                             self.noImageLabel.isHidden = false
@@ -734,6 +734,7 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
     
     private func displayLevelImage(building: String, level: String, flag: Bool) {
         self.loadLevel(building: building, level: level, flag: flag, completion: { [self] data, error in
+//            print("(Jupiter) Building Level : \(building) , \(level)")
             DispatchQueue.main.async {
                 if (data != nil) {
                     // 빌딩 -> 층 이미지가 있는 경우
@@ -746,14 +747,14 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
                     if (flag) {
                         self.imageLevel.isHidden = false
                         self.noImageLabel.isHidden = true
-                        
+
                         self.imageLevel.image = UIImage(named: "emptyLevel")
                     } else {
                         self.scatterChart.isHidden = true
                         self.noImageLabel.isHidden = false
                         self.imageLevel.isHidden = true
                     }
-                    
+
                 }
             }
         })
@@ -762,7 +763,7 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
     private func drawRP(RP_X: [Double], RP_Y: [Double], XY: [Double], heading: Double, limits: [Double]) {
         let xAxisValue: [Double] = RP_X
         let yAxisValue: [Double] = RP_Y
-        
+
         let values1 = (0..<xAxisValue.count).map { (i) -> ChartDataEntry in
             return ChartDataEntry(x: xAxisValue[i], y: yAxisValue[i])
         }
@@ -840,7 +841,7 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
         scatterChart.xAxis.centerAxisLabelsEnabled = chartFlag
         scatterChart.leftAxis.centerAxisLabelsEnabled = chartFlag
         scatterChart.rightAxis.centerAxisLabelsEnabled = chartFlag
-        
+
         scatterChart.xAxis.drawLabelsEnabled = chartFlag
         scatterChart.leftAxis.drawLabelsEnabled = chartFlag
         scatterChart.rightAxis.drawLabelsEnabled = chartFlag
@@ -877,7 +878,7 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
         let set1 = ScatterChartDataSet(entries: values1, label: "USER")
         set1.drawValuesEnabled = false
         set1.setScatterShape(.circle)
-        
+
         set1.setColor(valueColor)
         set1.scatterShapeSize = 16
         
@@ -924,7 +925,7 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
         scatterChart.xAxis.centerAxisLabelsEnabled = chartFlag
         scatterChart.leftAxis.centerAxisLabelsEnabled = chartFlag
         scatterChart.rightAxis.centerAxisLabelsEnabled = chartFlag
-        
+
         scatterChart.xAxis.drawLabelsEnabled = chartFlag
         scatterChart.leftAxis.drawLabelsEnabled = chartFlag
         scatterChart.rightAxis.drawLabelsEnabled = chartFlag
@@ -936,7 +937,7 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
         scatterChart.data = chartData
     }
     
-    private func drawDebug(XY: [Double], RP_X: [Double], RP_Y: [Double],  serverXY: [Double], tuXY: [Double], heading: Double, limits: [Double], isBleOnlyMode: Bool, isPmSuccess: Bool, trajectoryStartCoord: [Double], userTrajectory: [[Double]], searchArea: [[Double]], searchType: Int, isIndoor: Bool) {
+    private func drawDebug(XY: [Double], RP_X: [Double], RP_Y: [Double],  serverXY: [Double], tuXY: [Double], heading: Double, limits: [Double], isBleOnlyMode: Bool, isPmSuccess: Bool) {
         let xAxisValue: [Double] = RP_X
         let yAxisValue: [Double] = RP_Y
         
@@ -989,61 +990,10 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
         set3.setColor(.systemGreen)
         set3.scatterShapeSize = 12
         
-        let values4 = (0..<1).map { (i) -> ChartDataEntry in
-            return ChartDataEntry(x: trajectoryStartCoord[0], y: trajectoryStartCoord[1])
-        }
-        
-        let set4 = ScatterChartDataSet(entries: values4, label: "startCoord")
-        set4.drawValuesEnabled = false
-        set4.setScatterShape(.circle)
-        set4.setColor(.black)
-        set4.scatterShapeSize = 6
-        
-        let values5 = (0..<userTrajectory.count).map { (i) -> ChartDataEntry in
-            return ChartDataEntry(x: userTrajectory[i][0], y: userTrajectory[i][1])
-        }
-        let set5 = ScatterChartDataSet(entries: values5, label: "Trajectory")
-        set5.drawValuesEnabled = false
-        set5.setScatterShape(.circle)
-        set5.setColor(.black)
-        set5.scatterShapeSize = 6
-        
-        let values6 = (0..<searchArea.count).map { (i) -> ChartDataEntry in
-            return ChartDataEntry(x: searchArea[i][0], y: searchArea[i][1])
-        }
-        let set6 = ScatterChartDataSet(entries: values6, label: "SearchArea")
-        set6.drawValuesEnabled = false
-        set6.setScatterShape(.circle)
-        switch (searchType) {
-        case 0:
-            // 곡선
-            set6.setColor(.systemYellow)
-        case 1:
-            // All 직선
-            set6.setColor(.systemGreen)
-        case 2:
-            // Head 직선
-            set6.setColor(.systemBlue)
-        case 3:
-            // Tail 직선
-            set6.setColor(.blue3)
-        case 4:
-            set6.setColor(.systemOrange)
-        case -2:
-            // KF 진입 전
-            set6.setColor(.systemBrown)
-        default:
-            set6.setColor(.systemTeal)
-        }
-        set6.scatterShapeSize = 6
-        
         let chartData = ScatterChartData(dataSet: set0)
         chartData.append(set1)
         chartData.append(set2)
         chartData.append(set3)
-        chartData.append(set4)
-        chartData.append(set5)
-        chartData.append(set6)
         chartData.setDrawValues(false)
         
         // Heading
@@ -1087,7 +1037,7 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
         
 //        print("\(currentBuilding) \(currentLevel) MinMax : \(xMin) , \(xMax), \(yMin), \(yMax)")
 //        print("\(currentBuilding) \(currentLevel) Limits : \(limits[0]) , \(limits[1]), \(limits[2]), \(limits[3])")
-//
+        
 //        scatterChart.xAxis.axisMinimum = -1.3
 //        scatterChart.xAxis.axisMaximum = 18
 //        scatterChart.leftAxis.axisMinimum = -8.2
@@ -1117,7 +1067,7 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
         scatterChart.xAxis.centerAxisLabelsEnabled = chartFlag
         scatterChart.leftAxis.centerAxisLabelsEnabled = chartFlag
         scatterChart.rightAxis.centerAxisLabelsEnabled = chartFlag
-        
+
         scatterChart.xAxis.drawLabelsEnabled = chartFlag
         scatterChart.leftAxis.drawLabelsEnabled = chartFlag
         scatterChart.rightAxis.drawLabelsEnabled = chartFlag
@@ -1168,7 +1118,7 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
                     scatterChart.isHidden = true
                 } else {
 //                    drawRP(RP_X: rp[0], RP_Y: rp[1], XY: XY, heading: heading, limits: limits)
-                    drawDebug(XY: XY, RP_X: rp[0], RP_Y: rp[1], serverXY: serviceManager.serverResult, tuXY: serviceManager.timeUpdateResult, heading: heading, limits: limits, isBleOnlyMode: self.isBleOnlyMode, isPmSuccess: self.isPathMatchingSuccess, trajectoryStartCoord: serviceManager.displayOutput.trajectoryStartCoord, userTrajectory: serviceManager.displayOutput.userTrajectory, searchArea: serviceManager.displayOutput.searchArea, searchType: serviceManager.displayOutput.searchType, isIndoor: isIndoor)
+                    drawDebug(XY: XY, RP_X: rp[0], RP_Y: rp[1], serverXY: serviceManager.serverResult, tuXY: serviceManager.timeUpdateResult, heading: heading, limits: limits, isBleOnlyMode: self.isBleOnlyMode, isPmSuccess: self.isPathMatchingSuccess)
                 }
             }
         } else {
@@ -1197,15 +1147,15 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
                 currentLevel = data.level
             }
         }
-        
+
         if (pastBuilding != currentBuilding || pastLevel != currentLevel) {
             displayLevelImage(building: currentBuilding, level: currentLevel, flag: flag)
         }
-        
+
         pastBuilding = currentBuilding
         pastLevel = currentLevel
-        
-        
+
+
         let key = "\(currentBuilding)_\(currentLevel)"
         let condition: ((String, [[Double]])) -> Bool = {
             $0.0.contains(key)
@@ -1213,14 +1163,14 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
         let rp: [[Double]] = RP[key] ?? [[Double]]()
         var limits: [Double] = chartLimits[key] ?? [0, 0, 0, 0]
         let heading: Double = data.heading
-        
+
         if (flag) {
             if (RP.contains(where: condition)) {
                 if (rp.isEmpty) {
                     scatterChart.isHidden = true
                 } else {
 //                    drawRP(RP_X: rp[0], RP_Y: rp[1], XY: XY, heading: heading, limits: limits)
-                    drawDebug(XY: XY, RP_X: rp[0], RP_Y: rp[1], serverXY: serviceManager.serverResult, tuXY: serviceManager.timeUpdateResult, heading: heading, limits: limits, isBleOnlyMode: self.isBleOnlyMode, isPmSuccess: self.isPathMatchingSuccess, trajectoryStartCoord: serviceManager.displayOutput.trajectoryStartCoord, userTrajectory: serviceManager.displayOutput.userTrajectory, searchArea: serviceManager.displayOutput.searchArea, searchType: serviceManager.displayOutput.searchType, isIndoor: isIndoor)
+                    drawDebug(XY: XY, RP_X: rp[0], RP_Y: rp[1], serverXY: serviceManager.serverResult, tuXY: serviceManager.timeUpdateResult, heading: heading, limits: limits, isBleOnlyMode: self.isBleOnlyMode, isPmSuccess: self.isPathMatchingSuccess)
                 }
             }
         } else {
@@ -1230,7 +1180,7 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
                 }
             }
         }
-        
+
         dropText.text = currentBuilding
     }
     
@@ -1247,15 +1197,15 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
         return levelToReturn
     }
     
-    func notificationCenterAddOberver() {
-        _ = NotificationCenter.default.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: .main) { _ in
-            self.serviceManager.enterBackground()
-        }
-        
-        _ = NotificationCenter.default.addObserver(forName: UIApplication.didBecomeActiveNotification, object: nil, queue: .main) { _ in
-            self.serviceManager.enterForeground()
-        }
-    }
+//    func notificationCenterAddOberver() {
+//        _ = NotificationCenter.default.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: .main) { _ in
+//            self.serviceManager.enterBackground()
+//        }
+//
+//        _ = NotificationCenter.default.addObserver(forName: UIApplication.didBecomeActiveNotification, object: nil, queue: .main) { _ in
+//            self.serviceManager.enterForeground()
+//        }
+//    }
     
     func hideDropDown(flag: Bool) {
         if (flag) {
@@ -1330,16 +1280,16 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
 extension ServiceViewController: UITableViewDelegate {
     // 높이 지정 index별
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        if indexPath.row == 0 {
-            return 40
-        } else {
-            if (indexPath.section == 0) {
-                return 220 + 20
+            if indexPath.row == 0 {
+                return 40
             } else {
-                return 160 + 20
+                if (indexPath.section == 0) {
+                    return 220 + 20
+                } else {
+                    return 160 + 20
+                }
+                
             }
-            
-        }
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -1347,38 +1297,38 @@ extension ServiceViewController: UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-//        print("\(indexPath.section)섹션 \(indexPath.row)로우 선택됨")
+//            print("\(indexPath.section)섹션 \(indexPath.row)로우 선택됨")
     }
 }
 
 extension ServiceViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if section == 0 {
-            return 2
-        } else {
-            return 2
-        }
+            if section == 0 {
+                return 2
+            } else {
+                return 2
+            }
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if indexPath.section == 0 {
             let serviceInfoTVC = tableView.dequeueReusableCell(withIdentifier: ServiceInfoTableViewCell.identifier) as!
             ServiceInfoTableViewCell
-            
+                
             serviceInfoTVC.backgroundColor = .systemGray6
             serviceInfoTVC.infoOfLevelsLabel.text = infoOfLevels
             serviceInfoTVC.velocityLabel.text = "0"
-            
+                
             serviceInfoTVC.updateResult(data: resultToDisplay)
-            
+                
             return serviceInfoTVC
         } else {
             let robotTVC = tableView.dequeueReusableCell(withIdentifier: RobotTableViewCell.identifier) as!
             RobotTableViewCell
-            
+                
             robotTVC.delegate = self
             robotTVC.backgroundColor = .systemGray6
-            
+                
             return robotTVC
         }
     }
@@ -1402,7 +1352,7 @@ extension ServiceViewController : UICollectionViewDelegate{
         } else {
             if (isShowRP) {
 //                drawRP(RP_X: rp[0], RP_Y: rp[1], XY: XY, heading: 0, limits: limits)
-                drawDebug(XY: XY, RP_X: rp[0], RP_Y: rp[1], serverXY: serviceManager.serverResult, tuXY: serviceManager.timeUpdateResult, heading: 0, limits: limits, isBleOnlyMode: self.isBleOnlyMode, isPmSuccess: self.isPathMatchingSuccess, trajectoryStartCoord: serviceManager.displayOutput.trajectoryStartCoord, userTrajectory: serviceManager.displayOutput.userTrajectory, searchArea: serviceManager.displayOutput.searchArea, searchType: serviceManager.displayOutput.searchType, isIndoor: false)
+                drawDebug(XY: XY, RP_X: rp[0], RP_Y: rp[1], serverXY: serviceManager.serverResult, tuXY: serviceManager.timeUpdateResult, heading: 0, limits: limits, isBleOnlyMode: self.isBleOnlyMode, isPmSuccess: self.isPathMatchingSuccess)
             }
             displayLevelImage(building: currentBuilding, level: currentLevel, flag: isShowRP)
         }
@@ -1420,7 +1370,7 @@ extension ServiceViewController : UICollectionViewDataSource{
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let levelCollectionView = collectionView.dequeueReusableCell(withReuseIdentifier: LevelCollectionViewCell.className, for: indexPath)
                 as? LevelCollectionViewCell else {return UICollectionViewCell()}
-        
+
         levelCollectionView.setName(level: levels[currentBuilding]![indexPath.row],
                                     isClicked: currentLevel == levels[currentBuilding]![indexPath.row] ? true : false)
         displayLevelImage(building: currentBuilding, level: currentLevel, flag: isShowRP)
@@ -1477,7 +1427,7 @@ extension ServiceViewController: CustomSwitchButtonDelegate {
                 serviceManager.startService(id: uuid, sector_id: cardData!.sector_id, service: serviceName, mode: inputMode, completion: { isStart, message in
                     if (isStart) {
                         print("(ServiceVC) Success : \(message)")
-                        self.notificationCenterAddOberver()
+//                        self.notificationCenterAddOberver()
                         self.startTimer()
                     } else {
                         print("(ServiceVC) Fail : \(message)")
