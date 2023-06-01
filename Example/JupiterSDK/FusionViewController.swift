@@ -112,7 +112,7 @@ class FusionViewController: UIViewController, Observer {
     var serviceName = "FLT"
     var region: String = ""
     var uuid: String = ""
-    var sectorID: Int = 0
+    var sector_id: Int = 0
     
     var timer: Timer?
     var timerCounter: Int = 0
@@ -133,6 +133,7 @@ class FusionViewController: UIViewController, Observer {
     var RP = [String: [[Double]]]()
     var Road = [[Double]]()
     var chartLimits = [String: [Double]]()
+    var chartLoad = [String: Bool]()
     
     var XY: [Double] = [0, 0]
     
@@ -231,7 +232,7 @@ class FusionViewController: UIViewController, Observer {
     }
     
     func setCardData(cardData: CardItemData) {
-        self.sectorID = cardData.sector_id
+        self.sector_id = cardData.sector_id
         self.sectorNameLabel.text = cardData.sector_name
         
         let imageName: String = cardData.cardColor + "CardTop"
@@ -269,33 +270,7 @@ class FusionViewController: UIViewController, Observer {
                 }
                 
                 // Scale
-                let input = Scale(sector_id: cardData.sector_id, building_name: buildingName, level_name: levelName)
-                Network.shared.postScale(url: SCALE_URL, input: input, completion: { [self] statusCode, returnedString in
-                    let result = jsonToScale(json: returnedString)
-//                    print("Scale Result : \(result)")
-                    if (statusCode >= 200 && statusCode <= 300) {
-                        let scaleString = result.image_scale
-                        
-                        if (scaleString.isEmpty) {
-                            chartLimits[key] = [0, 0, 0, 0]
-                        } else if (scaleString == "None") {
-                            chartLimits[key] = [0, 0, 0, 0]
-                        } else {
-                            let os = scaleString.components(separatedBy: "/")
-                            let iosScale = os[1].components(separatedBy: " ")
-                            
-                            var data = [Double]()
-                            if (iosScale.count < 4) {
-                                chartLimits[key] = [0, 0, 0, 0]
-                            } else {
-                                for i in 0..<iosScale.count {
-                                    data.append(Double(iosScale[i])!)
-                                }
-                                chartLimits[key] = data
-                            }
-                        }
-                    }
-                })
+                self.loadScale(sector_id: self.sector_id, building: buildingName, level: levelName)
             }
         }
     }
@@ -436,6 +411,42 @@ class FusionViewController: UIViewController, Observer {
         self.dropImage.image = UIImage.init(named: "closeInfoToggle")
     }
     
+    func loadScale(sector_id: Int, building: String, level: String) {
+        let key = "\(building)_\(level)"
+        let input = Scale(sector_id: sector_id, building_name: building, level_name: level)
+        Network.shared.postScale(url: SCALE_URL, input: input, completion: { [self] statusCode, returnedString, buildingLevel in
+            let result = jsonToScale(json: returnedString)
+            
+            if (statusCode >= 200 && statusCode <= 300) {
+                let scaleString = result.image_scale
+                
+                if (scaleString.isEmpty) {
+                    chartLoad[buildingLevel] = true
+                    chartLimits[key] = [0, 0, 0, 0]
+                } else if (scaleString == "None") {
+                    chartLoad[buildingLevel] = true
+                    chartLimits[key] = [0, 0, 0, 0]
+                } else {
+                    let os = scaleString.components(separatedBy: "/")
+                    let iosScale = os[1].components(separatedBy: " ")
+                    
+                    var data = [Double]()
+                    if (iosScale.count < 4) {
+                        chartLoad[buildingLevel] = true
+                        chartLimits[key] = [0, 0, 0, 0]
+                    } else {
+                        for i in 0..<iosScale.count {
+                            data.append(Double(iosScale[i])!)
+                        }
+                        chartLoad[buildingLevel] = true
+                        chartLimits[key] = data
+                    }
+                }
+            } else {
+                chartLoad[buildingLevel] = false
+            }
+        })
+    }
     
     private func loadRP(fileName: String) -> [[Double]] {
         guard let path = Bundle.main.path(forResource: fileName, ofType: "csv") else {
@@ -576,7 +587,7 @@ class FusionViewController: UIViewController, Observer {
     }
     
     private func loadLevel(building: String, level: String, flag: Bool, completion: @escaping (UIImage?, Error?) -> Void) {
-        let urlString: String = "https://storage.googleapis.com/\(IMAGE_URL)/map/\(self.sectorID)/\(building)_\(level).png"
+        let urlString: String = "https://storage.googleapis.com/\(IMAGE_URL)/map/\(self.sector_id)/\(building)_\(level).png"
         if let urlLevel = URL(string: urlString) {
             let cacheKey = NSString(string: urlString)
             

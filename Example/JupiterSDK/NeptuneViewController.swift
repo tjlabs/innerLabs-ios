@@ -40,6 +40,7 @@ class NeptuneViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
     
     var resultToDisplay = Spot()
     var chartLimits = [String: [Double]]()
+    var chartLoad = [String: Bool]()
     
     var currentBuilding: String = "Unknown"
     var currentLevel: String = "층"
@@ -133,33 +134,7 @@ class NeptuneViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
                     RP[key] = rpXY
                 }
                 
-                // Scale
-                let input = Scale(sector_id: cardData.sector_id, building_name: buildingName, level_name: levelName)
-                Network.shared.postScale(url: SCALE_URL, input: input, completion: { [self] statusCode, returnedString in
-                    let result = jsonToScale(json: returnedString)
-                    if (statusCode >= 200 && statusCode <= 300) {
-                        let scaleString = result.image_scale
-                        
-                        if (scaleString.isEmpty) {
-                            self.chartLimits[key] = [0, 0, 0, 0]
-                        } else if (scaleString == "None") {
-                            self.chartLimits[key] = [0, 0, 0, 0]
-                        } else {
-                            let os = scaleString.components(separatedBy: "/")
-                            let iosScale = os[1].components(separatedBy: " ")
-                            
-                            var data = [Double]()
-                            if (iosScale.count < 4) {
-                                self.chartLimits[key] = [0, 0, 0, 0]
-                            } else {
-                                for i in 0..<iosScale.count {
-                                    data.append(Double(iosScale[i])!)
-                                }
-                                self.chartLimits[key] = data
-                            }
-                        }
-                    }
-                })
+                self.loadScale(sector_id: self.sectorId, building: buildingName, level: levelName)
             }
         }
         
@@ -167,6 +142,43 @@ class NeptuneViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
         let initLevels = self.levels[initBuilding]
         let initLevel = initLevels![0]
         self.fetchLevel(building: initBuilding, level: initLevel, flag: false)
+    }
+    
+    func loadScale(sector_id: Int, building: String, level: String) {
+        let key = "\(building)_\(level)"
+        let input = Scale(sector_id: sector_id, building_name: building, level_name: level)
+        Network.shared.postScale(url: SCALE_URL, input: input, completion: { [self] statusCode, returnedString, buildingLevel in
+            let result = jsonToScale(json: returnedString)
+            
+            if (statusCode >= 200 && statusCode <= 300) {
+                let scaleString = result.image_scale
+                
+                if (scaleString.isEmpty) {
+                    chartLoad[buildingLevel] = true
+                    chartLimits[key] = [0, 0, 0, 0]
+                } else if (scaleString == "None") {
+                    chartLoad[buildingLevel] = true
+                    chartLimits[key] = [0, 0, 0, 0]
+                } else {
+                    let os = scaleString.components(separatedBy: "/")
+                    let iosScale = os[1].components(separatedBy: " ")
+                    
+                    var data = [Double]()
+                    if (iosScale.count < 4) {
+                        chartLoad[buildingLevel] = true
+                        chartLimits[key] = [0, 0, 0, 0]
+                    } else {
+                        for i in 0..<iosScale.count {
+                            data.append(Double(iosScale[i])!)
+                        }
+                        chartLoad[buildingLevel] = true
+                        chartLimits[key] = data
+                    }
+                }
+            } else {
+                chartLoad[buildingLevel] = false
+            }
+        })
     }
     
     private func loadRP(fileName: String) -> [[Double]] {

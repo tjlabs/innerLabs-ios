@@ -24,8 +24,8 @@ class RemoteConfigManager: NSObject {
                 
                 // 데이터 Fetch
                 let appConfig: AppConfig = AppConfig()
-                appConfig.isOn = remoteConfig["splash_message_caps"].boolValue
-                appConfig.message = remoteConfig["splash_message"].stringValue
+                appConfig.isOn = remoteConfig["ios_splash_message_caps"].boolValue
+                appConfig.message = remoteConfig["ios_splash_message"].stringValue
                 
                 var titleServer: String = "Server Maintenance"
                 var messageServer: String = "We will come back with a better look"
@@ -71,10 +71,10 @@ class RemoteConfigManager: NSObject {
 
                 // 데이터 Fetch
                 let appConfig: AppConfig = AppConfig()
-                appConfig.isOn = remoteConfig["splash_message_caps"].boolValue
-                appConfig.message = remoteConfig["splash_message"].stringValue
-                appConfig.latestVersion = remoteConfig["latest_version"].stringValue
-                appConfig.minVersion = remoteConfig["min_version"].stringValue
+                appConfig.isOn = remoteConfig["ios_splash_message_caps"].boolValue
+                appConfig.message = remoteConfig["ios_splash_message"].stringValue
+                appConfig.latestVersion = remoteConfig["ios_latest_version"].stringValue
+                appConfig.minVersion = remoteConfig["ios_min_version"].stringValue
 
                 completionHandler(appConfig)
                 
@@ -101,7 +101,6 @@ class RemoteConfigManager: NSObject {
                     let alertController = UIAlertController.init(title: titleServer, message: messageServer, preferredStyle: UIAlertController.Style.alert)
                     alertController.addAction(UIAlertAction.init(title: buttonTitle, style: UIAlertAction.Style.default, handler: { (action) in
                         // 앱 종료하기
-                        
                         UIApplication.shared.perform(#selector(NSXPCConnection.suspend))
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
                             exit(0)

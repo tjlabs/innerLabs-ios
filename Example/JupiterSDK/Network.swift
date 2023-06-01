@@ -14,14 +14,11 @@ public class Network {
     
     let url = ""
     
-    // MARK: - [Get 방식 http 요청 실시]
     func getRequest(){
-        
         // [http 요청 헤더 지정]
         let header : HTTPHeaders = [
             "Content-Type" : "application/json"
         ]
-        
         
         // [http 요청 파라미터 지정 실시]
         let queryString : Parameters = [
@@ -347,20 +344,12 @@ public class Network {
         }
     }
     
-    func postScale(url: String, input: Scale, completion: @escaping (Int, String) -> Void) {
+    func postScale(url: String, input: Scale, completion: @escaping (Int, String, String) -> Void) {
         // [http 요청 헤더 지정]
         let header : HTTPHeaders = [
             "Content-Type" : "application/json"
         ]
-        
-        // [http 요청 수행 실시]
-//        print("")
-//        print("====================================")
-//        print("주 소 :: ", url)
-//        print("-------------------------------")
-//        print("데이터 :: ", input)
-//        print("====================================")
-//        print("")
+        let key = "\(input.building_name)_\(input.level_name)"
         
         AF.request(
             url, // [주소]
@@ -374,20 +363,11 @@ public class Network {
             switch response.result {
             case .success(let res):
                 do {
-//                    print("")
-//                    print("====================================")
-//                    print("응답 코드 :: ", response.response?.statusCode ?? 0)
-//                    print("-------------------------------")
-//                    print("응답 데이터 :: ", String(data: res, encoding: .utf8) ?? "")
-//                    print("====================================")
-//                    print("")
                     
                     let returnedString = String(decoding: response.data!, as: UTF8.self)
-                    completion(200, returnedString)
-                    
                     // [비동기 작업 수행]
                     DispatchQueue.main.async {
-                        
+                        completion(200, returnedString, key)
                     }
                 }
                 catch (let err){
@@ -396,19 +376,11 @@ public class Network {
                     print("catch :: ", err.localizedDescription)
                     print("====================================")
                     print("")
-                    completion(200, "")
+                    completion(500, "", key)
                 }
                 break
             case .failure(let err):
-//                print("")
-//                print("====================================")
-//                print("응답 코드 :: ", response.response?.statusCode ?? 0)
-//                print("-------------------------------")
-//                print("에 러 :: ", err.localizedDescription)
-//                print("====================================")
-//                print("")
-                completion(200, "")
-                
+                completion(500, "", key)
                 break
             }
         }
