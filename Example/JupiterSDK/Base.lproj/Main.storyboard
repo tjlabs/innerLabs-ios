@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="21507" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="KJ4-Co-KT0">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="21701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="KJ4-Co-KT0">
     <device id="retina6_0" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21505"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21678"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
@@ -2531,9 +2531,11 @@
                     <connections>
                         <outlet property="blackView" destination="di9-FM-jQ3" id="TVG-gd-KXq"/>
                         <outlet property="collectionView" destination="StD-CP-4oA" id="ExW-lQ-9zy"/>
+                        <outlet property="loginInfoButton" destination="UYG-M7-TRh" id="Iei-7Z-p9q"/>
                         <outlet property="menuView" destination="pjn-OW-keg" id="hdB-SV-4Vu"/>
                         <outlet property="menuViewRight" destination="nn5-pE-HnZ" id="93h-NS-Bb5"/>
                         <outlet property="menuViewWidth" destination="fIL-cB-veE" id="wtF-mv-dsg"/>
+                        <outlet property="privacyPolicyButton" destination="W3K-zo-oO3" id="YmU-ib-xnc"/>
                         <outlet property="progressView" destination="zG3-DH-fmo" id="qFo-Y2-M0q"/>
                     </connections>
                 </viewController>

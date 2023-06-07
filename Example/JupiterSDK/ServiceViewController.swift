@@ -623,7 +623,7 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
             serviceManager.getRecentResult(id: self.idToMonitor, completion: { [self] statusCode, returnedString in
                 if (statusCode == 200) {
                     let result = serviceManager.jsonToResult(json: returnedString)
-                    let pathMatchingResult = serviceManager.pathMatching(building: result.building_name, level: result.level_name, x: result.x, y: result.y, heading: result.absolute_heading, tuXY: [0, 0], mode: "dr", isPast: false, HEADING_RANGE: 50)
+                    let pathMatchingResult = serviceManager.pathMatching(building: result.building_name, level: result.level_name, x: result.x, y: result.y, heading: result.absolute_heading, tuXY: [0,0], isPast: false, HEADING_RANGE: 50, isUseHeading: true, pathType: 1)
                     let resultTime: Int = result.mobile_time
                     let resultIndex = result.index
                     let resultBuildingName: String = result.building_name
@@ -1309,6 +1309,14 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
         }
     }
     
+    @objc func goToBackServiceFail() {
+        NotificationCenter.default.removeObserver(self)
+        self.delegate?.sendPage(data: self.page)
+        DispatchQueue.main.async {
+            self.navigationController?.popViewController(animated: true)
+        }
+    }
+    
     
     func tableView(_ tableView: ExpyTableView, expyState state: ExpyState, changeForSection section: Int) {
         switch state {
@@ -1535,11 +1543,16 @@ extension ServiceViewController: CustomSwitchButtonDelegate {
                     self.stopTimer()
                 } else {
                     print("(SeviceVC) Fail : \(isStop.1)")
-                    NotificationCenter.default.removeObserver(self)
-                    self.delegate?.sendPage(data: self.page)
-                    DispatchQueue.main.async {
-                        self.navigationController?.popViewController(animated: true)
-                    }
+
+                    let message: String = isStop.1
+                    showPopUpWithButton(title: "Service Fail", message: message, rightActionTitle: "Okay", rightActionCompletion: goToBackServiceFail)
+//                    showPopUp(title: "Service Fail", message: isStop.1)
+                    
+//                    NotificationCenter.default.removeObserver(self)
+//                    self.delegate?.sendPage(data: self.page)
+//                    DispatchQueue.main.async {
+//                        self.navigationController?.popViewController(animated: true)
+//                    }
                 }
             }
         }

@@ -50,7 +50,7 @@ class GuideViewController: UIViewController, ExpyTableViewDelegate, ExpyTableVie
     func configureMapView() {
         let camera = GMSCameraPosition.camera(withLatitude: lat, longitude: lon, zoom: 18)
         let mapView = GMSMapView.map(withFrame: self.containerMapView.frame, camera: camera)
-        //        mapView.mapType = GMSMapViewType.satellite
+//        mapView.mapType = GMSMapViewType.satellite
         
         self.view.addSubview(mapView)
         self.view.sendSubviewToBack(mapView)

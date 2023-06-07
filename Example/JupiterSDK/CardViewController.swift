@@ -17,6 +17,10 @@ class CardViewController: UIViewController, ServiceViewPageDelegate, FusionViewP
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var progressView: UIProgressView!
     
+    
+    @IBOutlet weak var loginInfoButton: UIButton!
+    @IBOutlet weak var privacyPolicyButton: UIButton!
+    
     var region: String = ""
     var uuid: String = ""
     var cardItemData: [CardItemData] = []
@@ -29,6 +33,7 @@ class CardViewController: UIViewController, ServiceViewPageDelegate, FusionViewP
     @IBOutlet weak var menuView: UIView!
     @IBOutlet weak var menuViewWidth: NSLayoutConstraint!
     @IBOutlet weak var menuViewRight: NSLayoutConstraint!
+    
     
     var isMenuOpened: Bool = false
     
@@ -56,6 +61,7 @@ class CardViewController: UIViewController, ServiceViewPageDelegate, FusionViewP
     override func viewDidLoad() {
         super.viewDidLoad()
         serviceManager.changeRegion(regionName: self.region)
+        changeButtonNameByRegion(region: self.region)
 //        serviceManager.startService(id: self.uuid, sector_id: 10, service: "CLD", mode: "pdr")
         
         blackView.backgroundColor = UIColor.black
@@ -69,6 +75,7 @@ class CardViewController: UIViewController, ServiceViewPageDelegate, FusionViewP
         let tapRecognizer = UITapGestureRecognizer()
         tapRecognizer.addTarget(self, action: #selector(self.tappedOnView))
         blackView.addGestureRecognizer(tapRecognizer)
+        
         
 //        print("(innerLabs) Region : \(self.region)")
     }
@@ -277,6 +284,22 @@ class CardViewController: UIViewController, ServiceViewPageDelegate, FusionViewP
         }
     }
     
+    func changeButtonNameByRegion(region: String) {
+        var loginInfoTitle: String = "로그인 정보"
+        var privacyPolicyTitle: String = "개인정보처리방침"
+        switch (region) {
+        case "Korea":
+            loginInfoTitle = "로그인 정보"
+            privacyPolicyTitle = "개인정보처리방침"
+        case "Canada":
+            loginInfoTitle = "Login Info"
+            privacyPolicyTitle = "Privacy Policy"
+        default:
+            loginInfoTitle = "Login Info"
+            privacyPolicyTitle = "Privacy Policy"
+        }
+    }
+    
     @IBAction func tapLoginInfoButton(_ sender: UIButton) {
         var popUpTitle: String = "로그인 정보"
         switch (self.region) {
@@ -401,18 +424,18 @@ extension CardViewController: UICollectionViewDataSource, UICollectionViewDelega
                 guideVC.page = currentPage
                 self.navigationController?.pushViewController(guideVC, animated: true)
             } else if (sector_id == 1) {
-//                guard let fusionVC = self.storyboard?.instantiateViewController(withIdentifier: "FusionViewController") as? FusionViewController else { return }
-//                fusionVC.cardData = cardItemData[mod]
-//                fusionVC.region = region
-//                fusionVC.uuid = uuid
-//                fusionVC.page = currentPage
-//                self.navigationController?.pushViewController(fusionVC, animated: true)
-                guard let serviceVC = self.storyboard?.instantiateViewController(withIdentifier: "ServiceViewController") as? ServiceViewController else { return }
-                serviceVC.cardData = cardItemData[mod]
-                serviceVC.region = region
-                serviceVC.uuid = uuid
-                serviceVC.page = currentPage
-                self.navigationController?.pushViewController(serviceVC, animated: true)
+                guard let fusionVC = self.storyboard?.instantiateViewController(withIdentifier: "FusionViewController") as? FusionViewController else { return }
+                fusionVC.cardData = cardItemData[mod]
+                fusionVC.region = region
+                fusionVC.uuid = uuid
+                fusionVC.page = currentPage
+                self.navigationController?.pushViewController(fusionVC, animated: true)
+//                guard let serviceVC = self.storyboard?.instantiateViewController(withIdentifier: "ServiceViewController") as? ServiceViewController else { return }
+//                serviceVC.cardData = cardItemData[mod]
+//                serviceVC.region = region
+//                serviceVC.uuid = uuid
+//                serviceVC.page = currentPage
+//                self.navigationController?.pushViewController(serviceVC, animated: true)
             }
             else if (sector_id == 10) {
                 guard let collectVC = self.storyboard?.instantiateViewController(withIdentifier: "CollectViewController") as? CollectViewController else { return }
