@@ -962,6 +962,10 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
             valueColor = UIColor.systemBlue
         }
         
+        if (!isIndoor) {
+            valueColor = .systemGray
+        }
+        
         let values0 = (0..<xAxisValue.count).map { (i) -> ChartDataEntry in
             return ChartDataEntry(x: xAxisValue[i], y: yAxisValue[i])
         }
