@@ -1123,6 +1123,14 @@ class FusionViewController: UIViewController, Observer {
         self.spotNameLabel.text = spotName
         self.spotCcsLabel.text = String(format: "%.4f", ccs)
     }
+    
+    @objc func goToBackServiceFail() {
+        NotificationCenter.default.removeObserver(self)
+        self.delegate?.sendPage(data: self.page)
+        DispatchQueue.main.async {
+            self.navigationController?.popViewController(animated: true)
+        }
+    }
 }
 
 
@@ -1215,10 +1223,8 @@ extension FusionViewController: CustomSwitchButtonDelegate {
                         self.startTimer()
                     } else {
                         print("(FusionVC) Fail : \(message)")
-                        self.delegate?.sendPage(data: self.page)
-                        DispatchQueue.main.async {
-                            self.navigationController?.popViewController(animated: true)
-                        }
+                        self.showPopUp(title: "Service Fail", message: message)
+                        self.goToBackServiceFail()
                     }
                 })
             } else {
@@ -1240,10 +1246,9 @@ extension FusionViewController: CustomSwitchButtonDelegate {
                     self.stopTimer()
                 } else {
                     print("(FusionVC) Fail : \(isStop.1)")
-                    self.delegate?.sendPage(data: self.page)
-                    DispatchQueue.main.async {
-                        self.navigationController?.popViewController(animated: true)
-                    }
+                    let message: String = isStop.1
+                    showPopUp(title: "Service Fail", message: message)
+                    goToBackServiceFail()
                 }
             }
         }

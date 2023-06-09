@@ -3124,7 +3124,6 @@ public class ServiceManager: Observation {
                     
                     // Search Direction
                     let ppHeadings = getPathMatchingHeadings(building: userBuilding, level: userLevel, x: userX, y: userY, heading: userH, RANGE: RANGE, mode: mode)
-                    print("ppHeadings : \(ppHeadings)")
                     var searchHeadings: [Double] = []
                     for i in 0..<ppHeadings.count {
                         searchHeadings.append(compensateHeading(heading: ppHeadings[i]-10))
@@ -3197,19 +3196,19 @@ public class ServiceManager: Observation {
                         let areaMinMax: [Double] = getSearchAreaMinMax(xyMinMax: xyMinMax, heading: [headingStart, headingEnd], recentScc: recentScc, searchType: isStraight, mode: mode)
                         let searchArea = getSearchCoordinates(areaMinMax: areaMinMax, interval: 1.0)
                         
-                        var searchHeadings: [Double] = []
+                        var searchHeadings: [Double] = [compensateHeading(heading: headingEnd)]
                         
-                        if (diffHeading > 5) {
-                            searchHeadings.append(headingEnd-diffHeading)
-                            searchHeadings.append(headingEnd)
-                            searchHeadings.append(headingEnd+diffHeading)
-                        } else {
-                            searchHeadings.append(headingEnd)
-                        }
+//                        if (diffHeading > 5) {
+//                            searchHeadings.append(headingEnd-diffHeading)
+//                            searchHeadings.append(headingEnd)
+//                            searchHeadings.append(headingEnd+diffHeading)
+//                        } else {
+//                            searchHeadings.append(headingEnd)
+//                        }
                         
-                        for i in 0..<searchHeadings.count {
-                            searchHeadings[i] = compensateHeading(heading: searchHeadings[i])
-                        }
+//                        for i in 0..<searchHeadings.count {
+//                            searchHeadings[i] = compensateHeading(heading: searchHeadings[i])
+//                        }
                         
                         resultRange = areaMinMax.map { Int($0) }
                         resultDirection = searchHeadings.map { Int($0) }
@@ -3262,10 +3261,10 @@ public class ServiceManager: Observation {
                         var searchHeadings: [Double] = []
                         
                         if (diffHeading < 90) {
-                            if (diffHeading > 5) {
-                                searchHeadings.append(headingEnd-diffHeading)
+                            if (diffHeading > 2) {
+                                searchHeadings.append(headingEnd-5)
                                 searchHeadings.append(headingEnd)
-                                searchHeadings.append(headingEnd+diffHeading)
+                                searchHeadings.append(headingEnd+5)
                             } else {
                                 searchHeadings.append(headingEnd)
                             }
@@ -3354,10 +3353,10 @@ public class ServiceManager: Observation {
                             }
                         } else {
                             if (diffHeading < 90) {
-                                if (diffHeading > 5) {
-                                    searchHeadings.append(headingEnd-diffHeading)
+                                if (diffHeading > 2) {
+                                    searchHeadings.append(headingEnd-5)
                                     searchHeadings.append(headingEnd)
-                                    searchHeadings.append(headingEnd+diffHeading)
+                                    searchHeadings.append(headingEnd+5)
                                 } else {
                                     searchHeadings.append(headingEnd)
                                 }
@@ -3554,7 +3553,7 @@ public class ServiceManager: Observation {
             return 0
         }
         
-        let straightAngle: Double = 5.0
+        let straightAngle: Double = 2.0
         // All Straight
         let circularStandardDeviationAll = circularStandardDeviation(for: array)
         if (circularStandardDeviationAll <= straightAngle) {
@@ -3808,10 +3807,10 @@ public class ServiceManager: Observation {
                             if (self.timeRequest >= 6) {
                                 let phase3Trajectory = self.userTrajectoryInfo
 //                                let searchInfo = makeSearchAreaAndDirection(userTrajectory: phase3Trajectory, accumulatedLength: 1, phase: self.phase, isKf: self.isActiveKf)
-                                let searchInfo = makeSearchAreaAndDirectionTest(userTrajectory: phase3Trajectory, pastUserTrajectory: self.pastUserTrajectoryInfo, pastSearchDirection: self.pastSearchDirection, length: 1, diagonal: 1, mode: self.runMode, phase: self.phase, isKf: self.isActiveKf)
+                                let searchInfoTurn = makeSearchAreaAndDirectionTest(userTrajectory: phase3Trajectory, pastUserTrajectory: self.pastUserTrajectoryInfo, pastSearchDirection: self.pastSearchDirection, length: 1, diagonal: 1, mode: self.runMode, phase: self.phase, isKf: self.isActiveKf)
                                 self.pastUserTrajectoryInfo = phase3Trajectory
                                 self.timeRequest = 0
-                                processPhase3(currentTime: currentTime, localTime: localTime, userTrajectory: phase3Trajectory, searchInfo: searchInfo)
+                                processPhase3(currentTime: currentTime, localTime: localTime, userTrajectory: phase3Trajectory, searchInfo: searchInfoTurn)
                             }
                         }
                     }
@@ -3944,6 +3943,22 @@ public class ServiceManager: Observation {
                         } else {
                             let trajLength = self.calculateAccumulatedLength(userTrajectory: self.userTrajectoryInfo)
                             if (trajLength >= USER_TRAJECTORY_LENGTH*0.5 && result.scc > 0.7) {
+                                self.timeUpdatePosition.x = resultCorrected.1[0]
+                                self.timeUpdatePosition.y = resultCorrected.1[1]
+                                self.timeUpdatePosition.heading = resultCorrected.1[2]
+
+                                self.timeUpdateOutput.x = resultCorrected.1[0]
+                                self.timeUpdateOutput.y = resultCorrected.1[1]
+                                self.timeUpdateOutput.absolute_heading = resultCorrected.1[2]
+
+                                self.measurementPosition.x = resultCorrected.1[0]
+                                self.measurementPosition.y = resultCorrected.1[1]
+                                self.measurementPosition.heading = resultCorrected.1[2]
+
+                                self.measurementOutput.x = resultCorrected.1[0]
+                                self.measurementOutput.y = resultCorrected.1[1]
+                                self.measurementOutput.absolute_heading = resultCorrected.1[2]
+                                
                                 self.outputResult.x = resultCorrected.1[0]
                                 self.outputResult.y = resultCorrected.1[1]
                                 self.outputResult.absolute_heading = resultCorrected.1[2]

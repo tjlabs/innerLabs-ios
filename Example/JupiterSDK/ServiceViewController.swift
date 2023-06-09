@@ -1515,11 +1515,14 @@ extension ServiceViewController: CustomSwitchButtonDelegate {
                         self.startTimer()
                     } else {
                         print("(ServiceVC) Fail : \(message)")
-                        NotificationCenter.default.removeObserver(self)
-                        self.delegate?.sendPage(data: self.page)
-                        DispatchQueue.main.async {
-                            self.navigationController?.popViewController(animated: true)
-                        }
+//                        self.showPopUpWithButton(title: "Service Fail", message: message, leftActionTitle: "Cancel", rightActionTitle: "Okay", leftActionCompletion: goToBackServiceFail, rightActionCompletion: goToBackServiceFail)
+                        self.showPopUp(title: "Service Fail", message: message)
+                        self.goToBackServiceFail()
+//                        NotificationCenter.default.removeObserver(self)
+//                        self.delegate?.sendPage(data: self.page)
+//                        DispatchQueue.main.async {
+//                            self.navigationController?.popViewController(animated: true)
+//                        }
                     }
                 })
                 
@@ -1545,9 +1548,9 @@ extension ServiceViewController: CustomSwitchButtonDelegate {
                     print("(SeviceVC) Fail : \(isStop.1)")
 
                     let message: String = isStop.1
-                    showPopUpWithButton(title: "Service Fail", message: message, rightActionTitle: "Okay", rightActionCompletion: goToBackServiceFail)
-//                    showPopUp(title: "Service Fail", message: isStop.1)
-                    
+//                    showPopUpWithButton(title: "Service Fail", message: message, leftActionTitle: "Cancel", rightActionTitle: "Okay", leftActionCompletion: goToBackServiceFail, rightActionCompletion: goToBackServiceFail)
+                    showPopUp(title: "Service Fail", message: message)
+                    goToBackServiceFail()
 //                    NotificationCenter.default.removeObserver(self)
 //                    self.delegate?.sendPage(data: self.page)
 //                    DispatchQueue.main.async {
