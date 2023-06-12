@@ -4513,7 +4513,7 @@ public class ServiceManager: Observation {
         let currentTime = getCurrentTimeInMilliseconds()
         let keyBiasTime: String = "JupiterRssiBiasTime_\(sector_id)"
         if let biasTime: Int = UserDefaults.standard.object(forKey: keyBiasTime) as? Int {
-            if (currentTime - biasTime) > 1000*3600*24*7  {
+            if (currentTime - biasTime) > 1000*3600*24*15  {
                 print(getLocalTimeString() + " , (Jupiter) Cannot believe old bias (\(currentTime - biasTime))")
                 return (bias, biasArray, isConverged)
             }

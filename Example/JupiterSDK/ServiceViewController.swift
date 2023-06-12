@@ -113,7 +113,11 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
     @IBOutlet weak var cardTopImage: UIImageView!
     
     @IBOutlet weak var biasLabel: UILabel!
+    @IBOutlet weak var infoLabel: UILabel!
     
+    var currentRegion: String = ""
+    var showInfoText: String = ""
+    var closeInfoText: String = ""
     
     var serviceManager = ServiceManager()
     var serviceName = "FLT"
@@ -234,12 +238,35 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
         super.viewDidLoad()
         biasLabel.isHidden = true
         
-        runMode = cardData!.mode
+        let locale = Locale.current
+        if let countryCode = locale.regionCode, countryCode == "KR" {
+            self.currentRegion = "Korea"
+        } else {
+            self.currentRegion = "Canada"
+        }
+        self.setTextByRegion(region: self.currentRegion)
         
+        
+        runMode = cardData!.mode
         
         self.hideKeyboardWhenTappedAround()
     }
     
+    func setTextByRegion(region: String) {
+        switch (region) {
+        case "Korea":
+            self.showInfoText = "정보 보기"
+            self.closeInfoText = "정보 닫기"
+        case "Canada":
+            self.showInfoText = "Show"
+            self.closeInfoText = "Close"
+        default:
+            self.showInfoText = "Show"
+            self.closeInfoText = "Close"
+        }
+        
+        self.infoLabel.text = self.showInfoText
+    }
     
     @IBAction func tapBackButton(_ sender: UIButton) {
         NotificationCenter.default.removeObserver(self)
@@ -260,10 +287,12 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
         
         if sender.isSelected == false {
             isShow = true
+            self.infoLabel.text = self.closeInfoText
             showContainerTableView()
         }
         else {
             isShow = false
+            self.infoLabel.text = self.showInfoText
             hideContainerTableView()
         }
     }

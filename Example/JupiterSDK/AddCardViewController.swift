@@ -21,6 +21,7 @@ class AddCardViewController: UIViewController, UITextFieldDelegate {
     
     @IBOutlet weak var codeTextField: UITextField!
     @IBOutlet weak var responseLabel: UILabel!
+    @IBOutlet weak var confirmLabel: UILabel!
     
     var uuid: String = ""
     var code: String = ""
@@ -29,11 +30,35 @@ class AddCardViewController: UIViewController, UITextFieldDelegate {
     var page: Int = 0
 
     var delegate : AddCardDelegate?
+    var currentRegion: String = ""
+    var confirmText: String = ""
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        let locale = Locale.current
+        if let countryCode = locale.regionCode, countryCode == "KR" {
+            self.currentRegion = "Korea"
+        } else {
+            self.currentRegion = "Canada"
+        }
+        self.setTextByRegion(region: self.currentRegion)
+        
         codeTextField.delegate = self
+    }
+    
+    func setTextByRegion(region: String) {
+        switch (region) {
+        case "Korea":
+            self.confirmText = "완료"
+        case "Canada":
+            self.confirmText = "Confirm"
+        default:
+            self.confirmText = "Confirm"
+        }
+        
+        self.confirmLabel.text = self.confirmText
     }
 
     @IBAction func tapBackButton(_ sender: UIButton) {

@@ -22,6 +22,8 @@ class GuideViewController: UIViewController, ExpyTableViewDelegate, ExpyTableVie
     @IBOutlet weak var containerMapView: UIView!
     @IBOutlet weak var containerTableView: ExpyTableView!
     @IBOutlet weak var containerTableViewHeight: NSLayoutConstraint!
+    @IBOutlet weak var infoLabel: UILabel!
+    
     
     let lat: Double = 37.49575119345803
     let lon: Double = 127.03829280268539
@@ -29,7 +31,10 @@ class GuideViewController: UIViewController, ExpyTableViewDelegate, ExpyTableVie
     var delegate : GuideSendPageDelegate?
     var page: Int = 0
     
+    var currentRegion: String = ""
     var isShow: Bool = false
+    var showInfoText: String = ""
+    var closeInfoText: String = ""
     
     var defaultHeight: CGFloat = 100
     
@@ -39,6 +44,14 @@ class GuideViewController: UIViewController, ExpyTableViewDelegate, ExpyTableVie
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        let locale = Locale.current
+        if let countryCode = locale.regionCode, countryCode == "KR" {
+            self.currentRegion = "Korea"
+        } else {
+            self.currentRegion = "Canada"
+        }
+        self.setTextByRegion(region: self.currentRegion)
         
         configureMapView()
         makeDelegate()
@@ -95,12 +108,30 @@ class GuideViewController: UIViewController, ExpyTableViewDelegate, ExpyTableVie
         
         if sender.isSelected == false {
             isShow = true
+            self.infoLabel.text = self.closeInfoText
             showContainerTableView()
         }
         else {
             isShow = false
+            self.infoLabel.text = self.showInfoText
             hideContainerTableView()
         }
+    }
+    
+    public func setTextByRegion(region: String) {
+        switch (region) {
+        case "Korea":
+            self.showInfoText = "정보 보기"
+            self.closeInfoText = "정보 닫기"
+        case "Canada":
+            self.showInfoText = "Show"
+            self.closeInfoText = "Close"
+        default:
+            self.showInfoText = "Show"
+            self.closeInfoText = "Close"
+        }
+        
+        self.infoLabel.text = self.showInfoText
     }
     
     func showContainerTableView() {

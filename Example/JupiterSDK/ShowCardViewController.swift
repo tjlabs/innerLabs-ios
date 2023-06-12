@@ -19,6 +19,7 @@ class ShowCardViewController: UIViewController, AddCardDelegate {
     
     @IBOutlet weak var editButton: UIButton!
     @IBOutlet weak var showCardCollectionView: UICollectionView!
+    @IBOutlet weak var editLabel: UILabel!
     
     var longPressGesture: UILongPressGestureRecognizer?
     
@@ -40,6 +41,10 @@ class ShowCardViewController: UIViewController, AddCardDelegate {
     
     var page: Int = 0
     
+    var currentRegion: String = ""
+    var editText: String = ""
+    var confirmText: String = ""
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(false)
         
@@ -51,6 +56,30 @@ class ShowCardViewController: UIViewController, AddCardDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        let locale = Locale.current
+        if let countryCode = locale.regionCode, countryCode == "KR" {
+            self.currentRegion = "Korea"
+        } else {
+            self.currentRegion = "Canada"
+        }
+        self.setTextByRegion(region: self.currentRegion)
+    }
+    
+    func setTextByRegion(region: String) {
+        switch (region) {
+        case "Korea":
+            self.editText = "편집"
+            self.confirmText = "완료"
+        case "Canada":
+            self.editText = "Edit"
+            self.confirmText = "Confirm"
+        default:
+            self.editText = "Edit"
+            self.confirmText = "Confirm"
+        }
+        
+        self.editLabel.text = self.editText
     }
     
     func initShowCardVC() {
@@ -177,10 +206,14 @@ class ShowCardViewController: UIViewController, AddCardDelegate {
         
         if sender.isSelected == false {
             isEditMode = true
+            self.editLabel.text = self.confirmText
+            self.editLabel.textColor = .systemBlue
             self.showCardCollectionView.reloadData()
         }
         else {
             isEditMode = false
+            self.editLabel.text = self.editText
+            self.editLabel.textColor = .systemGray
             self.showCardCollectionView.reloadData()
             
             // Save Card Order
