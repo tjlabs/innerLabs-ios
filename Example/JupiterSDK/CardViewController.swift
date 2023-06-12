@@ -17,7 +17,6 @@ class CardViewController: UIViewController, ServiceViewPageDelegate, FusionViewP
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var progressView: UIProgressView!
     
-    
     @IBOutlet weak var loginInfoButton: UIButton!
     @IBOutlet weak var privacyPolicyButton: UIButton!
     
@@ -34,6 +33,8 @@ class CardViewController: UIViewController, ServiceViewPageDelegate, FusionViewP
     @IBOutlet weak var menuViewWidth: NSLayoutConstraint!
     @IBOutlet weak var menuViewRight: NSLayoutConstraint!
     
+    @IBOutlet weak var showCardButton: UIButton!
+    @IBOutlet weak var addCardButton: UIButton!
     
     var isMenuOpened: Bool = false
     
@@ -291,13 +292,21 @@ class CardViewController: UIViewController, ServiceViewPageDelegate, FusionViewP
         case "Korea":
             loginInfoTitle = "로그인 정보"
             privacyPolicyTitle = "개인정보처리방침"
+            self.showCardButton.setImage(UIImage(named: "showCard.png"), for: .normal)
+            self.addCardButton.setImage(UIImage(named: "addCard.png"), for: .normal)
         case "Canada":
             loginInfoTitle = "Login Info"
             privacyPolicyTitle = "Privacy Policy"
+            self.showCardButton.setImage(UIImage(named: "showCardEng.png"), for: .normal)
+            self.addCardButton.setImage(UIImage(named: "addCardEng.png"), for: .normal)
         default:
             loginInfoTitle = "Login Info"
             privacyPolicyTitle = "Privacy Policy"
+            self.showCardButton.setImage(UIImage(named: "showCardEng.png"), for: .normal)
+            self.addCardButton.setImage(UIImage(named: "addCardEng.png"), for: .normal)
         }
+        self.loginInfoButton.setTitle(loginInfoTitle, for: .normal)
+        self.privacyPolicyButton.setTitle(privacyPolicyTitle, for: .normal)
     }
     
     @IBAction func tapLoginInfoButton(_ sender: UIButton) {

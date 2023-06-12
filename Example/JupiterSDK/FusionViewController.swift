@@ -471,23 +471,26 @@ class FusionViewController: UIViewController, Observer {
                 for item in dataArr {
                     let rp: [String] = item
                     if (rp.count >= 2) {
-                        
-                        guard let x: Double = Double(rp[0]) else { return [[Double]]() }
-                        guard let y: Double = Double(rp[1].components(separatedBy: "\r")[0]) else { return [[Double]]() }
-                        
-                        rpX.append(x)
-                        rpY.append(y)
+                        if (self.runMode == "pdr") {
+                            guard let x: Double = Double(rp[1]) else { return [[Double]]() }
+                            guard let y: Double = Double(rp[2].components(separatedBy: "\r")[0]) else { return [[Double]]() }
+                            
+                            rpX.append(x)
+                            rpY.append(y)
+                        } else {
+                            let pathType = Int(rp[0])
+                            if (pathType == 1) {
+                                guard let x: Double = Double(rp[1]) else { return [[Double]]() }
+                                guard let y: Double = Double(rp[2].components(separatedBy: "\r")[0]) else { return [[Double]]() }
+                                
+                                rpX.append(x)
+                                rpY.append(y)
+                            }
+                        }
                     }
                 }
             }
             rpXY = [rpX, rpY]
-            
-            let xMin = rpXY[0].min()!
-            let xMax = rpXY[0].max()!
-            let yMin = rpXY[1].min()!
-            let yMax = rpXY[1].max()!
-//            print("Min Max : \(xMin), \(xMax), \(yMin), \(yMax)")
-            
         } catch {
             print("Error reading .csv file")
         }

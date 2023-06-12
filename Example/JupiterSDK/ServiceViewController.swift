@@ -246,9 +246,6 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
         }
         self.setTextByRegion(region: self.currentRegion)
         
-        
-        runMode = cardData!.mode
-        
         self.hideKeyboardWhenTappedAround()
     }
     
@@ -301,6 +298,7 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
     func setCardData(cardData: CardItemData) {
         self.sector_id = cardData.sector_id
         self.sectorNameLabel.text = cardData.sector_name
+        self.runMode = cardData.mode
         
         let imageName: String = cardData.cardColor + "CardTop"
         if let topImage = UIImage(named: imageName) {
@@ -597,12 +595,22 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
                 for item in dataArr {
                     let rp: [String] = item
                     if (rp.count >= 2) {
-                        
-                        guard let x: Double = Double(rp[0]) else { return [[Double]]() }
-                        guard let y: Double = Double(rp[1].components(separatedBy: "\r")[0]) else { return [[Double]]() }
-                        
-                        rpX.append(x)
-                        rpY.append(y)
+                        if (self.runMode == "pdr") {
+                            guard let x: Double = Double(rp[1]) else { return [[Double]]() }
+                            guard let y: Double = Double(rp[2].components(separatedBy: "\r")[0]) else { return [[Double]]() }
+                            
+                            rpX.append(x)
+                            rpY.append(y)
+                        } else {
+                            let pathType = Int(rp[0])
+                            if (pathType == 1) {
+                                guard let x: Double = Double(rp[1]) else { return [[Double]]() }
+                                guard let y: Double = Double(rp[2].components(separatedBy: "\r")[0]) else { return [[Double]]() }
+                                
+                                rpX.append(x)
+                                rpY.append(y)
+                            }
+                        }
                     }
                 }
             }
@@ -651,8 +659,9 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
         if (self.isMonitor) {
             serviceManager.getRecentResult(id: self.idToMonitor, completion: { [self] statusCode, returnedString in
                 if (statusCode == 200) {
-                    let result = serviceManager.jsonToResult(json: returnedString)
-                    let pathMatchingResult = serviceManager.pathMatching(building: result.building_name, level: result.level_name, x: result.x, y: result.y, heading: result.absolute_heading, tuXY: [0,0], isPast: false, HEADING_RANGE: 50, isUseHeading: true, pathType: 1)
+                    let result = serviceManager.jsonToRecent(json: returnedString)
+                    print(getLocalTimeString() + " , (Monitor Result) : \(result.x) , \(result.y) , \(result.absolute_heading) , \(result.phase)")
+                    let pathMatchingResult = serviceManager.pathMatching(building: result.building_name, level: result.level_name, x: result.x, y: result.y, heading: result.absolute_heading, tuXY: [0,0], isPast: false, HEADING_RANGE: 50, isUseHeading: true, pathType: 0)
                     let resultTime: Int = result.mobile_time
                     let resultIndex = result.index
                     let resultBuildingName: String = result.building_name
@@ -666,12 +675,18 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
                     if (resultCoordX != 0 && resultCoordY != 0) {
                         self.monitorToDisplay.x = resultCoordX
                         self.monitorToDisplay.y = resultCoordY
+                        self.monitorToDisplay.heading = resultHeading
+//                        self.monitorToDisplay.x = result.x
+//                        self.monitorToDisplay.y = result.y
+//                        self.monitorToDisplay.heading = result.absolute_heading
+                        
                         self.monitorToDisplay.building = resultBuildingName
                         self.monitorToDisplay.level = resultLevelName
-                        self.monitorToDisplay.heading = resultHeading
-                        
+                        self.monitorToDisplay.isIndoor = true
                         self.monitorCoord(data: self.monitorToDisplay, flag: self.isShowRP)
                     }
+                } else {
+                    print(getLocalTimeString() + " , (Monitor Result) : \(statusCode) , Error")
                 }
             })
         } else {
@@ -1139,8 +1154,8 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
         let yMin = yAxisValue.min()!
         let yMax = yAxisValue.max()!
         
-//        print("\(currentBuilding) \(currentLevel) MinMax : \(xMin) , \(xMax), \(yMin), \(yMax)")
-//        print("\(currentBuilding) \(currentLevel) Limits : \(limits[0]) , \(limits[1]), \(limits[2]), \(limits[3])")
+        print("\(currentBuilding) \(currentLevel) MinMax : \(xMin) , \(xMax), \(yMin), \(yMax)")
+        print("\(currentBuilding) \(currentLevel) Limits : \(limits[0]) , \(limits[1]), \(limits[2]), \(limits[3])")
 //
 //        scatterChart.xAxis.axisMinimum = -1.3
 //        scatterChart.xAxis.axisMaximum = 18
@@ -1159,6 +1174,10 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
             scatterChart.leftAxis.axisMinimum = limits[2]
             scatterChart.leftAxis.axisMaximum = limits[3]
         }
+//        scatterChart.xAxis.axisMinimum = 10
+//        scatterChart.xAxis.axisMaximum = 322
+//        scatterChart.leftAxis.axisMinimum = 21
+//        scatterChart.leftAxis.axisMaximum = 508
         
         scatterChart.xAxis.drawGridLinesEnabled = chartFlag
         scatterChart.leftAxis.drawGridLinesEnabled = chartFlag

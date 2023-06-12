@@ -21,6 +21,9 @@ class ShowCardViewController: UIViewController, AddCardDelegate {
     @IBOutlet weak var showCardCollectionView: UICollectionView!
     @IBOutlet weak var editLabel: UILabel!
     
+    @IBOutlet weak var toCardButton: UIButton!
+    @IBOutlet weak var addCardButton: UIButton!
+    
     var longPressGesture: UILongPressGestureRecognizer?
     
     var isEditMode: Bool = false
@@ -62,6 +65,7 @@ class ShowCardViewController: UIViewController, AddCardDelegate {
             self.currentRegion = "Korea"
         } else {
             self.currentRegion = "Canada"
+            
         }
         self.setTextByRegion(region: self.currentRegion)
     }
@@ -71,12 +75,21 @@ class ShowCardViewController: UIViewController, AddCardDelegate {
         case "Korea":
             self.editText = "편집"
             self.confirmText = "완료"
+            
+            self.toCardButton.setImage(UIImage(named: "toCard.png"), for: .normal)
+            self.addCardButton.setImage(UIImage(named: "addCard.png"), for: .normal)
         case "Canada":
             self.editText = "Edit"
             self.confirmText = "Confirm"
+            
+            self.toCardButton.setImage(UIImage(named: "toCardEng.png"), for: .normal)
+            self.addCardButton.setImage(UIImage(named: "addCardEng.png"), for: .normal)
         default:
             self.editText = "Edit"
             self.confirmText = "Confirm"
+            
+            self.toCardButton.setImage(UIImage(named: "toCardEng.png"), for: .normal)
+            self.addCardButton.setImage(UIImage(named: "addCardEng.png"), for: .normal)
         }
         
         self.editLabel.text = self.editText
@@ -235,7 +248,7 @@ class ShowCardViewController: UIViewController, AddCardDelegate {
 
 extension ShowCardViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        //        return CGSize(width: collectionView.bounds.width-32, height: 48)
+//        return CGSize(width: collectionView.bounds.width-32, height: 48)
         return CGSize(width: collectionView.bounds.width-10, height: 80)
     }
 }

@@ -4720,6 +4720,18 @@ public class ServiceManager: Observation {
         return result
     }
     
+    public func jsonToRecent(json: String) -> RecentResultFromServer {
+        let result = RecentResultFromServer()
+        let decoder = JSONDecoder()
+        let jsonString = json
+        
+        if let data = jsonString.data(using: .utf8), let decoded = try? decoder.decode(RecentResultFromServer.self, from: data) {
+            return decoded
+        }
+        
+        return result
+    }
+    
     func jsonForTracking(json: String) -> FineLocationTrackingResult {
         let result = FineLocationTrackingResult()
         let decoder = JSONDecoder()

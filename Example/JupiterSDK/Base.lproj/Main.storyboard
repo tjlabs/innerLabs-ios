@@ -322,9 +322,11 @@
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="addCardButton" destination="8EU-Pm-XCs" id="1H3-Ur-XlX"/>
                         <outlet property="editButton" destination="Roy-K8-fGl" id="Rp0-4N-NpB"/>
                         <outlet property="editLabel" destination="me8-ZJ-3J0" id="AGO-WC-Qns"/>
                         <outlet property="showCardCollectionView" destination="qaa-l9-3Dl" id="daI-As-HTZ"/>
+                        <outlet property="toCardButton" destination="AfR-kN-Sa2" id="lIC-Nw-Zcy"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="mY1-1W-7Q4" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -2577,6 +2579,7 @@
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="addCardButton" destination="gSy-dk-oxB" id="2Lp-Sr-M3T"/>
                         <outlet property="blackView" destination="di9-FM-jQ3" id="TVG-gd-KXq"/>
                         <outlet property="collectionView" destination="StD-CP-4oA" id="ExW-lQ-9zy"/>
                         <outlet property="loginInfoButton" destination="UYG-M7-TRh" id="Iei-7Z-p9q"/>
@@ -2585,6 +2588,7 @@
                         <outlet property="menuViewWidth" destination="fIL-cB-veE" id="wtF-mv-dsg"/>
                         <outlet property="privacyPolicyButton" destination="W3K-zo-oO3" id="YmU-ib-xnc"/>
                         <outlet property="progressView" destination="zG3-DH-fmo" id="qFo-Y2-M0q"/>
+                        <outlet property="showCardButton" destination="MUW-dn-rmi" id="MyT-ek-Kgd"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="0Ja-XC-Run" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>

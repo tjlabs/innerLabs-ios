@@ -533,6 +533,36 @@ struct RecentResult: Encodable {
     var mobile_time: Int
 }
 
+public struct RecentResultFromServer: Codable {
+    public var mobile_time: Int
+    public var building_name: String
+    public var level_name: String
+    public var scc: Double
+    public var x: Double
+    public var y: Double
+    public var absolute_heading: Double
+    public var phase: Int
+    public var calculated_time: Double
+    public var index: Int
+    public var rss_compensation: Int
+    public var sc_compensation: Double
+    
+    public init() {
+        self.mobile_time = 0
+        self.building_name = ""
+        self.level_name = ""
+        self.scc = 0
+        self.x = 0
+        self.y = 0
+        self.absolute_heading = 0
+        self.phase = 0
+        self.calculated_time = 0
+        self.index = 0
+        self.rss_compensation = 0
+        self.sc_compensation = 0
+    }
+}
+
 public func decodeOSA(json: String) -> OnSpotAuthorizationResult {
     let result = OnSpotAuthorizationResult.init()
     let decoder = JSONDecoder()

@@ -29,6 +29,7 @@ class NeptuneViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
     var cardData: CardItemData?
     var region: String = ""
     var userId: String = ""
+    var runMode: String = ""
     var page: Int = 0
     
     var RP = [String: [[Double]]]()
@@ -112,6 +113,7 @@ class NeptuneViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
     func setCardData(cardData: CardItemData) {
         self.sectorId = cardData.sector_id
         self.sectorNameLabel.text = cardData.sector_name
+        self.runMode = cardData.mode
         
         let imageName: String = cardData.cardColor + "CardTop"
         self.cardTopImage.image = UIImage(named: imageName)!
@@ -203,24 +205,27 @@ class NeptuneViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
             if let dataArr = dataEncoded?.components(separatedBy: "\n").map({$0.components(separatedBy: ",")}) {
                 for item in dataArr {
                     let rp: [String] = item
-                    if (rp.count == 2) {
-                        
-                        guard let x: Double = Double(rp[0]) else { return [[Double]]() }
-                        guard let y: Double = Double(rp[1].components(separatedBy: "\r")[0]) else { return [[Double]]() }
-                        
-                        rpX.append(x)
-                        rpY.append(y)
+                    if (rp.count >= 2) {
+                        if (self.runMode == "pdr") {
+                            guard let x: Double = Double(rp[1]) else { return [[Double]]() }
+                            guard let y: Double = Double(rp[2].components(separatedBy: "\r")[0]) else { return [[Double]]() }
+                            
+                            rpX.append(x)
+                            rpY.append(y)
+                        } else {
+                            let pathType = Int(rp[0])
+                            if (pathType == 1) {
+                                guard let x: Double = Double(rp[1]) else { return [[Double]]() }
+                                guard let y: Double = Double(rp[2].components(separatedBy: "\r")[0]) else { return [[Double]]() }
+                                
+                                rpX.append(x)
+                                rpY.append(y)
+                            }
+                        }
                     }
                 }
             }
             rpXY = [rpX, rpY]
-            
-            let xMin = rpXY[0].min()!
-            let xMax = rpXY[0].max()!
-            let yMin = rpXY[1].min()!
-            let yMax = rpXY[1].max()!
-            //            print("Min Max : \(xMin), \(xMax), \(yMin), \(yMax)")
-            
         } catch {
             print("Error reading .csv file")
         }
