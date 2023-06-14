@@ -982,8 +982,8 @@ class FusionViewController: UIViewController, Observer {
     func showOSAResult(data: Spot, flag: Bool) {
         self.spotAuthTime = data.mobile_time
         
-        let spotX = Double(data.spot_x)
-        let spotY = Double(data.spot_y)
+        let spotX = Double(data.spot_x) // -9.5
+        let spotY = Double(data.spot_y) // -14
         let XY: [Double] = [spotX, spotY]
         
         self.spotToDisplay = data
@@ -1058,7 +1058,8 @@ class FusionViewController: UIViewController, Observer {
         
         let point = scatterChart.getPosition(entry: ChartDataEntry(x: XY[0], y: XY[1]), axis: .left)
         
-        let imageCircle = UIImageView(image: spotCircle?.resize(newWidth: 120))
+        // Spot Image Size (default = 120)
+        let imageCircle = UIImageView(image: spotCircle?.resize(newWidth: 40))
         imageCircle.alpha = 0.6
         imageCircle.frame = CGRect(x: point.x-15, y: point.y-35, width: 30, height: 30)
         imageCircle.contentMode = .center

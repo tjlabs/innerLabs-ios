@@ -479,7 +479,7 @@ extension CardViewController: UICollectionViewDataSource, UICollectionViewDelega
                 neptuneVC.userId = uuid
                 neptuneVC.page = currentPage
                 self.navigationController?.pushViewController(neptuneVC, animated: true)
-            } else if (serviceName == "FLT+") {
+            } else if (sector_id == 5) { //serviceName == "FLT+"
                 guard let fusionVC = self.storyboard?.instantiateViewController(withIdentifier: "FusionViewController") as? FusionViewController else { return }
                 fusionVC.cardData = cardItemData[mod]
                 fusionVC.region = region

@@ -106,8 +106,8 @@ public func setBaseURL(url: String) {
     
     RF_URL = "https://where-run-record" + SERVER_TYPE + REGION + "/recordRF"
     UV_URL = "https://where-run-record" + SERVER_TYPE + REGION + "/recordUV"
-//    RECENT_URL = "https://where-run-user" + SERVER_TYPE + REGION + "/recent"
-    RECENT_URL = "https://where-run-user" + REGION + "/recent"
+    RECENT_URL = "https://where-run-user" + SERVER_TYPE + REGION + "/recent"
+//    RECENT_URL = "https://where-run-user" + REGION + "/recent"
 
     CLD_URL = BASE_URL + "CLD"
     CLE_URL = BASE_URL + "CLE"
