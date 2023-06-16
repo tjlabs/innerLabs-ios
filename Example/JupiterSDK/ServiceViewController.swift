@@ -659,8 +659,9 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
         if (self.isMonitor) {
             serviceManager.getRecentResult(id: self.idToMonitor, completion: { [self] statusCode, returnedString in
                 if (statusCode == 200) {
-                    let result = serviceManager.jsonToRecent(json: returnedString)
-                    print(getLocalTimeString() + " , (Monitor Result) : \(result.x) , \(result.y) , \(result.absolute_heading) , \(result.phase)")
+//                    let result = serviceManager.jsonToRecent(json: returnedString)
+//                    print(getLocalTimeString() + " , (Monitor Result) : \(result.x) , \(result.y) , \(result.absolute_heading) , \(result.phase)")
+                    let result = serviceManager.jsonToResult(json: returnedString)
                     let pathMatchingResult = serviceManager.pathMatching(building: result.building_name, level: result.level_name, x: result.x, y: result.y, heading: result.absolute_heading, tuXY: [0,0], isPast: false, HEADING_RANGE: 50, isUseHeading: true, pathType: 0)
                     let resultTime: Int = result.mobile_time
                     let resultIndex = result.index
@@ -915,19 +916,15 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
         
         var valueColor = UIColor.systemRed
         if (!isPmSuccess) {
-            valueColor = UIColor.systemPink
-        }
-        
-        if (isMonitor) {
+            valueColor = .systemOrange
+        } else if (isMonitor) {
             valueColor = UIColor.systemBlue
-        }
-        
-        if (isBleOnlyMode) {
+        } else if (isBleOnlyMode) {
             valueColor = UIColor.systemBlue
-        }
-        
-        if (!isIndoor) {
+        } else if (!isIndoor) {
             valueColor = .systemGray
+        } else {
+            valueColor = UIColor.systemRed
         }
         
         let set1 = ScatterChartDataSet(entries: values1, label: "USER")
@@ -1000,16 +997,14 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
         
         if (!isPmSuccess) {
             valueColor = UIColor.systemPink
-        }
-        
-        if (isBleOnlyMode) {
+        } else if (isBleOnlyMode) {
             valueColor = UIColor.systemBlue
-        }
-        
-        if (!isIndoor) {
+        } else if (!isIndoor) {
             valueColor = .systemGray
+        } else {
+            valueColor = UIColor.systemRed
         }
-        
+
         let values0 = (0..<xAxisValue.count).map { (i) -> ChartDataEntry in
             return ChartDataEntry(x: xAxisValue[i], y: yAxisValue[i])
         }
@@ -1567,7 +1562,7 @@ extension ServiceViewController: CustomSwitchButtonDelegate {
                         self.startTimer()
                     } else {
                         print("(ServiceVC) Fail : \(message)")
-//                        self.showPopUpWithButton(title: "Service Fail", message: message, leftActionTitle: "Cancel", rightActionTitle: "Okay", leftActionCompletion: goToBackServiceFail, rightActionCompletion: goToBackServiceFail)
+                        serviceManager.stopService()
                         self.showPopUp(title: "Service Fail", message: message)
                         self.goToBackServiceFail()
 //                        NotificationCenter.default.removeObserver(self)
@@ -1598,9 +1593,7 @@ extension ServiceViewController: CustomSwitchButtonDelegate {
                     self.stopTimer()
                 } else {
                     print("(SeviceVC) Fail : \(isStop.1)")
-
                     let message: String = isStop.1
-//                    showPopUpWithButton(title: "Service Fail", message: message, leftActionTitle: "Cancel", rightActionTitle: "Okay", leftActionCompletion: goToBackServiceFail, rightActionCompletion: goToBackServiceFail)
                     showPopUp(title: "Service Fail", message: message)
                     goToBackServiceFail()
 //                    NotificationCenter.default.removeObserver(self)

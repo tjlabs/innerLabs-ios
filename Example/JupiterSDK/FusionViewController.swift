@@ -652,18 +652,20 @@ class FusionViewController: UIViewController, Observer {
         })
     }
     
-    private func drawUser(XY: [Double], heading: Double, limits: [Double], isBleOnlyMode: Bool, isPmSuccess: Bool) {
+    private func drawUser(XY: [Double], heading: Double, limits: [Double], isBleOnlyMode: Bool, isPmSuccess: Bool, isIndoor: Bool) {
         let values1 = (0..<1).map { (i) -> ChartDataEntry in
             return ChartDataEntry(x: XY[0], y: XY[1])
         }
         
         var valueColor = UIColor.systemRed
         if (!isPmSuccess) {
-            valueColor = UIColor.systemPink
-        }
-        
-        if (isBleOnlyMode) {
+            valueColor = .systemOrange
+        } else if (isBleOnlyMode) {
             valueColor = UIColor.systemBlue
+        } else if (!isIndoor) {
+            valueColor = .systemGray
+        } else {
+            valueColor = UIColor.systemRed
         }
         
         let set1 = ScatterChartDataSet(entries: values1, label: "USER")
@@ -720,7 +722,7 @@ class FusionViewController: UIViewController, Observer {
         scatterChart.data = chartData
     }
     
-    private func drawDebug(XY: [Double], RP_X: [Double], RP_Y: [Double],  serverXY: [Double], tuXY: [Double], heading: Double, limits: [Double], isBleOnlyMode: Bool, isPmSuccess: Bool) {
+    private func drawDebug(XY: [Double], RP_X: [Double], RP_Y: [Double],  serverXY: [Double], tuXY: [Double], heading: Double, limits: [Double], isBleOnlyMode: Bool, isPmSuccess: Bool, isIndoor: Bool) {
         let xAxisValue: [Double] = RP_X
         let yAxisValue: [Double] = RP_Y
         
@@ -731,9 +733,12 @@ class FusionViewController: UIViewController, Observer {
         var valueColor = UIColor.systemRed
         if (!isPmSuccess) {
             valueColor = UIColor.systemPink
-        }
-        if (isBleOnlyMode) {
+        } else if (isBleOnlyMode) {
             valueColor = UIColor.systemBlue
+        } else if (!isIndoor) {
+            valueColor = .systemGray
+        } else {
+            valueColor = UIColor.systemRed
         }
         
         let set0 = ScatterChartDataSet(entries: values0, label: "RP")
@@ -864,6 +869,7 @@ class FusionViewController: UIViewController, Observer {
     func updateCoord(data: CoordToDisplay, flag: Bool) {
         self.XY[0] = data.x
         self.XY[1] = data.y
+        let isIndoor: Bool = data.isIndoor
         
         if (data.building == "") {
             currentBuilding = buildings[0]
@@ -898,13 +904,13 @@ class FusionViewController: UIViewController, Observer {
                 if (rp.isEmpty) {
                     scatterChart.isHidden = true
                 } else {
-                    drawDebug(XY: XY, RP_X: rp[0], RP_Y: rp[1], serverXY: serviceManager.serverResult, tuXY: serviceManager.timeUpdateResult, heading: heading, limits: limits, isBleOnlyMode: self.isBleOnlyMode, isPmSuccess: self.isPathMatchingSuccess)
+                    drawDebug(XY: XY, RP_X: rp[0], RP_Y: rp[1], serverXY: serviceManager.serverResult, tuXY: serviceManager.timeUpdateResult, heading: heading, limits: limits, isBleOnlyMode: self.isBleOnlyMode, isPmSuccess: self.isPathMatchingSuccess, isIndoor: isIndoor)
                 }
             }
         } else {
             if (buildings.contains(currentBuilding)) {
                 if (XY[0] != 0 && XY[1] != 0) {
-                    drawUser(XY: XY, heading: heading, limits: limits, isBleOnlyMode: self.isBleOnlyMode, isPmSuccess: self.isPathMatchingSuccess)
+                    drawUser(XY: XY, heading: heading, limits: limits, isBleOnlyMode: self.isBleOnlyMode, isPmSuccess: self.isPathMatchingSuccess, isIndoor: isIndoor)
                 }
             }
         }
@@ -1156,7 +1162,7 @@ extension FusionViewController : UICollectionViewDelegate{
             scatterChart.isHidden = true
         } else {
             if (isShowRP) {
-                drawDebug(XY: XY, RP_X: rp[0], RP_Y: rp[1], serverXY: serviceManager.serverResult, tuXY: serviceManager.timeUpdateResult, heading: 0, limits: limits, isBleOnlyMode: self.isBleOnlyMode, isPmSuccess: self.isPathMatchingSuccess)
+                drawDebug(XY: XY, RP_X: rp[0], RP_Y: rp[1], serverXY: serviceManager.serverResult, tuXY: serviceManager.timeUpdateResult, heading: 0, limits: limits, isBleOnlyMode: self.isBleOnlyMode, isPmSuccess: self.isPathMatchingSuccess, isIndoor: false)
             }
             displayLevelImage(building: currentBuilding, level: currentLevel, flag: isShowRP)
         }
@@ -1227,6 +1233,7 @@ extension FusionViewController: CustomSwitchButtonDelegate {
                         self.startTimer()
                     } else {
                         print("(FusionVC) Fail : \(message)")
+                        serviceManager.stopService()
                         self.showPopUp(title: "Service Fail", message: message)
                         self.goToBackServiceFail()
                     }
