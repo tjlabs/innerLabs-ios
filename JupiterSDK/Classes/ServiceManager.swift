@@ -336,7 +336,7 @@ public class ServiceManager: Observation {
     let SQUARE_RANGE_SMALL: Double = 10
     let SQUARE_RANGE_LARGE: Double = 20
     
-    let HEADING_RANGE: Double = 50
+    let HEADING_RANGE: Double = 46
     var pastMatchingResult: [Double] = [0, 0, 0, 0]
     
     let UVD_BUFFER_SIZE = 10
@@ -484,8 +484,10 @@ public class ServiceManager: Observation {
             numInput = 6
             interval = 1/2
         case "FLT":
-            numInput = 6
-            interval = 1/5
+//            numInput = 6
+//            interval = 1/5
+            numInput = 3
+            interval = 1/2
         case "OSA":
             numInput = 3
             interval = 1/2
@@ -2745,7 +2747,6 @@ public class ServiceManager: Observation {
 //                            headingCorrectionForHead = headInfoHeading - headInfo.userHeading
 //                        }
                         
-                        
                         var headingFromHead = [Double] (repeating: 0, count: uvHeading.count)
                         for i in 0..<uvHeading.count {
                             headingFromHead[i] = compensateHeading(heading: (uvHeading[i] + headingCorrectionForHead) - 180 + headingCorrectionFromServer)
@@ -3248,19 +3249,56 @@ public class ServiceManager: Observation {
                     }
                     
                     displayOutput.searchArea = getSearchCoordinates(areaMinMax: convertIntArrayToDoubleArray(searchInfo.0), interval: 1.0)
-                    displayOutput.searchType = 4
                     
-                    let phase2Headings = self.phase2Direction
-                    var searchHeadings: [Int] = []
-                    for i in 0..<phase2Headings.count {
-                        searchHeadings.append(Int(compensateHeading(heading: Double(phase2Headings[i]-5))))
-                        searchHeadings.append(Int(compensateHeading(heading: Double(phase2Headings[i]))))
-                        searchHeadings.append(Int(compensateHeading(heading: Double(phase2Headings[i]+5))))
+                    if (self.isActiveKf) {
+                        if (accumulatedLength < USER_TRAJECTORY_LENGTH*0.5) {
+                            let phase2Headings = self.phase2Direction
+                            var searchHeadings: [Int] = []
+                            for i in 0..<phase2Headings.count {
+                                searchHeadings.append(Int(compensateHeading(heading: Double(phase2Headings[i]-5))))
+                                searchHeadings.append(Int(compensateHeading(heading: Double(phase2Headings[i]))))
+                                searchHeadings.append(Int(compensateHeading(heading: Double(phase2Headings[i]+5))))
+                            }
+                            searchInfo.1 = searchHeadings
+
+                            displayOutput.searchType = 4
+
+                            self.timeRequest = 0
+                            processPhase2(currentTime: currentTime, localTime: localTime, userTrajectory: phase2Trajectory, searchInfo: searchInfo)
+                        } else {
+                            if (searchInfo.3 != 0) {
+                                self.timeRequest = 0
+                                processPhase2(currentTime: currentTime, localTime: localTime, userTrajectory: phase2Trajectory, searchInfo: searchInfo)
+                            }
+                        }
+                    } else {
+                        let phase2Headings = self.phase2Direction
+                        var searchHeadings: [Int] = []
+                        for i in 0..<phase2Headings.count {
+                            searchHeadings.append(Int(compensateHeading(heading: Double(phase2Headings[i]-5))))
+                            searchHeadings.append(Int(compensateHeading(heading: Double(phase2Headings[i]))))
+                            searchHeadings.append(Int(compensateHeading(heading: Double(phase2Headings[i]+5))))
+                        }
+                        searchInfo.1 = searchHeadings
+
+                        displayOutput.searchType = 4
+
+                        self.timeRequest = 0
+                        processPhase2(currentTime: currentTime, localTime: localTime, userTrajectory: phase2Trajectory, searchInfo: searchInfo)
                     }
-                    searchInfo.1 = searchHeadings
                     
-                    self.timeRequest = 0
-                    processPhase2(currentTime: currentTime, localTime: localTime, userTrajectory: phase2Trajectory, searchInfo: searchInfo)
+//                    displayOutput.searchType = 4
+//                    let phase2Headings = self.phase2Direction
+//                    var searchHeadings: [Int] = []
+//                    for i in 0..<phase2Headings.count {
+//                        searchHeadings.append(Int(compensateHeading(heading: Double(phase2Headings[i]-5))))
+//                        searchHeadings.append(Int(compensateHeading(heading: Double(phase2Headings[i]))))
+//                        searchHeadings.append(Int(compensateHeading(heading: Double(phase2Headings[i]+5))))
+//                    }
+//                    searchInfo.1 = searchHeadings
+//
+//                    self.timeRequest = 0
+//                    processPhase2(currentTime: currentTime, localTime: localTime, userTrajectory: phase2Trajectory, searchInfo: searchInfo)
                 } else if (self.phase < 4) {
                     // Phase 1 ~ 3
                     let phase3Trajectory = self.userTrajectoryInfo
@@ -3324,6 +3362,20 @@ public class ServiceManager: Observation {
         if (accumulatedLength >= USER_TRAJECTORY_LENGTH/2) {
             scCompenasation = [0.8, 1.0, 1.2]
         }
+        
+        var requestScArray: [Double] = [self.scCompensation]
+        if (self.runMode == "pdr") {
+            requestScArray = [1.0]
+        } else {
+            if (self.isScRequested) {
+                requestScArray = [1.01]
+            } else {
+                requestScArray = self.scCompensationArray
+                self.scRequestTime = currentTime
+                self.isScRequested = true
+            }
+        }
+        
         let input = FineLocationTracking(user_id: self.user_id, mobile_time: currentTime, sector_id: self.sector_id, building_name: self.currentBuilding, level_name: self.currentLevel, spot_id: self.currentSpot, phase: 2, search_range: searchInfo.0, search_direction_list: searchInfo.1, rss_compensation_list: [self.rssiBias], sc_compensation_list: scCompenasation, tail_index: searchInfo.2)
         self.networkCount += 1
         NetworkManager.shared.postFLT(url: FLT_URL, input: input, isSufficientRfd: self.isSufficientRfd, completion: { [self] statusCode, returnedString, rfdCondition in
@@ -3333,6 +3385,30 @@ public class ServiceManager: Observation {
             if (statusCode == 200) {
 //                print(getLocalTimeString() + " , (Jupiter) Phase 2 Result // Code = \(statusCode)")
                 var result = jsonToResult(json: returnedString)
+                
+                // Sc Compensation
+                if (self.isScRequested) {
+                    let compensationCheckTime = abs(result.mobile_time - self.scRequestTime)
+                    if (compensationCheckTime < 100) {
+                        if (result.scc < 0.55) {
+                            self.scCompensationBadCount += 1
+                        } else {
+                            if (result.scc > 0.7) {
+                                self.scCompensation = result.sc_compensation
+                            }
+                            self.scCompensationBadCount = 0
+                        }
+                        
+                        if (self.scCompensationBadCount > 1) {
+                            self.scCompensationBadCount = 0
+                            let resultEstScCompensation = estimateScCompensation(sccResult: result.scc, scResult: result.sc_compensation, scArray: self.scCompensationArray)
+                            self.scCompensationArray = resultEstScCompensation
+                            self.isScRequested = false
+                        }
+                    } else if (compensationCheckTime > 3000) {
+                        self.isScRequested = false
+                    }
+                }
                 if (result.x != 0 && result.y != 0) {
                     displayOutput.indexRx = result.index
                     displayOutput.scc = result.scc
@@ -3393,23 +3469,29 @@ public class ServiceManager: Observation {
                                     
                                     self.timeUpdatePosition.x = resultCorrected.1[0]
                                     self.timeUpdatePosition.y = resultCorrected.1[1]
-                                    self.timeUpdatePosition.heading = resultCorrected.1[2]
+//                                    self.timeUpdatePosition.heading = resultCorrected.1[2]
+                                    self.timeUpdatePosition.heading = resultHeading
+                                    self.updateHeading = resultHeading
 
                                     self.timeUpdateOutput.x = resultCorrected.1[0]
                                     self.timeUpdateOutput.y = resultCorrected.1[1]
-                                    self.timeUpdateOutput.absolute_heading = resultCorrected.1[2]
+//                                    self.timeUpdateOutput.absolute_heading = resultCorrected.1[2]
+                                    self.timeUpdateOutput.absolute_heading = resultHeading
 
                                     self.measurementPosition.x = resultCorrected.1[0]
                                     self.measurementPosition.y = resultCorrected.1[1]
-                                    self.measurementPosition.heading = resultCorrected.1[2]
+//                                    self.measurementPosition.heading = resultCorrected.1[2]
+                                    self.measurementPosition.heading = resultHeading
 
                                     self.measurementOutput.x = resultCorrected.1[0]
                                     self.measurementOutput.y = resultCorrected.1[1]
-                                    self.measurementOutput.absolute_heading = resultCorrected.1[2]
+//                                    self.measurementOutput.absolute_heading = resultCorrected.1[2]
+                                    self.measurementOutput.absolute_heading = resultHeading
 
                                     self.outputResult.x = resultCorrected.1[0]
                                     self.outputResult.y = resultCorrected.1[1]
-                                    self.outputResult.absolute_heading = resultCorrected.1[2]
+//                                    self.outputResult.absolute_heading = resultCorrected.1[2]
+                                    self.outputResult.absolute_heading = resultHeading
 
                                     self.resultToReturn = self.makeOutputResult(input: self.outputResult, isPast: self.flagPast, runMode: self.runMode, isVenusMode: self.isVenusMode)
                                 }
@@ -3610,7 +3692,6 @@ public class ServiceManager: Observation {
                                     self.measurementOutput.building_name = outputBuilding
                                     self.measurementOutput.level_name = outputLevel
                                     self.measurementOutput.phase = outputPhase
-                                    
                                     self.isActiveKf = true
                                     self.timeUpdateFlag = true
                                     self.isStartKf = true
@@ -3620,23 +3701,29 @@ public class ServiceManager: Observation {
                             if (result.phase == 4) {
                                 self.timeUpdatePosition.x = resultCorrected.1[0]
                                 self.timeUpdatePosition.y = resultCorrected.1[1]
-                                self.timeUpdatePosition.heading = resultCorrected.1[2]
+//                                self.timeUpdatePosition.heading = resultCorrected.1[2]
+                                self.timeUpdatePosition.heading = compensateHeading(heading: result.absolute_heading)
+                                self.updateHeading = compensateHeading(heading: result.absolute_heading)
                                 
                                 self.timeUpdateOutput.x = resultCorrected.1[0]
                                 self.timeUpdateOutput.y = resultCorrected.1[1]
-                                self.timeUpdateOutput.absolute_heading = resultCorrected.1[2]
+//                                self.timeUpdateOutput.absolute_heading = resultCorrected.1[2]
+                                self.timeUpdateOutput.absolute_heading = compensateHeading(heading: result.absolute_heading)
                                 
                                 self.measurementPosition.x = resultCorrected.1[0]
                                 self.measurementPosition.y = resultCorrected.1[1]
-                                self.measurementPosition.heading = resultCorrected.1[2]
+//                                self.measurementPosition.heading = resultCorrected.1[2]
+                                self.measurementPosition.heading = compensateHeading(heading: result.absolute_heading)
                                 
                                 self.measurementOutput.x = resultCorrected.1[0]
                                 self.measurementOutput.y = resultCorrected.1[1]
-                                self.measurementOutput.absolute_heading = resultCorrected.1[2]
+//                                self.measurementOutput.absolute_heading = resultCorrected.1[2]
+                                self.measurementOutput.absolute_heading = compensateHeading(heading: result.absolute_heading)
                                 
                                 self.outputResult.x = resultCorrected.1[0]
                                 self.outputResult.y = resultCorrected.1[1]
-                                self.outputResult.absolute_heading = resultCorrected.1[2]
+//                                self.outputResult.absolute_heading = resultCorrected.1[2]
+                                self.outputResult.absolute_heading = compensateHeading(heading: result.absolute_heading)
                                 
                                 self.resultToReturn = self.makeOutputResult(input: self.outputResult, isPast: self.flagPast, runMode: self.runMode, isVenusMode: self.isVenusMode)
                             }
@@ -3659,7 +3746,7 @@ public class ServiceManager: Observation {
                                     }
                                     // Building Level 이 바뀐지 10초 이상 지남 -> 서버 결과를 이용해 바뀌어야 한다고 판단
                                     self.currentBuilding = result.building_name
-                                    self.currentLevel = result.level_name
+                                    self.currentLevel = removeLevelDirectionString(levelName: result.level_name)
                                 } else {
                                     resultCopy.building_name = self.currentBuilding
                                     resultCopy.level_name = self.currentLevel
@@ -3696,7 +3783,7 @@ public class ServiceManager: Observation {
                                 if ((result.mobile_time - self.buildingLevelChangedTime) > TIME_CONDITION) {
                                     // Building Level 이 바뀐지 10초 이상 지남 -> 서버 결과를 이용해 바뀌어야 한다고 판단
                                     self.currentBuilding = result.building_name
-                                    self.currentLevel = result.level_name
+                                    self.currentLevel = removeLevelDirectionString(levelName: result.level_name)
                                     
                                     timUpdateOutputCopy.building_name = result.building_name
                                     timUpdateOutputCopy.level_name = result.level_name
@@ -3760,6 +3847,7 @@ public class ServiceManager: Observation {
                         self.biasRequestTime = currentTime
                         self.isBiasRequested = true
                     } else {
+                        
                         requestBiasArray = [self.rssiBias]
                     }
                 }
@@ -3775,7 +3863,8 @@ public class ServiceManager: Observation {
             if (requestBiasArray.count == 1) {
                 // 1개 -> scCoompenstaion 가능 -> 여기서 판단해서 3개보낼지 하나보낼지
                 if (self.isScRequested) {
-                    requestScArray = [self.scCompensation]
+//                    requestScArray = [self.scCompensation]
+                    requestScArray = [1.01]
                 } else {
                     requestScArray = self.scCompensationArray
                     self.scRequestTime = currentTime
@@ -3876,7 +3965,7 @@ public class ServiceManager: Observation {
                             
                             self.pastSearchDirection = result.search_direction
                             if (self.isActiveKf && result.phase == 4) {
-                                if (!(result.x == 0 && result.y == 0)) {
+                                if (!(result.x == 0 && result.y == 0) && !self.isDetermineSpot) {
                                     if (self.isPhaseBreak) {
                                         if (self.runMode == "pdr") {
                                             self.kalmanR = 0.5
@@ -3993,7 +4082,7 @@ public class ServiceManager: Observation {
                                                     }
                                                     // Building Level 이 바뀐지 10초 이상 지남 -> 서버 결과를 이용해 바뀌어야 한다고 판단
                                                     self.currentBuilding = result.building_name
-                                                    self.currentLevel = result.level_name
+                                                    self.currentLevel = removeLevelDirectionString(levelName: result.level_name)
                                                     
                                                     muResult.building_name = result.building_name
                                                     muResult.level_name = result.level_name

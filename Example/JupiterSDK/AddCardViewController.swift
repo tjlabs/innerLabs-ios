@@ -32,6 +32,9 @@ class AddCardViewController: UIViewController, UITextFieldDelegate {
     var delegate : AddCardDelegate?
     var currentRegion: String = ""
     var confirmText: String = ""
+    var enrollSuccessText: String = ""
+    var enrollConflictText: String = ""
+    var enrollFailText: String = ""
     
     
     override func viewDidLoad() {
@@ -52,10 +55,19 @@ class AddCardViewController: UIViewController, UITextFieldDelegate {
         switch (region) {
         case "Korea":
             self.confirmText = "완료"
+            self.enrollSuccessText = " 카드가 등록 됐습니다"
+            self.enrollConflictText = "이미 등록된 카드 입니다"
+            self.enrollFailText = "유효한 코드를 입력해주세요"
         case "Canada":
             self.confirmText = "Confirm"
+            self.enrollSuccessText = " card is enrolled"
+            self.enrollConflictText = "Already enrolled card"
+            self.enrollFailText = "Please enter the valid code"
         default:
             self.confirmText = "Confirm"
+            self.enrollSuccessText = " card is enrolled"
+            self.enrollConflictText = "Already enrolled card"
+            self.enrollFailText = "Please enter the valid code"
         }
         
         self.confirmLabel.text = self.confirmText
@@ -85,7 +97,7 @@ class AddCardViewController: UIViewController, UITextFieldDelegate {
             
             switch (message) {
             case "Update Success":
-                enrollMessage = "\(addedCard.sector_name) card is enrolled"
+                enrollMessage = "\(addedCard.sector_name)" + self.enrollSuccessText
                 self.responseLabel.text = enrollMessage
                 self.responseLabel.textColor = .systemBlue
                 self.responseLabel.isHidden = false
@@ -136,17 +148,17 @@ class AddCardViewController: UIViewController, UITextFieldDelegate {
                 
                 self.page = self.page + 4
             case "Update Conflict":
-                enrollMessage = "Alreadey enrolled card"
+                enrollMessage = self.enrollConflictText
                 self.responseLabel.text = enrollMessage
                 self.responseLabel.textColor = .systemRed
                 self.responseLabel.isHidden = false
             case "Update Fail":
-                enrollMessage = "Please enter the valid code"
+                enrollMessage = self.enrollFailText
                 self.responseLabel.text = enrollMessage
                 self.responseLabel.textColor = .systemRed
                 self.responseLabel.isHidden = false
             default:
-                enrollMessage = "Please enter the valid code"
+                enrollMessage = self.enrollFailText
                 self.responseLabel.text = enrollMessage
                 self.responseLabel.textColor = .systemRed
                 self.responseLabel.isHidden = false
