@@ -70,6 +70,7 @@ class FusionViewController: UIViewController, Observer {
                         self.coordToDisplay.x = x
                         self.coordToDisplay.y = y
                         self.coordToDisplay.heading = result.absolute_heading
+                        self.coordToDisplay.isIndoor = result.isIndoor
                     }
                 }
             }

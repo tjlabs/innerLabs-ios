@@ -12,6 +12,7 @@ struct SectorInfo: Codable {
 
 struct SectorInfoResult: Codable {
     var building_level: [[String]]
+    var entrance_wards: [String]
 }
  
 struct CardList: Codable {
