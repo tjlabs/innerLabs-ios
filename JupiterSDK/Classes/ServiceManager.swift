@@ -69,9 +69,10 @@ public class ServiceManager: Observation {
     var EntranceArea = [String: [[Double]]]()
     var EntranceWards = [String]()
     var PathMatchingArea = [String: [[Double]]]()
-    var EntranceNumbers: Int = 5
+    var EntranceNumbers: Int = 0
     var EntranceInfo = [String: [[Double]]]()
-    var EntranceVelocityScale = [String: Double]()
+    var EntranceVelocityScale = [Double]()
+//    var EntranceVelocityScale = [String: Double]()
     var currentEntrance: String = ""
     var currentEntranceLength: Int = 0
     var currentEntranceIndex: Int = 0
@@ -548,7 +549,7 @@ public class ServiceManager: Observation {
                     let log: String = getLocalTimeString() + " , (Jupiter) Success : User Login"
                     print(log)
                     
-                    (self.EntranceInfo, self.EntranceVelocityScale) = loadEntrances(sector_id: sector_id)
+//                    (self.EntranceInfo, self.EntranceVelocityScale) = loadEntrances(sector_id: sector_id)
 //                    for (key, value) in EntranceInfo {
 //                        print("Key = \(key)")
 //                        print(value)
@@ -562,8 +563,10 @@ public class ServiceManager: Observation {
                         if (statusCode == 200) {
                             let sectorInfoResult = jsonToSectorInfoResult(json: returnedString)
                             let entranceWards = sectorInfoResult.entrance_wards
+                            let entranceScales = sectorInfoResult.entrance_scales
                             self.EntranceWards = entranceWards
-                            print(self.EntranceWards)
+                            self.EntranceNumbers = entranceWards.count
+                            self.EntranceVelocityScale = entranceScales
                             
                             let buildings_n_levels: [[String]] = sectorInfoResult.building_level
                             
@@ -612,21 +615,30 @@ public class ServiceManager: Observation {
                                                 if let utf8Text = String(data: responseData, encoding: .utf8) {
                                                     ( self.PathType[key], self.PathPoint[key], self.PathMagScale[key], self.PathHeading[key] ) = self.parseRoad(data: utf8Text)
                                                     self.isLoadEnd[key] = [true, true]
-//                                                    print("PathType \(key) = \(self.PathType[key])")
-//                                                    print("PathPoint \(key) = \(self.PathPoint[key])")
-//                                                    print("PathMagScale \(key) = \(self.PathMagScale[key])")
-//                                                    print("PathHeading \(key) = \(self.PathHeading[key])")
-//                                                    let log: String = getLocalTimeString() + " , (Jupiter) Success : Load \(buildingName) \(levelName) Path-Point"
-//                                                    print(log)
                                                 }
                                             }
                                         } else {
                                             self.isLoadEnd[key] = [true, false]
-//                                            let log: String = getLocalTimeString() + " , (Jupiter) Warnings : Load \(buildingName) \(levelName) Path-Point"
-//                                            print(log)
                                         }
                                     })
                                     dataTask.resume()
+                                    
+                                    if (levelName == "B0") {
+                                        for i in 0..<self.EntranceNumbers {
+                                            let number = i+1
+                                            let entranceKey = key + "_\(number)"
+                                            
+                                            let loadedData = loadEntranceFromCache(key: entranceKey)
+                                            print(getLocalTimeString() + " , (Jupiter) Entrance : loadEntranceFromCache // \(entranceKey)")
+                                            if (loadedData.isEmpty) {
+                                                print(getLocalTimeString() + " , (Jupiter) Information : Download Entrance-Info \(entranceKey)")
+                                                loadEntranceFromUrl(key: entranceKey)
+                                            } else {
+                                                self.EntranceInfo[key] = loadedData
+                                                print(getLocalTimeString() + " , (Jupiter) Information : Already have Entrance-Info \(entranceKey)")
+                                            }
+                                        }
+                                    }
                                 }
                                 
                                 for j in 0..<levelList!.count {
@@ -936,6 +948,66 @@ public class ServiceManager: Observation {
             url = "https://storage.googleapis.com/\(IMAGE_URL)/ios/pp-2/\(self.sectorIdOrigin)/\(key).csv"
         default:
             url = "https://storage.googleapis.com/\(IMAGE_URL)/ios/pp/\(self.sectorIdOrigin)/\(key).csv"
+        }
+        
+        return url
+    }
+    
+    func loadEntranceFromCache(key: String) -> [[Double]] {
+        let entranceKey: String = key
+        var entrance = [[Double]]()
+        
+        if let entranceInfo: [[Double]] = UserDefaults.standard.object(forKey: entranceKey) as? [[Double]] {
+            entrance = entranceInfo
+        }
+        return entrance
+    }
+    
+    func saveEntranceToCache(key: String, entranceData: [[Double]]) {
+        do {
+            UserDefaults.standard.set(entranceData, forKey: key)
+            print("(Jupiter) Success : Save EntranceInfo \(key)")
+        } catch {
+            print("(Jupiter) Error : Fail to save EntranceInfo \(key)")
+        }
+    }
+    
+    func loadEntranceFromUrl(key: String) {
+        let entranceKey = key
+        let entranceUrl = self.getEntranceUrl(server: self.serverType, key: entranceKey)
+        let entranceUrlComponents = URLComponents(string: entranceUrl)
+        let entranceRequestURL = URLRequest(url: (entranceUrlComponents?.url)!)
+        let entranceDataTask = URLSession.shared.dataTask(with: entranceRequestURL, completionHandler: { [self] (data, response, error) in
+            let statusCode = (response as? HTTPURLResponse)?.statusCode ?? 500
+            if (statusCode == 200) {
+                if let responseData = data {
+                    if let utf8Text = String(data: responseData, encoding: .utf8) {
+                        let parsedData = self.parseEntrance(data: utf8Text)
+                        self.EntranceInfo[entranceKey] = parsedData
+                        self.saveEntranceToCache(key: entranceKey, entranceData: parsedData)
+                        print(getLocalTimeString() + " , (Jupiter) Success : Load EntranceInfo from url // \(entranceKey)")
+                    }
+                }
+            } else {
+                let log: String = getLocalTimeString() + " , (Jupiter) Warnings : Load \(entranceKey) EntranceInfo"
+                print(log)
+            }
+        })
+        entranceDataTask.resume()
+    }
+    
+    func getEntranceUrl(server: Int, key: String) -> String {
+        var url = "https://storage.googleapis.com/\(IMAGE_URL)/ios/entrance/\(self.sectorIdOrigin)/\(key).csv"
+        
+        switch (server) {
+        case 0:
+            url = "https://storage.googleapis.com/\(IMAGE_URL)/ios/entrance-test/\(self.sectorIdOrigin)/\(key).csv"
+        case 1:
+            url = "https://storage.googleapis.com/\(IMAGE_URL)/ios/entrance/\(self.sectorIdOrigin)/\(key).csv"
+        case 2:
+            url = "https://storage.googleapis.com/\(IMAGE_URL)/ios/entrance-2/\(self.sectorIdOrigin)/\(key).csv"
+        default:
+            url = "https://storage.googleapis.com/\(IMAGE_URL)/ios/entrance/\(self.sectorIdOrigin)/\(key).csv"
         }
         
         return url
@@ -1561,6 +1633,7 @@ public class ServiceManager: Observation {
                             }
                         }
                         
+                        
                         if (self.isActiveKf) {
                             result = self.lastResult
                         } else {
@@ -1697,12 +1770,13 @@ public class ServiceManager: Observation {
                                     let entranceResult = self.findEntrance(result: result, entrance: i)
                                     print(getLocalTimeString() + " , (Jupiter) Entrance Simulator : findEntrance = \(entranceResult)")
                                     if (entranceResult.0 != 0) {
+                                        let velocityScale: Double = self.EntranceVelocityScale[i]
                                         print(getLocalTimeString() + " , (Jupiter) Entrance Simulator : number = \(entranceResult.0)")
-                                        print(getLocalTimeString() + " , (Jupiter) Entrance Simulator : scale = \(entranceResult.2)")
+                                        print(getLocalTimeString() + " , (Jupiter) Entrance Simulator : scale = \(velocityScale)")
                                         // 입구 탐지 !
                                         self.currentEntrance = "\(result.building_name)_\(result.level_name)_\(entranceResult.0)"
                                         self.currentEntranceLength = entranceResult.1
-                                        self.entranceVelocityScale = entranceResult.2
+                                        self.entranceVelocityScale = velocityScale
                                         
                                         self.isStartSimulate = true
                                     }
@@ -3810,6 +3884,22 @@ public class ServiceManager: Observation {
                         displayOutput.indexRx = result.index
                         displayOutput.scc = result.scc
                         displayOutput.phase = String(result.phase)
+                        
+                        let buildingName = result.building_name
+                        let levelName = result.level_name
+                        if (levelName == "B0") {
+                            for i in 0..<self.EntranceNumbers {
+                                let number = i+1
+                                let entranceKey = "\(buildingName)_\(levelName)_\(number)"
+                                
+                                if let loadedData = self.EntranceInfo[entranceKey] {
+//                                    print(getLocalTimeString() + " (Jupiter) Information : Already have Entrance-Info \(entranceKey)")
+                                } else {
+                                    self.loadEntranceFromUrl(key: entranceKey)
+                                }
+                            }
+                        }
+                        
                         if (!self.isGetFirstResponse) {
                             if (!self.isIndoor && (self.timeForInit >= TIME_INIT_THRESHOLD)) {
                                 self.isGetFirstResponse = true
@@ -5018,170 +5108,32 @@ public class ServiceManager: Observation {
         return (roadType, road, roadScale, roadHeading)
     }
     
-    private func loadEntranceInfo(buildingName: String, levelName: String) {
-        if (levelName == "B0") {
-            let key: String = "\(buildingName)_\(levelName)_4"
-            var entranceInfo = [[Double]]()
-//            entranceInfo.append([225, 432, 270])
-//            entranceInfo.append([225, 431, 270])
-//            entranceInfo.append([225, 430, 270])
-//            entranceInfo.append([225, 429, 270])
-//            entranceInfo.append([225, 428, 270])
-//            entranceInfo.append([225, 427, 270])
-//            entranceInfo.append([225, 426, 270])
-//            entranceInfo.append([225, 425, 270])
-//            entranceInfo.append([225, 424, 270])
-//            entranceInfo.append([225, 423, 270])
-            entranceInfo.append([225, 422, 270])
-            entranceInfo.append([225, 421, 270])
-            entranceInfo.append([225, 420, 270])
-            entranceInfo.append([225, 419, 270])
-            entranceInfo.append([225, 418, 270])
-            entranceInfo.append([225, 417, 270])
-            entranceInfo.append([225, 416, 270])
-            entranceInfo.append([225, 415, 270])
-            entranceInfo.append([225, 414, 270])
-            entranceInfo.append([225, 413, 270])
-            entranceInfo.append([225, 412, 270])
-            entranceInfo.append([225, 411, 270])
-            entranceInfo.append([225, 410, 270])
-            entranceInfo.append([225, 409, 270])
-            entranceInfo.append([225, 408, 270])
-            entranceInfo.append([225, 407, 270])
-            entranceInfo.append([225, 406, 270])
-            entranceInfo.append([225, 405, 270])
-            entranceInfo.append([225, 404, 270])
-            entranceInfo.append([225, 403, 270])
-            entranceInfo.append([225, 402, 270])
-            //
-            entranceInfo.append([225, 401, 0])
-            entranceInfo.append([226, 401, 0])
-            entranceInfo.append([227, 401, 0])
-            entranceInfo.append([228, 401, 0])
-            entranceInfo.append([229, 401, 0])
-            entranceInfo.append([230, 401, 0])
-            entranceInfo.append([231, 401, 0])
-            entranceInfo.append([232, 401, 0])
-            entranceInfo.append([233, 401, 0])
-            entranceInfo.append([234, 401, 0])
-            entranceInfo.append([235, 401, 0])
-            entranceInfo.append([236, 401, 0])
-            entranceInfo.append([237, 401, 0])
-            entranceInfo.append([238, 401, 0])
-            entranceInfo.append([239, 401, 0])
-            entranceInfo.append([240, 401, 0])
-            entranceInfo.append([241, 401, 0])
-            entranceInfo.append([242, 401, 0])
-            entranceInfo.append([243, 401, 0])
-            entranceInfo.append([244, 401, 0])
-            entranceInfo.append([245, 401, 0])
-            entranceInfo.append([246, 401, 0])
-            entranceInfo.append([247, 401, 0])
-            entranceInfo.append([248, 401, 0])
-            entranceInfo.append([249, 401, 0])
-            entranceInfo.append([250, 401, 0])
-            entranceInfo.append([251, 401, 0])
-            entranceInfo.append([252, 401, 0])
-            entranceInfo.append([253, 401, 0])
-            entranceInfo.append([254, 401, 0])
-            entranceInfo.append([255, 401, 0])
-            entranceInfo.append([256, 401, 0])
-            entranceInfo.append([257, 401, 0])
-            entranceInfo.append([258, 401, 0])
-            entranceInfo.append([259, 401, 0])
-            //
-            entranceInfo.append([259, 402, 90])
-            entranceInfo.append([259, 403, 90])
-            entranceInfo.append([259, 404, 90])
-            entranceInfo.append([259, 405, 90])
-            entranceInfo.append([259, 406, 90])
-            entranceInfo.append([259, 407, 90])
-            entranceInfo.append([259, 408, 90])
-            entranceInfo.append([259, 409, 90])
-            entranceInfo.append([259, 410, 90])
-            entranceInfo.append([259, 411, 90])
-            entranceInfo.append([259, 412, 90])
-            entranceInfo.append([259, 413, 90])
-            entranceInfo.append([259, 414, 90])
-            entranceInfo.append([259, 415, 90])
-            entranceInfo.append([259, 416, 90])
-            entranceInfo.append([259, 417, 90])
-            entranceInfo.append([259, 418, 90])
-            entranceInfo.append([259, 419, 90])
-            entranceInfo.append([259, 420, 90])
-            entranceInfo.append([259, 421, 90])
-            entranceInfo.append([259, 422, 90])
-            entranceInfo.append([259, 423, 90])
-            entranceInfo.append([259, 424, 90])
-            entranceInfo.append([259, 425, 90])
-            entranceInfo.append([259, 426, 90])
-            entranceInfo.append([259, 427, 90])
-            entranceInfo.append([259, 428, 90])
-            entranceInfo.append([259, 429, 90])
-            entranceInfo.append([259, 430, 90])
-            entranceInfo.append([259, 431, 90])
-            entranceInfo.append([259, 432, 90])
-            entranceInfo.append([259, 433, 90])
-            entranceInfo.append([259, 434, 90])
-            entranceInfo.append([259, 435, 90])
-            entranceInfo.append([259, 436, 90])
-            entranceInfo.append([259, 437, 90])
-            entranceInfo.append([259, 438, 90])
-            entranceInfo.append([259, 439, 90])
-            entranceInfo.append([259, 440, 90])
-            entranceInfo.append([259, 441, 90])
-            entranceInfo.append([259, 442, 90])
-            //
-            entranceInfo.append([258, 442, 180])
-            entranceInfo.append([257, 442, 180])
-            entranceInfo.append([256, 442, 180])
-            entranceInfo.append([255, 442, 180])
-            entranceInfo.append([254, 442, 180])
-            entranceInfo.append([253, 442, 180])
-            entranceInfo.append([252, 442, 180])
-            entranceInfo.append([251, 442, 180])
-            entranceInfo.append([250, 442, 180])
-            entranceInfo.append([249, 442, 180])
-            entranceInfo.append([248, 442, 180])
-            entranceInfo.append([247, 442, 180])
-            entranceInfo.append([246, 442, 180])
-            entranceInfo.append([245, 442, 180])
-            entranceInfo.append([244, 442, 180])
-            entranceInfo.append([243, 442, 180])
-            entranceInfo.append([242, 442, 180])
-            entranceInfo.append([241, 442, 180])
-            entranceInfo.append([240, 442, 180])
-            entranceInfo.append([239, 442, 180])
-            entranceInfo.append([238, 442, 180])
-            entranceInfo.append([237, 442, 180])
-            entranceInfo.append([236, 442, 180])
-            entranceInfo.append([235, 442, 180])
-            entranceInfo.append([234, 442, 180])
-            entranceInfo.append([233, 442, 180])
-            entranceInfo.append([232, 442, 180])
-            entranceInfo.append([231, 442, 180])
-            entranceInfo.append([230, 442, 180])
-            entranceInfo.append([229, 442, 180])
-            entranceInfo.append([228, 442, 180])
-            entranceInfo.append([227, 442, 180])
-            entranceInfo.append([226, 442, 180])
-            entranceInfo.append([225, 442, 180])
-            entranceInfo.append([224, 442, 180])
-            entranceInfo.append([223, 442, 180])
-            entranceInfo.append([222, 442, 180])
-            entranceInfo.append([221, 442, 180])
-            entranceInfo.append([220, 442, 180])
-            
-            self.EntranceInfo[key] = entranceInfo
-//            print("EntranceInfo = \(key)")
-//            print("EntranceInfo = \(self.EntranceInfo[key])")
+    private func parseEntrance(data: String) -> [[Double]] {
+        var entrance = [[Double]]()
+        
+        var entranceX = [Double]()
+        var entranceY = [Double]()
+        var entranceHeading = [Double]()
+        
+        let entranceString = data.components(separatedBy: .newlines)
+        for i in 0..<entranceString.count {
+            if (entranceString[i] != "") {
+                let lineData = entranceString[i].components(separatedBy: ",")
+                
+                entranceX.append((Double(lineData[0])!))
+                entranceY.append(Double(lineData[1])!)
+                entranceHeading.append(Double(lineData[2])!)
+            }
         }
+        entrance = [entranceX, entranceY, entranceHeading]
+        
+        return entrance
     }
     
-    private func findEntrance(result: FineLocationTrackingFromServer, entrance: Int) -> (Int, Int, Double) {
+    private func findEntrance(result: FineLocationTrackingFromServer, entrance: Int) -> (Int, Int) {
         var entranceNumber: Int = 0
         var entranceLength: Int = 0
-        var velocityScale: Double = 1.0
+//        var velocityScale: Double = 1.0
         
         let lastResult = result
         
@@ -5198,12 +5150,12 @@ public class ServiceManager: Observation {
             
             let key = "\(buildingName)_\(levelName)_\(number)"
             
-            if let loadedScale: Double = self.EntranceVelocityScale[key] {
-                velocityScale = loadedScale
-            }
+//            if let loadedScale: Double = self.EntranceVelocityScale[key] {
+//                velocityScale = loadedScale
+//            }
             
             guard let entranceInfo: [[Double]] = self.EntranceInfo[key] else {
-                return (entranceNumber, entranceLength, velocityScale)
+                return (entranceNumber, entranceLength)
             }
             
             // Find minimum and maximum values of column 1
@@ -5239,7 +5191,7 @@ public class ServiceManager: Observation {
             }
         }
         
-        return (entranceNumber, entranceLength, velocityScale)
+        return (entranceNumber, entranceLength)
     }
     
     
