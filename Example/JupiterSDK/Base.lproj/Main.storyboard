@@ -133,12 +133,25 @@
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="SDK Version " lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="znb-I6-SF2">
+                                <rect key="frame" x="15" y="745.33333333333337" width="74" height="15"/>
+                                <fontDescription key="fontDescription" type="italicSystem" pointSize="12"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qqT-Dj-6j4">
+                                <rect key="frame" x="14.999999999999998" y="765.33333333333337" width="26.333333333333329" height="12"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="10"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="tJz-hP-2ob"/>
                         <color key="backgroundColor" systemColor="systemGray6Color"/>
                         <constraints>
                             <constraint firstItem="zl8-wP-m6e" firstAttribute="leading" secondItem="tJz-hP-2ob" secondAttribute="leading" id="0TH-6V-Zwl"/>
                             <constraint firstItem="I89-If-8y7" firstAttribute="leading" secondItem="tJz-hP-2ob" secondAttribute="leading" constant="23.300000000000001" id="0Zh-6P-Tm5"/>
+                            <constraint firstItem="znb-I6-SF2" firstAttribute="leading" secondItem="tJz-hP-2ob" secondAttribute="leading" constant="15" id="43w-9q-M6v"/>
                             <constraint firstItem="zl8-wP-m6e" firstAttribute="top" secondItem="tJz-hP-2ob" secondAttribute="top" constant="153.30000000000001" id="4j4-a5-FLr"/>
                             <constraint firstItem="U3z-wL-2zJ" firstAttribute="centerY" secondItem="vI8-C4-adM" secondAttribute="centerY" id="6Wh-Fa-azj"/>
                             <constraint firstItem="vI8-C4-adM" firstAttribute="trailing" secondItem="So7-VT-aPc" secondAttribute="trailing" id="763-st-fnb"/>
@@ -148,6 +161,7 @@
                             <constraint firstItem="4Wm-pG-8t2" firstAttribute="centerY" secondItem="So7-VT-aPc" secondAttribute="centerY" id="CXS-dr-9V7"/>
                             <constraint firstItem="3cD-sh-gUq" firstAttribute="top" secondItem="So7-VT-aPc" secondAttribute="bottom" constant="60" id="KEb-cY-zKi"/>
                             <constraint firstItem="tJz-hP-2ob" firstAttribute="trailing" secondItem="C17-O1-Ggj" secondAttribute="trailing" constant="10" id="LPK-1p-NrU"/>
+                            <constraint firstItem="qqT-Dj-6j4" firstAttribute="top" secondItem="znb-I6-SF2" secondAttribute="bottom" constant="5" id="O5h-Dj-vQx"/>
                             <constraint firstItem="tJz-hP-2ob" firstAttribute="trailing" secondItem="4Wm-pG-8t2" secondAttribute="trailing" constant="50" id="OT2-VG-OGq"/>
                             <constraint firstItem="tJz-hP-2ob" firstAttribute="trailing" secondItem="So7-VT-aPc" secondAttribute="trailing" constant="23.300000000000001" id="Thl-4W-DeY"/>
                             <constraint firstItem="C17-O1-Ggj" firstAttribute="top" secondItem="beZ-wd-V62" secondAttribute="bottom" constant="5" id="UGI-U1-pBj"/>
@@ -157,8 +171,10 @@
                             <constraint firstItem="So7-VT-aPc" firstAttribute="leading" secondItem="tJz-hP-2ob" secondAttribute="leading" constant="23.300000000000001" id="ava-Bh-kbu"/>
                             <constraint firstItem="tJz-hP-2ob" firstAttribute="trailing" secondItem="I89-If-8y7" secondAttribute="trailing" constant="23.300000000000001" id="fkl-dQ-qua"/>
                             <constraint firstItem="4Wm-pG-8t2" firstAttribute="leading" secondItem="So7-VT-aPc" secondAttribute="trailing" constant="-280" id="lQY-yI-aGk"/>
+                            <constraint firstItem="qqT-Dj-6j4" firstAttribute="leading" secondItem="znb-I6-SF2" secondAttribute="leading" id="nKB-MO-NaZ"/>
                             <constraint firstItem="I89-If-8y7" firstAttribute="top" secondItem="3cD-sh-gUq" secondAttribute="bottom" constant="40" id="p4b-YC-fto"/>
                             <constraint firstItem="3cD-sh-gUq" firstAttribute="centerX" secondItem="kh9-bI-dsS" secondAttribute="centerX" id="qi5-HG-1G0"/>
+                            <constraint firstItem="znb-I6-SF2" firstAttribute="centerY" secondItem="beZ-wd-V62" secondAttribute="centerY" id="wDU-YR-zkR"/>
                             <constraint firstItem="So7-VT-aPc" firstAttribute="top" secondItem="zl8-wP-m6e" secondAttribute="bottom" constant="40" id="wNv-6g-THQ"/>
                         </constraints>
                     </view>
@@ -171,6 +187,7 @@
                         <outlet property="dropView" destination="C17-O1-Ggj" id="5UC-38-2xm"/>
                         <outlet property="guideLabel" destination="3cD-sh-gUq" id="qM7-fN-aJC"/>
                         <outlet property="saveUuidButton" destination="U3z-wL-2zJ" id="CJG-0x-IaM"/>
+                        <outlet property="sdkVersionLabel" destination="qqT-Dj-6j4" id="Uzl-ch-Dgq"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="x5A-6p-PRh" sceneMemberID="firstResponder"/>
@@ -1207,7 +1224,7 @@
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="정보 보기" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3t5-Iy-m5f">
-                                        <rect key="frame" x="312" y="62" width="56" height="21"/>
+                                        <rect key="frame" x="312.33333333333331" y="62.333333333333336" width="55.666666666666686" height="20.333333333333336"/>
                                         <fontDescription key="fontDescription" name="NotoSansKR-Bold" family="Noto Sans KR" pointSize="14"/>
                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <nil key="highlightedColor"/>

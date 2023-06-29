@@ -723,7 +723,7 @@ class FusionViewController: UIViewController, Observer {
         scatterChart.data = chartData
     }
     
-    private func drawDebug(XY: [Double], RP_X: [Double], RP_Y: [Double],  serverXY: [Double], tuXY: [Double], heading: Double, limits: [Double], isBleOnlyMode: Bool, isPmSuccess: Bool, isIndoor: Bool) {
+    private func drawDebug(XY: [Double], RP_X: [Double], RP_Y: [Double],  serverXY: [Double], tuXY: [Double], heading: Double, limits: [Double], isBleOnlyMode: Bool, isPmSuccess: Bool, trajectoryStartCoord: [Double], userTrajectory: [[Double]], searchArea: [[Double]], searchType: Int, isIndoor: Bool) {
         let xAxisValue: [Double] = RP_X
         let yAxisValue: [Double] = RP_Y
         
@@ -825,10 +825,10 @@ class FusionViewController: UIViewController, Observer {
         print("\(currentBuilding) \(currentLevel) MinMax : \(xMin) , \(xMax), \(yMin), \(yMax)")
         print("\(currentBuilding) \(currentLevel) Limits : \(limits[0]) , \(limits[1]), \(limits[2]), \(limits[3])")
         
-//        scatterChart.xAxis.axisMinimum = 0.3
-//        scatterChart.xAxis.axisMaximum = 100.75
-//        scatterChart.leftAxis.axisMinimum = 0.5
-//        scatterChart.leftAxis.axisMaximum = 108.2
+//        scatterChart.xAxis.axisMinimum = 2.2
+//        scatterChart.xAxis.axisMaximum = 99.6
+//        scatterChart.leftAxis.axisMinimum = -1.4
+//        scatterChart.leftAxis.axisMaximum = 108.5
         
         if ( limits[0] == 0 && limits[1] == 0 && limits[2] == 0 && limits[3] == 0 ) {
             scatterChart.xAxis.axisMinimum = xMin - 5
@@ -905,7 +905,7 @@ class FusionViewController: UIViewController, Observer {
                 if (rp.isEmpty) {
                     scatterChart.isHidden = true
                 } else {
-                    drawDebug(XY: XY, RP_X: rp[0], RP_Y: rp[1], serverXY: serviceManager.serverResult, tuXY: serviceManager.timeUpdateResult, heading: heading, limits: limits, isBleOnlyMode: self.isBleOnlyMode, isPmSuccess: self.isPathMatchingSuccess, isIndoor: isIndoor)
+                    drawDebug(XY: XY, RP_X: rp[0], RP_Y: rp[1], serverXY: serviceManager.serverResult, tuXY: serviceManager.timeUpdateResult, heading: heading, limits: limits, isBleOnlyMode: self.isBleOnlyMode, isPmSuccess: self.isPathMatchingSuccess, trajectoryStartCoord: serviceManager.displayOutput.trajectoryStartCoord, userTrajectory: serviceManager.displayOutput.userTrajectory, searchArea: serviceManager.displayOutput.searchArea, searchType: serviceManager.displayOutput.searchType, isIndoor: isIndoor)
                 }
             }
         } else {
@@ -1066,7 +1066,7 @@ class FusionViewController: UIViewController, Observer {
         let point = scatterChart.getPosition(entry: ChartDataEntry(x: XY[0], y: XY[1]), axis: .left)
         
         // Spot Image Size (default = 120)
-        let imageCircle = UIImageView(image: spotCircle?.resize(newWidth: 40))
+        let imageCircle = UIImageView(image: spotCircle?.resize(newWidth: 60))
         imageCircle.alpha = 0.6
         imageCircle.frame = CGRect(x: point.x-15, y: point.y-35, width: 30, height: 30)
         imageCircle.contentMode = .center
@@ -1163,7 +1163,7 @@ extension FusionViewController : UICollectionViewDelegate{
             scatterChart.isHidden = true
         } else {
             if (isShowRP) {
-                drawDebug(XY: XY, RP_X: rp[0], RP_Y: rp[1], serverXY: serviceManager.serverResult, tuXY: serviceManager.timeUpdateResult, heading: 0, limits: limits, isBleOnlyMode: self.isBleOnlyMode, isPmSuccess: self.isPathMatchingSuccess, isIndoor: false)
+                drawDebug(XY: XY, RP_X: rp[0], RP_Y: rp[1], serverXY: serviceManager.serverResult, tuXY: serviceManager.timeUpdateResult, heading: 0, limits: limits, isBleOnlyMode: self.isBleOnlyMode, isPmSuccess: self.isPathMatchingSuccess, trajectoryStartCoord: serviceManager.displayOutput.trajectoryStartCoord, userTrajectory: serviceManager.displayOutput.userTrajectory, searchArea: serviceManager.displayOutput.searchArea, searchType: serviceManager.displayOutput.searchType, isIndoor: false)
             }
             displayLevelImage(building: currentBuilding, level: currentLevel, flag: isShowRP)
         }

@@ -6,6 +6,13 @@ struct UserInfo: Codable {
     var os_version: Int
 }
 
+struct UserLogin: Codable {
+    var user_id: String
+    var device_model: String
+    var os_version: Int
+    var sdk_version: String
+}
+
 struct SectorInfo: Codable {
     var sector_id: Int
 }

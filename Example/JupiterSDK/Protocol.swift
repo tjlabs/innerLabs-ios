@@ -4,6 +4,7 @@ var COMMON_URL = "https://where-run-user"
 var REGION_URL = "-skrgq3jc5a-du.a.run.app"
 
 var USER_URL = COMMON_URL + REGION_URL + "/user"
+var LOGIN_URL = COMMON_URL + REGION_URL + "/login"
 var CARD_URL = COMMON_URL + REGION_URL + "/card"
 var SCALE_URL = COMMON_URL + REGION_URL + "/scale"
 var IMAGE_URL = "jupiter_image"
@@ -39,6 +40,7 @@ struct Login: Codable {
     var user_id: String
     var device_model: String
     var os_version: Int
+    var sdk_version: String
 }
 
 struct AddCard: Codable {

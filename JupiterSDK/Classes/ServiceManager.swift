@@ -72,12 +72,12 @@ public class ServiceManager: Observation {
     var EntranceNumbers: Int = 0
     var EntranceInfo = [String: [[Double]]]()
     var EntranceVelocityScale = [Double]()
-//    var EntranceVelocityScale = [String: Double]()
     var currentEntrance: String = ""
     var currentEntranceLength: Int = 0
     var currentEntranceIndex: Int = 0
     var isStartSimulate: Bool = false
     var indexAfterSimulate: Int = 0
+    var posBufferForEndSimulate =  [[Double]]()
     
     public var isLoadEnd = [String: [Bool]]()
     var isBackground: Bool = false
@@ -481,8 +481,6 @@ public class ServiceManager: Observation {
             }
         })
         
-//        completion(false, getLocalTimeString() + " , (Jupiter) Error : print error msg")
-        
         switch(service) {
         case "SD":
             numInput = 3
@@ -543,8 +541,8 @@ public class ServiceManager: Observation {
             completion(false, message)
         } else {
             // Login Success
-            let userInfo = UserInfo(user_id: self.user_id, device_model: deviceModel, os_version: osVersion)
-            postUser(url: USER_URL, input: userInfo, completion: { [self] statusCode, returnedString in
+            let userInfo = UserLogin(user_id: self.user_id, device_model: deviceModel, os_version: osVersion, sdk_version: ServiceManager.sdkVersion)
+            NetworkManager.shared.postUserLogin(url: LOGIN_URL, input: userInfo, completion: { [self] statusCode, returnedString in
                 if (statusCode == 200) {
                     let log: String = getLocalTimeString() + " , (Jupiter) Success : User Login"
                     print(log)
@@ -559,7 +557,7 @@ public class ServiceManager: Observation {
 //                        print(value)
 //                    }
                     let sectorInfo = SectorInfo(sector_id: sector_id)
-                    postSector(url: SECTOR_URL, input: sectorInfo, completion: { [self] statusCode, returnedString in
+                    NetworkManager.shared.postSector(url: SECTOR_URL, input: sectorInfo, completion: { [self] statusCode, returnedString in
                         if (statusCode == 200) {
                             let sectorInfoResult = jsonToSectorInfoResult(json: returnedString)
                             let entranceWards = sectorInfoResult.entrance_wards
@@ -1749,10 +1747,11 @@ public class ServiceManager: Observation {
                 self.bleTrimed = trimBleData(bleInput: bleData, nowTime: getCurrentTimeInMillisecondsDouble(), validTime: validTime)
                 self.bleAvg = avgBleData(bleDictionary: self.bleTrimed)
                 self.lastScannedEntranceWardTime = getLastScannedEntranceWardTime(bleAvg: self.bleAvg, entranceWards: self.EntranceWards)
-                let findResult = findNetworkBadEntrance(bleAvg: self.bleAvg, entranceWards: self.EntranceWards)
-                self.isInNetworkBadEntrance = findResult.0
                 
                 if (!self.isGetFirstResponse) {
+                    let findResult = findNetworkBadEntrance(bleAvg: self.bleAvg, entranceWards: self.EntranceWards)
+                    self.isInNetworkBadEntrance = findResult.0
+                    
                     if (!self.isIndoor && (self.timeForInit >= TIME_INIT_THRESHOLD)) {
                         if (self.isInNetworkBadEntrance) {
                             self.isGetFirstResponse = true
@@ -1845,7 +1844,7 @@ public class ServiceManager: Observation {
                             let isInPathMatchingArea = self.checkInPathMatchingArea(x: lastResult.x, y: lastResult.y, building: lastResult.building_name, level: lastResult.level_name)
                             
                             let diffEntranceWardTime = cTime - self.lastScannedEntranceWardTime
-                            
+                            print(getLocalTimeString() + " , (Jupiter) Check Outdoor : diffEntranceWardTime = \(diffEntranceWardTime)")
                             if (lastResult.building_name != "" && lastResult.level_name == "B0") {
                                 self.initVariables()
                                 self.currentLevel = "B0"
@@ -2061,13 +2060,10 @@ public class ServiceManager: Observation {
                     unitDRGenerator.setIsEntranceLevel(flag: isEntrance)
                     if (self.isStartSimulate) {
                         self.indexAfterSimulate += 1
+                        self.scVelocityScale = self.entranceVelocityScale
+                    } else {
+                        self.scVelocityScale = 1.0
                     }
-                }
-                
-                if (self.isStartSimulate) {
-                    self.scVelocityScale = self.entranceVelocityScale
-                } else {
-                    self.scVelocityScale = 1.0
                 }
                 unitDRGenerator.setScVelocityScaleFactor(scaleFactor: self.scVelocityScale)
                 
@@ -2112,7 +2108,7 @@ public class ServiceManager: Observation {
                 if (self.isStartSimulate) {
 //                    print(getLocalTimeString() + " , (Jupiter) Entrance Simulator : isRunning // index = \(self.currentEntranceIndex)")
                     if (self.currentEntranceIndex < self.currentEntranceLength) {
-                        self.resultToReturn = self.simulateEntrance(originalReseult: self.outputResult, runMode: self.runMode, currentEntranceIndex: self.currentEntranceIndex)
+                        self.resultToReturn = self.simulateEntrance(originalResult: self.outputResult, runMode: self.runMode, currentEntranceIndex: self.currentEntranceIndex)
                         self.currentEntranceIndex += 1
                         
                         print(getLocalTimeString() + " , (Jupiter) Entrance Simulator : Check // indexAfterSimulate = \(indexAfterSimulate) , TH = \(Int(Double(MINIMUN_INDEX_FOR_BIAS)*1.5))")
@@ -2133,6 +2129,31 @@ public class ServiceManager: Observation {
                                 self.currentEntrance = ""
                                 self.currentEntranceLength = 0
                                 self.currentEntranceIndex = 0
+                            } else {
+                                if (self.isActiveKf) {
+                                    let isFind = self.findClosestSimulation(originalResult: self.outputResult, currentEntranceIndex: self.currentEntranceIndex)
+                                    if (isFind) {
+                                        print(getLocalTimeString() + " , (Jupiter) Entrance Simulator : Finish (Position Passed)")
+                                        self.isStartSimulate = false
+                                        self.indexAfterSimulate = 0
+                                        self.currentEntrance = ""
+                                        self.currentEntranceLength = 0
+                                        self.currentEntranceIndex = 0
+                                    }
+                                    // 유저가 먼저 앞서서 안정화 됨
+//                                    let isIn = self.checkInPathMatchingArea(x: self.outputResult.x, y: self.outputResult.y, building: self.outputResult.building_name, level: self.outputResult.level_name)
+//                                    if (!isIn.0) {
+//                                        let pos = [self.outputResult.x, self.outputResult.y]
+//                                        self.posBufferForEndSimulate.append(pos)
+//                                        if (self.posBufferForEndSimulate.count >= 3) {
+//                                            for i in 1..<posBufferForEndSimulate.count {
+//                                                let dx = posBufferForEndSimulate[i][0] - posBufferForEndSimulate[i-1][0]
+//                                                let dy = posBufferForEndSimulate[i][1] - posBufferForEndSimulate[i-1][1]
+//
+//                                            }
+//                                        }
+//                                    }
+                                }
                             }
                         }
                     } else {
@@ -2337,10 +2358,7 @@ public class ServiceManager: Observation {
                     self.userTrajectoryInfo = newTraj
                     
                     self.isMoveNotLookingToLooking = false
-                } else if (self.isNeedTrajInit) {
-//                    print(getLocalTimeString() + " , (Jupiter) Trajectory : isNeedTrajInit = \(self.isNeedTrajInit)")
                     if (self.isPhaseBreak) {
-//                        print(getLocalTimeString() + " , (Jupiter) Trajectory : isPhaseBreak = \(self.isPhaseBreak)")
                         let cutIdx = Int(ceil(USER_TRAJECTORY_DIAGONAL*0.5))
                         let newTraj = getTrajectoryFromLast(from: self.userTrajectoryInfo, N: cutIdx)
                         var isNeedAllClear: Bool = false
@@ -2366,10 +2384,8 @@ public class ServiceManager: Observation {
                     }
                     self.isNeedTrajInit = false
                 } else if (!self.isGetFirstResponse && (self.timeForInit < TIME_INIT_THRESHOLD)) {
-//                    print(getLocalTimeString() + " , (Jupiter) Trajectory : OUT->IN")
                     self.userTrajectoryInfo = [TrajectoryInfo]()
                 } else if (self.isForeground) {
-//                    print(getLocalTimeString() + " , (Jupiter) Trajectory : Enter Foreground")
                     let cutIdx = Int(ceil(USER_TRAJECTORY_DIAGONAL*0.2))
                     let newTraj = getTrajectoryFromLast(from: self.userTrajectoryInfo, N: cutIdx)
                     var isNeedAllClear: Bool = false
@@ -3912,12 +3928,13 @@ public class ServiceManager: Observation {
                                         let entranceResult = self.findEntrance(result: result, entrance: i)
                                         print(getLocalTimeString() + " , (Jupiter) Entrance Simulator : findEntrance = \(entranceResult)")
                                         if (entranceResult.0 != 0) {
+                                            let velocityScale: Double = self.EntranceVelocityScale[i]
                                             print(getLocalTimeString() + " , (Jupiter) Entrance Simulator : number = \(entranceResult.0)")
-                                            print(getLocalTimeString() + " , (Jupiter) Entrance Simulator : scale = \(entranceResult.2)")
+                                            print(getLocalTimeString() + " , (Jupiter) Entrance Simulator : scale = \(velocityScale)")
                                             // 입구 탐지 !
                                             self.currentEntrance = "\(result.building_name)_\(result.level_name)_\(entranceResult.0)"
                                             self.currentEntranceLength = entranceResult.1
-                                            self.entranceVelocityScale = entranceResult.2
+                                            self.entranceVelocityScale = velocityScale
                                             
                                             self.isStartSimulate = true
                                         }
@@ -5133,11 +5150,8 @@ public class ServiceManager: Observation {
     private func findEntrance(result: FineLocationTrackingFromServer, entrance: Int) -> (Int, Int) {
         var entranceNumber: Int = 0
         var entranceLength: Int = 0
-//        var velocityScale: Double = 1.0
         
-        let lastResult = result
-        
-        let buildingName = lastResult.building_name
+        let buildingName = result.building_name
         let levelName = removeLevelDirectionString(levelName: result.level_name)
         
         let resultPm = self.pathMatching(building: buildingName, level: levelName, x: result.x, y: result.y, heading: result.absolute_heading, tuXY: [0, 0], isPast: false, HEADING_RANGE: self.HEADING_RANGE, isUseHeading: true, pathType: 1)
@@ -5149,10 +5163,6 @@ public class ServiceManager: Observation {
             let number = entrance+1
             
             let key = "\(buildingName)_\(levelName)_\(number)"
-            
-//            if let loadedScale: Double = self.EntranceVelocityScale[key] {
-//                velocityScale = loadedScale
-//            }
             
             guard let entranceInfo: [[Double]] = self.EntranceInfo[key] else {
                 return (entranceNumber, entranceLength)
@@ -5195,8 +5205,8 @@ public class ServiceManager: Observation {
     }
     
     
-    private func simulateEntrance(originalReseult: FineLocationTrackingResult, runMode: String, currentEntranceIndex: Int) -> FineLocationTrackingResult {
-        var result = originalReseult
+    private func simulateEntrance(originalResult: FineLocationTrackingResult, runMode: String, currentEntranceIndex: Int) -> FineLocationTrackingResult {
+        var result = originalResult
         
         result.index = self.unitDrInfoIndex
         result.mode = runMode
@@ -5210,6 +5220,37 @@ public class ServiceManager: Observation {
         result.absolute_heading = entranceInfo[currentEntranceIndex][2]
         
         return result
+    }
+    
+    private func findClosestSimulation(originalResult: FineLocationTrackingResult, currentEntranceIndex: Int) -> Bool {
+        var isFindClosestSimulation: Bool = false
+        
+        let userX = originalResult.x
+        let userY = originalResult.y
+        let userH = originalResult.absolute_heading
+        
+        guard let entranceInfo: [[Double]] = self.EntranceInfo[self.currentEntrance] else {
+            return isFindClosestSimulation
+        }
+        
+        for i in currentEntranceIndex..<entranceInfo.count {
+            let entranceX = entranceInfo[i][0]
+            let entranceY = entranceInfo[i][1]
+            let entracneH = entranceInfo[i][2]
+            
+            let diffX = userX - entranceX
+            let diffY = userY - entranceY
+            var diffH = compensateHeading(heading: (userH - entracneH))
+            if (diffH >= 270) {
+                diffH = 360 - diffH
+            }
+            let diffXy = sqrt(diffX*diffX + diffY*diffY)
+            if (diffXy <= 10 && diffH <= 30) {
+                isFindClosestSimulation = true
+            }
+        }
+        
+        return isFindClosestSimulation
     }
     
     private func loadEntranceArea(buildingName: String, levelName: String) -> [[Double]] {
@@ -5520,94 +5561,6 @@ public class ServiceManager: Observation {
         }
     }
     
-    func postUser(url: String, input: UserInfo, completion: @escaping (Int, String) -> Void) {
-        // [http 비동기 방식을 사용해서 http 요청 수행 실시]
-        let urlComponents = URLComponents(string: url)
-        var requestURL = URLRequest(url: (urlComponents?.url)!)
-        
-        requestURL.httpMethod = "POST"
-        let encodingData = JSONConverter.encodeJson(param: input)
-        requestURL.httpBody = encodingData
-        requestURL.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        requestURL.setValue("\(encodingData)", forHTTPHeaderField: "Content-Length")
-        
-        let dataTask = URLSession.shared.dataTask(with: requestURL, completionHandler: { (data, response, error) in
-            
-            // [error가 존재하면 종료]
-            guard error == nil else {
-                // [콜백 반환]
-                completion(500, error?.localizedDescription ?? "Fail")
-                return
-            }
-            
-            // [status 코드 체크 실시]
-            let successsRange = 200..<300
-            guard let statusCode = (response as? HTTPURLResponse)?.statusCode, successsRange.contains(statusCode)
-            else {
-                // [콜백 반환]
-                completion(500, (response as? HTTPURLResponse)?.description ?? "Fail")
-                return
-            }
-            
-            // [response 데이터 획득]
-            let resultCode = (response as? HTTPURLResponse)?.statusCode ?? 500 // [상태 코드]
-            let resultLen = data! // [데이터 길이]
-            let resultData = String(data: resultLen, encoding: .utf8) ?? "" // [데이터 확인]
-            
-            // [콜백 반환]
-            DispatchQueue.main.async {
-                completion(resultCode, resultData)
-            }
-        })
-        
-        // [network 통신 실행]
-        dataTask.resume()
-    }
-    
-    func postSector(url: String, input: SectorInfo, completion: @escaping (Int, String) -> Void) {
-        // [http 비동기 방식을 사용해서 http 요청 수행 실시]
-        let urlComponents = URLComponents(string: url)
-        var requestURL = URLRequest(url: (urlComponents?.url)!)
-        
-        requestURL.httpMethod = "POST"
-        let encodingData = JSONConverter.encodeJson(param: input)
-        requestURL.httpBody = encodingData
-        requestURL.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        requestURL.setValue("\(encodingData)", forHTTPHeaderField: "Content-Length")
-        
-        let dataTask = URLSession.shared.dataTask(with: requestURL, completionHandler: { (data, response, error) in
-            
-            // [error가 존재하면 종료]
-            guard error == nil else {
-                // [콜백 반환]
-                completion(500, error?.localizedDescription ?? "Fail")
-                return
-            }
-            
-            // [status 코드 체크 실시]
-            let successsRange = 200..<300
-            guard let statusCode = (response as? HTTPURLResponse)?.statusCode, successsRange.contains(statusCode)
-            else {
-                // [콜백 반환]
-                completion(500, (response as? HTTPURLResponse)?.description ?? "Fail")
-                return
-            }
-            
-            // [response 데이터 획득]
-            let resultCode = (response as? HTTPURLResponse)?.statusCode ?? 500 // [상태 코드]
-            let resultLen = data! // [데이터 길이]
-            let resultData = String(data: resultLen, encoding: .utf8) ?? "" // [데이터 확인]
-            
-            // [콜백 반환]
-            DispatchQueue.main.async {
-                completion(resultCode, resultData)
-            }
-        })
-        
-        // [network 통신 실행]
-        dataTask.resume()
-    }
-    
     func jsonToCardList(json: String) -> CardList {
         let result = CardList(sectors: [])
         let decoder = JSONDecoder()
@@ -5622,7 +5575,7 @@ public class ServiceManager: Observation {
     }
     
     func jsonToSectorInfoResult(json: String) -> SectorInfoResult {
-        let result = SectorInfoResult(building_level: [[]], entrance_wards: [])
+        let result = SectorInfoResult(building_level: [[]], entrance_wards: [], entrance_scales: [])
         let decoder = JSONDecoder()
         
         let jsonString = json

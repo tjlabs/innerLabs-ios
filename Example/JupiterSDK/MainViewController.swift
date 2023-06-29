@@ -17,12 +17,14 @@ class MainViewController: UIViewController, UITextFieldDelegate {
     @IBOutlet weak var codeTextField: UITextField!
     @IBOutlet weak var guideLabel: UILabel!
     @IBOutlet weak var saveUuidButton: UIButton!
+    @IBOutlet weak var sdkVersionLabel: UILabel!
     
     var isSaveUuid: Bool = false
     var uuid: String = ""
     var deviceModel: String = ""
     var os: String = ""
     var osVersion: Int = 0
+    var sdkVersion: String = ""
     
     let defaults = UserDefaults.standard
     
@@ -57,6 +59,8 @@ class MainViewController: UIViewController, UITextFieldDelegate {
         os = UIDevice.current.systemVersion
         let arr = os.components(separatedBy: ".")
         osVersion = Int(arr[0]) ?? 0
+        self.sdkVersion = ServiceManager.sdkVersion
+        self.sdkVersionLabel.text = self.sdkVersion
         
         let locale = Locale.current
         if let countryCode = locale.regionCode, countryCode == "KR" {
@@ -87,8 +91,8 @@ class MainViewController: UIViewController, UITextFieldDelegate {
             }
             defaults.synchronize()
             
-            let login = Login(user_id: uuid, device_model: deviceModel, os_version: osVersion)
-            postLogin(url: USER_URL, input: login)
+            let login = Login(user_id: uuid, device_model: deviceModel, os_version: osVersion, sdk_version: sdkVersion)
+            postLogin(url: LOGIN_URL, input: login)
         }
     }
     
@@ -223,6 +227,11 @@ class MainViewController: UIViewController, UITextFieldDelegate {
                 }
                 break
             case .failure(let err):
+                print("")
+                print("====================================")
+                print("failure :: ", err.localizedDescription)
+                print("====================================")
+                print("")
                 break
             }
         }
