@@ -750,7 +750,7 @@ public class NetworkManager {
         }
     }
     
-    func postGEO(url: String, input: JupiterGeo, completion: @escaping (Int, String, String, String) -> Void) {
+    func postGeo(url: String, input: JupiterGeo, completion: @escaping (Int, String, String, String) -> Void) {
         let buildingName: String = input.building_name
         let levelName: String = input.level_name
         

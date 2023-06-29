@@ -2,7 +2,7 @@ import Foundation
 import CoreMotion
 
 public class ServiceManager: Observation {
-    public static let  sdkVersion: String = "3.0.4"
+    public static let sdkVersion: String = "3.0.4"
     
     func tracking(input: FineLocationTrackingResult, isPast: Bool) {
         for observer in observers {
@@ -65,7 +65,7 @@ public class ServiceManager: Observation {
     var PathHeading = [String: [String]]()
     var LoadPathPoint = [String: Bool]()
     
-    var AbnormalArea = [String: [[Double]]]()
+//    var AbnormalArea = [String: [[Double]]]()
     var EntranceArea = [String: [[Double]]]()
     var EntranceWards = [String]()
     var PathMatchingArea = [String: [[Double]]]()
@@ -546,7 +546,6 @@ public class ServiceManager: Observation {
                 if (statusCode == 200) {
                     let log: String = getLocalTimeString() + " , (Jupiter) Success : User Login"
                     print(log)
-                    
 //                    (self.EntranceInfo, self.EntranceVelocityScale) = loadEntrances(sector_id: sector_id)
 //                    for (key, value) in EntranceInfo {
 //                        print("Key = \(key)")
@@ -632,8 +631,9 @@ public class ServiceManager: Observation {
                                                 print(getLocalTimeString() + " , (Jupiter) Information : Download Entrance-Info \(entranceKey)")
                                                 loadEntranceFromUrl(key: entranceKey)
                                             } else {
-                                                self.EntranceInfo[key] = loadedData
-                                                print(getLocalTimeString() + " , (Jupiter) Information : Already have Entrance-Info \(entranceKey)")
+                                                self.EntranceInfo[entranceKey] = loadedData
+                                                print(getLocalTimeString() + " , (Jupiter) Information : Already have Entrance-Info // Key = \(entranceKey)")
+//                                                print("Alreday have data : \(self.EntranceInfo[key])")
                                             }
                                         }
                                     }
@@ -642,11 +642,10 @@ public class ServiceManager: Observation {
                                 for j in 0..<levelList!.count {
                                     let levelName = levelList![j]
                                     let input = JupiterGeo(sector_id: self.sector_id, building_name: buildingName, level_name: levelName)
-                                    NetworkManager.shared.postGEO(url: GEO_URL, input: input, completion: { [self] statusCode, returnedString, buildingGeo, levelGeo in
+                                    NetworkManager.shared.postGeo(url: GEO_URL, input: input, completion: { [self] statusCode, returnedString, buildingGeo, levelGeo in
                                         if (statusCode >= 200 && statusCode <= 300) {
                                             let result = decodeGeo(json: returnedString)
                                             let key: String = "\(buildingGeo)_\(levelGeo)"
-                                            self.AbnormalArea[key] = result.geofences
                                             self.EntranceArea[key] = result.entrance_area
                                             // Add
 //                                            self.loadEntranceInfo(buildingName: buildingGeo, levelName: levelGeo)
@@ -825,7 +824,7 @@ public class ServiceManager: Observation {
                                                 self.notificationCenterRemoveObserver()
                                                 completion(false, message)
                                             } else {
-                                                let log: String = getLocalTimeString() + " , (Jupiter) Error : Load Abnormal Area"
+                                                let log: String = getLocalTimeString() + " , (Jupiter) Error : Load Abnormal Area // \(buildingGeo) \(levelGeo)"
                                                 message = log
                                                 self.isStartFlag = false
                                                 self.notificationCenterRemoveObserver()
@@ -964,9 +963,9 @@ public class ServiceManager: Observation {
     func saveEntranceToCache(key: String, entranceData: [[Double]]) {
         do {
             UserDefaults.standard.set(entranceData, forKey: key)
-            print("(Jupiter) Success : Save EntranceInfo \(key)")
+            print(getLocalTimeString() + " , (Jupiter) Success : Save EntranceInfo \(key)")
         } catch {
-            print("(Jupiter) Error : Fail to save EntranceInfo \(key)")
+            print(getLocalTimeString() + " , (Jupiter) Error : Fail to save EntranceInfo \(key)")
         }
     }
     
@@ -982,8 +981,8 @@ public class ServiceManager: Observation {
                     if let utf8Text = String(data: responseData, encoding: .utf8) {
                         let parsedData = self.parseEntrance(data: utf8Text)
                         self.EntranceInfo[entranceKey] = parsedData
-                        self.saveEntranceToCache(key: entranceKey, entranceData: parsedData)
                         print(getLocalTimeString() + " , (Jupiter) Success : Load EntranceInfo from url // \(entranceKey)")
+                        self.saveEntranceToCache(key: entranceKey, entranceData: parsedData)
                     }
                 }
             } else {
@@ -1746,7 +1745,11 @@ public class ServiceManager: Observation {
                 self.isRfdTimerRunningFinished = true
                 self.bleTrimed = trimBleData(bleInput: bleData, nowTime: getCurrentTimeInMillisecondsDouble(), validTime: validTime)
                 self.bleAvg = avgBleData(bleDictionary: self.bleTrimed)
-                self.lastScannedEntranceWardTime = getLastScannedEntranceWardTime(bleAvg: self.bleAvg, entranceWards: self.EntranceWards)
+                let scannedResult = getLastScannedEntranceWardTime(bleAvg: self.bleAvg, entranceWards: self.EntranceWards)
+                if (scannedResult.0) {
+                    self.lastScannedEntranceWardTime = scannedResult.1
+                    print(getLocalTimeString() + " , (Jupiter) Information : I scanned entrance ward // lastScannedEntranceWardTime = \(self.lastScannedEntranceWardTime)")
+                }
                 
                 if (!self.isGetFirstResponse) {
                     let findResult = findNetworkBadEntrance(bleAvg: self.bleAvg, entranceWards: self.EntranceWards)
@@ -1844,7 +1847,7 @@ public class ServiceManager: Observation {
                             let isInPathMatchingArea = self.checkInPathMatchingArea(x: lastResult.x, y: lastResult.y, building: lastResult.building_name, level: lastResult.level_name)
                             
                             let diffEntranceWardTime = cTime - self.lastScannedEntranceWardTime
-                            print(getLocalTimeString() + " , (Jupiter) Check Outdoor : diffEntranceWardTime = \(diffEntranceWardTime)")
+                            print(getLocalTimeString() + " , (Jupiter) Check Outdoor : diffEntranceWardTime = \(diffEntranceWardTime) // cTime = \(cTime) // lastScannedEntranceWardTime = \(lastScannedEntranceWardTime)")
                             if (lastResult.building_name != "" && lastResult.level_name == "B0") {
                                 self.initVariables()
                                 self.currentLevel = "B0"
@@ -2131,15 +2134,16 @@ public class ServiceManager: Observation {
                                 self.currentEntranceIndex = 0
                             } else {
                                 if (self.isActiveKf) {
-                                    let isFind = self.findClosestSimulation(originalResult: self.outputResult, currentEntranceIndex: self.currentEntranceIndex)
-                                    if (isFind) {
-                                        print(getLocalTimeString() + " , (Jupiter) Entrance Simulator : Finish (Position Passed)")
-                                        self.isStartSimulate = false
-                                        self.indexAfterSimulate = 0
-                                        self.currentEntrance = ""
-                                        self.currentEntranceLength = 0
-                                        self.currentEntranceIndex = 0
-                                    }
+//                                    let isFind = self.findClosestSimulation(originalResult: self.outputResult, currentEntranceIndex: self.currentEntranceIndex)
+//                                    if (isFind) {
+//                                        print(getLocalTimeString() + " , (Jupiter) Entrance Simulator : Finish (Position Passed)")
+//                                        self.isStartSimulate = false
+//                                        self.indexAfterSimulate = 0
+//                                        self.currentEntrance = ""
+//                                        self.currentEntranceLength = 0
+//                                        self.currentEntranceIndex = 0
+//                                    }
+                                    
                                     // 유저가 먼저 앞서서 안정화 됨
 //                                    let isIn = self.checkInPathMatchingArea(x: self.outputResult.x, y: self.outputResult.y, building: self.outputResult.building_name, level: self.outputResult.level_name)
 //                                    if (!isIn.0) {
@@ -2670,8 +2674,8 @@ public class ServiceManager: Observation {
                     resultDirection = searchHeadings.map { Int($0) }
                     tailIndex = userTrajectory[0].index
                     
-                    print(getLocalTimeString() + " , (Jupiter) Phase 1~3 Search : Past Direction =  \(pastSearchDirection)")
-                    print(getLocalTimeString() + " , (Jupiter) Phase 1~3 Search : Direction = \(resultDirection)")
+//                    print(getLocalTimeString() + " , (Jupiter) Phase 1~3 Search : Past Direction =  \(pastSearchDirection)")
+//                    print(getLocalTimeString() + " , (Jupiter) Phase 1~3 Search : Direction = \(resultDirection)")
                     
                     displayOutput.trajectoryStartCoord = [headInfo.userX, headInfo.userY]
                     displayOutput.userTrajectory = trajectoryFromHead
@@ -3909,8 +3913,11 @@ public class ServiceManager: Observation {
                                 let entranceKey = "\(buildingName)_\(levelName)_\(number)"
                                 
                                 if let loadedData = self.EntranceInfo[entranceKey] {
-//                                    print(getLocalTimeString() + " (Jupiter) Information : Already have Entrance-Info \(entranceKey)")
+//                                    print(getLocalTimeString() + " (Jupiter) Information : Already have Entrance-Info // key = \(entranceKey)")
+//                                    print(getLocalTimeString() + " (Jupiter) Information : Already have Entrance-Info // data =  \(self.EntranceInfo[entranceKey])")
                                 } else {
+//                                    print(getLocalTimeString() + "Key = \(entranceKey)")
+//                                    print(getLocalTimeString() + "Data = \(self.EntranceInfo[entranceKey])")
                                     self.loadEntranceFromUrl(key: entranceKey)
                                 }
                             }
@@ -3929,8 +3936,8 @@ public class ServiceManager: Observation {
                                         print(getLocalTimeString() + " , (Jupiter) Entrance Simulator : findEntrance = \(entranceResult)")
                                         if (entranceResult.0 != 0) {
                                             let velocityScale: Double = self.EntranceVelocityScale[i]
-                                            print(getLocalTimeString() + " , (Jupiter) Entrance Simulator : number = \(entranceResult.0)")
-                                            print(getLocalTimeString() + " , (Jupiter) Entrance Simulator : scale = \(velocityScale)")
+//                                            print(getLocalTimeString() + " , (Jupiter) Entrance Simulator : number = \(entranceResult.0)")
+//                                            print(getLocalTimeString() + " , (Jupiter) Entrance Simulator : scale = \(velocityScale)")
                                             // 입구 탐지 !
                                             self.currentEntrance = "\(result.building_name)_\(result.level_name)_\(entranceResult.0)"
                                             self.currentEntranceLength = entranceResult.1
@@ -4652,37 +4659,37 @@ public class ServiceManager: Observation {
     }
     
     
-    func checkInAbnormalArea(result: FineLocationTrackingResult) -> Double {
-        var velocityScaleFactor: Double = 1.0
-        
-        let lastResult = result
-        
-        let buildingName = lastResult.building_name
-        let levelName = removeLevelDirectionString(levelName: result.level_name)
-        
-        let key = "\(buildingName)_\(levelName)"
-        guard let abnormalArea: [[Double]] = AbnormalArea[key] else {
-            return velocityScaleFactor
-        }
-        
-        for i in 0..<abnormalArea.count {
-            if (!abnormalArea[i].isEmpty) {
-                let xMin = abnormalArea[i][0]
-                let yMin = abnormalArea[i][1]
-                let xMax = abnormalArea[i][2]
-                let yMax = abnormalArea[i][3]
-                
-                if (lastResult.x >= xMin && lastResult.x <= xMax) {
-                    if (lastResult.y >= yMin && lastResult.y <= yMax) {
-                        velocityScaleFactor = abnormalArea[i][4]
-                        return velocityScaleFactor
-                    }
-                }
-            }
-        }
-        
-        return velocityScaleFactor
-    }
+//    func checkInAbnormalArea(result: FineLocationTrackingResult) -> Double {
+//        var velocityScaleFactor: Double = 1.0
+//
+//        let lastResult = result
+//
+//        let buildingName = lastResult.building_name
+//        let levelName = removeLevelDirectionString(levelName: result.level_name)
+//
+//        let key = "\(buildingName)_\(levelName)"
+//        guard let abnormalArea: [[Double]] = AbnormalArea[key] else {
+//            return velocityScaleFactor
+//        }
+//
+//        for i in 0..<abnormalArea.count {
+//            if (!abnormalArea[i].isEmpty) {
+//                let xMin = abnormalArea[i][0]
+//                let yMin = abnormalArea[i][1]
+//                let xMax = abnormalArea[i][2]
+//                let yMax = abnormalArea[i][3]
+//
+//                if (lastResult.x >= xMin && lastResult.x <= xMax) {
+//                    if (lastResult.y >= yMin && lastResult.y <= yMax) {
+//                        velocityScaleFactor = abnormalArea[i][4]
+//                        return velocityScaleFactor
+//                    }
+//                }
+//            }
+//        }
+//
+//        return velocityScaleFactor
+//    }
     
     func checkIsEntranceLevel(result: FineLocationTrackingResult) -> Bool {
         let lastResult = result
@@ -5126,25 +5133,19 @@ public class ServiceManager: Observation {
     }
     
     private func parseEntrance(data: String) -> [[Double]] {
-        var entrance = [[Double]]()
-        
-        var entranceX = [Double]()
-        var entranceY = [Double]()
-        var entranceHeading = [Double]()
+        var entranceArray = [[Double]]()
         
         let entranceString = data.components(separatedBy: .newlines)
         for i in 0..<entranceString.count {
             if (entranceString[i] != "") {
                 let lineData = entranceString[i].components(separatedBy: ",")
                 
-                entranceX.append((Double(lineData[0])!))
-                entranceY.append(Double(lineData[1])!)
-                entranceHeading.append(Double(lineData[2])!)
+                let entrance: [Double] = [(Double(lineData[0])!), (Double(lineData[1])!), (Double(lineData[2])!)]
+                entranceArray.append(entrance)
             }
         }
-        entrance = [entranceX, entranceY, entranceHeading]
         
-        return entrance
+        return entranceArray
     }
     
     private func findEntrance(result: FineLocationTrackingFromServer, entrance: Int) -> (Int, Int) {
@@ -5159,14 +5160,26 @@ public class ServiceManager: Observation {
         let coordX = resultPm.xyh[0]
         let coordY = resultPm.xyh[1]
         
+        var resultCopy = result
+        resultCopy.x = coordX
+        resultCopy.y = coordY
+        
         if (levelName == "B0") {
             let number = entrance+1
             
             let key = "\(buildingName)_\(levelName)_\(number)"
             
             guard let entranceInfo: [[Double]] = self.EntranceInfo[key] else {
+                print(getLocalTimeString() + " , (Jupiter) Entrance Simulator : EntranceInfo is empty // key = \(key)")
                 return (entranceNumber, entranceLength)
             }
+            
+//            let fltResult = fromServerToResult(fromServer: resultCopy, velocity: displayOutput.velocity)
+//            let check = self.checkIsEntranceLevel(result: fltResult)
+//            if (check) {
+//                entranceNumber = number
+//                entranceLength = entranceInfo.count
+//            }
             
             // Find minimum and maximum values of column 1
             var column1Min = Double.infinity
@@ -5187,12 +5200,12 @@ public class ServiceManager: Observation {
                 column2Min = min(column2Min, value)
                 column2Max = max(column2Max, value)
             }
-            
+
             let xMin = column1Min
             let xMax = column1Max
             let yMin = column2Min
             let yMax = column2Max
-            
+
             if (coordX >= xMin && coordX <= xMax) {
                 if (coordY >= yMin && coordY <= yMax) {
                     entranceNumber = number
@@ -5655,17 +5668,17 @@ public class ServiceManager: Observation {
         if (runMode != "pdr") {
             var correctedTuCopy = (true, [timeUpdateCopy.x, timeUpdateCopy.y, timeUpdateCopy.heading])
             let pathMatchingResult = self.pathMatching(building: timeUpdateOutput.building_name, level: levelName, x: timeUpdateCopy.x, y: timeUpdateCopy.y, heading: compensatedHeading, tuXY: [0,0], isPast: false, HEADING_RANGE: self.HEADING_RANGE, isUseHeading: true, pathType: 1)
-            print(getLocalTimeString() + " , (TimeUpdate) : correctedTuCopy = \(correctedTuCopy)")
-            print(getLocalTimeString() + " , (TimeUpdate) : timeUpdateOutput = \(timeUpdateOutput)")
-            print(getLocalTimeString() + " , (TimeUpdate) : timeUpdateCopy = \(timeUpdateCopy)")
-            print(getLocalTimeString() + " , (TimeUpdate) : pathMatchingResult = \(pathMatchingResult)")
+//            print(getLocalTimeString() + " , (TimeUpdate) : correctedTuCopy = \(correctedTuCopy)")
+//            print(getLocalTimeString() + " , (TimeUpdate) : timeUpdateOutput = \(timeUpdateOutput)")
+//            print(getLocalTimeString() + " , (TimeUpdate) : timeUpdateCopy = \(timeUpdateCopy)")
+//            print(getLocalTimeString() + " , (TimeUpdate) : pathMatchingResult = \(pathMatchingResult)")
             correctedTuCopy.0 = pathMatchingResult.isSuccess
             correctedTuCopy.1 = pathMatchingResult.xyh
             correctedTuCopy.1[2] = compensateHeading(heading: correctedTuCopy.1[2])
             if (correctedTuCopy.0) {
                 timeUpdateCopy.x = correctedTuCopy.1[0]
                 timeUpdateCopy.y = correctedTuCopy.1[1]
-                if (isNeedHeadingCorrection && self.phase < 4) {
+                if (isNeedHeadingCorrection) {
                     timeUpdateCopy.heading = correctedTuCopy.1[2]
                 }
                 timeUpdatePosition = timeUpdateCopy
@@ -5942,20 +5955,24 @@ public class ServiceManager: Observation {
         return ble
     }
     
-    func getLastScannedEntranceWardTime(bleAvg: [String: Double], entranceWards: [String]) -> Double {
+    func getLastScannedEntranceWardTime(bleAvg: [String: Double], entranceWards: [String]) -> (Bool, Double) {
+        var isScanned: Bool = false
         var scannedTime: Double = 0
 
         for (key, value) in bleAvg {
             if entranceWards.contains(key) {
+//                print(getLocalTimeString() + " , (Jupiter) Information : I scanned entrance ward \(key)")
                 if (value >= -82.0) {
+//                    print(getLocalTimeString() + " , (Jupiter) Information : I scanned entrance ward // \(key) = \(value)")
+                    isScanned = true
                     scannedTime = getCurrentTimeInMillisecondsDouble()
                     
-                    return scannedTime
+                    return (isScanned, scannedTime)
                 }
             }
         }
         
-        return scannedTime
+        return (isScanned, scannedTime)
     }
     
     func findNetworkBadEntrance(bleAvg: [String: Double], entranceWards: [String]) -> (Bool, FineLocationTrackingFromServer) {
