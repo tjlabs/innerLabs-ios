@@ -3925,25 +3925,31 @@ public class ServiceManager: Observation {
                         
                         if (!self.isGetFirstResponse) {
                             if (!self.isIndoor && (self.timeForInit >= TIME_INIT_THRESHOLD)) {
-                                self.isGetFirstResponse = true
-                                self.isIndoor = true
-                                self.reporting(input: INDOOR_FLAG)
-                                
-                                // Add
-                                for i in 0..<self.EntranceNumbers {
-                                    if (!self.isStartSimulate) {
-                                        let entranceResult = self.findEntrance(result: result, entrance: i)
-                                        print(getLocalTimeString() + " , (Jupiter) Entrance Simulator : findEntrance = \(entranceResult)")
-                                        if (entranceResult.0 != 0) {
-                                            let velocityScale: Double = self.EntranceVelocityScale[i]
-//                                            print(getLocalTimeString() + " , (Jupiter) Entrance Simulator : number = \(entranceResult.0)")
-//                                            print(getLocalTimeString() + " , (Jupiter) Entrance Simulator : scale = \(velocityScale)")
-                                            // 입구 탐지 !
-                                            self.currentEntrance = "\(result.building_name)_\(result.level_name)_\(entranceResult.0)"
-                                            self.currentEntranceLength = entranceResult.1
-                                            self.entranceVelocityScale = velocityScale
-                                            
-                                            self.isStartSimulate = true
+                                if (levelName != "B0") {
+                                    self.isGetFirstResponse = true
+                                    self.isIndoor = true
+                                    self.reporting(input: INDOOR_FLAG)
+                                } else {
+                                    // Add
+                                    for i in 0..<self.EntranceNumbers {
+                                        if (!self.isStartSimulate) {
+                                            let entranceResult = self.findEntrance(result: result, entrance: i)
+                                            print(getLocalTimeString() + " , (Jupiter) Entrance Simulator : findEntrance = \(entranceResult)")
+                                            if (entranceResult.0 != 0) {
+                                                let velocityScale: Double = self.EntranceVelocityScale[i]
+                                                //                                            print(getLocalTimeString() + " , (Jupiter) Entrance Simulator : number = \(entranceResult.0)")
+                                                //                                            print(getLocalTimeString() + " , (Jupiter) Entrance Simulator : scale = \(velocityScale)")
+                                                // 입구 탐지 !
+                                                self.currentEntrance = "\(result.building_name)_\(result.level_name)_\(entranceResult.0)"
+                                                self.currentEntranceLength = entranceResult.1
+                                                self.entranceVelocityScale = velocityScale
+                                                
+                                                self.isGetFirstResponse = true
+                                                self.isIndoor = true
+                                                self.reporting(input: INDOOR_FLAG)
+                                                
+                                                self.isStartSimulate = true
+                                            }
                                         }
                                     }
                                 }
@@ -5962,7 +5968,7 @@ public class ServiceManager: Observation {
         for (key, value) in bleAvg {
             if entranceWards.contains(key) {
 //                print(getLocalTimeString() + " , (Jupiter) Information : I scanned entrance ward \(key)")
-                if (value >= -82.0) {
+                if (value >= -85.0) {
 //                    print(getLocalTimeString() + " , (Jupiter) Information : I scanned entrance ward // \(key) = \(value)")
                     isScanned = true
                     scannedTime = getCurrentTimeInMillisecondsDouble()
