@@ -533,6 +533,7 @@ public struct MobileResult: Encodable {
     public var ble_only_position: Bool
     public var rss_compensation: Int
     public var sc_compensation: Double
+    public var is_indoor: Bool
 }
 
 
