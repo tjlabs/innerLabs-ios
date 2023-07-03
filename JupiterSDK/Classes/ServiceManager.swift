@@ -2637,7 +2637,9 @@ public class ServiceManager: Observation {
                     let searchArea = getSearchCoordinates(areaMinMax: areaMinMax, interval: 1.0)
                     
                     var headInfo = userTrajectory[userTrajectory.count-1]
+                    var tailInfo = userTrajectory[0]
                     let headInfoHeading = headInfo.userTuHeading
+                    let tailInfoHeading = tailInfo.userTuHeading
                     var xyFromHead: [Double] = [headInfo.userX, headInfo.userY]
                     
                     var headingCorrectionForHead: Double = 0
@@ -2661,13 +2663,17 @@ public class ServiceManager: Observation {
                         trajectoryFromHead.append(xyFromHead)
                     }
                     
+                    var diffHeading = abs(uvHeading[uvHeading.count-1] - uvHeading[0])
+                    if (diffHeading <= 5) {
+                        diffHeading = 5
+                    }
                     // Search Direction
                     let ppHeadings = getPathMatchingHeadings(building: userBuilding, level: userLevel, x: userX, y: userY, heading: userH, RANGE: RANGE, mode: mode)
                     var searchHeadings: [Double] = []
                     for i in 0..<ppHeadings.count {
-                        searchHeadings.append(compensateHeading(heading: ppHeadings[i]-10))
+                        searchHeadings.append(compensateHeading(heading: ppHeadings[i]-diffHeading))
                         searchHeadings.append(compensateHeading(heading: ppHeadings[i]))
-                        searchHeadings.append(compensateHeading(heading: ppHeadings[i]+10))
+                        searchHeadings.append(compensateHeading(heading: ppHeadings[i]+diffHeading))
                     }
                     
                     resultRange = areaMinMax.map { Int($0) }
