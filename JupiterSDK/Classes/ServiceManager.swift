@@ -43,7 +43,7 @@ public class ServiceManager: Observation {
     let MR_INPUT_NUM = 20
     
     // 1 ~ 2 : Release  //  0 : Test
-    var serverType: Int = 0
+    var serverType: Int = 2
     var region: String = "Korea"
     
     let G: Double = 9.81
@@ -385,7 +385,6 @@ public class ServiceManager: Observation {
         dateFormatter.dateFormat = "yyyy-MM-dd-HH-mm-ss"
         dateFormatter.locale = Locale(identifier:"ko_KR")
         let nowDate = Date()
-        let localTime = dateFormatter.string(from: nowDate)
         
         deviceModel = UIDevice.modelName
         os = UIDevice.current.systemVersion
@@ -563,7 +562,7 @@ public class ServiceManager: Observation {
                             self.EntranceWards = entranceWards
                             self.EntranceNumbers = entranceWards.count
                             self.EntranceVelocityScale = entranceScales
-                            print("EntranceVelocityScale = \(entranceScales)")  // [1.05, 1.0, 1.12, 1.45, 1.0]
+//                            print("EntranceVelocityScale = \(entranceScales)")  // [1.05, 1.0, 1.12, 1.45, 1.0]
                             
                             let buildings_n_levels: [[String]] = sectorInfoResult.building_level
                             
@@ -1039,7 +1038,6 @@ public class ServiceManager: Observation {
     
     public func enterBackground() {
         if (!self.isBackground) {
-            let localTime = getLocalTimeString()
             
             self.isBackground = true
             self.bleManager.stopScan()
@@ -1072,7 +1070,6 @@ public class ServiceManager: Observation {
     
     public func enterForeground() {
         if (self.isBackground) {
-            let localTime = getLocalTimeString()
             
             self.isBackground = false
             self.bleManager.startScan(option: .Foreground)
@@ -1221,6 +1218,38 @@ public class ServiceManager: Observation {
         let input = RecentResult(user_id: id, mobile_time: currentTime)
         NetworkManager.shared.postRecent(url: RECENT_URL, input: input, completion: { statusCode, returnedString in
             completion(statusCode, returnedString)
+        })
+    }
+    
+    public func getRecentJupiterResult(id: String, completion: @escaping (Int, JupiterToDisplay) -> Void) {
+        var recentResult = JupiterToDisplay()
+        let currentTime = getCurrentTimeInMilliseconds()
+        
+        let input = RecentResult(user_id: id, mobile_time: currentTime)
+        NetworkManager.shared.postRecent(url: RECENT_URL, input: input, completion: { [self] statusCode, returnedString in
+            if (statusCode == 200) {
+                let decodedResult = jsonToRecent(json: returnedString)
+                recentResult.building = decodedResult.building_name
+                recentResult.level = decodedResult.level_name
+                
+                let pmResultWithHeading = pathMatching(building: decodedResult.building_name, level: decodedResult.level_name, x: decodedResult.x, y: decodedResult.y, heading: decodedResult.absolute_heading, tuXY: [0, 0], isPast: false, HEADING_RANGE: HEADING_RANGE, isUseHeading: true, pathType: 1)
+                
+                if (pmResultWithHeading.isSuccess) {
+                    recentResult.x = pmResultWithHeading.xyh[0]
+                    recentResult.y = pmResultWithHeading.xyh[1]
+                    recentResult.heading = pmResultWithHeading.xyh[2]
+                } else {
+                    let pmResult = pathMatching(building: decodedResult.building_name, level: decodedResult.level_name, x: decodedResult.x, y: decodedResult.y, heading: decodedResult.absolute_heading, tuXY: [0, 0], isPast: false, HEADING_RANGE: HEADING_RANGE, isUseHeading: false, pathType: 1)
+                    recentResult.x = pmResult.xyh[0]
+                    recentResult.y = pmResult.xyh[1]
+                    recentResult.heading = pmResult.xyh[2]
+                }
+                recentResult.isIndoor = true
+                
+                completion(statusCode, recentResult)
+            } else {
+                completion(statusCode, recentResult)
+            }
         })
     }
     
@@ -1827,7 +1856,8 @@ public class ServiceManager: Observation {
             } else {
                 // Add
                 let lastBleDiscoveredTime: Double = bleManager.bleDiscoveredTime
-                if (getCurrentTimeInMillisecondsDouble() - lastBleDiscoveredTime > BLE_VALID_TIME && lastBleDiscoveredTime != 0) {
+                let cTime = getCurrentTimeInMillisecondsDouble()
+                if (cTime - lastBleDiscoveredTime > BLE_VALID_TIME && lastBleDiscoveredTime != 0) {
                     self.timeActiveRF += RFD_INTERVAL
                 } else {
                     self.timeActiveRF = 0
@@ -2262,7 +2292,7 @@ public class ServiceManager: Observation {
         var accumulatedDiagonal = 0.0
         
         if (!userTrajectory.isEmpty) {
-            var startHeading = userTrajectory[0].heading
+            let startHeading = userTrajectory[0].heading
             let headInfo = userTrajectory[userTrajectory.count-1]
             var xyFromHead: [Double] = [headInfo.userX, headInfo.userY]
             
@@ -2296,7 +2326,7 @@ public class ServiceManager: Observation {
         var accumulatedDiagonal = 0.0
         
         if (!userTrajectory.isEmpty) {
-            var startHeading = userTrajectory[0].heading
+            let startHeading = userTrajectory[0].heading
             let headInfo = userTrajectory[userTrajectory.count-1]
             var xyFromHead: [Double] = [headInfo.userX, headInfo.userY]
             
@@ -2619,18 +2649,15 @@ public class ServiceManager: Observation {
                     let areaMinMax: [Double] = [userX - RANGE, userY - RANGE, userX + RANGE, userY + RANGE]
                     let searchArea = getSearchCoordinates(areaMinMax: areaMinMax, interval: 1.0)
                     
-                    var headInfo = userTrajectory[userTrajectory.count-1]
-                    var tailInfo = userTrajectory[0]
-                    let headInfoHeading = headInfo.userTuHeading
-                    let tailInfoHeading = tailInfo.userTuHeading
+                    let headInfo = userTrajectory[userTrajectory.count-1]
+                    let tailInfo = userTrajectory[0]
                     var xyFromHead: [Double] = [headInfo.userX, headInfo.userY]
                     
-                    var headingCorrectionForHead: Double = 0
-                    var headingCorrectionFromServer: Double = headInfo.userHeading - uvHeading[uvHeading.count-1]
+                    let headingCorrectionFromServer: Double = headInfo.userHeading - uvHeading[uvHeading.count-1]
                     var headingFromHead = [Double] (repeating: 0, count: uvHeading.count)
 
                     for i in 0..<uvHeading.count {
-                        headingFromHead[i] = compensateHeading(heading: (uvHeading[i] + headingCorrectionForHead) - 180 + headingCorrectionFromServer)
+                        headingFromHead[i] = compensateHeading(heading: uvHeading[i] - 180 + headingCorrectionFromServer)
                     }
                     
                     var trajectoryFromHead = [[Double]]()
@@ -2669,10 +2696,10 @@ public class ServiceManager: Observation {
                     displayOutput.searchType = 5
                     searchType = 5
                 } else {
-                    var headInfo = userTrajectory[userTrajectory.count-1]
+                    let headInfo = userTrajectory[userTrajectory.count-1]
                     let headInfoHeading = headInfo.userTuHeading
                     
-                    var tailInfo = userTrajectory[0]
+                    let tailInfo = userTrajectory[0]
                     let tailInfoHeading = tailInfo.userTuHeading
                     
                     let pastTraj = pastUserTrajectory
@@ -2839,7 +2866,7 @@ public class ServiceManager: Observation {
                     let tailInfoHeading = tailInfo.userTuHeading
                     var xyFromHead: [Double] = [headInfo.userX, headInfo.userY]
                     
-                    var headingCorrectionFromServer: Double = headInfo.userHeading - uvHeading[uvHeading.count-1]
+                    let headingCorrectionFromServer: Double = headInfo.userHeading - uvHeading[uvHeading.count-1]
                     var headingCorrectionForHead: Double = 0
                     if (!isKf) {
                         headingCorrectionForHead = 0
@@ -2904,7 +2931,7 @@ public class ServiceManager: Observation {
                     let headInfoHeading = headInfo.userTuHeading
                     var xyFromHead: [Double] = [headInfo.userX, headInfo.userY]
                     
-                    var headingCorrectionFromServer: Double = headInfo.userHeading - uvHeading[uvHeading.count-1]
+                    let headingCorrectionFromServer: Double = headInfo.userHeading - uvHeading[uvHeading.count-1]
                     var headingCorrectionForHead: Double = 0
                     if (!isKf) {
                         headingCorrectionForHead = 0
@@ -2945,31 +2972,24 @@ public class ServiceManager: Observation {
                     displayOutput.searchType = -2
                     searchType = -2
                 } else {
-                    let userBuilding = userTrajectory[userTrajectory.count-1].userBuilding
-                    let userLevel = userTrajectory[userTrajectory.count-1].userLevel
-                    let userX = userTrajectory[userTrajectory.count-1].userX
-                    let userY = userTrajectory[userTrajectory.count-1].userY
-                    let userH = userTrajectory[userTrajectory.count-1].userHeading
-                    
-                    var headInfo = userTrajectory[userTrajectory.count-1]
-                    let headInfoHeading = headInfo.userTuHeading
-                    
-                    var tailInfo = userTrajectory[0]
-                    let tailInfoHeading = tailInfo.userTuHeading
-                    
                     let isStraight = isTrajectoryStraight(for: uvHeading, size: uvHeading.count, mode: mode)
+                    
+                    let headInfo = userTrajectory[userTrajectory.count-1]
+                    let headInfoHeading = headInfo.userTuHeading
+                                        
+                    let tailInfo = userTrajectory[0]
+                    let tailInfoHeading = tailInfo.userTuHeading
                     
                     if (isStraight == 1) {
                         // All Straight
-                        var recentScc: Double = headInfo.scc
+                        let recentScc: Double = headInfo.scc
                         var xyFromHead: [Double] = [headInfo.userX, headInfo.userY]
                         
-                        var headingCorrectionForHead: Double = 0
-                        var headingCorrectionFromServer: Double = headInfo.userHeading - uvHeading[uvHeading.count-1]
+                        let headingCorrectionFromServer: Double = headInfo.userHeading - uvHeading[uvHeading.count-1]
                         
                         var headingFromHead = [Double] (repeating: 0, count: uvHeading.count)
                         for i in 0..<uvHeading.count {
-                            headingFromHead[i] = compensateHeading(heading: (uvHeading[i] + headingCorrectionForHead) - 180 + headingCorrectionFromServer)
+                            headingFromHead[i] = compensateHeading(heading: uvHeading[i] - 180 + headingCorrectionFromServer)
                         }
                         
                         // Head 기준 back propagation
@@ -2982,7 +3002,7 @@ public class ServiceManager: Observation {
                             trajectoryFromHead.append(xyFromHead)
                         }
                         
-                        var xyMinMax: [Double] = getMinMaxValues(for: trajectoryFromHead)
+                        let xyMinMax: [Double] = getMinMaxValues(for: trajectoryFromHead)
 
                         let headingStart = compensateHeading(heading: headingFromHead[headingFromHead.count-1]-180)
                         let headingEnd = compensateHeading(heading: headingFromHead[0]-180)
@@ -2991,7 +3011,7 @@ public class ServiceManager: Observation {
                         let areaMinMax: [Double] = getSearchAreaMinMax(xyMinMax: xyMinMax, heading: [headingStart, headingEnd], recentScc: recentScc, searchType: isStraight, mode: mode)
                         let searchArea = getSearchCoordinates(areaMinMax: areaMinMax, interval: 1.0)
                         
-                        var searchHeadings: [Double] = [compensateHeading(heading: headingEnd)]
+                        let searchHeadings: [Double] = [compensateHeading(heading: headingEnd)]
                         
                         resultRange = areaMinMax.map { Int($0) }
                         resultDirection = searchHeadings.map { Int($0) }
@@ -3006,15 +3026,14 @@ public class ServiceManager: Observation {
                         searchType = isStraight
                     } else if (isStraight == 2) {
                         // Head Straight
-                        var recentScc: Double = headInfo.scc
+                        let recentScc: Double = headInfo.scc
                         var xyFromHead: [Double] = [headInfo.userX, headInfo.userY]
                         
-                        var headingCorrectionForHead: Double = 0
-                        var headingCorrectionFromServer: Double = headInfo.userHeading - uvHeading[uvHeading.count-1]
+                        let headingCorrectionFromServer: Double = headInfo.userHeading - uvHeading[uvHeading.count-1]
                         
                         var headingFromHead = [Double] (repeating: 0, count: uvHeading.count)
                         for i in 0..<uvHeading.count {
-                            headingFromHead[i] = (uvHeading[i] + headingCorrectionForHead) - 180 + headingCorrectionFromServer
+                            headingFromHead[i] = uvHeading[i] - 180 + headingCorrectionFromServer
                         }
                         
                         // Head 기준 back propagation
@@ -3027,7 +3046,7 @@ public class ServiceManager: Observation {
                             trajectoryFromHead.append(xyFromHead)
                         }
                         
-                        var xyMinMax: [Double] = getMinMaxValues(for: trajectoryFromHead)
+                        let xyMinMax: [Double] = getMinMaxValues(for: trajectoryFromHead)
                         
                         let headingStart = compensateHeading(heading: headingFromHead[headingFromHead.count-1]-180)
                         let headingEnd = compensateHeading(heading: headingFromHead[0]-180)
@@ -3065,15 +3084,14 @@ public class ServiceManager: Observation {
                         searchType = isStraight
                     } else if (isStraight == 3) {
                         // Tail Straight
-                        var recentScc: Double = headInfo.scc
+                        let recentScc: Double = headInfo.scc
                         var xyFromTail: [Double] = [tailInfo.userX, tailInfo.userY]
 
-                        var headingCorrectionForTail: Double = 0
-                        var headingCorrectionFromServer: Double = tailInfo.userHeading - uvHeading[0]
+                        let headingCorrectionFromServer: Double = tailInfo.userHeading - uvHeading[0]
                         
                         var headingFromTail = [Double] (repeating: 0, count: uvHeading.count)
                         for i in 0..<uvHeading.count {
-                            headingFromTail[i] = uvHeading[i] + headingCorrectionForTail + headingCorrectionFromServer
+                            headingFromTail[i] = uvHeading[i] + headingCorrectionFromServer
                         }
 
                         var trajectoryFromTail = [[Double]]()
@@ -3086,7 +3104,7 @@ public class ServiceManager: Observation {
                             trajectoryFromTail.append(xyFromTail)
                         }
 
-                        var xyMinMax: [Double] = getMinMaxValues(for: trajectoryFromTail)
+                        let xyMinMax: [Double] = getMinMaxValues(for: trajectoryFromTail)
 
                         let headingStart = compensateHeading(heading: headingFromTail[headingFromTail.count-1])
                         let headingEnd = compensateHeading(heading: headingFromTail[0])
@@ -3095,7 +3113,7 @@ public class ServiceManager: Observation {
                         let diffX = xyMinMax[2] - xyMinMax[0]
                         let diffY = xyMinMax[3] - xyMinMax[1]
 
-                        var areaMinMax: [Double] = getSearchAreaMinMax(xyMinMax: xyMinMax, heading: [headingStart, headingEnd], recentScc: recentScc, searchType: isStraight, mode: mode)
+                        let areaMinMax: [Double] = getSearchAreaMinMax(xyMinMax: xyMinMax, heading: [headingStart, headingEnd], recentScc: recentScc, searchType: isStraight, mode: mode)
                         let searchArea = getSearchCoordinates(areaMinMax: areaMinMax, interval: 1.0)
 
                         var searchHeadings: [Double] = []
@@ -3139,15 +3157,14 @@ public class ServiceManager: Observation {
                         }
                     } else {
                         // Turn
-                        var recentScc: Double = headInfo.scc
+                        let recentScc: Double = headInfo.scc
                         var xyFromHead: [Double] = [headInfo.userX, headInfo.userY]
                         
-                        var headingCorrectionForHead: Double = 0
-                        var headingCorrectionFromServer: Double = headInfo.userHeading - uvHeading[uvHeading.count-1]
+                        let headingCorrectionFromServer: Double = headInfo.userHeading - uvHeading[uvHeading.count-1]
                         
                         var headingFromHead = [Double] (repeating: 0, count: uvHeading.count)
                         for i in 0..<uvHeading.count {
-                            headingFromHead[i] = compensateHeading(heading: (uvHeading[i] + headingCorrectionForHead) - 180 + headingCorrectionFromServer)
+                            headingFromHead[i] = compensateHeading(heading: uvHeading[i] - 180 + headingCorrectionFromServer)
                         }
                         
                         // Head 기준 back propagation
@@ -3160,7 +3177,7 @@ public class ServiceManager: Observation {
                             trajectoryFromHead.append(xyFromHead)
                         }
                         
-                        var xyMinMax: [Double] = getMinMaxValues(for: trajectoryFromHead)
+                        let xyMinMax: [Double] = getMinMaxValues(for: trajectoryFromHead)
 
                         let headingStart = compensateHeading(heading: headingFromHead[headingFromHead.count-1]-180)
                         let headingEnd = compensateHeading(heading: headingFromHead[0]-180)
@@ -3169,7 +3186,7 @@ public class ServiceManager: Observation {
                         let areaMinMax: [Double] = getSearchAreaMinMax(xyMinMax: xyMinMax, heading: [headingStart, headingEnd], recentScc: recentScc, searchType: isStraight, mode: mode)
                         let searchArea = getSearchCoordinates(areaMinMax: areaMinMax, interval: 1.0)
                         
-                        var searchHeadings: [Double] = [compensateHeading(heading: headingEnd)]
+                        let searchHeadings: [Double] = [compensateHeading(heading: headingEnd)]
                         
                         resultRange = areaMinMax.map { Int($0) }
                         resultDirection = searchHeadings.map { Int($0) }
@@ -3275,7 +3292,7 @@ public class ServiceManager: Observation {
         if (mode == "pdr") {
             lengthCondition = USER_TRAJECTORY_DIAGONAL*0.6
         }
-        var SEARCH_LENGTH: Double = lengthCondition*0.3
+        let SEARCH_LENGTH: Double = lengthCondition*0.3
         
         let headingStart = heading[0]
         let headingEnd = heading[1]
@@ -3451,6 +3468,7 @@ public class ServiceManager: Observation {
                     if (diffHeadingHeadTail <= 5) {
                         diffHeadingHeadTail = 5
                     }
+                    
                     displayOutput.searchArea = getSearchCoordinates(areaMinMax: convertIntArrayToDoubleArray(searchInfo.0), interval: 1.0)
                     
                     if (self.isActiveKf) {
@@ -3458,9 +3476,9 @@ public class ServiceManager: Observation {
                             let phase2Headings = self.phase2Direction
                             var searchHeadings: [Int] = []
                             for i in 0..<phase2Headings.count {
-                                searchHeadings.append(Int(compensateHeading(heading: Double(phase2Headings[i]-diffHeadingHeadTail))))
+                                searchHeadings.append(Int(compensateHeading(heading: Double(phase2Headings[i]-Int(diffHeadingHeadTail)))))
                                 searchHeadings.append(Int(compensateHeading(heading: Double(phase2Headings[i]))))
-                                searchHeadings.append(Int(compensateHeading(heading: Double(phase2Headings[i]+diffHeadingHeadTail))))
+                                searchHeadings.append(Int(compensateHeading(heading: Double(phase2Headings[i]+Int(diffHeadingHeadTail)))))
                             }
                             let uniqueSearchHeadings = Array(Set(searchHeadings))
                             searchInfo.1 = uniqueSearchHeadings
@@ -3479,9 +3497,9 @@ public class ServiceManager: Observation {
                         let phase2Headings = self.phase2Direction
                         var searchHeadings: [Int] = []
                         for i in 0..<phase2Headings.count {
-                            searchHeadings.append(Int(compensateHeading(heading: Double(phase2Headings[i]-diffHeadingHeadTail))))
+                            searchHeadings.append(Int(compensateHeading(heading: Double(phase2Headings[i]-Int(diffHeadingHeadTail)))))
                             searchHeadings.append(Int(compensateHeading(heading: Double(phase2Headings[i]))))
-                            searchHeadings.append(Int(compensateHeading(heading: Double(phase2Headings[i]+diffHeadingHeadTail))))
+                            searchHeadings.append(Int(compensateHeading(heading: Double(phase2Headings[i]+Int(diffHeadingHeadTail)))))
                         }
                         let uniqueSearchHeadings = Array(Set(searchHeadings))
                         searchInfo.1 = uniqueSearchHeadings
@@ -5843,7 +5861,7 @@ public class ServiceManager: Observation {
         var isInNetworkBadEntrance: Bool = false
         var entrance = FineLocationTrackingFromServer()
         
-        var networkBadEntranceWards = ["TJ-00CB-00000386-0000"]
+        let networkBadEntranceWards = ["TJ-00CB-00000386-0000"]
         for (key, value) in bleAvg {
             if networkBadEntranceWards.contains(key) {
                 if (value >= -80.0) {

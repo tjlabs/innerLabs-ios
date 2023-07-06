@@ -573,6 +573,15 @@ public struct RecentResultFromServer: Codable {
     }
 }
 
+public struct JupiterToDisplay {
+    var x: Double = 0
+    var y: Double = 0
+    var heading: Double = 0
+    var building: String = ""
+    var level: String = ""
+    var isIndoor: Bool = false
+}
+
 public func decodeOSA(json: String) -> OnSpotAuthorizationResult {
     let result = OnSpotAuthorizationResult.init()
     let decoder = JSONDecoder()

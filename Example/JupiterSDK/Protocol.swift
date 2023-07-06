@@ -138,6 +138,7 @@ public func setRegion(regionName: String) {
     }
     
     USER_URL = COMMON_URL + REGION_URL + "/user"
+    LOGIN_URL = COMMON_URL + REGION_URL + "/login"
     CARD_URL = COMMON_URL + REGION_URL + "/card"
     SCALE_URL = COMMON_URL + REGION_URL + "/scale"
     

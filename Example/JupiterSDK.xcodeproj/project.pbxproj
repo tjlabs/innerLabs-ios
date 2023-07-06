@@ -26,6 +26,7 @@
 		B30EED7C28936CB5009A3EDA /* TipsTownViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B30EED7B28936CB5009A3EDA /* TipsTownViewController.swift */; };
 		B30EED872893B64C009A3EDA /* CollectViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B30EED862893B64C009A3EDA /* CollectViewController.swift */; };
 		B31EC7D92876C03A00799659 /* ServiceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B31EC7D82876C03A00799659 /* ServiceViewController.swift */; };
+		B32F8AC92A568B36006C900B /* PG_1F.csv in Resources */ = {isa = PBXBuildFile; fileRef = B32F8AC82A568B36006C900B /* PG_1F.csv */; };
 		B340EE3328093FB20096E404 /* CardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B340EE3228093FB20096E404 /* CardViewController.swift */; };
 		B3455283282AB7B400F0DD3E /* ServiceInfoTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3455281282AB7B400F0DD3E /* ServiceInfoTableViewCell.swift */; };
 		B3455284282AB7B400F0DD3E /* ServiceInfoTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B3455282282AB7B400F0DD3E /* ServiceInfoTableViewCell.xib */; };
@@ -43,7 +44,6 @@
 		B364B35828BCD8C5001A8950 /* LUPIUM_3F.csv in Resources */ = {isa = PBXBuildFile; fileRef = B364B35428BCD8C5001A8950 /* LUPIUM_3F.csv */; };
 		B369287E28C5BCAC005FD4A9 /* LUPIUM_B1.csv in Resources */ = {isa = PBXBuildFile; fileRef = B369287D28C5BCAC005FD4A9 /* LUPIUM_B1.csv */; };
 		B36928AE28C5D290005FD4A9 /* L8_B1.csv in Resources */ = {isa = PBXBuildFile; fileRef = B36928AD28C5D290005FD4A9 /* L8_B1.csv */; };
-		B36A28902A3AE81700441D37 /* PG_1F.csv in Resources */ = {isa = PBXBuildFile; fileRef = B36A288F2A3AE81700441D37 /* PG_1F.csv */; };
 		B36B964E289A024900951457 /* L1_2F.csv in Resources */ = {isa = PBXBuildFile; fileRef = B36B964D289A024900951457 /* L1_2F.csv */; };
 		B3844E8E28099EE3007A5215 /* CardCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3844E8C28099EE3007A5215 /* CardCollectionViewCell.swift */; };
 		B3844E8F28099EE3007A5215 /* CardCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B3844E8D28099EE3007A5215 /* CardCollectionViewCell.xib */; };
@@ -146,6 +146,7 @@
 		B30EED7B28936CB5009A3EDA /* TipsTownViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TipsTownViewController.swift; sourceTree = "<group>"; };
 		B30EED862893B64C009A3EDA /* CollectViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectViewController.swift; sourceTree = "<group>"; };
 		B31EC7D82876C03A00799659 /* ServiceViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceViewController.swift; sourceTree = "<group>"; };
+		B32F8AC82A568B36006C900B /* PG_1F.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = PG_1F.csv; sourceTree = "<group>"; };
 		B340EE3228093FB20096E404 /* CardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardViewController.swift; sourceTree = "<group>"; };
 		B3455281282AB7B400F0DD3E /* ServiceInfoTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceInfoTableViewCell.swift; sourceTree = "<group>"; };
 		B3455282282AB7B400F0DD3E /* ServiceInfoTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ServiceInfoTableViewCell.xib; sourceTree = "<group>"; };
@@ -164,7 +165,6 @@
 		B364B35428BCD8C5001A8950 /* LUPIUM_3F.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LUPIUM_3F.csv; sourceTree = "<group>"; };
 		B369287D28C5BCAC005FD4A9 /* LUPIUM_B1.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LUPIUM_B1.csv; sourceTree = "<group>"; };
 		B36928AD28C5D290005FD4A9 /* L8_B1.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = L8_B1.csv; sourceTree = "<group>"; };
-		B36A288F2A3AE81700441D37 /* PG_1F.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = PG_1F.csv; sourceTree = "<group>"; };
 		B36B964D289A024900951457 /* L1_2F.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = L1_2F.csv; sourceTree = "<group>"; };
 		B3844E8C28099EE3007A5215 /* CardCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardCollectionViewCell.swift; sourceTree = "<group>"; };
 		B3844E8D28099EE3007A5215 /* CardCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CardCollectionViewCell.xib; sourceTree = "<group>"; };
@@ -314,9 +314,9 @@
 				B3B9F4E4286C2EA300FEE914 /* Gallery_4F_Road.csv */,
 				B3FD74EA2869A38800CD4D74 /* Gallery_4F.csv */,
 				B3021F0E29541D7C000CE9AD /* Museum_1F.csv */,
-				B36A288F2A3AE81700441D37 /* PG_1F.csv */,
 				B364B35428BCD8C5001A8950 /* LUPIUM_3F.csv */,
 				B30638F12A36E58800C7FF89 /* COEX_B0.csv */,
+				B32F8AC82A568B36006C900B /* PG_1F.csv */,
 				B30638FA2A36E82100C7FF89 /* S3_7F.csv */,
 				B30638F22A36E58800C7FF89 /* COEX_B1.csv */,
 				B30638F42A36E58800C7FF89 /* COEX_B2.csv */,
@@ -610,7 +610,7 @@
 				B3D19DED29079CE000A5F7D4 /* SpotTableViewCell.xib in Resources */,
 				B369287E28C5BCAC005FD4A9 /* LUPIUM_B1.csv in Resources */,
 				B3FD74ED2869A38800CD4D74 /* Gallery_3F.csv in Resources */,
-				B36A28902A3AE81700441D37 /* PG_1F.csv in Resources */,
+				B32F8AC92A568B36006C900B /* PG_1F.csv in Resources */,
 				B30638F82A36E58800C7FF89 /* COEX_B3.csv in Resources */,
 				B3BD699A27E9A4BE00A32A7A /* Colors.xcassets in Resources */,
 				B360D89028090D6A0084FB22 /* NotoSansKR-Thin.otf in Resources */,
@@ -1012,7 +1012,7 @@
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.lifestyle";
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 1.8.18;
+				MARKETING_VERSION = 1.8.19;
 				MODULE_NAME = ExampleApp;
 				PRODUCT_BUNDLE_IDENTIFIER = com.tjlabscorp.ios.innerLabs;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1034,7 +1034,7 @@
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.lifestyle";
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 1.8.18;
+				MARKETING_VERSION = 1.8.19;
 				MODULE_NAME = ExampleApp;
 				PRODUCT_BUNDLE_IDENTIFIER = com.tjlabscorp.ios.innerLabs;
 				PRODUCT_NAME = "$(TARGET_NAME)";

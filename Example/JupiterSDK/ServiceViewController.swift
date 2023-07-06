@@ -659,8 +659,6 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
         if (self.isMonitor) {
             serviceManager.getRecentResult(id: self.idToMonitor, completion: { [self] statusCode, returnedString in
                 if (statusCode == 200) {
-//                    let result = serviceManager.jsonToRecent(json: returnedString)
-//                    print(getLocalTimeString() + " , (Monitor Result) : \(result.x) , \(result.y) , \(result.absolute_heading) , \(result.phase)")
                     let result = serviceManager.jsonToResult(json: returnedString)
                     let pathMatchingResult = serviceManager.pathMatching(building: result.building_name, level: result.level_name, x: result.x, y: result.y, heading: result.absolute_heading, tuXY: [0,0], isPast: false, HEADING_RANGE: 50, isUseHeading: true, pathType: 0)
                     let resultTime: Int = result.mobile_time
@@ -668,19 +666,16 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
                     let resultBuildingName: String = result.building_name
                     let resultLevelNameAll: String = result.level_name
                     let resultLevelName: String = removeLevelDirectionString(levelName: resultLevelNameAll)
-                    
+
                     let resultCoordX = pathMatchingResult.xyh[0]
                     let resultCoordY = pathMatchingResult.xyh[1]
                     let resultHeading = pathMatchingResult.xyh[2]
-                    
+
                     if (resultCoordX != 0 && resultCoordY != 0) {
                         self.monitorToDisplay.x = resultCoordX
                         self.monitorToDisplay.y = resultCoordY
                         self.monitorToDisplay.heading = resultHeading
-//                        self.monitorToDisplay.x = result.x
-//                        self.monitorToDisplay.y = result.y
-//                        self.monitorToDisplay.heading = result.absolute_heading
-                        
+
                         self.monitorToDisplay.building = resultBuildingName
                         self.monitorToDisplay.level = resultLevelName
                         self.monitorToDisplay.isIndoor = true
@@ -1154,8 +1149,8 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
 //
 //        scatterChart.xAxis.axisMinimum = -1.3
 //        scatterChart.xAxis.axisMaximum = 18
-//        scatterChart.leftAxis.axisMinimum = -8.2
-//        scatterChart.leftAxis.axisMaximum = 26
+//        scatterChart.leftAxis.axisMinimum = -9.2
+//        scatterChart.leftAxis.axisMaximum = 25.5
         
         // Configure Chart
         if ( limits[0] == 0 && limits[1] == 0 && limits[2] == 0 && limits[3] == 0 ) {
@@ -1169,10 +1164,6 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
             scatterChart.leftAxis.axisMinimum = limits[2]
             scatterChart.leftAxis.axisMaximum = limits[3]
         }
-//        scatterChart.xAxis.axisMinimum = 10
-//        scatterChart.xAxis.axisMaximum = 322
-//        scatterChart.leftAxis.axisMinimum = 21
-//        scatterChart.leftAxis.axisMaximum = 508
         
         scatterChart.xAxis.drawGridLinesEnabled = chartFlag
         scatterChart.leftAxis.drawGridLinesEnabled = chartFlag
@@ -1563,13 +1554,9 @@ extension ServiceViewController: CustomSwitchButtonDelegate {
                     } else {
                         print("(ServiceVC) Fail : \(message)")
                         serviceManager.stopService()
-                        self.showPopUp(title: "Service Fail", message: message)
+//                        self.showPopUp(title: "Service Fail", message: message)
                         self.goToBackServiceFail()
 //                        NotificationCenter.default.removeObserver(self)
-//                        self.delegate?.sendPage(data: self.page)
-//                        DispatchQueue.main.async {
-//                            self.navigationController?.popViewController(animated: true)
-//                        }
                     }
                 })
                 
@@ -1594,13 +1581,9 @@ extension ServiceViewController: CustomSwitchButtonDelegate {
                 } else {
                     print("(SeviceVC) Fail : \(isStop.1)")
                     let message: String = isStop.1
-                    showPopUp(title: "Service Fail", message: message)
+//                    showPopUp(title: "Service Fail", message: message)
                     goToBackServiceFail()
 //                    NotificationCenter.default.removeObserver(self)
-//                    self.delegate?.sendPage(data: self.page)
-//                    DispatchQueue.main.async {
-//                        self.navigationController?.popViewController(animated: true)
-//                    }
                 }
             }
         }

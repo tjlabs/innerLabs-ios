@@ -826,9 +826,19 @@ class FusionViewController: UIViewController, Observer {
         print("\(currentBuilding) \(currentLevel) Limits : \(limits[0]) , \(limits[1]), \(limits[2]), \(limits[3])")
         
 //        scatterChart.xAxis.axisMinimum = 2.2
-//        scatterChart.xAxis.axisMaximum = 99.6
-//        scatterChart.leftAxis.axisMinimum = -1.4
-//        scatterChart.leftAxis.axisMaximum = 108.5
+//        scatterChart.xAxis.axisMaximum = 100.6
+//        scatterChart.leftAxis.axisMinimum = -1
+//        scatterChart.leftAxis.axisMaximum = 111.2
+        
+//        scatterChart.xAxis.axisMinimum = 2.0
+//        scatterChart.xAxis.axisMaximum = 100.6
+//        scatterChart.leftAxis.axisMinimum = 0.1
+//        scatterChart.leftAxis.axisMaximum = 110.4
+        
+//        scatterChart.xAxis.axisMinimum = 2.0
+//        scatterChart.xAxis.axisMaximum = 100.6
+//        scatterChart.leftAxis.axisMinimum = -2.5
+//        scatterChart.leftAxis.axisMaximum = 112.6
         
         if ( limits[0] == 0 && limits[1] == 0 && limits[2] == 0 && limits[3] == 0 ) {
             scatterChart.xAxis.axisMinimum = xMin - 5
@@ -1235,7 +1245,7 @@ extension FusionViewController: CustomSwitchButtonDelegate {
                     } else {
                         print("(FusionVC) Fail : \(message)")
                         serviceManager.stopService()
-                        self.showPopUp(title: "Service Fail", message: message)
+//                        self.showPopUp(title: "Service Fail", message: message)
                         self.goToBackServiceFail()
                     }
                 })
@@ -1259,7 +1269,7 @@ extension FusionViewController: CustomSwitchButtonDelegate {
                 } else {
                     print("(FusionVC) Fail : \(isStop.1)")
                     let message: String = isStop.1
-                    showPopUp(title: "Service Fail", message: message)
+//                    showPopUp(title: "Service Fail", message: message)
                     goToBackServiceFail()
                 }
             }

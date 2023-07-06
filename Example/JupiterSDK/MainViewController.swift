@@ -143,6 +143,7 @@ class MainViewController: UIViewController, UITextFieldDelegate {
                 do {
                     print("")
                     print("====================================")
+                    print("Login URL :: ", url)
                     print("응답 코드 :: ", response.response?.statusCode ?? 0)
                     print("-------------------------------")
                     print("응답 데이터 :: ", String(data: res, encoding: .utf8) ?? "")
@@ -221,6 +222,7 @@ class MainViewController: UIViewController, UITextFieldDelegate {
                 catch (let err){
                     print("")
                     print("====================================")
+                    print("Login URL :: ", url)
                     print("catch :: ", err.localizedDescription)
                     print("====================================")
                     print("")
@@ -229,6 +231,7 @@ class MainViewController: UIViewController, UITextFieldDelegate {
             case .failure(let err):
                 print("")
                 print("====================================")
+                print("Login URL :: ", url)
                 print("failure :: ", err.localizedDescription)
                 print("====================================")
                 print("")

@@ -535,7 +535,7 @@
                                         <rect key="frame" x="0.0" y="0.0" width="390" height="355"/>
                                     </imageView>
                                     <view hidden="YES" userInteractionEnabled="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="kDG-1Q-o2X" customClass="ScatterChartView" customModule="Charts">
-                                        <rect key="frame" x="0.0" y="10" width="390" height="335"/>
+                                        <rect key="frame" x="0.0" y="10" width="390" height="355"/>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     </view>
                                     <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="There is no image of floor" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="nV5-dP-qBZ">
@@ -547,9 +547,9 @@
                                 </subviews>
                                 <color key="backgroundColor" systemColor="systemGray6Color"/>
                                 <constraints>
-                                    <constraint firstItem="kDG-1Q-o2X" firstAttribute="top" secondItem="kJ9-Zf-no4" secondAttribute="top" constant="10" id="1T3-fc-OQk"/>
                                     <constraint firstItem="nV5-dP-qBZ" firstAttribute="centerX" secondItem="JBg-cF-UzO" secondAttribute="centerX" id="70e-Xa-ixb"/>
                                     <constraint firstItem="47X-rs-DuW" firstAttribute="leading" secondItem="7fZ-dU-vCi" secondAttribute="trailing" id="8Wd-a6-okD"/>
+                                    <constraint firstItem="kDG-1Q-o2X" firstAttribute="top" secondItem="JBg-cF-UzO" secondAttribute="top" constant="10" id="9Ml-U7-cdf"/>
                                     <constraint firstItem="JBg-cF-UzO" firstAttribute="top" secondItem="kJ9-Zf-no4" secondAttribute="top" id="EiB-dz-8Ou"/>
                                     <constraint firstAttribute="trailing" secondItem="JBg-cF-UzO" secondAttribute="trailing" id="H4n-uT-3j0"/>
                                     <constraint firstItem="nV5-dP-qBZ" firstAttribute="centerY" secondItem="JBg-cF-UzO" secondAttribute="centerY" id="M9q-Gs-wuR"/>
@@ -561,9 +561,9 @@
                                     <constraint firstAttribute="trailing" secondItem="47X-rs-DuW" secondAttribute="trailing" constant="10" id="cqx-qm-GqN"/>
                                     <constraint firstItem="kDG-1Q-o2X" firstAttribute="leading" secondItem="kJ9-Zf-no4" secondAttribute="leading" id="eHq-FU-E0Z"/>
                                     <constraint firstAttribute="bottom" secondItem="7fZ-dU-vCi" secondAttribute="bottom" constant="10" id="eIt-Ju-9zN"/>
+                                    <constraint firstItem="kDG-1Q-o2X" firstAttribute="bottom" secondItem="JBg-cF-UzO" secondAttribute="bottom" constant="10" id="fH0-KX-0bd"/>
                                     <constraint firstItem="7fZ-dU-vCi" firstAttribute="top" secondItem="JBg-cF-UzO" secondAttribute="bottom" id="fYf-d2-u4l"/>
                                     <constraint firstAttribute="trailing" secondItem="kDG-1Q-o2X" secondAttribute="trailing" id="oSf-9o-0Wu"/>
-                                    <constraint firstItem="7fZ-dU-vCi" firstAttribute="top" secondItem="kDG-1Q-o2X" secondAttribute="bottom" constant="10" id="saK-Gb-R3S"/>
                                     <constraint firstAttribute="height" constant="400" id="veB-sz-ODU"/>
                                 </constraints>
                             </view>
@@ -1801,7 +1801,7 @@
                                         <rect key="frame" x="0.0" y="0.0" width="390" height="355"/>
                                     </imageView>
                                     <view hidden="YES" userInteractionEnabled="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="N8z-WI-3Kf" customClass="ScatterChartView" customModule="Charts">
-                                        <rect key="frame" x="0.0" y="10" width="390" height="335"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="390" height="355"/>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     </view>
                                     <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="There is no image of floor" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="tN7-xC-rrT">
@@ -1821,16 +1821,16 @@
                                     <constraint firstItem="SZr-PN-kU7" firstAttribute="leading" secondItem="8BC-Dp-9eC" secondAttribute="trailing" id="GGU-Kh-9gC"/>
                                     <constraint firstItem="8BC-Dp-9eC" firstAttribute="top" secondItem="Aht-zH-KnH" secondAttribute="bottom" id="IBD-SC-Dh9"/>
                                     <constraint firstItem="8BC-Dp-9eC" firstAttribute="leading" secondItem="XfL-ja-dus" secondAttribute="leading" constant="10" id="P2Q-9a-0ec"/>
-                                    <constraint firstItem="N8z-WI-3Kf" firstAttribute="top" secondItem="XfL-ja-dus" secondAttribute="top" constant="10" id="PJy-xt-Bwq"/>
                                     <constraint firstAttribute="bottom" secondItem="8BC-Dp-9eC" secondAttribute="bottom" constant="10" id="TaO-nm-MdL"/>
                                     <constraint firstAttribute="height" constant="400" id="TaW-O8-Zfb"/>
                                     <constraint firstItem="Aht-zH-KnH" firstAttribute="leading" secondItem="XfL-ja-dus" secondAttribute="leading" id="WnA-fN-GPB"/>
+                                    <constraint firstItem="N8z-WI-3Kf" firstAttribute="bottom" secondItem="Aht-zH-KnH" secondAttribute="bottom" id="X5b-eP-mXE"/>
                                     <constraint firstItem="8BC-Dp-9eC" firstAttribute="top" secondItem="AkL-bK-jnf" secondAttribute="bottom" constant="10" id="Xl7-Tm-vsb"/>
+                                    <constraint firstItem="N8z-WI-3Kf" firstAttribute="top" secondItem="Aht-zH-KnH" secondAttribute="top" id="aWP-tM-vSS"/>
                                     <constraint firstAttribute="trailing" secondItem="N8z-WI-3Kf" secondAttribute="trailing" id="e4x-w0-ym0"/>
                                     <constraint firstItem="AkL-bK-jnf" firstAttribute="leading" secondItem="8BC-Dp-9eC" secondAttribute="leading" id="jvD-x1-f61"/>
                                     <constraint firstItem="Aht-zH-KnH" firstAttribute="top" secondItem="XfL-ja-dus" secondAttribute="top" id="soa-ul-Bty"/>
                                     <constraint firstAttribute="bottom" secondItem="SZr-PN-kU7" secondAttribute="bottom" constant="10" id="udW-X4-Sgs"/>
-                                    <constraint firstItem="8BC-Dp-9eC" firstAttribute="top" secondItem="N8z-WI-3Kf" secondAttribute="bottom" constant="10" id="xKm-UD-Jg8"/>
                                 </constraints>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="DO2-Yo-k91">
