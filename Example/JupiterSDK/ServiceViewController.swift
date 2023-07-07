@@ -1146,11 +1146,16 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
         
 //        print("\(currentBuilding) \(currentLevel) MinMax : \(xMin) , \(xMax), \(yMin), \(yMax)")
 //        print("\(currentBuilding) \(currentLevel) Limits : \(limits[0]) , \(limits[1]), \(limits[2]), \(limits[3])")
-//
-//        scatterChart.xAxis.axisMinimum = -1.3
-//        scatterChart.xAxis.axisMaximum = 18
-//        scatterChart.leftAxis.axisMinimum = -9.2
-//        scatterChart.leftAxis.axisMaximum = 25.5
+
+//        scatterChart.xAxis.axisMinimum = -35.0
+//        scatterChart.xAxis.axisMaximum = 316
+//        scatterChart.leftAxis.axisMinimum = -9.0
+//        scatterChart.leftAxis.axisMaximum = 510.0
+        
+//        scatterChart.xAxis.axisMinimum = -28
+//        scatterChart.xAxis.axisMaximum = 312
+//        scatterChart.leftAxis.axisMinimum = -9.0
+//        scatterChart.leftAxis.axisMaximum = 510.0
         
         // Configure Chart
         if ( limits[0] == 0 && limits[1] == 0 && limits[2] == 0 && limits[3] == 0 ) {
