@@ -43,7 +43,7 @@ public class ServiceManager: Observation {
     let MR_INPUT_NUM = 20
     
     // 1 ~ 2 : Release  //  0 : Test
-    var serverType: Int = 3
+    var serverType: Int = 0
     var region: String = "Korea"
     
     let G: Double = 9.81
@@ -185,6 +185,7 @@ public class ServiceManager: Observation {
     
     
     // ----- Fine Location Tracking ----- //
+    var rfSurfaceCorrelator = ReceivedForceSurfaceCorrelator()
     var bleData: [String: [[Double]]]?
     var unitDRInfo = UnitDRInfo()
     var unitDrInfoIndex: Int = 0
@@ -250,7 +251,7 @@ public class ServiceManager: Observation {
     var scVelocityScale: Double = 1.0
     var entranceVelocityScale: Double = 1.0
     
-    let SCC_THRESHOLD: Double = 0.75
+    let SCC_THRESHOLD: Double = 0.72
     let SCC_MAX: Double = 0.8
     let BIAS_RANGE_MAX: Int = 10
     let BIAS_RANGE_MIN: Int = -3
@@ -265,6 +266,11 @@ public class ServiceManager: Observation {
     let GOOD_BIAS_ARRAY_SIZE: Int = 30
     // --------------------------------- //
     
+    // ----- Fine Location Tracking ----- //
+    var isMockMode: Bool = false
+    var mockFltResult = FineLocationTrackingResult()
+    var mockOsaResult: String = ""
+    // --------------------------------- //
     
     // ----------- Kalman Filter ------------ //
     var phase: Int = 0
@@ -378,6 +384,10 @@ public class ServiceManager: Observation {
     var timeForInit: Double = 31
     public var TIME_INIT_THRESHOLD: Double = 30
     
+    // State
+    private var foregroundObserver: Any!
+    private var backgroundObserver: Any!
+    
     public override init() {
         super.init()
         
@@ -390,6 +400,8 @@ public class ServiceManager: Observation {
         os = UIDevice.current.systemVersion
         let arr = os.components(separatedBy: ".")
         osVersion = Int(arr[0]) ?? 0
+        
+        self.notificationCenterAddOberver()
     }
     
     public func initService(service: String, mode: String) -> (Bool, String) {
@@ -436,6 +448,48 @@ public class ServiceManager: Observation {
         }
         
         return (isSuccess, message)
+    }
+    
+    public func enableMockMode() {
+        let currentTime = getCurrentTimeInMilliseconds()
+        self.isMockMode = true
+        
+        let input = JupiterMock(user_id: self.user_id, mobile_time: currentTime, sector_id: self.sector_id)
+        NetworkManager.shared.postMock(url: MOCK_URL, input: input, completion: { [self] statusCode, returnedString in
+            if (statusCode == 200) {
+                let result = decodeMock(json: returnedString)
+                
+                let fltResult = result.FLT
+                let osaResult = result.OSA
+                
+                self.mockFltResult.mobile_time = fltResult.mobile_time
+                self.mockFltResult.building_name = fltResult.building_name
+                self.mockFltResult.level_name = fltResult.level_name
+                self.mockFltResult.scc = fltResult.scc
+                self.mockFltResult.x = fltResult.x
+                self.mockFltResult.y = fltResult.y
+                self.mockFltResult.absolute_heading = fltResult.absolute_heading
+                self.mockFltResult.phase = fltResult.phase
+                self.mockFltResult.calculated_time = fltResult.calculated_time
+                self.mockFltResult.index = fltResult.index
+                self.mockFltResult.velocity = displayOutput.velocity
+                self.mockFltResult.mode = self.runMode
+                self.mockFltResult.ble_only_position = self.isVenusMode
+                self.mockFltResult.isIndoor = true
+                
+                if let encodingData = JSONConverter.encodeJson(param: osaResult) {
+                    self.mockOsaResult = String(decoding: encodingData, as: UTF8.self)
+                }
+                print(getLocalTimeString() + " , (Jupiter) Success : Enable Mock Mode")
+            } else {
+                print(getLocalTimeString() + " , (Jupiter) Fail : Enable Mock Mode")
+            }
+        })
+    }
+    
+    public func disableMockMode() {
+        self.isMockMode = false
+        print(getLocalTimeString() + " , (Jupiter) Success : Disable Mock Mode")
     }
     
     public func changeRegion(regionName: String) {
@@ -684,7 +738,7 @@ public class ServiceManager: Observation {
                                                                                     let log: String = localTime + " , (Jupiter) Success : Service Initalization"
                                                                                     message = log
                                                                                     
-                                                                                    self.notificationCenterAddOberver()
+//                                                                                    self.notificationCenterAddOberver()
                                                                                     completion(true, message)
                                                                                 } else {
                                                                                     // Success Load Bias without OS
@@ -716,7 +770,7 @@ public class ServiceManager: Observation {
                                                                                         
                                                                                         let log: String = localTime + " , (Jupiter) Success : Service Initalization"
                                                                                         message = log
-                                                                                        self.notificationCenterAddOberver()
+//                                                                                        self.notificationCenterAddOberver()
                                                                                         completion(true, message)
                                                                                     } else {
                                                                                         self.rssiBias = loadedBias.0
@@ -732,7 +786,7 @@ public class ServiceManager: Observation {
                                                                                         
                                                                                         let log: String = localTime + " , (Jupiter) Success : Service Initalization"
                                                                                         message = log
-                                                                                        self.notificationCenterAddOberver()
+//                                                                                        self.notificationCenterAddOberver()
                                                                                         completion(true, message)
                                                                                     }
                                                                                 }
@@ -773,7 +827,7 @@ public class ServiceManager: Observation {
                                                                         
                                                                         let log: String = localTime + " , (Jupiter) Success : Service Initalization"
                                                                         message = log
-                                                                        self.notificationCenterAddOberver()
+//                                                                        self.notificationCenterAddOberver()
                                                                         completion(true, message)
                                                                     }
                                                                 } else {
@@ -781,7 +835,7 @@ public class ServiceManager: Observation {
                                                                     message = log
                                                                     self.stopTimer()
                                                                     self.isStartFlag = false
-                                                                    self.notificationCenterRemoveObserver()
+//                                                                    self.notificationCenterRemoveObserver()
                                                                     completion(false, message)
                                                                 }
                                                             })
@@ -1034,58 +1088,42 @@ public class ServiceManager: Observation {
     }
     
     public func enterBackground() {
-        if (!self.isBackground) {
-            
-            self.isBackground = true
-            self.bleManager.stopScan()
-            self.stopTimer()
-            backgroundTaskIdentifier = .invalid
-            backgroundTaskIdentifier = UIApplication.shared.beginBackgroundTask(withName: "BackgroundOutputTimer") {
-                UIApplication.shared.endBackgroundTask(self.backgroundTaskIdentifier!)
-                self.backgroundTaskIdentifier = .invalid
-            }
-            
-            if (self.backgroundUpTimer == nil) {
-                self.backgroundUpTimer = DispatchSource.makeTimerSource(queue: DispatchQueue.global())
-                self.backgroundUpTimer!.schedule(deadline: .now(), repeating: UPDATE_INTERVAL)
-                self.backgroundUpTimer!.setEventHandler(handler: self.outputTimerUpdate)
-                self.backgroundUpTimer!.resume()
-            }
-            
-            if (self.backgroundUvTimer == nil) {
-                self.backgroundUvTimer = DispatchSource.makeTimerSource(queue: DispatchQueue.global())
-                self.backgroundUvTimer!.schedule(deadline: .now(), repeating: UVD_INTERVAL)
-                self.backgroundUvTimer!.setEventHandler(handler: self.userVelocityTimerUpdate)
-                self.backgroundUvTimer!.resume()
-            }
-            
-            self.bleTrimed = [String: [[Double]]]()
-            self.bleAvg = [String: Double]()
-            self.reporting(input: BACKGROUND_FLAG)
+        self.isBackground = true
+        self.bleManager.stopScan()
+        self.stopTimer()
+        backgroundTaskIdentifier = .invalid
+        backgroundTaskIdentifier = UIApplication.shared.beginBackgroundTask(withName: "BackgroundOutputTimer") {
+            UIApplication.shared.endBackgroundTask(self.backgroundTaskIdentifier!)
+            self.backgroundTaskIdentifier = .invalid
         }
+        
+        if (self.backgroundUpTimer == nil) {
+            self.backgroundUpTimer = DispatchSource.makeTimerSource(queue: DispatchQueue.global())
+            self.backgroundUpTimer!.schedule(deadline: .now(), repeating: UPDATE_INTERVAL)
+            self.backgroundUpTimer!.setEventHandler(handler: self.outputTimerUpdate)
+            self.backgroundUpTimer!.resume()
+        }
+        
+        if (self.backgroundUvTimer == nil) {
+            self.backgroundUvTimer = DispatchSource.makeTimerSource(queue: DispatchQueue.global())
+            self.backgroundUvTimer!.schedule(deadline: .now(), repeating: UVD_INTERVAL)
+            self.backgroundUvTimer!.setEventHandler(handler: self.userVelocityTimerUpdate)
+            self.backgroundUvTimer!.resume()
+        }
+        
+        self.bleTrimed = [String: [[Double]]]()
+        self.bleAvg = [String: Double]()
+        self.reporting(input: BACKGROUND_FLAG)
     }
     
     public func enterForeground() {
-        if (self.isBackground) {
-            
-            self.isBackground = false
-            self.bleManager.startScan(option: .Foreground)
-            
-            if backgroundTaskIdentifier != .invalid {
-                UIApplication.shared.endBackgroundTask(backgroundTaskIdentifier!)
-                backgroundTaskIdentifier = .invalid
-            }
-            self.backgroundUpTimer?.cancel()
-            self.backgroundUpTimer = nil
-            
-            self.backgroundUvTimer?.cancel()
-            self.backgroundUvTimer = nil
-            
-            self.startTimer()
-            
-            self.isForeground = true
-            self.reporting(input: FOREGROUND_FLAG)
-        }
+        self.isBackground = false
+        self.bleManager.startScan(option: .Foreground)
+        
+        self.startTimer()
+        
+        self.isForeground = true
+        self.reporting(input: FOREGROUND_FLAG)
     }
     
     private func initVariables() {
@@ -1119,21 +1157,24 @@ public class ServiceManager: Observation {
         self.currentEntranceIndex = 0
         
         self.isInNetworkBadEntrance = false
+        self.isBackground = false
     }
     
     func notificationCenterAddOberver() {
-//        _ = NotificationCenter.default.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: .main) { _ in
-//            self.enterBackground()
-//        }
-//
-//        _ = NotificationCenter.default.addObserver(forName: UIApplication.didBecomeActiveNotification, object: nil, queue: .main) { _ in
-//            self.enterForeground()
-//        }
+        self.backgroundObserver = NotificationCenter.default.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: .main) { _ in
+            self.enterBackground()
+        }
+
+        self.foregroundObserver = NotificationCenter.default.addObserver(forName: UIApplication.didBecomeActiveNotification, object: nil, queue: .main) { _ in
+            self.enterForeground()
+        }
     }
     
     func notificationCenterRemoveObserver() {
-        NotificationCenter.default.removeObserver(self, name: UIApplication.didEnterBackgroundNotification, object: nil)
-        NotificationCenter.default.removeObserver(self, name: UIApplication.didBecomeActiveNotification, object: nil)
+//        NotificationCenter.default.removeObserver(self, name: UIApplication.didEnterBackgroundNotification, object: nil)
+//        NotificationCenter.default.removeObserver(self, name: UIApplication.didBecomeActiveNotification, object: nil)
+        NotificationCenter.default.removeObserver(self.backgroundObserver)
+        NotificationCenter.default.removeObserver(self.foregroundObserver)
     }
     
     public func initCollect() {
@@ -1200,13 +1241,30 @@ public class ServiceManager: Observation {
     public func getSpotResult(completion: @escaping (Int, String) -> Void) {
         let currentTime: Int = getCurrentTimeInMilliseconds()
         
-        if (self.user_id != "") {
-            let input = OnSpotAuthorization(user_id: self.user_id, mobile_time: currentTime)
-            NetworkManager.shared.postOSA(url: OSA_URL, input: input, completion: { statusCode, returnedString in
-                completion(statusCode, returnedString)
-            })
+        if (self.isMockMode) {
+            if (self.mockOsaResult != "") {
+                completion(200, self.mockOsaResult)
+            } else {
+                let input = JupiterMock(user_id: self.user_id, mobile_time: currentTime, sector_id: self.sector_id)
+                NetworkManager.shared.postMock(url: MOCK_URL, input: input, completion: { [self] statusCode, returnedString in
+                    if (statusCode == 200) {
+                        let result = decodeMock(json: returnedString)
+                        let osaResult = result.OSA
+                        if let encodingData = JSONConverter.encodeJson(param: osaResult) {
+                            self.mockOsaResult = String(decoding: encodingData, as: UTF8.self)
+                        }
+                    }
+                })
+            }
         } else {
-            completion(500, " , (Jupiter) Error : Invalid User ID")
+            if (self.user_id != "") {
+                let input = OnSpotAuthorization(user_id: self.user_id, mobile_time: currentTime)
+                NetworkManager.shared.postOSA(url: OSA_URL, input: input, completion: { statusCode, returnedString in
+                    completion(statusCode, returnedString)
+                })
+            } else {
+                completion(500, " , (Jupiter) Error : Invalid User ID")
+            }
         }
     }
     
@@ -1493,6 +1551,16 @@ public class ServiceManager: Observation {
     }
     
     func startTimer() {
+//        if backgroundTaskIdentifier != .invalid {
+//            UIApplication.shared.endBackgroundTask(backgroundTaskIdentifier!)
+//            backgroundTaskIdentifier = .invalid
+//        }
+        self.backgroundUpTimer?.cancel()
+        self.backgroundUpTimer = nil
+        
+        self.backgroundUvTimer?.cancel()
+        self.backgroundUvTimer = nil
+        
         if (self.requestTimer == nil) {
             let queueRFD = DispatchQueue(label: Bundle.main.bundleIdentifier! + ".receivedForceTimer")
             self.receivedForceTimer = DispatchSource.makeTimerSource(queue: queueRFD)
@@ -1588,13 +1656,43 @@ public class ServiceManager: Observation {
         if (self.isActiveService) {
             let currentTime = getCurrentTimeInMilliseconds()
             
-            var resultToReturn = self.resultToReturn
-            resultToReturn.mobile_time = currentTime
-            resultToReturn.ble_only_position = self.isVenusMode
-            resultToReturn.isIndoor = self.isIndoor
-            
-            self.tracking(input: resultToReturn, isPast: self.flagPast)
-            self.lastOutputTime = currentTime
+            if (self.isMockMode) {
+                if (self.mockFltResult.building_name != "") {
+                    self.tracking(input: self.mockFltResult, isPast: false)
+                } else {
+                    let input = JupiterMock(user_id: self.user_id, mobile_time: currentTime, sector_id: self.sector_id)
+                    NetworkManager.shared.postMock(url: MOCK_URL, input: input, completion: { [self] statusCode, returnedString in
+                        if (statusCode == 200) {
+                            let result = decodeMock(json: returnedString)
+                            
+                            let fltResult = result.FLT
+                            
+                            self.mockFltResult.mobile_time = fltResult.mobile_time
+                            self.mockFltResult.building_name = fltResult.building_name
+                            self.mockFltResult.level_name = fltResult.level_name
+                            self.mockFltResult.scc = fltResult.scc
+                            self.mockFltResult.x = fltResult.x
+                            self.mockFltResult.y = fltResult.y
+                            self.mockFltResult.absolute_heading = fltResult.absolute_heading
+                            self.mockFltResult.phase = fltResult.phase
+                            self.mockFltResult.calculated_time = fltResult.calculated_time
+                            self.mockFltResult.index = fltResult.index
+                            self.mockFltResult.velocity = displayOutput.velocity
+                            self.mockFltResult.mode = self.runMode
+                            self.mockFltResult.ble_only_position = self.isVenusMode
+                            self.mockFltResult.isIndoor = true
+                        }
+                    })
+                }
+            } else {
+                var resultToReturn = self.resultToReturn
+                resultToReturn.mobile_time = currentTime
+                resultToReturn.ble_only_position = self.isVenusMode
+                resultToReturn.isIndoor = self.isIndoor
+                
+                self.tracking(input: resultToReturn, isPast: self.flagPast)
+                self.lastOutputTime = currentTime
+            }
         }
     }
     
@@ -1731,7 +1829,7 @@ public class ServiceManager: Observation {
             }
             
             result.level_name = removeLevelDirectionString(levelName: result.level_name)
-            result.velocity = round(result.velocity*100)/100
+            result.velocity = round(displayOutput.velocity*100)/100
             if (isVenusMode) {
                 result.phase = 1
             }
@@ -1818,6 +1916,9 @@ public class ServiceManager: Observation {
 //            self.bleAvg = ["TJ-00CB-00000242-0000":-76.0] // S3 7F
 //            self.bleAvg = ["TJ-00CB-000003E7-0000":-76.0] // Plan Group
             
+            let isSufficientRfdBuffer = rfSurfaceCorrelator.accumulateRfdBuffer(bleData: self.bleAvg)
+            unitDRGenerator.setRfScc(scc: rfSurfaceCorrelator.getRfdScc(), isSufficient: isSufficientRfdBuffer)
+//            print(getLocalTimeString() + " , (RFC) //  Result = \(rfSurfaceCorrelator.getRfdScc())")
             if (!self.bleAvg.isEmpty) {
                 self.timeBleOff = 0
                 self.timeActiveRF = 0
@@ -2113,7 +2214,7 @@ public class ServiceManager: Observation {
                         self.uvdIndexBuffer.append(unitDRInfo.index)
                         self.tuResultBuffer.append([tuResult.x, tuResult.y, tuResult.absolute_heading])
                         
-                        if (self.uvdIndexBuffer.count > UVD_BUFFER_SIZE) {
+                        if (self.uvdIndexBuffer.count > UVD_BUFFER_SIZE*3) {
                             self.uvdIndexBuffer.remove(at: 0)
                             self.tuResultBuffer.remove(at: 0)
                         }
@@ -4241,7 +4342,8 @@ public class ServiceManager: Observation {
                 
                 if (result.mobile_time > self.preOutputMobileTime) {
                     if ((self.nowTime - result.mobile_time) <= RECENT_THRESHOLD) {
-                        if ((result.index - self.indexPast) < INDEX_THRESHOLD) {
+                        let indexResultMinusPast = result.index - self.indexPast
+                        if (indexResultMinusPast >= 0 && indexResultMinusPast < INDEX_THRESHOLD) {
 //                            if (result.phase == 4) {
 //                                if (self.isIndoor) {
 //                                    let outputBuilding = self.outputResult.building_name

@@ -133,6 +133,8 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
     let PP_CHECK_INTERVAL: TimeInterval = 2
     var isReportPpExist: Bool = false
     
+    private var foregroundObserver: Any!
+    private var backgroundObserver: Any!
     
     var pastTime: Double = 0
     var elapsedTime: Double = 0
@@ -266,7 +268,8 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
     }
     
     @IBAction func tapBackButton(_ sender: UIButton) {
-        NotificationCenter.default.removeObserver(self)
+        NotificationCenter.default.removeObserver(self.backgroundObserver)
+        NotificationCenter.default.removeObserver(self.foregroundObserver)
         self.delegate?.sendPage(data: page)
         serviceManager.stopService()
         self.navigationController?.popViewController(animated: true)
@@ -1317,11 +1320,11 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
     }
     
     func notificationCenterAddOberver() {
-        _ = NotificationCenter.default.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: .main) { _ in
+        self.backgroundObserver = NotificationCenter.default.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: .main) { _ in
             self.serviceManager.enterBackground()
         }
         
-        _ = NotificationCenter.default.addObserver(forName: UIApplication.didBecomeActiveNotification, object: nil, queue: .main) { _ in
+        self.foregroundObserver = NotificationCenter.default.addObserver(forName: UIApplication.didBecomeActiveNotification, object: nil, queue: .main) { _ in
             self.serviceManager.enterForeground()
         }
     }
@@ -1353,7 +1356,8 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
     }
     
     @objc func goToBackServiceFail() {
-        NotificationCenter.default.removeObserver(self)
+//        NotificationCenter.default.removeObserver(self.backgroundObserver)
+//        NotificationCenter.default.removeObserver(self.foregroundObserver)
         self.delegate?.sendPage(data: self.page)
         DispatchQueue.main.async {
             self.navigationController?.popViewController(animated: true)
@@ -1554,7 +1558,7 @@ extension ServiceViewController: CustomSwitchButtonDelegate {
                 serviceManager.startService(id: uuid, sector_id: cardData!.sector_id, service: "FLT", mode: inputMode, completion: { isStart, message in
                     if (isStart) {
                         print("(ServiceVC) Success : \(message)")
-                        self.notificationCenterAddOberver()
+//                        self.notificationCenterAddOberver()
                         self.startTimer()
                     } else {
                         print("(ServiceVC) Fail : \(message)")

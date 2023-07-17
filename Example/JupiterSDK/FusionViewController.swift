@@ -58,7 +58,6 @@ class FusionViewController: UIViewController, Observer {
                 self.isBleOnlyMode = false
             }
 //            self.isPathMatchingSuccess = self.serviceManager.displayOutput.isPmSuccess
-
 //            let log: String = localTime + " , (FusionVC) : dt = \(dt) // time = \(result.mobile_time) // befor = \(self.observerTime) // x = \(result.x) // y = \(result.y) // h = \(result.absolute_heading) // phase = \(result.phase) // Venus = \(result.ble_only_position)"
 //            print(log)
             
@@ -1241,6 +1240,7 @@ extension FusionViewController: CustomSwitchButtonDelegate {
                 serviceManager.startService(id: uuid, sector_id: cardData!.sector_id, service: serviceName, mode: cardData!.mode, completion: { isStart, message in
                     if (isStart) {
                         print("(FusionVC) Success : \(message)")
+//                        serviceManager.enableMockMode()
                         self.startTimer()
                     } else {
                         print("(FusionVC) Fail : \(message)")

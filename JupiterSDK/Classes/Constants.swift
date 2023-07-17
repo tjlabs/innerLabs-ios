@@ -33,6 +33,8 @@ var FLT_URL = BASE_URL + "FLT"
 var CLC_URL = BASE_URL + "CLC"
 var OSA_URL = BASE_URL + "OSA"
 var OSR_URL = BASE_URL + "OSR"
+var MOCK_URL = BASE_URL + "MRS"
+
 // ---------- Network ----------  //
 
 let R2D: Double = 180 / Double.pi
@@ -116,4 +118,5 @@ public func setBaseURL(url: String) {
     CLC_URL = BASE_URL + "CLC"
     OSA_URL = BASE_URL + "OSA"
     OSR_URL = BASE_URL + "OSR"
+    MOCK_URL = BASE_URL + "MRS"
 }

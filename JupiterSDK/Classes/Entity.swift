@@ -431,6 +431,22 @@ public struct Spot: Codable {
     }
 }
 
+struct JupiterMock: Encodable {
+    var user_id: String
+    var mobile_time: Int
+    var sector_id: Int
+}
+
+public struct JupiterMockResult: Codable {
+    public var FLT: FineLocationTrackingFromServer
+    public var OSA: OnSpotAuthorizationResult
+
+    public init() {
+        self.FLT = FineLocationTrackingFromServer.init()
+        self.OSA = OnSpotAuthorizationResult.init()
+    }
+}
+
 // Geo
 public struct JupiterGeo: Encodable {
     var sector_id: Int
@@ -580,6 +596,19 @@ public struct JupiterToDisplay {
     var building: String = ""
     var level: String = ""
     var isIndoor: Bool = false
+}
+
+public func decodeMock(json: String) -> JupiterMockResult {
+    let result = JupiterMockResult.init()
+    let decoder = JSONDecoder()
+    let jsonString = json
+
+    if let data = jsonString.data(using: .utf8), let decoded = try? decoder.decode(JupiterMockResult.self, from: data) {
+        return decoded
+    }
+
+    return result
+
 }
 
 public func decodeOSA(json: String) -> OnSpotAuthorizationResult {
