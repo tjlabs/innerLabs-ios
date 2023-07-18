@@ -46,6 +46,7 @@ public class ServiceManager: Observation {
     var serverType: Int = 0
     var region: String = "Korea"
     
+    let jupiterServices: [String] = ["SD", "BD", "CLD", "FLD", "CLE", "FLT", "OSA"]
     var user_id: String = ""
     var sector_id: Int = 0
     var sectorIdOrigin: Int = 0
@@ -264,7 +265,6 @@ public class ServiceManager: Observation {
     var pastHeadingKalmanK: Double = 1
     // ------------------------------------- //
     
-    
     var timeUpdatePosition = KalmanOutput()
     var measurementPosition = KalmanOutput()
     
@@ -275,9 +275,6 @@ public class ServiceManager: Observation {
     var currentBuilding: String = ""
     var currentLevel: String = "0F"
     var currentSpot: Int = 0
-    
-    var buildingBuffer = [String]()
-    var levelBuffer = [String]()
     
     var isMapMatching: Bool = false
     var isLoadingPp: Bool = false
@@ -471,8 +468,8 @@ public class ServiceManager: Observation {
         
         var countBuildingLevel: Int = 0
         
-        var numInput = 3
-        var interval: Double = 1/2
+        let numInput = 3
+        let interval: Double = 1/2
         
         // Check Save Flag
         let debugInput = MobileDebug(sector_id: sector_id)
@@ -483,29 +480,7 @@ public class ServiceManager: Observation {
             }
         })
         
-        switch(service) {
-        case "SD":
-            numInput = 3
-            interval = 1/2
-        case "BD":
-            numInput = 3
-            interval = 1/2
-        case "CLD":
-            numInput = 3
-            interval = 1/2
-        case "FLD":
-            numInput = 3
-            interval = 1/2
-        case "CLE":
-            numInput = 3
-            interval = 1/2
-        case "FLT":
-            numInput = 3
-            interval = 1/2
-        case "OSA":
-            numInput = 3
-            interval = 1/2
-        default:
+        if (!jupiterServices.contains(service)) {
             let log: String = getLocalTimeString() + " , (Jupiter) Error : Invalid Service Name"
             message = log
             
@@ -565,11 +540,6 @@ public class ServiceManager: Observation {
                             }
                             self.EntranceOuterWards = entranceOuterWards
                             self.EntranceVelocityScale = entranceScales
-                            
-                            print("Info (Result) : EntranceNumbers = \(self.EntranceNumbers)")
-                            print("Info (Result) : EntranceOuterWards = \(self.EntranceOuterWards)")
-                            print("Info (Result) : EntranceVelocityScale = \(self.EntranceVelocityScale)")
-                            print("Info (Result) : EntranceWards = \(self.EntranceWards)")
 
                             let buildings_n_levels: [[String]] = sectorInfoResult.building_level
 
@@ -2188,6 +2158,10 @@ public class ServiceManager: Observation {
                 // Add
                 if (self.isStartSimulate) {
                     if (self.currentEntranceIndex < self.currentEntranceLength) {
+                        if let entranceWards = self.EntranceWards[self.currentEntrance] {
+                            biasEstimator.refreshEntranceWardRssi(entranceWard: entranceWards, bleData: self.bleAvg)
+                        }
+                        
                         self.resultToReturn = self.simulateEntrance(originalResult: self.outputResult, runMode: self.runMode, currentEntranceIndex: self.currentEntranceIndex)
                         self.currentEntranceIndex += 1
                         
@@ -2203,6 +2177,22 @@ public class ServiceManager: Observation {
                             print(getLocalTimeString() + " , (Jupiter) Entrance Simulator : Check // diffX = \(diffX) , diffY = \(diffY) , diffH = \(diffH) , isActiveKf = \(self.isActiveKf)")
                             let diffXy = sqrt(diffX*diffX + diffY*diffY)
                             if (diffXy <= 10 && diffH <= 30 && self.isActiveKf) {
+                                if let entranceWards = self.EntranceWards[self.currentEntrance] {
+                                    let biasInEntrance = biasEstimator.estimateRssiBiasInEntrance(entranceWard: entranceWards)
+                                    
+                                    if (self.isBiasConverged) {
+                                        if (abs(biasInEntrance - self.rssiBias) >= 4) {
+                                            self.rssiBias = biasInEntrance
+                                            self.rssiBiasArray = biasEstimator.makeRssiBiasArray(bias: biasInEntrance)
+                                            self.isBiasConverged = true
+                                        }
+                                    } else {
+                                        self.rssiBias = biasInEntrance
+                                        self.rssiBiasArray = biasEstimator.makeRssiBiasArray(bias: biasInEntrance)
+                                        self.isBiasConverged = true
+                                    }
+                                }
+                                
                                 print(getLocalTimeString() + " , (Jupiter) Entrance Simulator : Finish (Position Matched)")
                                 self.isStartSimulate = false
                                 self.isInNetworkBadEntrance = false
@@ -2214,6 +2204,22 @@ public class ServiceManager: Observation {
                                 if (self.isActiveKf) {
                                     let isFind = self.findClosestSimulation(originalResult: self.outputResult, currentEntranceIndex: self.currentEntranceIndex)
                                     if (isFind) {
+                                        if let entranceWards = self.EntranceWards[self.currentEntrance] {
+                                            let biasInEntrance = biasEstimator.estimateRssiBiasInEntrance(entranceWard: entranceWards)
+                                            
+                                            if (self.isBiasConverged) {
+                                                if (abs(biasInEntrance - self.rssiBias) >= 4) {
+                                                    self.rssiBias = biasInEntrance
+                                                    self.rssiBiasArray = biasEstimator.makeRssiBiasArray(bias: biasInEntrance)
+                                                    self.isBiasConverged = true
+                                                }
+                                            } else {
+                                                self.rssiBias = biasInEntrance
+                                                self.rssiBiasArray = biasEstimator.makeRssiBiasArray(bias: biasInEntrance)
+                                                self.isBiasConverged = true
+                                            }
+                                        }
+                                        
                                         print(getLocalTimeString() + " , (Jupiter) Entrance Simulator : Finish (Position Passed)")
                                         self.isStartSimulate = false
                                         self.isInNetworkBadEntrance = false
@@ -3389,14 +3395,14 @@ public class ServiceManager: Observation {
                             processPhase3(currentTime: currentTime, localTime: localTime, userTrajectory: phase3Trajectory, searchInfo: searchInfo)
                         } else {
                             self.timeRequest += RQ_INTERVAL
-                            if (self.timeRequest >= 10) {
-                                let phase3Trajectory = self.userTrajectoryInfo
-                                let searchInfoTurn = makeSearchAreaAndDirection(userTrajectory: phase3Trajectory, pastUserTrajectory: self.pastUserTrajectoryInfo, pastSearchDirection: self.pastSearchDirection, length: 1, diagonal: 1, mode: self.runMode, phase: self.phase, isKf: self.isActiveKf)
-                                self.pastUserTrajectoryInfo = phase3Trajectory
-                                self.pastTailIndex = searchInfo.2
-                                self.timeRequest = 0
-                                processPhase3(currentTime: currentTime, localTime: localTime, userTrajectory: phase3Trajectory, searchInfo: searchInfoTurn)
-                            }
+//                            if (self.timeRequest >= 10) {
+//                                let phase3Trajectory = self.userTrajectoryInfo
+//                                let searchInfoTurn = makeSearchAreaAndDirection(userTrajectory: phase3Trajectory, pastUserTrajectory: self.pastUserTrajectoryInfo, pastSearchDirection: self.pastSearchDirection, length: 1, diagonal: 1, mode: self.runMode, phase: self.phase, isKf: self.isActiveKf)
+//                                self.pastUserTrajectoryInfo = phase3Trajectory
+//                                self.pastTailIndex = searchInfo.2
+//                                self.timeRequest = 0
+//                                processPhase3(currentTime: currentTime, localTime: localTime, userTrajectory: phase3Trajectory, searchInfo: searchInfoTurn)
+//                            }
                         }
                     }
                 }

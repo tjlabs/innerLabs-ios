@@ -3,8 +3,52 @@ import Foundation
 
 public class BiasEstimator {
     
+    var entranceWardRssi = [String: Double]()
+    
     init() {
         
+    }
+    
+    public func refreshEntranceWardRssi(entranceWard: [String: Int], bleData: [String: Double]) {
+        let entranceWardIds: [String] = Array(entranceWard.keys)
+        
+        for (key, value) in bleData {
+            if (entranceWardIds.contains(key)) {
+                if (self.entranceWardRssi.keys.contains(key)) {
+                    if let previousValue = self.entranceWardRssi[key] {
+                        if (value > previousValue) {
+                            self.entranceWardRssi[key] = value
+                        }
+                    }
+                } else {
+                    self.entranceWardRssi[key] = value
+                }
+            }
+        }
+    }
+    
+    public func estimateRssiBiasInEntrance(entranceWard: [String: Int]) -> Int {
+        var result: Int = -100
+        
+        var diffRssiArray = [Double]()
+        
+        for (key, value) in self.entranceWardRssi {
+            if let entranceData = entranceWard[key] {
+                let entranceWardRssi = Double(entranceData)
+                let diffRssi = entranceWardRssi - value
+                print(getLocalTimeString() + " , (Jupiter) Bias in Entrance : \(key) = \(diffRssi)")
+                diffRssiArray.append(diffRssi)
+            }
+        }
+        
+        if (!diffRssiArray.isEmpty) {
+            let bias: Int = Int(round(diffRssiArray.mean))
+            
+            result = bias
+            print(getLocalTimeString() + " , (Jupiter) Bias in Entrance : Bias = \(bias)")
+        }
+        
+        return result
     }
     
     public func saveRssiBias(bias: Int, biasArray: [Int], isConverged: Bool, sector_id: Int) {
