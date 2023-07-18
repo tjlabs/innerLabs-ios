@@ -662,7 +662,7 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
         if (self.isMonitor) {
             serviceManager.getRecentResult(id: self.idToMonitor, completion: { [self] statusCode, returnedString in
                 if (statusCode == 200) {
-                    let result = serviceManager.jsonToResult(json: returnedString)
+                    let result = jsonToResult(json: returnedString)
                     let pathMatchingResult = serviceManager.pathMatching(building: result.building_name, level: result.level_name, x: result.x, y: result.y, heading: result.absolute_heading, tuXY: [0,0], isPast: false, HEADING_RANGE: 50, isUseHeading: true, pathType: 0)
                     let resultTime: Int = result.mobile_time
                     let resultIndex = result.index

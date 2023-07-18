@@ -244,7 +244,7 @@ public class UnitDRGenerator: NSObject {
         self.isEnteranceLevel = flag
     }
     
-    public func setRfScc (scc: Double, isSufficient: Bool) {
+    public func setRfScc(scc: Double, isSufficient: Bool) {
         self.rfScc = scc
         self.isSufficientRfdBuffer = isSufficient
     }

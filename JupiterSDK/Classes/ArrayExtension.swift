@@ -4,6 +4,7 @@ extension Array {
 
 }
 
+
 public func += <V> ( left: inout [V], right: V) {
     left.append(right)
 }
@@ -18,6 +19,14 @@ public func + <V>(left: Array<V>, right: V) -> Array<V>
     map.append(right)
 
     return map
+}
+
+public func sliceArray<T>(_ array: [T], startingFrom index: Int) -> [T] {
+    guard index >= 0 && index < array.count else {
+        return []
+    }
+    
+    return Array(array[index...])
 }
 
 public func circularStandardDeviation(for array: [Double]) -> Double {
