@@ -7,7 +7,7 @@ public class UnitDRGenerator: NSObject {
     }
     
     var STEP_VALID_TIME: Double = 1000
-    let RF_SC_THRESHOLD: Double = 0.35
+    let RF_SC_THRESHOLD_PDR: Double = 0.35
     
     public var unitMode = String()
     
@@ -45,7 +45,7 @@ public class UnitDRGenerator: NSObject {
             unitMode = MODE_AUTO
         }
         
-        let currentTime = getCurrentTimeInMilliseconds()
+        let currentTime = getCurrentTimeInMillisecondsDouble()
         
         var curAttitudeDr = Attitude(Roll: 0, Pitch: 0, Yaw: 0)
         var curAttitudePdr = Attitude(Roll: 0, Pitch: 0, Yaw: 0)
@@ -130,7 +130,7 @@ public class UnitDRGenerator: NSObject {
             
             // ------------------------------- Add ------------------------------- //
             if (self.isSufficientRfdBuffer) {
-                if (self.isPdrMode && self.rfScc >= RF_SC_THRESHOLD) {
+                if (self.isPdrMode && self.rfScc >= RF_SC_THRESHOLD_PDR) {
                     self.lastHighRfSccTime = currentTime
                 }
             }
@@ -143,7 +143,7 @@ public class UnitDRGenerator: NSObject {
                     self.lastModeChangedTime = currentTime
                 } else {
                     // 현재 PDR Mode
-                    if (self.rfScc < RF_SC_THRESHOLD && self.isSufficientRfdBuffer) {
+                    if (self.rfScc < RF_SC_THRESHOLD_PDR && self.isSufficientRfdBuffer) {
                         // RF SCC가 낮은 경우 -> DR 모드로 전환
                         self.isPdrMode = false
                         self.lastModeChangedTime = currentTime
@@ -247,20 +247,7 @@ public class UnitDRGenerator: NSObject {
     public func setRfScc(scc: Double, isSufficient: Bool) {
         self.rfScc = scc
         self.isSufficientRfdBuffer = isSufficient
-    }
-    
-    func getCurrentTimeInMilliseconds() -> Double
-    {
-        return Double(Date().timeIntervalSince1970 * 1000)
-    }
-    
-    func getLocalTimeString() -> String {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd-HH-mm-ss"
-        dateFormatter.locale = Locale(identifier:"ko_KR")
-        let nowDate = Date()
-        let convertNowStr = dateFormatter.string(from: nowDate)
         
-        return convertNowStr
+        self.drDistanceEstimator.setRfScc(scc: scc, isSufficient: isSufficient)
     }
 }

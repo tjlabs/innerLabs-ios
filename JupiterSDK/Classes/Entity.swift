@@ -403,7 +403,9 @@ public struct OnSpotRecognitionResult: Codable {
     public var spot_id: Int
     public var spot_distance: Double
     public var spot_range: [Int]
-    public var spot_direction_list: [Int]
+//    public var spot_direction_list: [Int]
+    public var spot_direction_down: [Int]
+    public var spot_direction_up: [Int]
 
     public init() {
         self.mobile_time = 0
@@ -413,7 +415,9 @@ public struct OnSpotRecognitionResult: Codable {
         self.spot_id = 0
         self.spot_distance = 0
         self.spot_range = []
-        self.spot_direction_list = []
+//        self.spot_direction_list = []
+        self.spot_direction_down = []
+        self.spot_direction_up = []
     }
 }
 

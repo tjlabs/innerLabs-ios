@@ -43,6 +43,11 @@ public class DRDistanceEstimator: NSObject {
     var preRoll: Double = 0
     var prePitch: Double = 0
     
+    let RF_SC_THRESHOLD_DR: Double = 0.5
+    
+    public var rfScc: Double = 0
+    public var isSufficientRfdBuffer: Bool = false
+    
     public func argmax(array: [Float]) -> Int {
         let output1 = array[0]
         let output2 = array[1]
@@ -173,6 +178,10 @@ public class DRDistanceEstimator: NSObject {
             velocityInputScale = VELOCITY_MAX
         }
         
+        if (self.isSufficientRfdBuffer && self.rfScc >= RF_SC_THRESHOLD_DR) {
+            velocityInputScale = 0
+        }
+        
         let velocityMps = (velocityInputScale/3.6)*turnScale
 
         finalUnitResult.isIndexChanged = false
@@ -249,19 +258,8 @@ public class DRDistanceEstimator: NSObject {
         velocityQueue.append(data)
     }
     
-    func getLocalTimeString() -> String {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd-HH-mm-ss"
-        dateFormatter.locale = Locale(identifier:"ko_KR")
-        let nowDate = Date()
-        let convertNowStr = dateFormatter.string(from: nowDate)
-        
-        return convertNowStr
+    public func setRfScc(scc: Double, isSufficient: Bool) {
+        self.rfScc = scc
+        self.isSufficientRfdBuffer = isSufficient
     }
-    
-    func getCurrentTimeInMilliseconds() -> Int
-    {
-        return Int(Date().timeIntervalSince1970 * 1000)
-    }
-    
 }
