@@ -795,11 +795,11 @@ public class NetworkManager {
             requestURL.addValue("application/json", forHTTPHeaderField: "Content-Type")
             requestURL.setValue("\(encodingData)", forHTTPHeaderField: "Content-Length")
             
-            print("")
-            print("====================================")
-            print("POST OSR 데이터 :: ", input)
-            print("====================================")
-            print("")
+//            print("")
+//            print("====================================")
+//            print("POST OSR 데이터 :: ", input)
+//            print("====================================")
+//            print("")
 
             let sessionConfig = URLSessionConfiguration.default
             sessionConfig.timeoutIntervalForResource = TIMEOUT_VALUE_POST
@@ -837,12 +837,12 @@ public class NetworkManager {
                 
                 // [콜백 반환]
                 DispatchQueue.main.async {
-                    print("")
-                    print("====================================")
-                    print("RESPONSE OSR 데이터 :: ", resultCode)
-                    print("                 :: ", resultData)
-                    print("====================================")
-                    print("")
+//                    print("")
+//                    print("====================================")
+//                    print("RESPONSE OSR 데이터 :: ", resultCode)
+//                    print("                 :: ", resultData)
+//                    print("====================================")
+//                    print("")
                     completion(resultCode, resultData)
                 }
             })

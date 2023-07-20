@@ -2521,7 +2521,15 @@ public class ServiceManager: Observation {
                     let userY = userTrajectory[userTrajectory.count-1].userY
                     let userH = userTrajectory[userTrajectory.count-1].userHeading
                     
-                    let RANGE = CONDITION*1.2
+                    var RANGE = CONDITION
+                    
+                    if (accumulatedValue <= 30) {
+                        RANGE = CONDITION*0.55
+                    } else {
+                        RANGE = CONDITION
+                    }
+                    
+//                    let RANGE = CONDITION*0.55
                     
                     // Search Area
                     let areaMinMax: [Double] = [userX - RANGE, userY - RANGE, userX + RANGE, userY + RANGE]
