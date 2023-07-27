@@ -589,6 +589,11 @@ public struct MobileResult: Encodable {
     public var is_indoor: Bool
 }
 
+public struct MobileReport: Encodable {
+    public var user_id: String
+    public var mobile_time: Int
+    public var report: Int
+}
 
 // Recent
 struct RecentResult: Encodable {

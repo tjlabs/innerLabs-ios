@@ -42,6 +42,7 @@
 		B364B35628BCD8C5001A8950 /* LUPIUM_5F.csv in Resources */ = {isa = PBXBuildFile; fileRef = B364B35228BCD8C5001A8950 /* LUPIUM_5F.csv */; };
 		B364B35728BCD8C5001A8950 /* LUPIUM_7F.csv in Resources */ = {isa = PBXBuildFile; fileRef = B364B35328BCD8C5001A8950 /* LUPIUM_7F.csv */; };
 		B364B35828BCD8C5001A8950 /* LUPIUM_3F.csv in Resources */ = {isa = PBXBuildFile; fileRef = B364B35428BCD8C5001A8950 /* LUPIUM_3F.csv */; };
+		B368814D2A6FA584005CD436 /* UsefulFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B368814C2A6FA584005CD436 /* UsefulFunctions.swift */; };
 		B369287E28C5BCAC005FD4A9 /* LUPIUM_B1.csv in Resources */ = {isa = PBXBuildFile; fileRef = B369287D28C5BCAC005FD4A9 /* LUPIUM_B1.csv */; };
 		B36928AE28C5D290005FD4A9 /* L8_B1.csv in Resources */ = {isa = PBXBuildFile; fileRef = B36928AD28C5D290005FD4A9 /* L8_B1.csv */; };
 		B36B964E289A024900951457 /* L1_2F.csv in Resources */ = {isa = PBXBuildFile; fileRef = B36B964D289A024900951457 /* L1_2F.csv */; };
@@ -163,6 +164,7 @@
 		B364B35228BCD8C5001A8950 /* LUPIUM_5F.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LUPIUM_5F.csv; sourceTree = "<group>"; };
 		B364B35328BCD8C5001A8950 /* LUPIUM_7F.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LUPIUM_7F.csv; sourceTree = "<group>"; };
 		B364B35428BCD8C5001A8950 /* LUPIUM_3F.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LUPIUM_3F.csv; sourceTree = "<group>"; };
+		B368814C2A6FA584005CD436 /* UsefulFunctions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsefulFunctions.swift; sourceTree = "<group>"; };
 		B369287D28C5BCAC005FD4A9 /* LUPIUM_B1.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LUPIUM_B1.csv; sourceTree = "<group>"; };
 		B36928AD28C5D290005FD4A9 /* L8_B1.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = L8_B1.csv; sourceTree = "<group>"; };
 		B36B964D289A024900951457 /* L1_2F.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = L1_2F.csv; sourceTree = "<group>"; };
@@ -463,6 +465,7 @@
 				B3C6F99F289CCF92003FB402 /* UIImageExtension.swift */,
 				B3E6C0F7292D6B1400D0AC13 /* ImageCacheManager.swift */,
 				B3607E4D29B8C34700F11AA6 /* ProgressCircleView.swift */,
+				B368814C2A6FA584005CD436 /* UsefulFunctions.swift */,
 			);
 			name = Utils;
 			sourceTree = "<group>";
@@ -819,6 +822,7 @@
 				B3B4F85A28114EEB009F9E6C /* ShowCardCollectionViewCell.swift in Sources */,
 				B3DE146D280E7146006DA43C /* AddCardViewController.swift in Sources */,
 				B3455283282AB7B400F0DD3E /* ServiceInfoTableViewCell.swift in Sources */,
+				B368814D2A6FA584005CD436 /* UsefulFunctions.swift in Sources */,
 				B3FD74E9286989A600CD4D74 /* CustomSwitchButton.swift in Sources */,
 				B3C09C64280E941B00E6F55F /* ShowCardViewController.swift in Sources */,
 				B3BD69AC27E9A57E00A32A7A /* UICollectionViewRegisterable.swift in Sources */,

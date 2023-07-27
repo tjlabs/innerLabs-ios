@@ -270,3 +270,36 @@ public func getSearchCoordinates(areaMinMax: [Double], interval: Double) -> [[Do
     
     return coordinates
 }
+
+public func extractSectionWithLeastChange(inputArray: [Double]) -> [Double] {
+    guard inputArray.count > 7 else {
+        return []
+    }
+
+    // Initialize variables to keep track of the best slice
+    var bestSliceStartIndex = 0
+    var bestSliceEndIndex = 0
+//    var bestSliceDifference = Double.greatestFiniteMagnitude
+
+    // Loop through the array to find the best slice
+    for startIndex in 0..<(inputArray.count-6) {
+        for endIndex in (startIndex+7)..<inputArray.count {
+            let slice = Array(inputArray[startIndex...endIndex])
+            guard let minSliceValue = slice.min(), let maxSliceValue = slice.max() else {
+                continue
+            }
+
+            let currentDifference = abs(maxSliceValue - minSliceValue)
+            // Check if the current slice meets the conditions
+            if currentDifference < 5 && slice.count > bestSliceEndIndex - bestSliceStartIndex {
+                bestSliceStartIndex = startIndex
+                bestSliceEndIndex = endIndex
+//                bestSliceDifference = currentDifference
+            }
+        }
+    }
+
+    return Array(inputArray[bestSliceStartIndex...bestSliceEndIndex])
+}
+
+

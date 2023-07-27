@@ -65,7 +65,7 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
             let localTime: String = self.getLocalTimeString()
             let dt = result.mobile_time - self.observerTime
             let log: String = localTime + " , (JupiterVC) : isIndoor = \(result.isIndoor) // dt = \(dt) // mode = \(result.mode) // x = \(result.x) // y = \(result.y) // index = \(result.index) // phase = \(result.phase)"
-//            print(log)
+            print(log)
             
             self.observerTime = result.mobile_time
             let building = result.building_name
@@ -316,14 +316,20 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
         self.sectorNameLabel.addGestureRecognizer(tapRecognizer)
         
         self.buildings = cardData.infoBuilding
-        self.levels = cardData.infoLevel
+        self.levels = removeValuesWith_D(in: cardData.infoLevel)
         
         self.currentBuilding = self.buildings[0]
         
         let numBuildings: Int = cardData.infoBuilding.count
         for building in 0..<numBuildings {
             let buildingName: String = cardData.infoBuilding[building]
-            let levels: [String] = cardData.infoLevel[buildingName]!
+            let levelNames: [String] = cardData.infoLevel[buildingName]!
+            var levels = [String]()
+            for i in 0..<levelNames.count {
+                if (!levelNames[i].contains("_D")) {
+                    levels.append(levelNames[i])
+                }
+            }
             let numLevels: Int = levels.count
             
             for level in 0..<numLevels {
@@ -1081,6 +1087,7 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
             // Tail 직선
             set6.setColor(.blue3)
         case 4:
+            // Phase == 2 & Request
             set6.setColor(.systemOrange)
         case 5:
             // PDR Phase < 4
@@ -1091,6 +1098,9 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
         case 7:
             // PDR Phase = 4 & Empty Closest Index
             set6.setColor(.blue3)
+        case -1:
+            // Phase 2 & No Request
+            set6.setColor(.red)
         case -2:
             // KF 진입 전
             set6.setColor(.systemBrown)

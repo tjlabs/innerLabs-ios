@@ -43,7 +43,7 @@ public class DRDistanceEstimator: NSObject {
     var preRoll: Double = 0
     var prePitch: Double = 0
     
-    let RF_SC_THRESHOLD_DR: Double = 0.5
+    let RF_SC_THRESHOLD_DR: Double = 0.65
     
     public var rfScc: Double = 0
     public var isSufficientRfdBuffer: Bool = false
@@ -148,7 +148,8 @@ public class DRDistanceEstimator: NSObject {
         // --------------- //
         
         let velocityRaw = log10(magVarFeature+1)/log10(1.1)
-        let velocity = velocityRaw
+        var velocity = velocityRaw
+//        print(getLocalTimeString() + " , (Jupiter) DRDistanceEstimator : velocityRaw = \(velocityRaw)")
         updateVelocityQueue(data: velocity)
 
         var velocitySmoothing: Double = 0
@@ -160,6 +161,8 @@ public class DRDistanceEstimator: NSObject {
             velocitySmoothing = CF.exponentialMovingAverage(preEMA: preVelocitySmoothing, curValue: velocity, windowSize: Int(SAMPLE_HZ))
         }
         preVelocitySmoothing = velocitySmoothing
+        
+//        print(getLocalTimeString() + " , (Jupiter) DRDistanceEstimator : velocitySmoothing = \(velocitySmoothing)")
         var turnScale = exp(-navGyroZSmoothing/1.6)
         if (turnScale > 0.87) {
             turnScale = 1.0
@@ -171,19 +174,32 @@ public class DRDistanceEstimator: NSObject {
         } else if velocityInput > VELOCITY_MAX {
             velocityInput = VELOCITY_MAX
         }
+        
+        
         var velocityInputScale = velocityInput*self.velocityScaleFactor*self.scVelocityScaleFactor
+//        print(getLocalTimeString() + " , (Jupiter) DRDistanceEstimator : velocityInput = \(velocityInput) , velocityScaleFactor = \(velocityScaleFactor) , scVelocityScaleFactor = \(scVelocityScaleFactor)")
+//        print(getLocalTimeString() + " , (Jupiter) DRDistanceEstimator : velocityInputScale = \(velocityInputScale)")
         if velocityInputScale < VELOCITY_MIN {
             velocityInputScale = 0
         } else if velocityInputScale > VELOCITY_MAX {
             velocityInputScale = VELOCITY_MAX
         }
         
+        
         if (self.isSufficientRfdBuffer && self.rfScc >= RF_SC_THRESHOLD_DR) {
+//            print(getLocalTimeString() + " , (Jupiter) DRDistanceEstimator (RF SCC) : velocityInputScale = \(velocityInputScale)")
             velocityInputScale = 0
         }
         
+        if (velocityInputScale < VELOCITY_MIN && self.isSufficientRfdBuffer && self.rfScc < 0.5) {
+            velocityInputScale = 2.5
+        }
+        
+        
         let velocityMps = (velocityInputScale/3.6)*turnScale
-
+//        print(getLocalTimeString() + " , (Jupiter) DRDistanceEstimator : velocityMps = \(velocityMps)")
+//        print(getLocalTimeString() + " , (Jupiter) DRDistanceEstimator : -----------------------------")
+        
         finalUnitResult.isIndexChanged = false
         finalUnitResult.velocity = velocityMps
         distance += (velocityMps*(1/SAMPLE_HZ))

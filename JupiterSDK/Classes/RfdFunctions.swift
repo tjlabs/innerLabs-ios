@@ -1,5 +1,8 @@
 import Foundation
 
+let WEAK_THRESHOLD: Double = -92
+let STRONG_THRESHOLD: Double = -80
+
 public func trimBleData(bleInput: [String: [[Double]]], nowTime: Double, validTime: Double) -> [String: [[Double]]] {
     var trimmedData = [String: [[Double]]]()
     
@@ -75,6 +78,32 @@ public func checkSufficientRfd(userTrajectory: [TrajectoryInfo]) -> Bool {
     } else {
         return false
     }
+}
+
+public func checkIsPossibleToIndoor(bleData: [String: Double]) -> Bool {
+    var isPossible: Bool = false
+    var countWeak: Int = 0
+    var countStrong: Int = 0
+    
+    let bleIds = bleData.keys.count
+    for (_, value) in bleData {
+        if (value >= WEAK_THRESHOLD) {
+            countWeak += 1
+            if (value >= STRONG_THRESHOLD) {
+                countStrong += 1
+            }
+        }
+    }
+    
+    if (countWeak >= 2) {
+        isPossible = true
+    } else if (countStrong >= 1) {
+        isPossible = true
+    } else {
+        isPossible = false
+    }
+    
+    return isPossible
 }
 
 public func latestBleData(bleDictionary: [String: [[Double]]]) -> [String: Double] {

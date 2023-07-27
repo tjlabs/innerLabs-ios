@@ -7,7 +7,7 @@ public class UnitDRGenerator: NSObject {
     }
     
     var STEP_VALID_TIME: Double = 1000
-    let RF_SC_THRESHOLD_PDR: Double = 0.35
+    let RF_SC_THRESHOLD_PDR: Double = 0.55
     
     public var unitMode = String()
     

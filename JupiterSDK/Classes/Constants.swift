@@ -18,14 +18,15 @@ var DEBUG_URL = "https://where-run-param" + REGION + "/md"
 var RF_URL = "https://where-run-record" + SERVER_TYPE + REGION + "/recordRF"
 var UV_URL = "https://where-run-record" + SERVER_TYPE + REGION + "/recordUV"
 var MR_URL = "https://where-run-record" + SERVER_TYPE + REGION + "/recordMR"
+var MT_URL = "https://where-run-record" + SERVER_TYPE + REGION + "/recordMT"
 var RECENT_URL = "https://where-run-user" + REGION + "/recent"
 
 var CALC_URL = "https://where-run-ios"
-var RELEASE_URL_i = "https://where-run-ios-2" + REGION + "/"
-var TEST_URL_i = "https://where-run-ios-t" + REGION + "/"
-
-var RELEASE_URL_A = "https://where-run-aos-2" + REGION + "/"
-var TEST_URL_A = "https://where-run-aos-t" + REGION + "/"
+//var RELEASE_URL_i = "https://where-run-ios-2" + REGION + "/"
+//var TEST_URL_i = "https://where-run-ios-t" + REGION + "/"
+//
+//var RELEASE_URL_A = "https://where-run-aos-2" + REGION + "/"
+//var TEST_URL_A = "https://where-run-aos-t" + REGION + "/"
 
 var BASE_URL = CALC_URL + SERVER_TYPE + REGION + "/"
 var CLD_URL = BASE_URL + "CLD"
@@ -136,6 +137,8 @@ public func setBaseURL(url: String) {
     
     RF_URL = "https://where-run-record" + SERVER_TYPE + REGION + "/recordRF"
     UV_URL = "https://where-run-record" + SERVER_TYPE + REGION + "/recordUV"
+    MR_URL = "https://where-run-record" + SERVER_TYPE + REGION + "/recordMR"
+    MT_URL = "https://where-run-record" + SERVER_TYPE + REGION + "/recordMT"
     RECENT_URL = "https://where-run-user" + SERVER_TYPE + REGION + "/recent"
 //    RECENT_URL = "https://where-run-user" + REGION + "/recent"
 

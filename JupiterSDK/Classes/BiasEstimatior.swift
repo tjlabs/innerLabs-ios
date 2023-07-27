@@ -9,6 +9,10 @@ public class BiasEstimator {
         
     }
     
+    public func clearEntranceWardRssi() {
+        self.entranceWardRssi = [String: Double]()
+    }
+    
     public func refreshEntranceWardRssi(entranceWard: [String: Int], bleData: [String: Double]) {
         let entranceWardIds: [String] = Array(entranceWard.keys)
         
@@ -42,10 +46,17 @@ public class BiasEstimator {
         }
         
         if (!diffRssiArray.isEmpty) {
+            let arrayWithoutMax = excludeLargestAbsoluteValue(from: diffRssiArray)
+            let biasWithOutMax: Int = Int(round(arrayWithoutMax.mean))
             let bias: Int = Int(round(diffRssiArray.mean))
             
-            result = bias
-            print(getLocalTimeString() + " , (Jupiter) Bias in Entrance : Bias = \(bias)")
+            if (abs(biasWithOutMax-bias) <= 2) {
+                result = bias
+            } else {
+                result = biasWithOutMax
+            }
+            
+            print(getLocalTimeString() + " , (Jupiter) Bias in Entrance : Bias = \(result)")
         }
         
         return result
@@ -217,6 +228,24 @@ public class BiasEstimator {
             isConverge = true
             return (bias, isConverge)
         }
+    }
+    
+    func excludeLargestAbsoluteValue(from array: [Double]) -> [Double] {
+        guard !array.isEmpty else {
+            return []
+        }
+
+        var largestAbsoluteValueFound = false
+        let result = array.filter { element -> Bool in
+            let isLargest = abs(element) == abs(array.max(by: { abs($0) < abs($1) })!)
+            if isLargest && !largestAbsoluteValueFound {
+                largestAbsoluteValueFound = true
+                return false
+            }
+            return true
+        }
+
+        return result
     }
 }
 

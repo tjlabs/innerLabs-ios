@@ -249,14 +249,20 @@ class FusionViewController: UIViewController, Observer {
         self.sectorNameLabel.addGestureRecognizer(tapRecognizer)
         
         self.buildings = cardData.infoBuilding
-        self.levels = cardData.infoLevel
+        self.levels = removeValuesWith_D(in: cardData.infoLevel)
         
         self.currentBuilding = self.buildings[0]
         
         let numBuildings: Int = cardData.infoBuilding.count
         for building in 0..<numBuildings {
             let buildingName: String = cardData.infoBuilding[building]
-            let levels: [String] = cardData.infoLevel[buildingName]!
+            let levelNames: [String] = cardData.infoLevel[buildingName]!
+            var levels = [String]()
+            for i in 0..<levelNames.count {
+                if (!levelNames[i].contains("_D")) {
+                    levels.append(levelNames[i])
+                }
+            }
             let numLevels: Int = levels.count
             
             for level in 0..<numLevels {
