@@ -22,11 +22,6 @@ var MT_URL = "https://where-run-record" + SERVER_TYPE + REGION + "/recordMT"
 var RECENT_URL = "https://where-run-user" + REGION + "/recent"
 
 var CALC_URL = "https://where-run-ios"
-//var RELEASE_URL_i = "https://where-run-ios-2" + REGION + "/"
-//var TEST_URL_i = "https://where-run-ios-t" + REGION + "/"
-//
-//var RELEASE_URL_A = "https://where-run-aos-2" + REGION + "/"
-//var TEST_URL_A = "https://where-run-aos-t" + REGION + "/"
 
 var BASE_URL = CALC_URL + SERVER_TYPE + REGION + "/"
 var CLD_URL = BASE_URL + "CLD"

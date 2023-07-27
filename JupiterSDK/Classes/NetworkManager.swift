@@ -193,8 +193,15 @@ public class NetworkManager {
         requestURL.addValue("application/json", forHTTPHeaderField: "Content-Type")
         requestURL.setValue("\(encodingData)", forHTTPHeaderField: "Content-Length")
         
+        // [http 요청 수행 실시]
+//        print("")
+//        print("====================================")
+//        print("POST INFO URL :: ", url)
+//        print("POST INFO 데이터 :: ", input)
+//        print("====================================")
+//        print("")
+        
         let dataTask = URLSession.shared.dataTask(with: requestURL, completionHandler: { (data, response, error) in
-            
             // [error가 존재하면 종료]
             guard error == nil else {
                 // [콜백 반환]
@@ -608,6 +615,8 @@ public class NetworkManager {
 //            print("")
 //            print("====================================")
 //            print("POST FLT URL :: ", url)
+//            print("POST FLT Sector :: ", input.sector_id)
+//            print("POST FLT ID :: ", input.user_id)
 //            print("POST FLT 데이터 :: ", input)
 //            print("====================================")
 //            print("")
@@ -674,6 +683,13 @@ public class NetworkManager {
             requestURL.httpBody = encodingData
             requestURL.addValue("application/json", forHTTPHeaderField: "Content-Type")
             requestURL.setValue("\(encodingData)", forHTTPHeaderField: "Content-Length")
+            
+//            print("")
+//            print("====================================")
+//            print("POST MOCK URL :: ", url)
+//            print("POST MOCK 데이터 :: ", input)
+//            print("====================================")
+//            print("")
             
             let sessionConfig = URLSessionConfiguration.default
             sessionConfig.timeoutIntervalForResource = TIMEOUT_VALUE_POST
@@ -871,6 +887,7 @@ public class NetworkManager {
             
 //            print("")
 //            print("====================================")
+//            print("POST Geo URL :: ", url)
 //            print("POST Geo 데이터 :: ", input)
 //            print("====================================")
 //            print("")

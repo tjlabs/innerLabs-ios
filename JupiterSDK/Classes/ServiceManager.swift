@@ -352,8 +352,6 @@ public class ServiceManager: Observation {
         os = UIDevice.current.systemVersion
         let arr = os.components(separatedBy: ".")
         osVersion = Int(arr[0]) ?? 0
-        
-        self.notificationCenterAddObserver()
     }
     
     public func initService(service: String, mode: String) -> (Bool, String) {
@@ -366,6 +364,7 @@ public class ServiceManager: Observation {
         if (service == "FLT") {
             unitDRInfo = UnitDRInfo()
             unitDRGenerator.setMode(mode: mode)
+            self.notificationCenterAddObserver()
 
             if (mode == "auto") {
                 self.runMode = "dr"
@@ -410,7 +409,6 @@ public class ServiceManager: Observation {
         NetworkManager.shared.postMock(url: MOCK_URL, input: input, completion: { [self] statusCode, returnedString in
             if (statusCode == 200) {
                 let result = decodeMock(json: returnedString)
-                
                 let fltResult = result.FLT
                 let osaResult = result.OSA
                 
@@ -1038,21 +1036,26 @@ public class ServiceManager: Observation {
             self.isBackground = true
             self.bleManager.stopScan()
             self.stopTimer()
-            backgroundTaskIdentifier = .invalid
-            backgroundTaskIdentifier = UIApplication.shared.beginBackgroundTask(withName: "BackgroundOutputTimer") {
+            
+            if let existingTaskIdentifier = self.backgroundTaskIdentifier {
+                UIApplication.shared.endBackgroundTask(existingTaskIdentifier)
+                self.backgroundTaskIdentifier = .invalid
+            }
+
+            self.backgroundTaskIdentifier = UIApplication.shared.beginBackgroundTask(withName: "BackgroundOutputTimer") {
                 UIApplication.shared.endBackgroundTask(self.backgroundTaskIdentifier!)
                 self.backgroundTaskIdentifier = .invalid
             }
             
             if (self.backgroundUpTimer == nil) {
-                self.backgroundUpTimer = DispatchSource.makeTimerSource(queue: DispatchQueue.global())
+                self.backgroundUpTimer = DispatchSource.makeTimerSource(queue: DispatchQueue.global(qos: .background))
                 self.backgroundUpTimer!.schedule(deadline: .now(), repeating: UPDATE_INTERVAL)
                 self.backgroundUpTimer!.setEventHandler(handler: self.outputTimerUpdate)
                 self.backgroundUpTimer!.resume()
             }
             
             if (self.backgroundUvTimer == nil) {
-                self.backgroundUvTimer = DispatchSource.makeTimerSource(queue: DispatchQueue.global())
+                self.backgroundUvTimer = DispatchSource.makeTimerSource(queue: DispatchQueue.global(qos: .background))
                 self.backgroundUvTimer!.schedule(deadline: .now(), repeating: UVD_INTERVAL)
                 self.backgroundUvTimer!.setEventHandler(handler: self.userVelocityTimerUpdate)
                 self.backgroundUvTimer!.resume()
@@ -1068,6 +1071,17 @@ public class ServiceManager: Observation {
     private func runForegroundMode() {
         if (self.isBackground) {
             self.isBackground = false
+            
+            if let existingTaskIdentifier = self.backgroundTaskIdentifier {
+                UIApplication.shared.endBackgroundTask(existingTaskIdentifier)
+                self.backgroundTaskIdentifier = .invalid
+            }
+            
+            self.backgroundUpTimer?.cancel()
+            self.backgroundUvTimer?.cancel()
+            self.backgroundUpTimer = nil
+            self.backgroundUvTimer = nil
+            
             self.bleManager.startScan(option: .Foreground)
             
             self.startTimer()
@@ -1160,7 +1174,6 @@ public class ServiceManager: Observation {
     
     public func initCollect() {
         unitDRGenerator.setMode(mode: "pdr")
-        
         sensorManager.initializeSensors()
         startBLE()
         startCollectTimer()
@@ -1307,12 +1320,6 @@ public class ServiceManager: Observation {
     }
     
     func startTimer() {
-        self.backgroundUpTimer?.cancel()
-        self.backgroundUpTimer = nil
-        
-        self.backgroundUvTimer?.cancel()
-        self.backgroundUvTimer = nil
-        
         if (self.receivedForceTimer == nil) {
             let queueRFD = DispatchQueue(label: Bundle.main.bundleIdentifier! + ".receivedForceTimer")
             self.receivedForceTimer = DispatchSource.makeTimerSource(queue: queueRFD)
@@ -1353,11 +1360,13 @@ public class ServiceManager: Observation {
         self.userVelocityTimer?.cancel()
         self.osrTimer?.cancel()
         self.updateTimer?.cancel()
+        self.backgroundUpTimer?.cancel()
         
         self.receivedForceTimer = nil
         self.userVelocityTimer = nil
         self.osrTimer = nil
         self.updateTimer = nil
+        self.backgroundUvTimer = nil
     }
     
     func enterSleepMode() {
@@ -1387,9 +1396,9 @@ public class ServiceManager: Observation {
     }
     
     func stopCollectTimer() {
-        if (collectTimer != nil) {
-            collectTimer!.invalidate()
-            collectTimer = nil
+        if (self.collectTimer != nil) {
+            self.collectTimer!.invalidate()
+            self.collectTimer = nil
         }
     }
     
@@ -1662,12 +1671,13 @@ public class ServiceManager: Observation {
             }
             
 //            self.bleAvg = ["TJ-00CB-0000038C-0000":-76.0] // COEX B2 <-> B3
+            self.bleAvg = ["TJ-00CB-0000030D-0000":-76.0] // COEX B2
 //            self.bleAvg = ["TJ-00CB-00000242-0000":-76.0] // S3 7F
 //            self.bleAvg = ["TJ-00CB-000003E7-0000":-76.0] // Plan Group
             
             let isSufficientRfdBuffer = rfSurfaceCorrelator.accumulateRfdBuffer(bleData: self.bleAvg)
             let isSufficientRfdVelocityBuffer = rfSurfaceCorrelator.accumulateRfdVelocityBuffer(bleData: self.bleAvg)
-            unitDRGenerator.setRfScc(scc: rfSurfaceCorrelator.getRfdScc(), isSufficient: isSufficientRfdBuffer)
+//            unitDRGenerator.setRfScc(scc: rfSurfaceCorrelator.getRfdScc(), isSufficient: isSufficientRfdBuffer)
 //            unitDRGenerator.setRfScc(scc: 0.0, isSufficient: isSufficientRfdBuffer)
 //            print(getLocalTimeString() + " , (Jupiter) Information : RF SCC = \(rfSurfaceCorrelator.getRfdScc())")
 //            print(getLocalTimeString() + " , (Jupiter) Information : RF SCC (Velocity) = \(rfSurfaceCorrelator.getRfdVelocityScc())")
@@ -2210,7 +2220,6 @@ public class ServiceManager: Observation {
         } else {
             self.timeRequest += UVD_INTERVAL
             if (!self.isGetFirstResponse && self.timeRequest >= 2) {
-                self.timeRequest = 0
                 print(getLocalTimeString() + " , (Jupiter) Information : Request when startService in Stop // \(self.isGetFirstResponse)")
                 let phase3Trajectory = self.userTrajectoryInfo
                 let accumulatedLength = calculateAccumulatedLength(userTrajectory: phase3Trajectory)
@@ -2218,6 +2227,7 @@ public class ServiceManager: Observation {
                 let searchInfo = makeSearchAreaAndDirection(userTrajectory: phase3Trajectory, pastUserTrajectory: self.pastUserTrajectoryInfo, pastSearchDirection: self.pastSearchDirection, length: accumulatedLength, diagonal: accumulatedDiagonal, mode: self.runMode, phase: self.phase, isKf: self.isActiveKf, isPhaseBreak: self.isPhaseBreak)
                 self.pastUserTrajectoryInfo = phase3Trajectory
                 self.pastTailIndex = searchInfo.2
+                print(getLocalTimeString() + " , (Jupiter) Information : Phase 3 input : \(self.user_id)")
                 processPhase3(currentTime: currentTime, localTime: localTime, userTrajectory: phase3Trajectory, searchInfo: searchInfo)
             }
             
@@ -3593,6 +3603,7 @@ public class ServiceManager: Observation {
         self.phase2Count = 0
         let input = FineLocationTracking(user_id: self.user_id, mobile_time: currentTime, sector_id: self.sector_id, building_name: self.currentBuilding, level_name_list: levelArray, spot_id: self.currentSpot, phase: self.phase, search_range: searchInfo.0, search_direction_list: searchInfo.1, rss_compensation_list: requestBiasArray, sc_compensation_list: [1.0], tail_index: searchInfo.2)
         self.networkCount += 1
+        
         NetworkManager.shared.postFLT(url: FLT_URL, input: input, isSufficientRfd: self.isSufficientRfd, completion: { [self] statusCode, returnedString, rfdCondition in
             if (!returnedString.contains("timed out")) {
                 self.networkCount = 0
@@ -4183,13 +4194,11 @@ public class ServiceManager: Observation {
                     let input = OnSpotRecognition(user_id: self.user_id, mobile_time: currentTime, rss_compensation: self.rssiBias)
                     NetworkManager.shared.postOSR(url: OSR_URL, input: input, completion: { [self] statusCode, returnedString in
                         if (statusCode == 200) {
-//                            print(getLocalTimeString() + " , (Jupiter) Success : OSR // \(returnedString)")
                             let result = decodeOSR(json: returnedString)
                             if (result.building_name != "" && result.level_name != "") {
                                 let isOnSpot = isOnSpotRecognition(result: result, level: self.currentLevel)
                                 if (isOnSpot.isOn) {
                                     let levelDestination = isOnSpot.levelDestination + isOnSpot.levelDirection
-                                    print(getLocalTimeString() + " , (Jupiter) OSR : levelDestination = \(levelDestination)")
                                     determineSpotDetect(result: result, lastSpotId: self.lastOsrId, levelDestination: levelDestination, currentTime: currentTime)
                                 }
                             }
@@ -4246,9 +4255,9 @@ public class ServiceManager: Observation {
             // Normal OSR
             let currentLevel: String = level
             let levelNameCorrected: String = removeLevelDirectionString(levelName: currentLevel)
-            print(getLocalTimeString() + " , (Jupiter) OSR : ----------------------------")
-            print(getLocalTimeString() + " , (Jupiter) OSR : levelNameCorrected = \(levelNameCorrected)")
-            print(getLocalTimeString() + " , (Jupiter) OSR : levelArray = \(levelArray)")
+//            print(getLocalTimeString() + " , (Jupiter) OSR : ----------------------------")
+//            print(getLocalTimeString() + " , (Jupiter) OSR : levelNameCorrected = \(levelNameCorrected)")
+//            print(getLocalTimeString() + " , (Jupiter) OSR : levelArray = \(levelArray)")
             for i in 0..<levelArray.count {
                 if levelArray[i] != levelNameCorrected {
                     levelDestination = levelArray[i]
