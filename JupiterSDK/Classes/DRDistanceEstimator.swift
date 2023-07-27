@@ -43,7 +43,7 @@ public class DRDistanceEstimator: NSObject {
     var preRoll: Double = 0
     var prePitch: Double = 0
     
-    let RF_SC_THRESHOLD_DR: Double = 0.65
+    let RF_SC_THRESHOLD_DR: Double = 0.67
     
     public var rfScc: Double = 0
     public var isSufficientRfdBuffer: Bool = false
@@ -149,7 +149,7 @@ public class DRDistanceEstimator: NSObject {
         
         let velocityRaw = log10(magVarFeature+1)/log10(1.1)
         var velocity = velocityRaw
-        print(getLocalTimeString() + " , (Jupiter) DRDistanceEstimator : velocityRaw = \(velocityRaw)")
+//        print(getLocalTimeString() + " , (Jupiter) DRDistanceEstimator : velocityRaw = \(velocityRaw)")
         updateVelocityQueue(data: velocity)
 
         var velocitySmoothing: Double = 0
@@ -162,7 +162,7 @@ public class DRDistanceEstimator: NSObject {
         }
         preVelocitySmoothing = velocitySmoothing
         
-        print(getLocalTimeString() + " , (Jupiter) DRDistanceEstimator : velocitySmoothing = \(velocitySmoothing)")
+//        print(getLocalTimeString() + " , (Jupiter) DRDistanceEstimator : velocitySmoothing = \(velocitySmoothing)")
         var turnScale = exp(-navGyroZSmoothing/1.6)
         if (turnScale > 0.87) {
             turnScale = 1.0
@@ -177,8 +177,8 @@ public class DRDistanceEstimator: NSObject {
         
         
         var velocityInputScale = velocityInput*self.velocityScaleFactor*self.scVelocityScaleFactor
-        print(getLocalTimeString() + " , (Jupiter) DRDistanceEstimator : velocityInput = \(velocityInput) , velocityScaleFactor = \(velocityScaleFactor) , scVelocityScaleFactor = \(scVelocityScaleFactor)")
-        print(getLocalTimeString() + " , (Jupiter) DRDistanceEstimator : velocityInputScale = \(velocityInputScale)")
+//        print(getLocalTimeString() + " , (Jupiter) DRDistanceEstimator : velocityInput = \(velocityInput) , velocityScaleFactor = \(velocityScaleFactor) , scVelocityScaleFactor = \(scVelocityScaleFactor)")
+//        print(getLocalTimeString() + " , (Jupiter) DRDistanceEstimator : velocityInputScale = \(velocityInputScale)")
         if velocityInputScale < VELOCITY_MIN {
             velocityInputScale = 0
         } else if velocityInputScale > VELOCITY_MAX {
@@ -187,7 +187,7 @@ public class DRDistanceEstimator: NSObject {
         
         
         if (self.isSufficientRfdBuffer && self.rfScc >= RF_SC_THRESHOLD_DR) {
-            print(getLocalTimeString() + " , (Jupiter) DRDistanceEstimator (RF SCC) : velocityInputScale = \(velocityInputScale)")
+//            print(getLocalTimeString() + " , (Jupiter) DRDistanceEstimator (RF SCC) : velocityInputScale = \(velocityInputScale) // rfSCC = \(self.rfScc)")
             velocityInputScale = 0
         }
         
@@ -197,8 +197,8 @@ public class DRDistanceEstimator: NSObject {
         
         
         let velocityMps = (velocityInputScale/3.6)*turnScale
-        print(getLocalTimeString() + " , (Jupiter) DRDistanceEstimator : velocityMps = \(velocityMps)")
-        print(getLocalTimeString() + " , (Jupiter) DRDistanceEstimator : -----------------------------")
+//        print(getLocalTimeString() + " , (Jupiter) DRDistanceEstimator : velocityMps = \(velocityMps)")
+//        print(getLocalTimeString() + " , (Jupiter) DRDistanceEstimator : -----------------------------")
         
         finalUnitResult.isIndexChanged = false
         finalUnitResult.velocity = velocityMps

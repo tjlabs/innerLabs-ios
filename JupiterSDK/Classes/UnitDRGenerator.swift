@@ -100,35 +100,6 @@ public class UnitDRGenerator: NSObject {
             unitDistancePdr = pdrDistanceEstimator.estimateDistanceInfo(time: currentTime, sensorData: sensorData)
             unitDistanceDr = drDistanceEstimator.estimateDistanceInfo(time: currentTime, sensorData: sensorData)
             
-            // PDR 불가능 영역에 있는지 체크
-//            var isPossiblePdr = pdrDistanceEstimator.normalStepCountFlag
-//            if (self.isEnteranceLevel) {
-//                isPossiblePdr = false
-//            }
-//
-//            if (isPossiblePdr) {
-//                // PDR 가능 영역
-//                if (unitDistancePdr.isIndexChanged) {
-//                    unitIndexAuto += 1
-//                }
-//                unitDistanceAuto = unitDistancePdr
-//                self.autoMode = 0
-//                normalStepTime = currentTime
-//            } else {
-//                // PDR 불가능 영역
-//                unitDistanceAuto = unitDistanceDr
-//                if (unitDistanceDr.isIndexChanged) {
-//                    unitIndexAuto += 1
-//                }
-//                self.autoMode = 1
-//            }
-//
-//            if ((currentTime - normalStepTime) >= 5*1000) {
-//                unitDistanceAuto = unitDistanceDr
-//                self.autoMode = 1
-//            }
-            
-            // ------------------------------- Add ------------------------------- //
             if (self.isSufficientRfdBuffer) {
                 if (self.isPdrMode && self.rfScc >= RF_SC_THRESHOLD_PDR) {
                     self.lastHighRfSccTime = currentTime

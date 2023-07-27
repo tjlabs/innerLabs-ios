@@ -60,8 +60,6 @@ public class ReceivedForceSurfaceCorrelator {
                     let preRssi = preRfd[key] ?? -100.0
                     
                     sumDiffRssi += abs(curRssi - preRssi)
-//                    print("(RFC) // key = \(key)")
-//                    print("(RFC) // sumDiffRssi = \(sumDiffRssi) , curRssi = \(curRssi) , preRssi = \(preRssi)")
                 }
                 
                 if (curRfd.keys.count != 0) {
@@ -70,8 +68,6 @@ public class ReceivedForceSurfaceCorrelator {
             }
             
             if (!sumDiffRssiArray.isEmpty) {
-//                print("(RFC) // sumDiffRssiArray = \(sumDiffRssiArray) , count = \(sumDiffRssiArray.count)")
-//                print("(RFC) // sumDiffRssiArrayMean = \(sumDiffRssiArray.average)")
                 let avgValue = sumDiffRssiArray.average
                 if (avgValue != 0) {
                     result = calcScc(value: sumDiffRssiArray.average)

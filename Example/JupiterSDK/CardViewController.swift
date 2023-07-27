@@ -423,7 +423,7 @@ extension CardViewController: UICollectionViewDataSource, UICollectionViewDelega
         
         let sector_id = cardItemData[mod].sector_id
         let serviceName = cardItemData[mod].service
-        serviceManager.stopService()
+//        serviceManager.stopService()
         
         let region: String = self.region
         switch (region) {
