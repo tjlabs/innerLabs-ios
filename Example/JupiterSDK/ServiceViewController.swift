@@ -239,7 +239,6 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
     override func viewDidLoad() {
         super.viewDidLoad()
         biasLabel.isHidden = true
-        
         let locale = Locale.current
         if let countryCode = locale.regionCode, countryCode == "KR" {
             self.currentRegion = "Korea"
@@ -268,8 +267,8 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
     }
     
     @IBAction func tapBackButton(_ sender: UIButton) {
-        NotificationCenter.default.removeObserver(self.backgroundObserver)
-        NotificationCenter.default.removeObserver(self.foregroundObserver)
+        serviceManager.removeObserver(self)
+        self.notificationCenterRemoveObserver()
         self.delegate?.sendPage(data: page)
         serviceManager.stopService()
         self.navigationController?.popViewController(animated: true)
@@ -1329,14 +1328,19 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
         return levelToReturn
     }
     
-    func notificationCenterAddOberver() {
+    func notificationCenterAddObserver() {
         self.backgroundObserver = NotificationCenter.default.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: .main) { _ in
-            self.serviceManager.enterBackground()
+            self.serviceManager.runBackgroundMode()
         }
         
         self.foregroundObserver = NotificationCenter.default.addObserver(forName: UIApplication.didBecomeActiveNotification, object: nil, queue: .main) { _ in
-            self.serviceManager.enterForeground()
+            self.serviceManager.runForegroundMode()
         }
+    }
+    
+    func notificationCenterRemoveObserver() {
+        NotificationCenter.default.removeObserver(self.backgroundObserver)
+        NotificationCenter.default.removeObserver(self.foregroundObserver)
     }
     
     func hideDropDown(flag: Bool) {
@@ -1366,8 +1370,8 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
     }
     
     @objc func goToBackServiceFail() {
-//        NotificationCenter.default.removeObserver(self.backgroundObserver)
-//        NotificationCenter.default.removeObserver(self.foregroundObserver)
+        serviceManager.removeObserver(self)
+        self.notificationCenterRemoveObserver()
         self.delegate?.sendPage(data: self.page)
         DispatchQueue.main.async {
             self.navigationController?.popViewController(animated: true)
@@ -1551,7 +1555,6 @@ extension ServiceViewController: CustomSwitchButtonDelegate {
     func isOnValueChange(isOn: Bool) {
         DispatchQueue.main.async { [self] in
             self.modeAuto = isOn
-            
             if (isOn) {
                 self.hideDropDown(flag: true)
                 serviceManager = ServiceManager()
@@ -1568,21 +1571,19 @@ extension ServiceViewController: CustomSwitchButtonDelegate {
                 serviceManager.startService(id: uuid, sector_id: cardData!.sector_id, service: "FLT", mode: inputMode, completion: { isStart, message in
                     if (isStart) {
                         print("(ServiceVC) Success : \(message)")
-//                        self.notificationCenterAddOberver()
+                        self.notificationCenterAddObserver()
                         self.startTimer()
                     } else {
                         print("(ServiceVC) Fail : \(message)")
                         serviceManager.stopService()
 //                        self.showPopUp(title: "Service Fail", message: message)
                         self.goToBackServiceFail()
-//                        NotificationCenter.default.removeObserver(self)
                     }
                 })
                 
             } else {
                 self.hideDropDown(flag: false)
                 
-                serviceManager.removeObserver(self)
                 let isStop = serviceManager.stopService()
                 if (isStop.0) {
                     self.coordToDisplay = CoordToDisplay()
@@ -1594,15 +1595,16 @@ extension ServiceViewController: CustomSwitchButtonDelegate {
                     self.pastBuilding = ""
                     self.pastLevel = ""
                     self.displayLevelImage(building: currentBuilding, level: currentLevel, flag: isShowRP)
+                    self.notificationCenterRemoveObserver()
                     
                     print("(SeviceVC) Success : \(isStop.1)")
                     self.stopTimer()
+                    serviceManager.removeObserver(self)
                 } else {
                     print("(SeviceVC) Fail : \(isStop.1)")
                     let message: String = isStop.1
 //                    showPopUp(title: "Service Fail", message: message)
-                    goToBackServiceFail()
-//                    NotificationCenter.default.removeObserver(self)
+                    self.goToBackServiceFail()
                 }
             }
         }

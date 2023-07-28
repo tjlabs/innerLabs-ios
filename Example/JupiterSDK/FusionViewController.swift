@@ -183,6 +183,9 @@ class FusionViewController: UIViewController, Observer {
     // View
     var defaultHeight: CGFloat = 100
     
+    private var foregroundObserver: Any!
+    private var backgroundObserver: Any!
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(false)
         setCardData(cardData: cardData!)
@@ -222,6 +225,8 @@ class FusionViewController: UIViewController, Observer {
     }
     
     @IBAction func tapBackButton(_ sender: UIButton) {
+        serviceManager.removeObserver(self)
+        self.notificationCenterRemoveObserver()
         goToBack()
     }
     
@@ -1150,8 +1155,24 @@ class FusionViewController: UIViewController, Observer {
         self.spotCcsLabel.text = String(format: "%.4f", ccs)
     }
     
+    func notificationCenterAddObserver() {
+        self.backgroundObserver = NotificationCenter.default.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: .main) { _ in
+            self.serviceManager.runBackgroundMode()
+        }
+        
+        self.foregroundObserver = NotificationCenter.default.addObserver(forName: UIApplication.didBecomeActiveNotification, object: nil, queue: .main) { _ in
+            self.serviceManager.runForegroundMode()
+        }
+    }
+    
+    func notificationCenterRemoveObserver() {
+        NotificationCenter.default.removeObserver(self.backgroundObserver)
+        NotificationCenter.default.removeObserver(self.foregroundObserver)
+    }
+    
     @objc func goToBackServiceFail() {
-        NotificationCenter.default.removeObserver(self)
+        serviceManager.removeObserver(self)
+        self.notificationCenterRemoveObserver()
         self.delegate?.sendPage(data: self.page)
         DispatchQueue.main.async {
             self.navigationController?.popViewController(animated: true)
@@ -1247,6 +1268,7 @@ extension FusionViewController: CustomSwitchButtonDelegate {
                     if (isStart) {
                         print("(FusionVC) Success : \(message)")
 //                        serviceManager.enableMockMode()
+                        self.notificationCenterAddObserver()
                         self.startTimer()
                     } else {
                         print("(FusionVC) Fail : \(message)")
@@ -1257,6 +1279,7 @@ extension FusionViewController: CustomSwitchButtonDelegate {
                 })
             } else {
                 self.hideDropDown(flag: false)
+                
                 
                 let isStop = serviceManager.stopService()
                 if (isStop.0) {
