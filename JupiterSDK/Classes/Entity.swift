@@ -179,11 +179,14 @@ public struct ServiceResult {
     public var trajectoryStartCoord: [Double] = [0, 0]
     public var searchArea: [[Double]] = [[0, 0]]
     public var searchType: Int = 0
+    
+    public var trajectoryPm: [[Double]] = [[0, 0]]
 }
 
 // ------------------------------------------------- //
 // -------------------- Network -------------------- //
 // ------------------------------------------------- //
+
 struct ReceivedForce: Encodable {
     var user_id: String
     var mobile_time: Int

@@ -155,6 +155,7 @@ public class ServiceManager: Observation {
     var rfSurfaceCorrelator = ReceivedForceSurfaceCorrelator()
     var bleData: [String: [[Double]]]?
     var unitDRInfo = UnitDRInfo()
+    var unitDrBuffer: [UnitDRInfo] = []
     var unitDrInfoIndex: Int = 0
     var unitDRGenerator = UnitDRGenerator()
     var userTrajectory = TrajectoryInfo()
@@ -167,6 +168,7 @@ public class ServiceManager: Observation {
     var phase2Direction: [Int] = []
     var preSearchRange: [Int] = []
     var preTailIndex: Int = 1
+    var DR_BUFFER_SIZE: Int = 20
     var USER_TRAJECTORY_LENGTH_ORIGIN: Double = 60
     var USER_TRAJECTORY_LENGTH: Double = 60
     var USER_TRAJECTORY_DIAGONAL: Double = 200
@@ -1804,6 +1806,11 @@ public class ServiceManager: Observation {
             self.headingBuffer.append(unitDRInfo.heading)
             self.isNeedHeadingCorrection = self.checkHeadingCorrection(buffer: self.headingBuffer)
             
+            self.unitDrBuffer.append(self.unitDRInfo)
+            if (self.unitDrBuffer.count > DR_BUFFER_SIZE) {
+                self.unitDrBuffer.remove(at: 0)
+            }
+            
             self.wakeUpFromSleepMode()
             self.timeActiveUV = 0
             self.timeSleepUV = 0
@@ -1933,7 +1940,7 @@ public class ServiceManager: Observation {
                 // Time Update
                 if (self.isActiveKf) {
                     if (self.timeUpdateFlag) {
-                        let tuOutput = timeUpdate(length: curUnitDRLength, diffHeading: diffHeading, mobileTime: currentTime, isNeedHeadingCorrection: isNeedHeadingCorrection, runMode: self.runMode)
+                        let tuOutput = timeUpdate(length: curUnitDRLength, diffHeading: diffHeading, mobileTime: currentTime, isNeedHeadingCorrection: isNeedHeadingCorrection, drBuffer: self.unitDrBuffer, runMode: self.runMode)
                         var tuResult = fromServerToResult(fromServer: tuOutput, velocity: displayOutput.velocity)
                         
                         self.timeUpdateResult[0] = tuResult.x
@@ -2624,7 +2631,8 @@ public class ServiceManager: Observation {
                     
                 }
             } else {
-                tailIndex = self.preTailIndex
+//                tailIndex = self.preTailIndex
+                tailIndex = self.pastTailIndex
                 if (resultRange.isEmpty) {
                     if (self.preSearchRange.isEmpty) {
                         let areaMinMax = [10, 10, 90, 90]
@@ -3106,7 +3114,8 @@ public class ServiceManager: Observation {
                     }
                 }
             } else {
-                tailIndex = self.preTailIndex
+//                tailIndex = self.preTailIndex
+                tailIndex = self.pastTailIndex
                 if (resultRange.isEmpty) {
                     if (self.preSearchRange.isEmpty) {
                         let areaMinMax = [10, 10, 90, 90]
@@ -4910,6 +4919,178 @@ public class ServiceManager: Observation {
         return (isSuccess, xyh)
     }
     
+    func pathTrajectoryMatching(building: String, level: String, x: Double, y: Double, heading: Double, pastResult: FineLocationTrackingResult, drBuffer: [UnitDRInfo], HEADING_RANGE: Double, pathType: Int) -> (isSuccess: Bool, xyd: [Double], minTrajectory: [[Double]]) {
+        let pastX = pastResult.x
+        let pastY = pastResult.y
+        
+        var isSuccess: Bool = false
+        var xyd: [Double] = [x, y, 50]
+        var minTrajectory = [[Double]]()
+        
+        let levelCopy: String = removeLevelDirectionString(levelName: level)
+        let key: String = "\(building)_\(levelCopy)"
+        
+        if (!(building.isEmpty) && !(level.isEmpty)) {
+            guard let mainType: [Int] = self.PathType[key] else {
+                return (isSuccess, xyd, minTrajectory)
+            }
+            guard let mainRoad: [[Double]] = self.PathPoint[key] else {
+                return (isSuccess, xyd, minTrajectory)
+            }
+            
+            if (!mainRoad.isEmpty) {
+                let roadX = mainRoad[0]
+                let roadY = mainRoad[1]
+                
+                var xMin = x - SQUARE_RANGE
+                var xMax = x + SQUARE_RANGE
+                var yMin = y - SQUARE_RANGE
+                var yMax = y + SQUARE_RANGE
+                
+                var ppXydArray = [[Double]]()
+                var minDistanceCoord = [Double]()
+                
+                for i in 0..<roadX.count {
+                    let xPath = roadX[i]
+                    let yPath = roadY[i]
+                    
+                    let pathTypeLoaded = mainType[i]
+                    if (pathType == 1) {
+                        if (pathType != pathTypeLoaded) {
+                            continue
+                        }
+                    }
+                    
+                    // XY 범위 안에 있는 값 중에 검사
+                    if (xPath >= xMin && xPath <= xMax) {
+                        if (yPath >= yMin && yPath <= yMax) {
+                            var distanceSum: Double = 0
+                            
+                            let headingCompensation: Double = heading - drBuffer[drBuffer.count-1].heading
+                            var headingBuffer: [Double] = []
+                            for i in 0..<drBuffer.count {
+                                let compensatedHeading = compensateHeading(heading: drBuffer[i].heading + headingCompensation - 180)
+                                headingBuffer.append(compensatedHeading)
+                            }
+                            
+                            var xyFromHead: [Double] = [xPath, yPath]
+                            let firstXyd = calDistacneFromNearestPp(coord: xyFromHead, mainRoad: mainRoad, mainType: mainType, pathType: pathType)
+                            var xydArray: [[Double]] = [firstXyd]
+                            distanceSum += firstXyd[2]
+                            
+                            var trajectoryFromHead = [[Double]]()
+                            trajectoryFromHead.append(xyFromHead)
+                            for i in (1..<drBuffer.count).reversed() {
+                                let headAngle = headingBuffer[i]
+                                xyFromHead[0] = xyFromHead[0] + drBuffer[i].length*cos(headAngle*D2R)
+                                xyFromHead[1] = xyFromHead[1] + drBuffer[i].length*sin(headAngle*D2R)
+                                trajectoryFromHead.append(xyFromHead)
+                                
+                                
+                                let calculatedXyd = calDistacneFromNearestPp(coord: xyFromHead, mainRoad: mainRoad, mainType: mainType, pathType: pathType)
+                                xydArray.append(calculatedXyd)
+                                distanceSum += calculatedXyd[2]
+                            }
+                            let distWithPast = sqrt((pastX - xPath)*(pastX - xPath) + (pastY - yPath)*(pastY - yPath))
+                            ppXydArray.append([xPath, yPath, distanceSum, distWithPast])
+                            
+                            if (minDistanceCoord.isEmpty) {
+                                minDistanceCoord = [xPath, yPath, distanceSum, distWithPast]
+                                minTrajectory = trajectoryFromHead
+                            } else {
+//                                let distanceCurrent = sqrt((distanceSum*distanceSum)*0.2 + (distWithPast*distWithPast)*0.8)
+//                                let distancePast = sqrt((minDistanceCoord[2]*minDistanceCoord[2])*0.2 + (minDistanceCoord[3]*minDistanceCoord[3])*0.8)
+//                                if (distanceCurrent < distancePast) {
+//                                    minDistanceCoord = [xPath, yPath, distanceSum, distWithPast]
+//                                    minTrajectory = trajectoryFromHead
+//                                }
+                                let distanceCurrent = distanceSum
+                                let distancePast = minDistanceCoord[2]
+                                if (distanceCurrent < distancePast && distWithPast <= 3) {
+                                    minDistanceCoord = [xPath, yPath, distanceSum, distWithPast]
+                                    minTrajectory = trajectoryFromHead
+                                }
+                            }
+                        }
+                    }
+                    
+//                    if (!ppXydArray.isEmpty) {
+//                        print(getLocalTimeString() + " , (PM) ppXydArray = \(ppXydArray)")
+//                        let sortedXyd = ppXydArray.sorted(by: {$0[2] < $1[2] })
+//                        if (!sortedXyd.isEmpty) {
+//                            let minData: [Double] = sortedXyd[0]
+//                            xyd = minData
+//
+//                            isSuccess = true
+//                            print(getLocalTimeString() + " , (PM) ppXydArray (min) = \(ppXydArray)")
+//                        }
+//                    }
+                    
+                    if (!minDistanceCoord.isEmpty) {
+                        if (minDistanceCoord[2] <= 15 && minDistanceCoord[3] <= 3) {
+                            isSuccess = true
+                        } else {
+                            isSuccess = false
+                        }
+                        xyd = minDistanceCoord
+                        print(getLocalTimeString() + " , (PM) minDistanceCoord = \(minDistanceCoord) , isSuccess = \(isSuccess)")
+                    }
+                }
+            }
+        }
+        return (isSuccess, xyd, minTrajectory)
+    }
+    
+    func calDistacneFromNearestPp(coord: [Double], mainRoad: [[Double]], mainType: [Int], pathType: Int) -> [Double] {
+        let x = coord[0]
+        let y = coord[1]
+        
+        var xyd: [Double] = [x, y, 50]
+        
+        var xydArray = [[Double]]()
+        
+        let roadX = mainRoad[0]
+        let roadY = mainRoad[1]
+        
+        var xMin = x - SQUARE_RANGE
+        var xMax = x + SQUARE_RANGE
+        var yMin = y - SQUARE_RANGE
+        var yMax = y + SQUARE_RANGE
+        
+        for i in 0..<roadX.count {
+            let xPath = roadX[i]
+            let yPath = roadY[i]
+            
+            let pathTypeLoaded = mainType[i]
+            if (pathType == 1) {
+                if (pathType != pathTypeLoaded) {
+                    continue
+                }
+            }
+            // XY 범위 안에 있는 값 중에 검사
+            if (xPath >= xMin && xPath <= xMax) {
+                if (yPath >= yMin && yPath <= yMax) {
+                    let distance = sqrt(pow(x-xPath, 2) + pow(y-yPath, 2))
+                    var xyd: [Double] = [xPath, yPath, distance]
+                    
+                    xydArray.append(xyd)
+                }
+            }
+        }
+        
+        if (!xydArray.isEmpty) {
+            let sortedXyd = xydArray.sorted(by: {$0[2] < $1[2] })
+            if (!sortedXyd.isEmpty) {
+                let minData: [Double] = sortedXyd[0]
+                xyd = minData
+            }
+        }
+        
+        print(getLocalTimeString() + " , (PM) calDistacneFromNearestPp = \(xyd)")
+        
+        return xyd
+    }
+    
     func getPathMatchingHeadings(building: String, level: String, x: Double, y: Double, heading: Double, RANGE: Double, mode: String) -> [Double] {
         var headings: [Double] = []
         let levelCopy: String = removeLevelDirectionString(levelName: level)
@@ -4968,8 +5149,6 @@ public class ServiceManager: Observation {
                 }
             }
         }
-        
-        
         return headings
     }
     
@@ -5038,7 +5217,7 @@ public class ServiceManager: Observation {
         }
     }
     
-    func timeUpdate(length: Double, diffHeading: Double, mobileTime: Int, isNeedHeadingCorrection: Bool, runMode: String) -> FineLocationTrackingFromServer {
+    func timeUpdate(length: Double, diffHeading: Double, mobileTime: Int, isNeedHeadingCorrection: Bool, drBuffer: [UnitDRInfo], runMode: String) -> FineLocationTrackingFromServer {
         updateHeading = timeUpdatePosition.heading + diffHeading
         
         let dx = length*cos(updateHeading*D2R)
@@ -5075,6 +5254,22 @@ public class ServiceManager: Observation {
                 timeUpdateCopy.x = correctedTuCopy.1[0]
                 timeUpdateCopy.y = correctedTuCopy.1[1]
                 timeUpdatePosition = timeUpdateCopy
+            }
+        } else {
+            if ((self.unitDrInfoIndex%2) == 0) {
+                let pathTrajMatchingResult = self.pathTrajectoryMatching(building: timeUpdateOutput.building_name, level: levelName, x: timeUpdateCopy.x, y: timeUpdateCopy.y, heading: compensatedHeading, pastResult: self.jupiterResult, drBuffer: drBuffer, HEADING_RANGE: HEADING_RANGE, pathType: 0)
+                if (pathTrajMatchingResult.isSuccess) {
+                    timeUpdatePosition.x = timeUpdatePosition.x*0.5 + pathTrajMatchingResult.xyd[0]*0.5
+                    timeUpdatePosition.y = timeUpdatePosition.y*0.5 + pathTrajMatchingResult.xyd[1]*0.5
+                    print(getLocalTimeString() + " , (PM) Result : x = \(pathTrajMatchingResult.xyd[0]) , y = \(pathTrajMatchingResult.xyd[1]) , d = \(pathTrajMatchingResult.xyd[2])")
+                    displayOutput.trajectoryPm = pathTrajMatchingResult.minTrajectory
+                    
+                    // pathTrajMatching 결과와 DR Buffer를 이용해서 DR Buffer를 재조정하는 로직?
+                } else {
+                    displayOutput.trajectoryPm = [[0,0]]
+                }
+            } else {
+                displayOutput.trajectoryPm = [[0,0]]
             }
         }
         
