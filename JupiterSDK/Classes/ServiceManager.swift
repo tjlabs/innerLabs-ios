@@ -168,7 +168,7 @@ public class ServiceManager: Observation {
     var phase2Direction: [Int] = []
     var preSearchRange: [Int] = []
     var preTailIndex: Int = 1
-    var DR_BUFFER_SIZE: Int = 20
+    var DR_BUFFER_SIZE: Int = 10
     var USER_TRAJECTORY_LENGTH_ORIGIN: Double = 60
     var USER_TRAJECTORY_LENGTH: Double = 60
     var USER_TRAJECTORY_DIAGONAL: Double = 200
@@ -458,6 +458,7 @@ public class ServiceManager: Observation {
     
     public func startService(id: String, sector_id: Int, service: String, mode: String, completion: @escaping (Bool, String) -> Void) {
         let localTime = getLocalTimeString()
+        print(localTime + " , (Jupiter) Information : Try startService")
         let log: String = localTime + " , (Jupiter) Success : Service Initalization"
         var message: String = log
         
@@ -477,379 +478,368 @@ public class ServiceManager: Observation {
         
         let numInput = 3
         let interval: Double = 1/2
-        
-        // Check Save Flag
-        let debugInput = MobileDebug(sector_id: sector_id)
-        NetworkManager.shared.postMobileDebug(url: DEBUG_URL, input: debugInput, completion: { [self] statusCode, returnedString in
-            if (statusCode == 200) {
-                let result = decodeMobileDebug(json: returnedString)
-                setSaveFlag(flag: result.sector_debug)
-            }
-        })
+        self.RFD_INPUT_NUM = numInput
+        self.RFD_INTERVAL = interval
         
         if (!jupiterServices.contains(service)) {
             let log: String = getLocalTimeString() + " , (Jupiter) Error : Invalid Service Name"
             message = log
-            
-            self.notificationCenterRemoveObserver()
-            completion(false, message)
-        }
-        
-        self.RFD_INPUT_NUM = numInput
-        self.RFD_INTERVAL = interval
-        
-        if (self.isStartFlag) {
-            message = getLocalTimeString() + " , (Jupiter) Error : Please stop another service"
-            self.notificationCenterRemoveObserver()
             completion(false, message)
         } else {
-            self.isStartFlag = true
-            let initService = self.initService(service: service, mode: mode)
-            if (!initService.0) {
-                message = initService.1
-                self.isStartFlag = false
-                self.notificationCenterRemoveObserver()
+            if (self.isStartFlag) {
+                message = getLocalTimeString() + " , (Jupiter) Error : Please stop another service"
                 completion(false, message)
-            }
-        }
-        
-        setServerUrl(server: self.serverType)
-        
-        if (self.user_id.isEmpty || self.user_id.contains(" ")) {
-            let log: String = getLocalTimeString() + " , (Jupiter) Error : User ID(input = \(self.user_id)) cannot be empty or contain space"
-            message = log
-            self.isStartFlag = false
-            self.notificationCenterRemoveObserver()
-            completion(false, message)
-        } else {
-            // Login Success
-            let userInfo = UserLogin(user_id: self.user_id, device_model: deviceModel, os_version: osVersion, sdk_version: ServiceManager.sdkVersion)
-            NetworkManager.shared.postUserLogin(url: LOGIN_URL, input: userInfo, completion: { [self] statusCode, returnedString in
-                if (statusCode == 200) {
-                    let log: String = getLocalTimeString() + " , (Jupiter) Success : User Login"
-                    print(log)
+            } else {
+                self.isStartFlag = true
+                let initService = self.initService(service: service, mode: mode)
+                if (!initService.0) {
+                    message = initService.1
+                    self.isStartFlag = false
+                    self.notificationCenterRemoveObserver()
+                    completion(false, message)
+                } else {
+                    setServerUrl(server: self.serverType)
                     
-                    let inputInfo = Info(sector_id: sector_id, operating_system: "ios")
-                    NetworkManager.shared.postInfo(url: INFO_URL, input: inputInfo, completion: { [self] statusCode, returnedString in
+                    // Check Save Flag
+                    let debugInput = MobileDebug(sector_id: sector_id)
+                    NetworkManager.shared.postMobileDebug(url: DEBUG_URL, input: debugInput, completion: { [self] statusCode, returnedString in
                         if (statusCode == 200) {
-                            let sectorInfoResult = jsonToInfoResult(json: returnedString)
-                            let entranceInfo = sectorInfoResult.entrances
-                
-                            self.EntranceNumbers = entranceInfo.count
-                            var entranceOuterWards: [String] = []
-                            var entranceScales: [Double] = []
-                            for i in 0..<self.EntranceNumbers {
-                                entranceOuterWards.append(entranceInfo[i].outermost_ward_id)
-                                entranceScales.append(entranceInfo[i].entrance_scale)
-                                
-                                let entranceKey = "\(entranceInfo[i].entrance_number)"
-                                self.EntranceWards[entranceKey] = entranceInfo[i].entrance_rss
-                            }
-                            self.EntranceOuterWards = entranceOuterWards
-                            self.EntranceVelocityScale = entranceScales
-
-                            let buildings_n_levels: [[String]] = sectorInfoResult.building_level
-
-                            var infoBuilding = [String]()
-                            var infoLevel = [String:[String]]()
-                            for building in 0..<buildings_n_levels.count {
-                                let buildingName: String = buildings_n_levels[building][0]
-                                let levelName: String = buildings_n_levels[building][1]
-
-                                // Building
-                                if !(infoBuilding.contains(buildingName)) {
-                                    infoBuilding.append(buildingName)
-                                }
-
-                                // Level
-                                if let value = infoLevel[buildingName] {
-                                    var levels:[String] = value
-                                    levels.append(levelName)
-                                    infoLevel[buildingName] = levels
-                                } else {
-                                    let levels:[String] = [levelName]
-                                    infoLevel[buildingName] = levels
-                                }
-                            }
-                            
-                            let countAll = countAllValuesInDictionary(infoLevel)
-                            
-                            self.isMapMatching = true
-                            // Key-Value Saved
-                            for i in 0..<infoBuilding.count {
-                                let buildingName = infoBuilding[i]
-                                let levelList = infoLevel[buildingName]
-                                for j in 0..<levelList!.count {
-                                    let levelName = levelList![j]
-                                    let key: String = "\(buildingName)_\(levelName)"
-                                    self.LoadPathPoint[key] = true
-                                    
-                                    let url = self.getPpUrl(server: self.serverType, key: key)
-                                    let urlComponents = URLComponents(string: url)
-                                    let requestURL = URLRequest(url: (urlComponents?.url)!)
-                                    let dataTask = URLSession.shared.dataTask(with: requestURL, completionHandler: { (data, response, error) in
-                                        let statusCode = (response as? HTTPURLResponse)?.statusCode ?? 500
-                                        
-                                        if (statusCode == 200) {
-                                            if let responseData = data {
-                                                if let utf8Text = String(data: responseData, encoding: .utf8) {
-                                                    ( self.PathType[key], self.PathPoint[key], self.PathMagScale[key], self.PathHeading[key] ) = self.parseRoad(data: utf8Text)
-                                                    self.isLoadEnd[key] = [true, true]
-                                                }
-                                            }
-                                        } else {
-                                            self.isLoadEnd[key] = [true, false]
-                                        }
-                                    })
-                                    dataTask.resume()
-                                    
-                                    if (levelName == "B0") {
-                                        for i in 0..<self.EntranceNumbers {
-                                            let number = i+1
-                                            let entranceKey = key + "_\(number)"
-                                            
-                                            let loadedData = loadEntranceFromCache(key: entranceKey)
-                                            if (loadedData.0.isEmpty) {
-                                                print(getLocalTimeString() + " , (Jupiter) Information : Download Entrance-Info // \(entranceKey)")
-                                                loadEntranceFromUrl(key: entranceKey)
-                                            } else {
-                                                self.EntranceLevelInfo[entranceKey] = loadedData.0
-                                                self.EntranceInfo[entranceKey] = loadedData.1
-                                                print(getLocalTimeString() + " , (Jupiter) Information : Already have Entrance-Info // \(entranceKey)")
-                                            }
-                                        }
-                                    }
-                                }
-                                
-                                for j in 0..<levelList!.count {
-                                    let levelName = levelList![j]
-                                    let input = JupiterGeo(sector_id: self.sector_id, building_name: buildingName, level_name: levelName)
-                                    NetworkManager.shared.postGeo(url: GEO_URL, input: input, completion: { [self] statusCode, returnedString, buildingGeo, levelGeo in
-                                        if (statusCode >= 200 && statusCode <= 300) {
-                                            let result = decodeGeo(json: returnedString)
-                                            let key: String = "\(buildingGeo)_\(levelGeo)"
-                                            self.EntranceArea[key] = result.entrance_area
-                                            self.EntranceMatchingArea[key] = result.entrance_matching_area
-                                            self.LevelChangeArea[key] = result.level_change_area
-                                            
-                                            countBuildingLevel += 1
-                                            
-                                            if (countBuildingLevel == countAll) {
-                                                if (bleManager.bluetoothReady) {
-                                                    // Load Trajectory Info
-                                                    let inputGetTraj = JupiterTraj(sector_id: sector_id)
-                                                    NetworkManager.shared.postTraj(url: TRAJ_URL, input: inputGetTraj, completion: { [self] statusCode, returnedString in
-                                                        if (statusCode == 200) {
-                                                            let resultTraj = decodeTraj(json: returnedString)
-                                                            self.USER_TRAJECTORY_LENGTH_ORIGIN = Double(resultTraj.trajectory_length + 10)
-                                                            self.USER_TRAJECTORY_LENGTH = Double(resultTraj.trajectory_length + 10)
-                                                            self.USER_TRAJECTORY_DIAGONAL = Double(resultTraj.trajectory_diagonal + 10)
-                                                            
-                                                            self.NUM_STRAIGHT_INDEX_DR = Int(ceil(self.USER_TRAJECTORY_LENGTH/6))
-                                                            self.NUM_STRAIGHT_INDEX_PDR = Int(ceil(self.USER_TRAJECTORY_DIAGONAL/6))
-                                                            print(getLocalTimeString() + " , (Jupiter) Trajectory Info Load : \(self.USER_TRAJECTORY_LENGTH) // \(self.USER_TRAJECTORY_DIAGONAL) // \(self.NUM_STRAIGHT_INDEX_DR)")
-                                                            
-                                                            // Load Bias
-                                                            let inputGetBias = JupiterBiasGet(device_model: self.deviceModel, os_version: self.osVersion, sector_id: self.sector_id)
-                                                            NetworkManager.shared.getJupiterBias(url: RC_URL, input: inputGetBias, completion: { [self] statusCode, returnedString in
-                                                                let loadedBias = biasEstimator.loadRssiBias(sector_id: self.sector_id)
-                                                                if (statusCode == 200) {
-                                                                    let result = decodeRC(json: returnedString)
-                                                                    if (result.rss_compensations.isEmpty) {
-                                                                        let inputGetDeviceBias = JupiterDeviceBiasGet(device_model: self.deviceModel, sector_id: self.sector_id)
-                                                                        NetworkManager.shared.getJupiterDeviceBias(url: RC_URL, input: inputGetDeviceBias, completion: { [self] statusCode, returnedString in
-                                                                            if (statusCode == 200) {
-                                                                                let result = decodeRC(json: returnedString)
-                                                                                if (result.rss_compensations.isEmpty) {
-                                                                                    // Need Bias Estimation
-                                                                                    self.rssiBias = loadedBias.0
-                                                                                    self.sccGoodBiasArray = loadedBias.1
-                                                                                    self.isBiasConverged = loadedBias.2
-                                                                                    displayOutput.bias = self.rssiBias
-                                                                                    displayOutput.isConverged = self.isBiasConverged
-                                                                                    
-                                                                                    let biasArray = biasEstimator.makeRssiBiasArray(bias: loadedBias.0)
-                                                                                    self.rssiBiasArray = biasArray
-                                                                                    self.isStartComplete = true
-                                                                                    
-                                                                                    self.startTimer()
-                                                                                    
-                                                                                    print(localTime + " , (Jupiter) Need Bias Estimation // bias = \(self.rssiBias) , array = \(self.sccGoodBiasArray)")
-                                                                                    let log: String = localTime + " , (Jupiter) Success : Service Initalization"
-                                                                                    message = log
-                                                                                    
-//                                                                                    self.notificationCenterAddOberver()
-                                                                                    completion(true, message)
-                                                                                } else {
-                                                                                    // Success Load Bias without OS
-                                                                                    if let closest = findClosestStructure(to: self.osVersion, in: result.rss_compensations) {
-                                                                                        let biasFromServer: rss_compensation = closest
-                                                                                        
-                                                                                        self.rssiScale = biasFromServer.scale_factor
-                                                                                        bleManager.setRssiScale(scale: self.rssiScale)
-                                                                                        
-                                                                                        if (loadedBias.2) {
-                                                                                            self.rssiBias = loadedBias.0
-                                                                                            self.sccGoodBiasArray = loadedBias.1
-                                                                                            self.isBiasConverged = true
-                                                                                            print(localTime + " , (Jupiter) Bias Load (Device // Cache) : \(loadedBias.0)")
-                                                                                        } else {
-                                                                                            self.rssiBias = biasFromServer.rss_compensation
-                                                                                            self.sccGoodBiasArray = loadedBias.1
-                                                                                            self.isBiasConverged = false
-                                                                                            print(localTime + " , (Jupiter) Bias Load (Device) : \(biasFromServer.rss_compensation)")
-                                                                                        }
-                                                                                        
-                                                                                        displayOutput.bias = self.rssiBias
-                                                                                        displayOutput.isConverged = self.isBiasConverged
-                                                                                        
-                                                                                        let biasArray = biasEstimator.makeRssiBiasArray(bias: self.rssiBias)
-                                                                                        self.rssiBiasArray = biasArray
-                                                                                        self.isStartComplete = true
-                                                                                        self.startTimer()
-                                                                                        
-                                                                                        let log: String = localTime + " , (Jupiter) Success : Service Initalization"
-                                                                                        message = log
-//                                                                                        self.notificationCenterAddOberver()
-                                                                                        completion(true, message)
-                                                                                    } else {
-                                                                                        self.rssiBias = loadedBias.0
-                                                                                        self.sccGoodBiasArray = loadedBias.1
-                                                                                        self.isBiasConverged = loadedBias.2
-                                                                                        displayOutput.bias = self.rssiBias
-                                                                                        displayOutput.isConverged = self.isBiasConverged
-                                                                                        
-                                                                                        let biasArray = biasEstimator.makeRssiBiasArray(bias: loadedBias.0)
-                                                                                        self.rssiBiasArray = biasArray
-                                                                                        self.isStartComplete = true
-                                                                                        self.startTimer()
-                                                                                        
-                                                                                        let log: String = localTime + " , (Jupiter) Success : Service Initalization"
-                                                                                        message = log
-//                                                                                        self.notificationCenterAddOberver()
-                                                                                        completion(true, message)
-                                                                                    }
-                                                                                }
-                                                                            } else {
-                                                                                let log: String = getLocalTimeString() + " , (Jupiter) Error : Bias Load (Device)"
-                                                                                message = log
-                                                                                self.stopTimer()
-                                                                                self.isStartFlag = false
-                                                                                self.notificationCenterRemoveObserver()
-                                                                                completion(false, message)
-                                                                            }
-                                                                        })
-                                                                    } else {
-                                                                        // Succes Load Bias
-                                                                        let biasFromServer: rss_compensation = result.rss_compensations[0]
-                                                                        
-                                                                        self.rssiScale = biasFromServer.scale_factor
-                                                                        bleManager.setRssiScale(scale: self.rssiScale)
-                                                                        
-                                                                        if (loadedBias.2) {
-                                                                            self.rssiBias = loadedBias.0
-                                                                            self.sccGoodBiasArray = loadedBias.1
-                                                                            print(getLocalTimeString() + " , (Jupiter) Bias Load (Device & OS // Cache) : \(loadedBias.0)")
-                                                                        } else {
-                                                                            self.rssiBias = biasFromServer.rss_compensation
-                                                                            self.sccGoodBiasArray = loadedBias.1
-                                                                            print(getLocalTimeString() + " , (Jupiter) Bias Load (Device & OS) : \(biasFromServer.rss_compensation)")
-                                                                        }
-                                                                        self.isBiasConverged = true
-                                                                        
-                                                                        displayOutput.bias = self.rssiBias
-                                                                        displayOutput.isConverged = self.isBiasConverged
-                                                                        
-                                                                        let biasArray = biasEstimator.makeRssiBiasArray(bias: self.rssiBias)
-                                                                        self.rssiBiasArray = biasArray
-                                                                        self.isStartComplete = true
-                                                                        self.startTimer()
-                                                                        
-                                                                        let log: String = localTime + " , (Jupiter) Success : Service Initalization"
-                                                                        message = log
-//                                                                        self.notificationCenterAddOberver()
-                                                                        completion(true, message)
-                                                                    }
-                                                                } else {
-                                                                    let log: String = getLocalTimeString() + " , (Jupiter) Error : Load Bias"
-                                                                    message = log
-                                                                    self.stopTimer()
-                                                                    self.isStartFlag = false
-//                                                                    self.notificationCenterRemoveObserver()
-                                                                    completion(false, message)
-                                                                }
-                                                            })
-                                                        } else {
-                                                            let log: String = getLocalTimeString() + " , (Jupiter) Error : Load Trajectory Info"
-                                                            message = log
-                                                            self.stopTimer()
-                                                            self.isStartFlag = false
-                                                            self.notificationCenterRemoveObserver()
-                                                            completion(false, message)
-                                                        }
-                                                    })
-                                                } else {
-                                                    let log: String = getLocalTimeString() + " , (Jupiter) Error : Bluetooth is not enabled"
-                                                    message = log
-                                                    self.stopTimer()
-                                                    self.isStartFlag = false
-                                                    self.notificationCenterRemoveObserver()
-                                                    completion(false, message)
-                                                }
-                                            }
-                                        } else {
-                                            self.stopTimer()
-                                            if (!NetworkCheck.shared.isConnectedToInternet()) {
-                                                let log: String = getLocalTimeString() + " , (Jupiter) Error : Network is not connected"
-                                                message = log
-                                                self.isStartFlag = false
-                                                self.notificationCenterRemoveObserver()
-                                                completion(false, message)
-                                            } else {
-                                                let log: String = getLocalTimeString() + " , (Jupiter) Error : Load Abnormal Area // \(buildingGeo) \(levelGeo)"
-                                                message = log
-                                                self.isStartFlag = false
-                                                self.notificationCenterRemoveObserver()
-                                                completion(false, message)
-                                            }
-                                        }
-                                    })
-                                }
-                            }
-                        } else {
-                            self.stopTimer()
-                            if (!NetworkCheck.shared.isConnectedToInternet()) {
-                                let log: String = getLocalTimeString() + " , (Jupiter) Error : Network is not connected"
-                                message = log
-                                self.isStartFlag = false
-                                self.notificationCenterRemoveObserver()
-                                completion(false, message)
-                            } else {
-                                let log: String = getLocalTimeString() + " , (Jupiter) Error : Load Building & Level Information"
-                                message = log
-                                self.isStartFlag = false
-                                self.notificationCenterRemoveObserver()
-                                completion(false, message)
-                            }
+                            let result = decodeMobileDebug(json: returnedString)
+                            setSaveFlag(flag: result.sector_debug)
                         }
                     })
-                } else {
-                    self.stopTimer()
-                    if (!NetworkCheck.shared.isConnectedToInternet()) {
-                        let log: String = getLocalTimeString() + " , (Jupiter) Error : Network is not connected"
+
+                    if (self.user_id.isEmpty || self.user_id.contains(" ")) {
+                        let log: String = getLocalTimeString() + " , (Jupiter) Error : User ID(input = \(self.user_id)) cannot be empty or contain space"
                         message = log
                         self.isStartFlag = false
                         self.notificationCenterRemoveObserver()
                         completion(false, message)
                     } else {
-                        let log: String = getLocalTimeString() + " , (Jupiter) Error : User Login"
-                        message = log
-                        self.isStartFlag = false
-                        self.notificationCenterRemoveObserver()
-                        completion(false, message)
+                        // Login Success
+                        let userInfo = UserLogin(user_id: self.user_id, device_model: deviceModel, os_version: osVersion, sdk_version: ServiceManager.sdkVersion)
+                        NetworkManager.shared.postUserLogin(url: LOGIN_URL, input: userInfo, completion: { [self] statusCode, returnedString in
+                            if (statusCode == 200) {
+                                let log: String = getLocalTimeString() + " , (Jupiter) Success : User Login(input = \(self.user_id))"
+                                print(log)
+                                
+                                let inputInfo = Info(sector_id: sector_id, operating_system: "ios")
+                                NetworkManager.shared.postInfo(url: INFO_URL, input: inputInfo, completion: { [self] statusCode, returnedString in
+                                    if (statusCode == 200) {
+                                        let sectorInfoResult = jsonToInfoResult(json: returnedString)
+                                        let entranceInfo = sectorInfoResult.entrances
+                            
+                                        self.EntranceNumbers = entranceInfo.count
+                                        var entranceOuterWards: [String] = []
+                                        var entranceScales: [Double] = []
+                                        for i in 0..<self.EntranceNumbers {
+                                            entranceOuterWards.append(entranceInfo[i].outermost_ward_id)
+                                            entranceScales.append(entranceInfo[i].entrance_scale)
+                                            
+                                            let entranceKey = "\(entranceInfo[i].entrance_number)"
+                                            self.EntranceWards[entranceKey] = entranceInfo[i].entrance_rss
+                                        }
+                                        self.EntranceOuterWards = entranceOuterWards
+                                        self.EntranceVelocityScale = entranceScales
+
+                                        let buildings_n_levels: [[String]] = sectorInfoResult.building_level
+
+                                        var infoBuilding = [String]()
+                                        var infoLevel = [String:[String]]()
+                                        for building in 0..<buildings_n_levels.count {
+                                            let buildingName: String = buildings_n_levels[building][0]
+                                            let levelName: String = buildings_n_levels[building][1]
+
+                                            // Building
+                                            if !(infoBuilding.contains(buildingName)) {
+                                                infoBuilding.append(buildingName)
+                                            }
+
+                                            // Level
+                                            if let value = infoLevel[buildingName] {
+                                                var levels:[String] = value
+                                                levels.append(levelName)
+                                                infoLevel[buildingName] = levels
+                                            } else {
+                                                let levels:[String] = [levelName]
+                                                infoLevel[buildingName] = levels
+                                            }
+                                        }
+                                        
+                                        let countAll = countAllValuesInDictionary(infoLevel)
+                                        
+                                        self.isMapMatching = true
+                                        // Key-Value Saved
+                                        for i in 0..<infoBuilding.count {
+                                            let buildingName = infoBuilding[i]
+                                            let levelList = infoLevel[buildingName]
+                                            for j in 0..<levelList!.count {
+                                                let levelName = levelList![j]
+                                                let key: String = "\(buildingName)_\(levelName)"
+                                                self.LoadPathPoint[key] = true
+                                                
+                                                let url = self.getPpUrl(server: self.serverType, key: key)
+                                                let urlComponents = URLComponents(string: url)
+                                                let requestURL = URLRequest(url: (urlComponents?.url)!)
+                                                let dataTask = URLSession.shared.dataTask(with: requestURL, completionHandler: { (data, response, error) in
+                                                    let statusCode = (response as? HTTPURLResponse)?.statusCode ?? 500
+                                                    
+                                                    if (statusCode == 200) {
+                                                        if let responseData = data {
+                                                            if let utf8Text = String(data: responseData, encoding: .utf8) {
+                                                                ( self.PathType[key], self.PathPoint[key], self.PathMagScale[key], self.PathHeading[key] ) = self.parseRoad(data: utf8Text)
+                                                                self.isLoadEnd[key] = [true, true]
+                                                            }
+                                                        }
+                                                    } else {
+                                                        self.isLoadEnd[key] = [true, false]
+                                                    }
+                                                })
+                                                dataTask.resume()
+                                                
+                                                if (levelName == "B0") {
+                                                    for i in 0..<self.EntranceNumbers {
+                                                        let number = i+1
+                                                        let entranceKey = key + "_\(number)"
+                                                        
+                                                        let loadedData = loadEntranceFromCache(key: entranceKey)
+                                                        if (loadedData.0.isEmpty) {
+                                                            print(getLocalTimeString() + " , (Jupiter) Information : Download Entrance-Info // \(entranceKey)")
+                                                            loadEntranceFromUrl(key: entranceKey)
+                                                        } else {
+                                                            self.EntranceLevelInfo[entranceKey] = loadedData.0
+                                                            self.EntranceInfo[entranceKey] = loadedData.1
+                                                            print(getLocalTimeString() + " , (Jupiter) Information : Already have Entrance-Info // \(entranceKey)")
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                            
+                                            for j in 0..<levelList!.count {
+                                                let levelName = levelList![j]
+                                                let input = JupiterGeo(sector_id: self.sector_id, building_name: buildingName, level_name: levelName)
+                                                NetworkManager.shared.postGeo(url: GEO_URL, input: input, completion: { [self] statusCode, returnedString, buildingGeo, levelGeo in
+                                                    if (statusCode >= 200 && statusCode <= 300) {
+                                                        let result = decodeGeo(json: returnedString)
+                                                        let key: String = "\(buildingGeo)_\(levelGeo)"
+                                                        self.EntranceArea[key] = result.entrance_area
+                                                        self.EntranceMatchingArea[key] = result.entrance_matching_area
+                                                        self.LevelChangeArea[key] = result.level_change_area
+                                                        
+                                                        countBuildingLevel += 1
+                                                        
+                                                        if (countBuildingLevel == countAll) {
+                                                            if (bleManager.bluetoothReady) {
+                                                                // Load Trajectory Info
+                                                                let inputGetTraj = JupiterTraj(sector_id: sector_id)
+                                                                NetworkManager.shared.postTraj(url: TRAJ_URL, input: inputGetTraj, completion: { [self] statusCode, returnedString in
+                                                                    if (statusCode == 200) {
+                                                                        let resultTraj = decodeTraj(json: returnedString)
+                                                                        self.USER_TRAJECTORY_LENGTH_ORIGIN = Double(resultTraj.trajectory_length + 10)
+                                                                        self.USER_TRAJECTORY_LENGTH = Double(resultTraj.trajectory_length + 10)
+                                                                        self.USER_TRAJECTORY_DIAGONAL = Double(resultTraj.trajectory_diagonal + 10)
+                                                                        
+                                                                        self.NUM_STRAIGHT_INDEX_DR = Int(ceil(self.USER_TRAJECTORY_LENGTH/6))
+                                                                        self.NUM_STRAIGHT_INDEX_PDR = Int(ceil(self.USER_TRAJECTORY_DIAGONAL/6))
+                                                                        print(getLocalTimeString() + " , (Jupiter) Trajectory Info Load : \(self.USER_TRAJECTORY_LENGTH) // \(self.USER_TRAJECTORY_DIAGONAL) // \(self.NUM_STRAIGHT_INDEX_DR)")
+                                                                        
+                                                                        // Load Bias
+                                                                        let inputGetBias = JupiterBiasGet(device_model: self.deviceModel, os_version: self.osVersion, sector_id: self.sector_id)
+                                                                        NetworkManager.shared.getJupiterBias(url: RC_URL, input: inputGetBias, completion: { [self] statusCode, returnedString in
+                                                                            let loadedBias = biasEstimator.loadRssiBias(sector_id: self.sector_id)
+                                                                            if (statusCode == 200) {
+                                                                                let result = decodeRC(json: returnedString)
+                                                                                if (result.rss_compensations.isEmpty) {
+                                                                                    let inputGetDeviceBias = JupiterDeviceBiasGet(device_model: self.deviceModel, sector_id: self.sector_id)
+                                                                                    NetworkManager.shared.getJupiterDeviceBias(url: RC_URL, input: inputGetDeviceBias, completion: { [self] statusCode, returnedString in
+                                                                                        if (statusCode == 200) {
+                                                                                            let result = decodeRC(json: returnedString)
+                                                                                            if (result.rss_compensations.isEmpty) {
+                                                                                                // Need Bias Estimation
+                                                                                                self.rssiBias = loadedBias.0
+                                                                                                self.sccGoodBiasArray = loadedBias.1
+                                                                                                self.isBiasConverged = loadedBias.2
+                                                                                                displayOutput.bias = self.rssiBias
+                                                                                                displayOutput.isConverged = self.isBiasConverged
+                                                                                                
+                                                                                                let biasArray = biasEstimator.makeRssiBiasArray(bias: loadedBias.0)
+                                                                                                self.rssiBiasArray = biasArray
+                                                                                                self.isStartComplete = true
+                                                                                                self.startTimer()
+                                                                                                
+                                                                                                print(localTime + " , (Jupiter) Need Bias Estimation // bias = \(self.rssiBias) , array = \(self.sccGoodBiasArray)")
+                                                                                                let log: String = localTime + " , (Jupiter) Success : Service Initalization"
+                                                                                                message = log
+                                                                                                completion(true, message)
+                                                                                            } else {
+                                                                                                // Success Load Bias without OS
+                                                                                                if let closest = findClosestStructure(to: self.osVersion, in: result.rss_compensations) {
+                                                                                                    let biasFromServer: rss_compensation = closest
+                                                                                                    
+                                                                                                    self.rssiScale = biasFromServer.scale_factor
+                                                                                                    bleManager.setRssiScale(scale: self.rssiScale)
+                                                                                                    
+                                                                                                    if (loadedBias.2) {
+                                                                                                        self.rssiBias = loadedBias.0
+                                                                                                        self.sccGoodBiasArray = loadedBias.1
+                                                                                                        self.isBiasConverged = true
+                                                                                                        print(localTime + " , (Jupiter) Bias Load (Device // Cache) : \(loadedBias.0)")
+                                                                                                    } else {
+                                                                                                        self.rssiBias = biasFromServer.rss_compensation
+                                                                                                        self.sccGoodBiasArray = loadedBias.1
+                                                                                                        self.isBiasConverged = false
+                                                                                                        print(localTime + " , (Jupiter) Bias Load (Device) : \(biasFromServer.rss_compensation)")
+                                                                                                    }
+                                                                                                    
+                                                                                                    displayOutput.bias = self.rssiBias
+                                                                                                    displayOutput.isConverged = self.isBiasConverged
+                                                                                                    
+                                                                                                    let biasArray = biasEstimator.makeRssiBiasArray(bias: self.rssiBias)
+                                                                                                    self.rssiBiasArray = biasArray
+                                                                                                    self.isStartComplete = true
+                                                                                                    self.startTimer()
+                                                                                                    
+                                                                                                    let log: String = localTime + " , (Jupiter) Success : Service Initalization"
+                                                                                                    message = log
+                                                                                                    completion(true, message)
+                                                                                                } else {
+                                                                                                    self.rssiBias = loadedBias.0
+                                                                                                    self.sccGoodBiasArray = loadedBias.1
+                                                                                                    self.isBiasConverged = loadedBias.2
+                                                                                                    displayOutput.bias = self.rssiBias
+                                                                                                    displayOutput.isConverged = self.isBiasConverged
+                                                                                                    
+                                                                                                    let biasArray = biasEstimator.makeRssiBiasArray(bias: loadedBias.0)
+                                                                                                    self.rssiBiasArray = biasArray
+                                                                                                    self.isStartComplete = true
+                                                                                                    self.startTimer()
+                                                                                                    
+                                                                                                    let log: String = localTime + " , (Jupiter) Success : Service Initalization"
+                                                                                                    message = log
+                                                                                                    completion(true, message)
+                                                                                                }
+                                                                                            }
+                                                                                        } else {
+                                                                                            let log: String = getLocalTimeString() + " , (Jupiter) Error : Bias Load (Device)"
+                                                                                            message = log
+                                                                                            self.stopTimer()
+                                                                                            self.isStartFlag = false
+                                                                                            self.notificationCenterRemoveObserver()
+                                                                                            completion(false, message)
+                                                                                        }
+                                                                                    })
+                                                                                } else {
+                                                                                    // Succes Load Bias
+                                                                                    let biasFromServer: rss_compensation = result.rss_compensations[0]
+                                                                                    
+                                                                                    self.rssiScale = biasFromServer.scale_factor
+                                                                                    bleManager.setRssiScale(scale: self.rssiScale)
+                                                                                    
+                                                                                    if (loadedBias.2) {
+                                                                                        self.rssiBias = loadedBias.0
+                                                                                        self.sccGoodBiasArray = loadedBias.1
+                                                                                        print(getLocalTimeString() + " , (Jupiter) Bias Load (Device & OS // Cache) : \(loadedBias.0)")
+                                                                                    } else {
+                                                                                        self.rssiBias = biasFromServer.rss_compensation
+                                                                                        self.sccGoodBiasArray = loadedBias.1
+                                                                                        print(getLocalTimeString() + " , (Jupiter) Bias Load (Device & OS) : \(biasFromServer.rss_compensation)")
+                                                                                    }
+                                                                                    self.isBiasConverged = true
+                                                                                    
+                                                                                    displayOutput.bias = self.rssiBias
+                                                                                    displayOutput.isConverged = self.isBiasConverged
+                                                                                    
+                                                                                    let biasArray = biasEstimator.makeRssiBiasArray(bias: self.rssiBias)
+                                                                                    self.rssiBiasArray = biasArray
+                                                                                    self.isStartComplete = true
+                                                                                    self.startTimer()
+                                                                                    
+                                                                                    let log: String = localTime + " , (Jupiter) Success : Service Initalization"
+                                                                                    message = log
+                                                                                    completion(true, message)
+                                                                                }
+                                                                            } else {
+                                                                                let log: String = getLocalTimeString() + " , (Jupiter) Error : Load Bias"
+                                                                                message = log
+                                                                                self.stopTimer()
+                                                                                self.isStartFlag = false
+                                                                                completion(false, message)
+                                                                            }
+                                                                        })
+                                                                    } else {
+                                                                        let log: String = getLocalTimeString() + " , (Jupiter) Error : Load Trajectory Info"
+                                                                        message = log
+                                                                        self.stopTimer()
+                                                                        self.isStartFlag = false
+                                                                        self.notificationCenterRemoveObserver()
+                                                                        completion(false, message)
+                                                                    }
+                                                                })
+                                                            } else {
+                                                                let log: String = getLocalTimeString() + " , (Jupiter) Error : Bluetooth is not enabled"
+                                                                message = log
+                                                                self.stopTimer()
+                                                                self.isStartFlag = false
+                                                                self.notificationCenterRemoveObserver()
+                                                                completion(false, message)
+                                                            }
+                                                        }
+                                                    } else {
+                                                        self.stopTimer()
+                                                        if (!NetworkCheck.shared.isConnectedToInternet()) {
+                                                            let log: String = getLocalTimeString() + " , (Jupiter) Error : Network is not connected"
+                                                            message = log
+                                                            self.isStartFlag = false
+                                                            self.notificationCenterRemoveObserver()
+                                                            completion(false, message)
+                                                        } else {
+                                                            let log: String = getLocalTimeString() + " , (Jupiter) Error : Load Abnormal Area // \(buildingGeo) \(levelGeo)"
+                                                            message = log
+                                                            self.isStartFlag = false
+                                                            self.notificationCenterRemoveObserver()
+                                                            completion(false, message)
+                                                        }
+                                                    }
+                                                })
+                                            }
+                                        }
+                                    } else {
+                                        self.stopTimer()
+                                        if (!NetworkCheck.shared.isConnectedToInternet()) {
+                                            let log: String = getLocalTimeString() + " , (Jupiter) Error : Network is not connected"
+                                            message = log
+                                            self.isStartFlag = false
+                                            self.notificationCenterRemoveObserver()
+                                            completion(false, message)
+                                        } else {
+                                            let log: String = getLocalTimeString() + " , (Jupiter) Error : Load Building & Level Information"
+                                            message = log
+                                            self.isStartFlag = false
+                                            self.notificationCenterRemoveObserver()
+                                            completion(false, message)
+                                        }
+                                    }
+                                })
+                            } else {
+                                self.stopTimer()
+                                if (!NetworkCheck.shared.isConnectedToInternet()) {
+                                    let log: String = getLocalTimeString() + " , (Jupiter) Error : Network is not connected"
+                                    message = log
+                                    self.isStartFlag = false
+                                    self.notificationCenterRemoveObserver()
+                                    completion(false, message)
+                                } else {
+                                    let log: String = getLocalTimeString() + " , (Jupiter) Error : User Login"
+                                    message = log
+                                    self.isStartFlag = false
+                                    self.notificationCenterRemoveObserver()
+                                    completion(false, message)
+                                }
+                            }
+                        })
                     }
                 }
-            })
+            }
         }
     }
     
@@ -872,7 +862,7 @@ public class ServiceManager: Observation {
     
     public func setSaveFlag(flag: Bool) {
         self.isSaveFlag = flag
-        print(getLocalTimeString() + " , (Jupiter) Set Save Flag : \(self.isSaveFlag)")
+        print(getLocalTimeString() + " , (Jupiter) Information : Set Save Flag = \(self.isSaveFlag)")
     }
     
     
@@ -1641,7 +1631,7 @@ public class ServiceManager: Observation {
                                     if (entranceResult.0 != 0) {
                                         let velocityScale: Double = self.EntranceVelocityScale[i]
                                         print(getLocalTimeString() + " , (Jupiter) Entrance Simulator : number = \(entranceResult.0)")
-                                        print(getLocalTimeString() + " , (Jupiter) Entrance Simulator : scale = \(velocityScale)")
+//                                        print(getLocalTimeString() + " , (Jupiter) Entrance Simulator : scale = \(velocityScale)")
                                         self.currentEntrance = "\(result.building_name)_\(result.level_name)_\(entranceResult.0)"
                                         self.currentEntranceLength = entranceResult.1
                                         self.entranceVelocityScale = velocityScale
@@ -3636,11 +3626,11 @@ public class ServiceManager: Observation {
                                     for i in 0..<self.EntranceNumbers {
                                         if (!self.isStartSimulate) {
                                             let entranceResult = self.findEntrance(result: result, entrance: i)
-                                            print(getLocalTimeString() + " , (Jupiter) Entrance Simulator : findEntrance = \(entranceResult)")
+//                                            print(getLocalTimeString() + " , (Jupiter) Entrance Simulator : findEntrance = \(entranceResult)")
                                             if (entranceResult.0 != 0) {
                                                 let velocityScale: Double = self.EntranceVelocityScale[i]
-                                                print(getLocalTimeString() + " , (Jupiter) Entrance Simulator : number = \(entranceResult.0)")
-                                                print(getLocalTimeString() + " , (Jupiter) Entrance Simulator : scale = \(velocityScale)")
+//                                                print(getLocalTimeString() + " , (Jupiter) Entrance Simulator : number = \(entranceResult.0)")
+//                                                print(getLocalTimeString() + " , (Jupiter) Entrance Simulator : scale = \(velocityScale)")
                                                 // 입구 탐지 !
                                                 self.currentEntrance = "\(result.building_name)_\(result.level_name)_\(entranceResult.0)"
                                                 self.currentEntranceLength = entranceResult.1

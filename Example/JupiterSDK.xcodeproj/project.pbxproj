@@ -22,6 +22,7 @@
 		B30638F82A36E58800C7FF89 /* COEX_B3.csv in Resources */ = {isa = PBXBuildFile; fileRef = B30638F32A36E58800C7FF89 /* COEX_B3.csv */; };
 		B30638F92A36E58800C7FF89 /* COEX_B2.csv in Resources */ = {isa = PBXBuildFile; fileRef = B30638F42A36E58800C7FF89 /* COEX_B2.csv */; };
 		B30638FB2A36E82100C7FF89 /* S3_7F.csv in Resources */ = {isa = PBXBuildFile; fileRef = B30638FA2A36E82100C7FF89 /* S3_7F.csv */; };
+		B30C09792A80B54300509A0E /* SampleViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B30C09782A80B54300509A0E /* SampleViewController.swift */; };
 		B30D4F89298A0BF000BFC124 /* morguard_6F.csv in Resources */ = {isa = PBXBuildFile; fileRef = B30D4F87298A0BF000BFC124 /* morguard_6F.csv */; };
 		B30EED7C28936CB5009A3EDA /* TipsTownViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B30EED7B28936CB5009A3EDA /* TipsTownViewController.swift */; };
 		B30EED872893B64C009A3EDA /* CollectViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B30EED862893B64C009A3EDA /* CollectViewController.swift */; };
@@ -143,6 +144,7 @@
 		B30638F32A36E58800C7FF89 /* COEX_B3.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = COEX_B3.csv; sourceTree = "<group>"; };
 		B30638F42A36E58800C7FF89 /* COEX_B2.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = COEX_B2.csv; sourceTree = "<group>"; };
 		B30638FA2A36E82100C7FF89 /* S3_7F.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = S3_7F.csv; sourceTree = "<group>"; };
+		B30C09782A80B54300509A0E /* SampleViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleViewController.swift; sourceTree = "<group>"; };
 		B30D4F87298A0BF000BFC124 /* morguard_6F.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = morguard_6F.csv; sourceTree = "<group>"; };
 		B30EED7B28936CB5009A3EDA /* TipsTownViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TipsTownViewController.swift; sourceTree = "<group>"; };
 		B30EED862893B64C009A3EDA /* CollectViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectViewController.swift; sourceTree = "<group>"; };
@@ -398,6 +400,7 @@
 				B38C7F4B28FE6AC200DEEF32 /* NeptuneViewController.swift */,
 				B349730F293847DC0078C872 /* FusionViewController.swift */,
 				B3DE961E299A111B00352F40 /* FileViewController.swift */,
+				B30C09782A80B54300509A0E /* SampleViewController.swift */,
 			);
 			name = ViewController;
 			sourceTree = "<group>";
@@ -847,6 +850,7 @@
 				B3DE961F299A111B00352F40 /* FileViewController.swift in Sources */,
 				607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */,
 				B30EED7C28936CB5009A3EDA /* TipsTownViewController.swift in Sources */,
+				B30C09792A80B54300509A0E /* SampleViewController.swift in Sources */,
 				B3BD69A627E9A55400A32A7A /* UIViewExtension.swift in Sources */,
 				B3BD699827E9A4A500A32A7A /* ColorPalette.swift in Sources */,
 				B3B7FBF52856DA4000E23EDF /* PopUpViewController.swift in Sources */,

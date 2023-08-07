@@ -493,6 +493,13 @@ extension CardViewController: UICollectionViewDataSource, UICollectionViewDelega
                 serviceVC.uuid = uuid
                 serviceVC.page = currentPage
                 self.navigationController?.pushViewController(serviceVC, animated: true)
+                
+//                guard let serviceVC = self.storyboard?.instantiateViewController(withIdentifier: "SampleViewController") as? SampleViewController else { return }
+//                serviceVC.cardData = cardItemData[mod]
+//                serviceVC.region = region
+//                serviceVC.uuid = uuid
+//                serviceVC.page = currentPage
+//                self.navigationController?.pushViewController(serviceVC, animated: true)
             }
         case "Canada":
             if (sector_id == 0) {
