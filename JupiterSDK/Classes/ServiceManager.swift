@@ -1658,10 +1658,10 @@ public class ServiceManager: Observation {
             
             biasEstimator.refreshWardMinRssi(bleData: self.bleAvg)
             biasEstimator.refreshWardMaxRssi(bleData: self.bleAvg)
-            if (self.isGetFirstResponse && self.indexAfterResponse >= 10) {
-                let normalizationScale: Double = biasEstimator.calNormalizationParameter(standardMin: self.standardRssiMin, standardMax: self.standradRssiMax)
+            if (self.isGetFirstResponse && self.indexAfterResponse >= 10 && (self.unitDrInfoIndex%5 == 0)) {
+                let normalizationScale: Double = biasEstimator.calNormalizationScale(standardMin: self.standardRssiMin, standardMax: self.standradRssiMax)
                 let smoothedNormalizationScale: Double = biasEstimator.smoothNormalizationScale(scale: normalizationScale)
-                bleManager.setNormalizationParam(isPossibleNormalize: true, scale: smoothedNormalizationScale, minValue: self.standardRssiMin, deviceMinValue: biasEstimator.deviceMinValue)
+//                bleManager.setNormalizationParam(isPossibleNormalize: true, scale: smoothedNormalizationScale, minValue: self.standardRssiMin, deviceMinValue: biasEstimator.deviceMinValue)
             }
             biasEstimator.refreshAllEntranceWardRssi(allEntranceWards: self.allEntranceWards, bleData: self.bleAvg)
             let isSufficientRfdBuffer = rflowCorrelator.accumulateRfdBuffer(bleData: self.bleAvg)
@@ -1906,6 +1906,7 @@ public class ServiceManager: Observation {
                         self.indexAfterResponse += 1
                         if (self.indexAfterResponse >= MINIMUN_INDEX_FOR_BIAS) {
                             self.isPossibleEstBias = true
+//                            self.isPossibleEstBias = false
                         }
                     }
                 }
@@ -3911,7 +3912,7 @@ public class ServiceManager: Observation {
             requestScArray = [1.0]
         } else {
             if (requestBiasArray.count == 1) {
-                // 1개 -> scCoompenstaion 가능 -> 여기서 판단해서 3개보낼지 하나보낼지
+                // 1개 -> scCompenstaion 가능 -> 여기서 판단해서 3개보낼지 하나보낼지
                 if (self.isScRequested) {
                     requestScArray = [1.01]
                 } else {

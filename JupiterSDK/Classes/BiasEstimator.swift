@@ -45,7 +45,7 @@ public class BiasEstimator {
 //        print(getLocalTimeString() + " , Ward : (Max) = \(self.wardMaxRssi)")
     }
     
-    public func calNormalizationParameter(standardMin: Double, standardMax: Double) -> Double {
+    public func calNormalizationScale(standardMin: Double, standardMax: Double) -> Double {
         let standardAmplitude: Double = abs(standardMax - standardMin)
         
         let avgMax = self.wardMaxRssi.average
