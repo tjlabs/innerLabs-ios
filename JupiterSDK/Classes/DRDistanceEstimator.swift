@@ -45,8 +45,10 @@ public class DRDistanceEstimator: NSObject {
     
     let RF_SC_THRESHOLD_DR: Double = 0.67
     
-    public var rfScc: Double = 0
+    public var rflow: Double = 0
+    public var rflowForVelocity: Double = 0
     public var isSufficientRfdBuffer: Bool = false
+    public var isSufficientRfdVelocityBuffer: Bool = false
     
     public func argmax(array: [Float]) -> Int {
         let output1 = array[0]
@@ -161,7 +163,6 @@ public class DRDistanceEstimator: NSObject {
             velocitySmoothing = CF.exponentialMovingAverage(preEMA: preVelocitySmoothing, curValue: velocity, windowSize: Int(SAMPLE_HZ))
         }
         preVelocitySmoothing = velocitySmoothing
-        
 //        print(getLocalTimeString() + " , (Jupiter) DRDistanceEstimator : velocitySmoothing = \(velocitySmoothing)")
         var turnScale = exp(-navGyroZSmoothing/1.6)
         if (turnScale > 0.87) {
@@ -185,13 +186,12 @@ public class DRDistanceEstimator: NSObject {
             velocityInputScale = VELOCITY_MAX
         }
         
-        
-        if (self.isSufficientRfdBuffer && self.rfScc >= RF_SC_THRESHOLD_DR) {
+        if (self.isSufficientRfdBuffer && self.rflow >= RF_SC_THRESHOLD_DR) {
 //            print(getLocalTimeString() + " , (Jupiter) DRDistanceEstimator (RF SCC) : velocityInputScale = \(velocityInputScale) // rfSCC = \(self.rfScc)")
             velocityInputScale = 0
         }
         
-        if (velocityInputScale < VELOCITY_MIN && self.isSufficientRfdBuffer && self.rfScc < 0.5) {
+        if (velocityInputScale < VELOCITY_MIN && self.isSufficientRfdBuffer && self.rflow < 0.5) {
             velocityInputScale = 2.5
         }
         
@@ -274,8 +274,10 @@ public class DRDistanceEstimator: NSObject {
         velocityQueue.append(data)
     }
     
-    public func setRfScc(scc: Double, isSufficient: Bool) {
-        self.rfScc = scc
+    public func setRflow(rflow: Double, rflowForVelocity: Double, isSufficient: Bool, isSufficientForVelocity: Bool) {
+        self.rflow = rflow
+        self.rflowForVelocity = rflowForVelocity
         self.isSufficientRfdBuffer = isSufficient
+        self.isSufficientRfdVelocityBuffer = isSufficientForVelocity
     }
 }

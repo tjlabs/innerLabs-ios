@@ -1570,7 +1570,6 @@ extension ServiceViewController: CustomSwitchButtonDelegate {
                 self.hideDropDown(flag: true)
                 serviceManager = ServiceManager()
                 serviceManager.changeRegion(regionName: self.region)
-                serviceManager.addObserver(self)
                 
                 var inputMode: String = "auto"
                 if (self.sector_id == 6) {
@@ -1581,6 +1580,7 @@ extension ServiceViewController: CustomSwitchButtonDelegate {
                 
                 serviceManager.startService(id: uuid, sector_id: cardData!.sector_id, service: "FLT", mode: inputMode, completion: { isStart, message in
                     if (isStart) {
+                        serviceManager.addObserver(self)
                         print("(ServiceVC) Success : \(message)")
                         self.notificationCenterAddObserver()
                         self.startTimer()

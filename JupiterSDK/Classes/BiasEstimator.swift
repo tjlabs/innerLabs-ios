@@ -4,13 +4,13 @@ import Foundation
 public class BiasEstimator {
     
     var entranceWardRssi = [String: Double]()
-    
-    init() {
-        
-    }
+    var allEntranceWardMinRssi = [String: [Double]]()
+    var allEntranceWardMaxRssi = [String: [Double]]()
     
     public func clearEntranceWardRssi() {
         self.entranceWardRssi = [String: Double]()
+        self.allEntranceWardMinRssi = [String: [Double]]()
+        self.allEntranceWardMaxRssi = [String: [Double]]()
     }
     
     public func refreshEntranceWardRssi(entranceWard: [String: Int], bleData: [String: Double]) {
@@ -26,6 +26,32 @@ public class BiasEstimator {
                     }
                 } else {
                     self.entranceWardRssi[key] = value
+                }
+            }
+        }
+    }
+    
+    public func refreshAllEntranceWardMinMaxRssi(allEntranceWards: [String], bleData: [String: Double]) {
+        let allEntranceWardIds: [String] = allEntranceWards
+        
+        for (key, value) in bleData {
+            if (allEntranceWardIds.contains(key)) {
+                // Update Min
+                if (self.allEntranceWardMinRssi.keys.contains(key)) {
+                    var allEntranceWardMinRssiValues: [Double] = self.allEntranceWardMinRssi[key]!
+                    let newAllEntranceWardMinRssiValues = appendAndKeepMinThree(inputArray: allEntranceWardMinRssiValues, newValue: value)
+                    self.allEntranceWardMinRssi[key] = newAllEntranceWardMinRssiValues
+                } else {
+                    self.allEntranceWardMinRssi[key] = [value]
+                }
+                
+                // Update Max
+                if (self.allEntranceWardMaxRssi.keys.contains(key)) {
+                    var allEntranceWardMaxRssiValues: [Double] = self.allEntranceWardMaxRssi[key]!
+                    let newAllEntranceWardMaxRssiValues = appendAndKeepMaxThree(inputArray: allEntranceWardMaxRssiValues, newValue: value)
+                    self.allEntranceWardMaxRssi[key] = newAllEntranceWardMaxRssiValues
+                } else {
+                    self.allEntranceWardMaxRssi[key] = [value]
                 }
             }
         }
@@ -60,6 +86,20 @@ public class BiasEstimator {
         }
         
         return result
+    }
+    
+    public func estimateRssiScaleInEntrance(entranceWard: [String: Int]) -> Double {
+        var scale: Double = 1.0
+        
+        let entranceWardIds: [String] = Array(entranceWard.keys)
+        var entranceWardMaxRssi = [String: [Double]]()
+        for (key, value) in self.allEntranceWardMaxRssi {
+            if (entranceWardIds.contains(key)) {
+                entranceWardMaxRssi[key] = value
+            }
+        }
+        
+        return scale
     }
     
     public func saveRssiBias(bias: Int, biasArray: [Int], isConverged: Bool, sector_id: Int) {
@@ -246,6 +286,34 @@ public class BiasEstimator {
         }
 
         return result
+    }
+    
+    func appendAndKeepMinThree(inputArray: [Double], newValue: Double) -> [Double] {
+        var array: [Double] = inputArray
+        array.append(newValue)
+        if array.count > 3 {
+            if let maxValue = array.max() {
+                if let index = array.firstIndex(of: maxValue) {
+                    array.remove(at: index)
+                }
+            }
+        }
+        return array
+    }
+    
+    func appendAndKeepMaxThree(inputArray: [Double], newValue: Double) -> [Double] {
+        var array: [Double] = inputArray
+        array.append(newValue)
+        
+        if array.count > 3 {
+            if let minValue = array.min() {
+                if let index = array.firstIndex(of: minValue) {
+                    array.remove(at: index)
+                }
+            }
+        }
+        
+        return array
     }
 }
 

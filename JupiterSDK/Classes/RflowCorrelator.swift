@@ -1,14 +1,12 @@
 import Foundation
 
 
-public class ReceivedForceSurfaceCorrelator {
-    
+public class RflowCorrelator {
     let D = 10*2 // 10s
     let T = 10*2 // 10s
     
     var rfdBufferLength = 40
     var rfdBuffer = [[String: Double]]()
-    
     
     let D_V = 5*2
     let T_V = 5*2
@@ -42,7 +40,7 @@ public class ReceivedForceSurfaceCorrelator {
         return isSufficient
     }
     
-    public func getRfdScc() -> Double {
+    public func getRflow() -> Double {
         var result: Double = 0
         
         if (self.rfdBuffer.count >= self.rfdBufferLength) {
@@ -99,7 +97,7 @@ public class ReceivedForceSurfaceCorrelator {
         return isSufficient
     }
     
-    public func getRfdVelocityScc() -> Double {
+    public func getRflowForVelocityScale() -> Double {
         var result: Double = 0
         
         if (self.rfdVelocityBuffer.count >= self.rfdVelocityBufferLength) {
