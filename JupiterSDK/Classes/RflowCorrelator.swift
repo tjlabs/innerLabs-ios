@@ -8,10 +8,10 @@ public class RflowCorrelator {
     var rfdBufferLength = 40
     var rfdBuffer = [[String: Double]]()
     
-    let D_V = 5*2
-    let T_V = 5*2
+    let D_V = 15*2
+    let T_V = 3*2
     
-    var rfdVelocityBufferLength = 20
+    var rfdVelocityBufferLength = 36
     var rfdVelocityBuffer = [[String: Double]]()
     
     init() {

@@ -214,6 +214,13 @@ public class ServiceManager: Observation {
     var rssiBiasArray: [Int] = [2, 0, 4]
     var rssiBias: Int = 0
     var rssiScale: Double = 1.0
+    
+    var isPossibleNormalize: Bool = false
+    var deviceRssiMin: Double = -100.0
+    var standardRssiMin: Double = -99.0
+    var standradRssiMax: Double = -59.5
+    var normalizationScale: Double = 1.0
+    
     var isBiasConverged: Bool = false
     var sccBadCount: Int = 0
     var scCompensationArray: [Double] = [0.8, 1.0, 1.2]
@@ -693,8 +700,7 @@ public class ServiceManager: Observation {
                                                                                                 if let closest = findClosestStructure(to: self.osVersion, in: result.rss_compensations) {
                                                                                                     let biasFromServer: rss_compensation = closest
                                                                                                     
-                                                                                                    self.rssiScale = biasFromServer.scale_factor
-                                                                                                    bleManager.setRssiScale(scale: self.rssiScale)
+//                                                                                                    self.rssiScale = biasFromServer.scale_factor
                                                                                                     
                                                                                                     if (loadedBias.2) {
                                                                                                         self.rssiBias = loadedBias.0
@@ -750,7 +756,6 @@ public class ServiceManager: Observation {
                                                                                     let biasFromServer: rss_compensation = result.rss_compensations[0]
                                                                                     
                                                                                     self.rssiScale = biasFromServer.scale_factor
-                                                                                    bleManager.setRssiScale(scale: self.rssiScale)
                                                                                     
                                                                                     if (loadedBias.2) {
                                                                                         self.rssiBias = loadedBias.0
@@ -1651,11 +1656,17 @@ public class ServiceManager: Observation {
 //            self.bleAvg = ["TJ-00CB-00000242-0000":-76.0] // S3 7F
 //            self.bleAvg = ["TJ-00CB-000003E7-0000":-76.0] // Plan Group
             
-            biasEstimator.refreshAllEntranceWardMinMaxRssi(allEntranceWards: self.allEntranceWards, bleData: self.bleAvg)
+            biasEstimator.refreshWardMinRssi(bleData: self.bleAvg)
+            biasEstimator.refreshWardMaxRssi(bleData: self.bleAvg)
+            if (self.isGetFirstResponse && self.indexAfterResponse >= 10) {
+                let normalizationScale: Double = biasEstimator.calNormalizationParameter(standardMin: self.standardRssiMin, standardMax: self.standradRssiMax)
+                let smoothedNormalizationScale: Double = biasEstimator.smoothNormalizationScale(scale: normalizationScale)
+                bleManager.setNormalizationParam(isPossibleNormalize: true, scale: smoothedNormalizationScale, minValue: self.standardRssiMin, deviceMinValue: biasEstimator.deviceMinValue)
+            }
+            biasEstimator.refreshAllEntranceWardRssi(allEntranceWards: self.allEntranceWards, bleData: self.bleAvg)
             let isSufficientRfdBuffer = rflowCorrelator.accumulateRfdBuffer(bleData: self.bleAvg)
             let isSufficientRfdVelocityBuffer = rflowCorrelator.accumulateRfdVelocityBuffer(bleData: self.bleAvg)
             unitDRGenerator.setRflow(rflow: rflowCorrelator.getRflow(), rflowForVelocity: rflowCorrelator.getRflowForVelocityScale(), isSufficient: isSufficientRfdBuffer, isSufficientForVelocity: isSufficientRfdVelocityBuffer)
-//            unitDRGenerator.setRfScc(scc: 0.0, isSufficient: isSufficientRfdBuffer)
 //            print(getLocalTimeString() + " , (Jupiter) Information : RF SCC = \(rfSurfaceCorrelator.getRfdScc())")
 //            print(getLocalTimeString() + " , (Jupiter) Information : RF SCC (Velocity) = \(rfSurfaceCorrelator.getRfdVelocityScc())")
             

@@ -43,7 +43,7 @@ public class DRDistanceEstimator: NSObject {
     var preRoll: Double = 0
     var prePitch: Double = 0
     
-    let RF_SC_THRESHOLD_DR: Double = 0.67
+    let RF_SC_THRESHOLD_DR: Double = 0.7
     
     public var rflow: Double = 0
     public var rflowForVelocity: Double = 0
@@ -176,27 +176,27 @@ public class DRDistanceEstimator: NSObject {
             velocityInput = VELOCITY_MAX
         }
         
-        
+        let rflowScale: Double = calRflowVelocityScale(rflowForVelocity: self.rflowForVelocity, isSufficientForVelocity: self.isSufficientRfdVelocityBuffer)
         var velocityInputScale = velocityInput*self.velocityScaleFactor*self.scVelocityScaleFactor
 //        print(getLocalTimeString() + " , (Jupiter) DRDistanceEstimator : velocityInput = \(velocityInput) , velocityScaleFactor = \(velocityScaleFactor) , scVelocityScaleFactor = \(scVelocityScaleFactor)")
 //        print(getLocalTimeString() + " , (Jupiter) DRDistanceEstimator : velocityInputScale = \(velocityInputScale)")
         if velocityInputScale < VELOCITY_MIN {
             velocityInputScale = 0
+            if (self.isSufficientRfdVelocityBuffer && self.rflowForVelocity < RF_SC_THRESHOLD_DR) {
+                velocityInputScale = VELOCITY_MAX*rflowScale
+            }
         } else if velocityInputScale > VELOCITY_MAX {
             velocityInputScale = VELOCITY_MAX
         }
         
+        // RFlow Stop Detection
         if (self.isSufficientRfdBuffer && self.rflow >= RF_SC_THRESHOLD_DR) {
 //            print(getLocalTimeString() + " , (Jupiter) DRDistanceEstimator (RF SCC) : velocityInputScale = \(velocityInputScale) // rfSCC = \(self.rfScc)")
             velocityInputScale = 0
         }
         
-        if (velocityInputScale < VELOCITY_MIN && self.isSufficientRfdBuffer && self.rflow < 0.5) {
-            velocityInputScale = 2.5
-        }
+        var velocityMps = (velocityInputScale/3.6)*turnScale*rflowScale
         
-        
-        let velocityMps = (velocityInputScale/3.6)*turnScale
 //        print(getLocalTimeString() + " , (Jupiter) DRDistanceEstimator : velocityMps = \(velocityMps)")
 //        print(getLocalTimeString() + " , (Jupiter) DRDistanceEstimator : -----------------------------")
         
@@ -279,5 +279,19 @@ public class DRDistanceEstimator: NSObject {
         self.rflowForVelocity = rflowForVelocity
         self.isSufficientRfdBuffer = isSufficient
         self.isSufficientRfdVelocityBuffer = isSufficientForVelocity
+    }
+    
+    public func calRflowVelocityScale(rflowForVelocity: Double, isSufficientForVelocity: Bool) -> Double {
+        var scale: Double = 1.0
+        
+        if (isSufficientForVelocity) {
+            scale = (-1/(1+exp(10*(-rflowForVelocity+0.66)))) + 1
+            
+            if (scale < 0.4) {
+                scale = 0.4
+            }
+        }
+        
+        return scale
     }
 }

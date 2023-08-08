@@ -56,7 +56,10 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
     
     var bleDictionary = [String: [[Double]]]()
     var bleDiscoveredTime: Double = 0
-    var rssiScale: Double = 1.0
+    var isPossibleNormalize: Bool = false
+    var normalizationScale: Double = 1.0
+    var normalizationMin: Double = -100.0
+    var deviceMin: Double = -100.0
     
     public var BLE_VALID_TIME: Double = 1000
     
@@ -128,7 +131,11 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
                     }
                     
                     var bleScaned = self.bleDictionary
-                    let rssiValue = RSSI.doubleValue*self.rssiScale
+                    var rssiValue = RSSI.doubleValue
+                    if (self.isPossibleNormalize) {
+                        rssiValue = (rssiValue - self.deviceMin)*self.normalizationScale + self.normalizationMin
+                    }
+                    
                     if (bleScaned.contains(where: condition)) {
                         let data = bleScaned.filter(condition)
                         var value:[[Double]] = data[bleName]!
@@ -222,8 +229,11 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
         }
     }
     
-    func setRssiScale(scale: Double) {
-        self.rssiScale = scale
+    func setNormalizationParam(isPossibleNormalize: Bool, scale: Double, minValue: Double, deviceMinValue: Double) {
+        self.isPossibleNormalize = isPossibleNormalize
+        self.normalizationScale = scale
+        self.normalizationMin = minValue
+        self.deviceMin = deviceMinValue
     }
     
     func trimBleData(bleData: Dictionary<String, [[Double]]>, nowTime: Double, validTime: Double) -> Dictionary<String, [[Double]]> {
