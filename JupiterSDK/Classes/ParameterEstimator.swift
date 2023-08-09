@@ -1,14 +1,14 @@
 import Foundation
 
 
-public class BiasEstimator {
+public class ParameterEstimator {
     
     var entranceWardRssi = [String: Double]()
     var allEntranceWardRssi = [String: Double]()
     
     var wardMinRssi = [Double]()
     var wardMaxRssi = [Double]()
-    var deviceMinValue: Double = -50.0
+    var deviceMinValue: Double = -99.0
     
     var preSmoothedNormalizationScale: Double = 1.0
     var scaleQueue = [Double]()
@@ -30,7 +30,7 @@ public class BiasEstimator {
                 }
             }
         }
-        print(getLocalTimeString() + " , Ward : (Min) = \(self.wardMinRssi)")
+//        print(getLocalTimeString() + " , Ward : (Min) = \(self.wardMinRssi)")
     }
     
     public func refreshWardMaxRssi(bleData: [String: Double]) {
@@ -42,7 +42,7 @@ public class BiasEstimator {
                 self.wardMaxRssi = newArray
             }
         }
-        print(getLocalTimeString() + " , Ward : (Max) = \(self.wardMaxRssi)")
+//        print(getLocalTimeString() + " , Ward : (Max) = \(self.wardMaxRssi)")
     }
     
     public func calNormalizationScale(standardMin: Double, standardMax: Double) -> Double {
@@ -56,7 +56,7 @@ public class BiasEstimator {
         
         let normalizationScale: Double = standardAmplitude/amplitude
         updateScaleQueue(data: normalizationScale)
-        print(getLocalTimeString() + " , (Normalization) : Scale = \(normalizationScale)")
+//        print(getLocalTimeString() + " , (Normalization) : Scale = \(normalizationScale)")
         
         return normalizationScale
     }
@@ -77,7 +77,7 @@ public class BiasEstimator {
         }
         preSmoothedNormalizationScale = smoothedScale
         
-        print(getLocalTimeString() + " , (Normalization) : smoothedScale = \(smoothedScale)")
+//        print(getLocalTimeString() + " , (Normalization) : smoothedScale = \(smoothedScale)")
         return smoothedScale
     }
     
@@ -316,6 +316,33 @@ public class BiasEstimator {
         }
     }
     
+    public func loadNormalizationScale(sector_id: Int) -> (Bool, Double) {
+        var isLoadedFromCache: Bool = false
+        var scale: Double = 1.0
+        
+        let keyScale: String = "JupiterNormalizationScale_\(sector_id)"
+        if let loadedScale: Double = UserDefaults.standard.object(forKey: keyScale) as? Double {
+            scale = loadedScale
+            isLoadedFromCache = true
+        }
+        
+        return (isLoadedFromCache, scale)
+    }
+    
+    public func saveNormalizationScale(scale: Double, sector_id: Int) {
+        let currentTime = getCurrentTimeInMilliseconds()
+        
+        print(getLocalTimeString() + " , (Jupiter) Save NormalizationScale : \(scale)")
+        
+        // Scale
+        do {
+            let key: String = "JupiterNormalizationScale_\(sector_id)"
+            UserDefaults.standard.set(scale, forKey: key)
+        } catch {
+            print("(Jupiter) Error : Fail to save NormalizattionScale")
+        }
+    }
+    
     func excludeLargestAbsoluteValue(from array: [Double]) -> [Double] {
         guard !array.isEmpty else {
             return []
@@ -365,6 +392,10 @@ public class BiasEstimator {
     func movingAverage(preMvalue: Double, curValue: Double, windowSize: Int) -> Double {
         let windowSizeDouble: Double = Double(windowSize)
         return preMvalue*((windowSizeDouble - 1)/windowSizeDouble) + (curValue/windowSizeDouble)
+    }
+    
+    public func getDeviceMinRss() -> Double {
+        return self.deviceMinValue
     }
 }
 

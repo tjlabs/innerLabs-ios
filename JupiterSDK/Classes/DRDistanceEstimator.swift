@@ -293,8 +293,8 @@ public class DRDistanceEstimator: NSObject {
         if (isSufficientForVelocity) {
             scale = (-1/(1+exp(10*(-rflowForVelocity+0.66)))) + 1
             
-            if (scale < 0.4) {
-                scale = 0.4
+            if (scale < 0.5) {
+                scale = 0.5
             }
         }
         
