@@ -184,8 +184,8 @@ public class DRDistanceEstimator: NSObject {
 //        print(getLocalTimeString() + " , (Jupiter) DRDistanceEstimator : velocityInputScale = \(velocityInputScale)")
         if velocityInputScale < VELOCITY_MIN {
             velocityInputScale = 0
-            if (self.isSufficientRfdVelocityBuffer && self.rflow < RF_SC_THRESHOLD_DR) {
-                velocityInputScale = VELOCITY_MAX*rflowScale*0.5
+            if (self.isSufficientRfdBuffer && self.rflow < 0.5) {
+                velocityInputScale = VELOCITY_MAX*rflowScale
             }
         } else if velocityInputScale > VELOCITY_MAX {
             velocityInputScale = VELOCITY_MAX
@@ -198,7 +198,8 @@ public class DRDistanceEstimator: NSObject {
         }
         
         var velocityMps = (velocityInputScale/3.6)*turnScale
-        if (velocityInputScale >= 14 && self.rflowForVelocity > 0.6 && self.isSufficientRfdVelocityBuffer) {
+        if (velocityInputScale >= 15 && self.rflowForVelocity > 0.65 && self.isSufficientRfdVelocityBuffer) {
+//            print(getLocalTimeString() + " , (Jupiter) I'm fast : velocityInputScale = \(velocityInputScale) , rflowForVelocity = \(self.rflowForVelocity)")
             velocityMps = velocityMps*rflowScale
         }
         

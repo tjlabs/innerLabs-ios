@@ -1086,6 +1086,7 @@ public class ServiceManager: Observation {
             
         self.startTimer()
             
+        self.isBackground = false
         self.isForeground = true
         self.reporting(input: FOREGROUND_FLAG)
     }
@@ -1658,10 +1659,10 @@ public class ServiceManager: Observation {
             
             biasEstimator.refreshWardMinRssi(bleData: self.bleAvg)
             biasEstimator.refreshWardMaxRssi(bleData: self.bleAvg)
-            if (self.isGetFirstResponse && self.indexAfterResponse >= 10 && (self.unitDrInfoIndex%5 == 0)) {
+            if (self.isGetFirstResponse && self.indexAfterResponse >= 30 && (self.unitDrInfoIndex%5 == 0)) {
                 let normalizationScale: Double = biasEstimator.calNormalizationScale(standardMin: self.standardRssiMin, standardMax: self.standradRssiMax)
                 let smoothedNormalizationScale: Double = biasEstimator.smoothNormalizationScale(scale: normalizationScale)
-//                bleManager.setNormalizationParam(isPossibleNormalize: true, scale: smoothedNormalizationScale, minValue: self.standardRssiMin, deviceMinValue: biasEstimator.deviceMinValue)
+                bleManager.setNormalizationParam(isPossibleNormalize: true, scale: smoothedNormalizationScale, minValue: self.standardRssiMin, deviceMinValue: biasEstimator.deviceMinValue)
             }
             biasEstimator.refreshAllEntranceWardRssi(allEntranceWards: self.allEntranceWards, bleData: self.bleAvg)
             let isSufficientRfdBuffer = rflowCorrelator.accumulateRfdBuffer(bleData: self.bleAvg)
@@ -1987,27 +1988,27 @@ public class ServiceManager: Observation {
                             let diffXy = sqrt(diffX*diffX + diffY*diffY)
                             let cLevel = removeLevelDirectionString(levelName: self.currentLevel)
                             if (diffXy <= 10 && diffH <= 30 && self.isActiveKf && (cLevel == self.resultToReturn.level_name)) {
-                                let entraceKey: String = self.currentEntrance
-                                let entranceWardKey: [String] = entraceKey.components(separatedBy: "_")
-                                if let entranceWards = self.EntranceWards[entranceWardKey[entranceWardKey.count-1]] {
-                                    let biasInEntrance = biasEstimator.estimateRssiBiasInEntrance(entranceWard: entranceWards)
-                                    print(getLocalTimeString() + " , (Jupiter) Bias Est in Entrance : bias = \(biasInEntrance) (Position Matched)")
-                                    if (self.isBiasConverged) {
-                                        if (abs(biasInEntrance - self.rssiBias) >= 5) {
-                                            print(getLocalTimeString() + " , (Jupiter) Bias Est in Entrance : biasDiff = \(abs(biasInEntrance - self.rssiBias)) (Position Matched)")
-                                            self.rssiBias = biasInEntrance
-                                            self.rssiBiasArray = biasEstimator.makeRssiBiasArray(bias: biasInEntrance)
-                                            self.isBiasConverged = true
-                                            
-                                            biasEstimator.saveRssiBias(bias: self.rssiBias, biasArray: self.sccGoodBiasArray, isConverged: self.isBiasConverged, sector_id: self.sector_id)
-                                        }
-                                    } else {
-                                        self.rssiBias = biasInEntrance
-                                        self.rssiBiasArray = biasEstimator.makeRssiBiasArray(bias: biasInEntrance)
-                                        self.isBiasConverged = true
-                                    }
-                                    biasEstimator.clearEntranceWardRssi()
-                                }
+//                                let entraceKey: String = self.currentEntrance
+//                                let entranceWardKey: [String] = entraceKey.components(separatedBy: "_")
+//                                if let entranceWards = self.EntranceWards[entranceWardKey[entranceWardKey.count-1]] {
+//                                    let biasInEntrance = biasEstimator.estimateRssiBiasInEntrance(entranceWard: entranceWards)
+//                                    print(getLocalTimeString() + " , (Jupiter) Bias Est in Entrance : bias = \(biasInEntrance) (Position Matched)")
+//                                    if (self.isBiasConverged) {
+//                                        if (abs(biasInEntrance - self.rssiBias) >= 5) {
+//                                            print(getLocalTimeString() + " , (Jupiter) Bias Est in Entrance : biasDiff = \(abs(biasInEntrance - self.rssiBias)) (Position Matched)")
+//                                            self.rssiBias = biasInEntrance
+//                                            self.rssiBiasArray = biasEstimator.makeRssiBiasArray(bias: biasInEntrance)
+//                                            self.isBiasConverged = true
+//
+//                                            biasEstimator.saveRssiBias(bias: self.rssiBias, biasArray: self.sccGoodBiasArray, isConverged: self.isBiasConverged, sector_id: self.sector_id)
+//                                        }
+//                                    } else {
+//                                        self.rssiBias = biasInEntrance
+//                                        self.rssiBiasArray = biasEstimator.makeRssiBiasArray(bias: biasInEntrance)
+//                                        self.isBiasConverged = true
+//                                    }
+//                                    biasEstimator.clearEntranceWardRssi()
+//                                }
                                 
                                 print(getLocalTimeString() + " , (Jupiter) Entrance Simulator : Finish (Position Matched)")
                                 self.isStartSimulate = false
@@ -2020,28 +2021,28 @@ public class ServiceManager: Observation {
                                 if (self.isActiveKf && (cLevel == self.resultToReturn.level_name)) {
                                     let isFind = self.findClosestSimulation(originalResult: self.outputResult, currentEntranceIndex: self.currentEntranceIndex)
                                     if (isFind) {
-                                        let entraceKey: String = self.currentEntrance
-                                        let entranceWardKey: [String] = entraceKey.components(separatedBy: "_")
-                                        if let entranceWards = self.EntranceWards[entranceWardKey[entranceWardKey.count-1]] {
-                                            let biasInEntrance = biasEstimator.estimateRssiBiasInEntrance(entranceWard: entranceWards)
-                                            print(getLocalTimeString() + " , (Jupiter) Bias Est in Entrance : bias = \(biasInEntrance) (Position Passed)")
-                                            
-                                            if (self.isBiasConverged) {
-                                                if (abs(biasInEntrance - self.rssiBias) >= 5) {
-                                                    print(getLocalTimeString() + " , (Jupiter) Bias Est in Entrance : biasDiff = \(abs(biasInEntrance - self.rssiBias)) (Position Passed)")
-                                                    self.rssiBias = biasInEntrance
-                                                    self.rssiBiasArray = biasEstimator.makeRssiBiasArray(bias: biasInEntrance)
-                                                    self.isBiasConverged = true
-                                                    
-                                                    biasEstimator.saveRssiBias(bias: self.rssiBias, biasArray: self.sccGoodBiasArray, isConverged: self.isBiasConverged, sector_id: self.sector_id)
-                                                }
-                                            } else {
-                                                self.rssiBias = biasInEntrance
-                                                self.rssiBiasArray = biasEstimator.makeRssiBiasArray(bias: biasInEntrance)
-                                                self.isBiasConverged = true
-                                            }
-                                            biasEstimator.clearEntranceWardRssi()
-                                        }
+//                                        let entraceKey: String = self.currentEntrance
+//                                        let entranceWardKey: [String] = entraceKey.components(separatedBy: "_")
+//                                        if let entranceWards = self.EntranceWards[entranceWardKey[entranceWardKey.count-1]] {
+//                                            let biasInEntrance = biasEstimator.estimateRssiBiasInEntrance(entranceWard: entranceWards)
+//                                            print(getLocalTimeString() + " , (Jupiter) Bias Est in Entrance : bias = \(biasInEntrance) (Position Passed)")
+//
+//                                            if (self.isBiasConverged) {
+//                                                if (abs(biasInEntrance - self.rssiBias) >= 5) {
+//                                                    print(getLocalTimeString() + " , (Jupiter) Bias Est in Entrance : biasDiff = \(abs(biasInEntrance - self.rssiBias)) (Position Passed)")
+//                                                    self.rssiBias = biasInEntrance
+//                                                    self.rssiBiasArray = biasEstimator.makeRssiBiasArray(bias: biasInEntrance)
+//                                                    self.isBiasConverged = true
+//
+//                                                    biasEstimator.saveRssiBias(bias: self.rssiBias, biasArray: self.sccGoodBiasArray, isConverged: self.isBiasConverged, sector_id: self.sector_id)
+//                                                }
+//                                            } else {
+//                                                self.rssiBias = biasInEntrance
+//                                                self.rssiBiasArray = biasEstimator.makeRssiBiasArray(bias: biasInEntrance)
+//                                                self.isBiasConverged = true
+//                                            }
+//                                            biasEstimator.clearEntranceWardRssi()
+//                                        }
                                         
                                         print(getLocalTimeString() + " , (Jupiter) Entrance Simulator : Finish (Position Passed)")
                                         self.isStartSimulate = false
@@ -2074,28 +2075,28 @@ public class ServiceManager: Observation {
                             self.outputResult.absolute_heading = self.resultToReturn.absolute_heading
                         }
                         
-                        let entraceKey: String = self.currentEntrance
-                        let entranceWardKey: [String] = entraceKey.components(separatedBy: "_")
-                        if let entranceWards = self.EntranceWards[entranceWardKey[entranceWardKey.count-1]] {
-                            let biasInEntrance = biasEstimator.estimateRssiBiasInEntrance(entranceWard: entranceWards)
-                            print(getLocalTimeString() + " , (Jupiter) Bias Est in Entrance : bias = \(biasInEntrance) (End Simulating)")
-                            
-                            if (self.isBiasConverged) {
-                                if (abs(biasInEntrance - self.rssiBias) >= 5) {
-                                    print(getLocalTimeString() + " , (Jupiter) Bias Est in Entrance : biasDiff = \(abs(biasInEntrance - self.rssiBias)) (End Simulating)")
-                                    self.rssiBias = biasInEntrance
-                                    self.rssiBiasArray = biasEstimator.makeRssiBiasArray(bias: biasInEntrance)
-                                    self.isBiasConverged = true
-                                    
-                                    biasEstimator.saveRssiBias(bias: self.rssiBias, biasArray: self.sccGoodBiasArray, isConverged: self.isBiasConverged, sector_id: self.sector_id)
-                                }
-                            } else {
-                                self.rssiBias = biasInEntrance
-                                self.rssiBiasArray = biasEstimator.makeRssiBiasArray(bias: biasInEntrance)
-                                self.isBiasConverged = true
-                            }
-                            biasEstimator.clearEntranceWardRssi()
-                        }
+//                        let entraceKey: String = self.currentEntrance
+//                        let entranceWardKey: [String] = entraceKey.components(separatedBy: "_")
+//                        if let entranceWards = self.EntranceWards[entranceWardKey[entranceWardKey.count-1]] {
+//                            let biasInEntrance = biasEstimator.estimateRssiBiasInEntrance(entranceWard: entranceWards)
+//                            print(getLocalTimeString() + " , (Jupiter) Bias Est in Entrance : bias = \(biasInEntrance) (End Simulating)")
+//
+//                            if (self.isBiasConverged) {
+//                                if (abs(biasInEntrance - self.rssiBias) >= 5) {
+//                                    print(getLocalTimeString() + " , (Jupiter) Bias Est in Entrance : biasDiff = \(abs(biasInEntrance - self.rssiBias)) (End Simulating)")
+//                                    self.rssiBias = biasInEntrance
+//                                    self.rssiBiasArray = biasEstimator.makeRssiBiasArray(bias: biasInEntrance)
+//                                    self.isBiasConverged = true
+//
+//                                    biasEstimator.saveRssiBias(bias: self.rssiBias, biasArray: self.sccGoodBiasArray, isConverged: self.isBiasConverged, sector_id: self.sector_id)
+//                                }
+//                            } else {
+//                                self.rssiBias = biasInEntrance
+//                                self.rssiBiasArray = biasEstimator.makeRssiBiasArray(bias: biasInEntrance)
+//                                self.isBiasConverged = true
+//                            }
+//                            biasEstimator.clearEntranceWardRssi()
+//                        }
                         
                         print(getLocalTimeString() + " , (Jupiter) Entrance Simulator : Finish (End Simulating)")
                         self.isStartSimulate = false
@@ -3344,7 +3345,8 @@ public class ServiceManager: Observation {
             }
         }
         
-        let input = FineLocationTracking(user_id: self.user_id, mobile_time: currentTime, sector_id: self.sector_id, building_name: self.currentBuilding, level_name_list: [self.currentLevel], spot_id: self.currentSpot, phase: 2, search_range: searchInfo.0, search_direction_list: searchInfo.1, rss_compensation_list: [self.rssiBias], sc_compensation_list: requestScArray, tail_index: searchInfo.2)
+//        let input = FineLocationTracking(user_id: self.user_id, mobile_time: currentTime, sector_id: self.sector_id, building_name: self.currentBuilding, level_name_list: [self.currentLevel], spot_id: self.currentSpot, phase: 2, search_range: searchInfo.0, search_direction_list: searchInfo.1, rss_compensation_list: [self.rssiBias], sc_compensation_list: requestScArray, tail_index: searchInfo.2)
+        let input = FineLocationTracking(user_id: self.user_id, mobile_time: currentTime, sector_id: self.sector_id, building_name: self.currentBuilding, level_name_list: [self.currentLevel], spot_id: self.currentSpot, phase: 2, search_range: searchInfo.0, search_direction_list: searchInfo.1, rss_compensation_list: [0], sc_compensation_list: requestScArray, tail_index: searchInfo.2)
         
         self.networkCount += 1
         NetworkManager.shared.postFLT(url: FLT_URL, input: input, isSufficientRfd: self.isSufficientRfd, completion: { [self] statusCode, returnedString, rfdCondition in
@@ -3581,7 +3583,8 @@ public class ServiceManager: Observation {
         }
         
         self.phase2Count = 0
-        let input = FineLocationTracking(user_id: self.user_id, mobile_time: currentTime, sector_id: self.sector_id, building_name: self.currentBuilding, level_name_list: levelArray, spot_id: self.currentSpot, phase: self.phase, search_range: searchInfo.0, search_direction_list: searchInfo.1, rss_compensation_list: requestBiasArray, sc_compensation_list: [1.0], tail_index: searchInfo.2)
+//        let input = FineLocationTracking(user_id: self.user_id, mobile_time: currentTime, sector_id: self.sector_id, building_name: self.currentBuilding, level_name_list: levelArray, spot_id: self.currentSpot, phase: self.phase, search_range: searchInfo.0, search_direction_list: searchInfo.1, rss_compensation_list: requestBiasArray, sc_compensation_list: [1.0], tail_index: searchInfo.2)
+        let input = FineLocationTracking(user_id: self.user_id, mobile_time: currentTime, sector_id: self.sector_id, building_name: self.currentBuilding, level_name_list: levelArray, spot_id: self.currentSpot, phase: self.phase, search_range: searchInfo.0, search_direction_list: searchInfo.1, rss_compensation_list: [0], sc_compensation_list: [1.0], tail_index: searchInfo.2)
         self.networkCount += 1
         
         NetworkManager.shared.postFLT(url: FLT_URL, input: input, isSufficientRfd: self.isSufficientRfd, completion: { [self] statusCode, returnedString, rfdCondition in
@@ -3930,7 +3933,8 @@ public class ServiceManager: Observation {
         }
         
         self.sccBadCount = 0
-        let input = FineLocationTracking(user_id: self.user_id, mobile_time: currentTime, sector_id: self.sector_id, building_name: self.currentBuilding, level_name_list: levelArray, spot_id: self.currentSpot, phase: self.phase, search_range: searchInfo.0, search_direction_list: searchInfo.1, rss_compensation_list: requestBiasArray, sc_compensation_list: requestScArray, tail_index: searchInfo.2)
+//        let input = FineLocationTracking(user_id: self.user_id, mobile_time: currentTime, sector_id: self.sector_id, building_name: self.currentBuilding, level_name_list: levelArray, spot_id: self.currentSpot, phase: self.phase, search_range: searchInfo.0, search_direction_list: searchInfo.1, rss_compensation_list: requestBiasArray, sc_compensation_list: requestScArray, tail_index: searchInfo.2)
+        let input = FineLocationTracking(user_id: self.user_id, mobile_time: currentTime, sector_id: self.sector_id, building_name: self.currentBuilding, level_name_list: levelArray, spot_id: self.currentSpot, phase: self.phase, search_range: searchInfo.0, search_direction_list: searchInfo.1, rss_compensation_list: [0], sc_compensation_list: requestScArray, tail_index: searchInfo.2)
         self.networkCount += 1
         NetworkManager.shared.postFLT(url: FLT_URL, input: input, isSufficientRfd: self.isSufficientRfd, completion: { [self] statusCode, returnedString, rfdCondition in
             if (!returnedString.contains("timed out")) {

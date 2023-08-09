@@ -122,15 +122,6 @@ public class BiasEstimator {
         
         var diffRssiArray = [Double]()
         
-//        for (key, value) in self.entranceWardRssi {
-//            if let entranceData = entranceWard[key] {
-//                let entranceWardRssi = Double(entranceData)
-//                let diffRssi = entranceWardRssi - value
-//                print(getLocalTimeString() + " , (Jupiter) Bias in Entrance : \(key) = \(diffRssi)")
-//                diffRssiArray.append(diffRssi)
-//            }
-//        }
-        
         for (key, value) in self.allEntranceWardRssi {
             if let entranceData = entranceWard[key] {
                 let entranceWardRssi = Double(entranceData)
