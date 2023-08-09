@@ -46,7 +46,7 @@ public class ServiceManager: Observation {
     
     
     // 1 ~ 4 : Release  //  0 : Test
-    var serverType: Int = 4
+    var serverType: Int = 0
     var region: String = "Korea"
     
     let jupiterServices: [String] = ["SD", "BD", "CLD", "FLD", "CLE", "FLT", "OSA"]
@@ -217,8 +217,8 @@ public class ServiceManager: Observation {
     
     var isPossibleNormalize: Bool = false
     var deviceRssiMin: Double = -100.0
-    var standardRssiMin: Double = -99.0
-    var standradRssiMax: Double = -59.5
+    var standardRssiMin: Double = -99.5
+    var standradRssiMax: Double = -60.0
     var normalizationScale: Double = 1.0
     
     var isBiasConverged: Bool = false
@@ -3545,8 +3545,11 @@ public class ServiceManager: Observation {
         let localTime = getLocalTimeString()
         self.isSufficientRfd = checkSufficientRfd(userTrajectory: userTrajectory)
         
+        if (self.runMode == "pdr") {
+            self.currentLevel = removeLevelDirectionString(levelName: self.currentLevel)
+        }
         var levelArray = [self.currentLevel]
-        let isInLevelChangeArea = self.checkInLevelChangeArea(result: self.lastResult)
+        let isInLevelChangeArea = self.checkInLevelChangeArea(result: self.lastResult, mode: self.runMode)
         if (isInLevelChangeArea) {
             levelArray = self.makeLevelChangeArray(buildingName: self.currentBuilding, levelName: self.currentLevel, buildingLevel: self.buildingsAndLevels)
             self.isPossibleEstBias = false
@@ -3876,8 +3879,11 @@ public class ServiceManager: Observation {
         var requestBiasArray: [Int] = [self.rssiBias]
         var requestScArray: [Double] = [self.scCompensation]
         
+        if (self.runMode == "pdr") {
+            self.currentLevel = removeLevelDirectionString(levelName: self.currentLevel)
+        }
         var levelArray = [self.currentLevel]
-        let isInLevelChangeArea = self.checkInLevelChangeArea(result: self.lastResult)
+        let isInLevelChangeArea = self.checkInLevelChangeArea(result: self.lastResult, mode: self.runMode)
         if (isInLevelChangeArea) {
             levelArray = self.makeLevelChangeArray(buildingName: self.currentBuilding, levelName: self.currentLevel, buildingLevel: self.buildingsAndLevels)
             
@@ -4157,7 +4163,7 @@ public class ServiceManager: Observation {
         if (self.isGetFirstResponse && !self.isInNetworkBadEntrance) {
             if (self.runMode != "pdr") {
                 if (self.phase == 4) {
-                    let isInLevelChangeArea = self.checkInLevelChangeArea(result: self.jupiterResult)
+                    let isInLevelChangeArea = self.checkInLevelChangeArea(result: self.jupiterResult, mode: self.runMode)
                     if (!isInLevelChangeArea) {
                         isRunOsr = false
                     }
@@ -4389,9 +4395,13 @@ public class ServiceManager: Observation {
         }
     }
     
-    func checkInLevelChangeArea(result: FineLocationTrackingResult) -> Bool {
+    func checkInLevelChangeArea(result: FineLocationTrackingResult, mode: String) -> Bool {
+        if (mode == "pdr") {
+            return false
+        }
+        
         let lastResult = result
-
+        
         let buildingName = lastResult.building_name
         let levelName = removeLevelDirectionString(levelName: result.level_name)
 

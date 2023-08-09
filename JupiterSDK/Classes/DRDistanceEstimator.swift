@@ -43,7 +43,7 @@ public class DRDistanceEstimator: NSObject {
     var preRoll: Double = 0
     var prePitch: Double = 0
     
-    let RF_SC_THRESHOLD_DR: Double = 0.7
+    let RF_SC_THRESHOLD_DR: Double = 0.67
     
     public var rflow: Double = 0
     public var rflowForVelocity: Double = 0
@@ -176,14 +176,16 @@ public class DRDistanceEstimator: NSObject {
             velocityInput = VELOCITY_MAX
         }
         
+//        print(getLocalTimeString() + " , (Jupiter) DRDistanceEstimator : rflowForVelocity = \(self.rflowForVelocity)")
         let rflowScale: Double = calRflowVelocityScale(rflowForVelocity: self.rflowForVelocity, isSufficientForVelocity: self.isSufficientRfdVelocityBuffer)
+//        print(getLocalTimeString() + " , (Jupiter) DRDistanceEstimator : rflowScale = \(rflowScale)")
         var velocityInputScale = velocityInput*self.velocityScaleFactor*self.scVelocityScaleFactor
 //        print(getLocalTimeString() + " , (Jupiter) DRDistanceEstimator : velocityInput = \(velocityInput) , velocityScaleFactor = \(velocityScaleFactor) , scVelocityScaleFactor = \(scVelocityScaleFactor)")
 //        print(getLocalTimeString() + " , (Jupiter) DRDistanceEstimator : velocityInputScale = \(velocityInputScale)")
         if velocityInputScale < VELOCITY_MIN {
             velocityInputScale = 0
-            if (self.isSufficientRfdVelocityBuffer && self.rflowForVelocity < RF_SC_THRESHOLD_DR) {
-                velocityInputScale = VELOCITY_MAX*rflowScale
+            if (self.isSufficientRfdVelocityBuffer && self.rflow < RF_SC_THRESHOLD_DR) {
+                velocityInputScale = VELOCITY_MAX*rflowScale*0.5
             }
         } else if velocityInputScale > VELOCITY_MAX {
             velocityInputScale = VELOCITY_MAX
@@ -195,7 +197,10 @@ public class DRDistanceEstimator: NSObject {
             velocityInputScale = 0
         }
         
-        var velocityMps = (velocityInputScale/3.6)*turnScale*rflowScale
+        var velocityMps = (velocityInputScale/3.6)*turnScale
+        if (velocityInputScale >= 14 && self.rflowForVelocity > 0.6 && self.isSufficientRfdVelocityBuffer) {
+            velocityMps = velocityMps*rflowScale
+        }
         
 //        print(getLocalTimeString() + " , (Jupiter) DRDistanceEstimator : velocityMps = \(velocityMps)")
 //        print(getLocalTimeString() + " , (Jupiter) DRDistanceEstimator : -----------------------------")

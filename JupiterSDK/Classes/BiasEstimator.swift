@@ -30,7 +30,7 @@ public class BiasEstimator {
                 }
             }
         }
-//        print(getLocalTimeString() + " , Ward : (Min) = \(self.wardMinRssi)")
+        print(getLocalTimeString() + " , Ward : (Min) = \(self.wardMinRssi)")
     }
     
     public func refreshWardMaxRssi(bleData: [String: Double]) {
@@ -42,7 +42,7 @@ public class BiasEstimator {
                 self.wardMaxRssi = newArray
             }
         }
-//        print(getLocalTimeString() + " , Ward : (Max) = \(self.wardMaxRssi)")
+        print(getLocalTimeString() + " , Ward : (Max) = \(self.wardMaxRssi)")
     }
     
     public func calNormalizationScale(standardMin: Double, standardMax: Double) -> Double {

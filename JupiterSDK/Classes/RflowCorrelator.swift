@@ -13,6 +13,8 @@ public class RflowCorrelator {
     
     var rfdVelocityBufferLength = 36
     var rfdVelocityBuffer = [[String: Double]]()
+    var rflowQueue = [Double]()
+    var preSmoothedRflowForVelocity: Double = 0
     
     init() {
         self.rfdBufferLength = (self.D + self.T)
@@ -47,28 +49,28 @@ public class RflowCorrelator {
             let preRfdBuffer = sliceDictionaryArray(self.rfdBuffer, startIndex: self.rfdBufferLength-T-D, endIndex: self.rfdBufferLength-T-1)
             let curRfdBuffer = sliceDictionaryArray(self.rfdBuffer, startIndex: self.rfdBufferLength-D, endIndex: self.rfdBufferLength-1)
             
-            var sumDiffRssiArray = [Double]()
+            var sumDiffRssi: Double = 0
+            var validKeyCount: Int = 0
+            
             for i in 0..<D {
                 let preRfd = preRfdBuffer[i]
                 let curRfd = curRfdBuffer[i]
                 
-                var sumDiffRssi: Double = 0
                 for (key, value) in curRfd {
-                    let curRssi = value
-                    let preRssi = preRfd[key] ?? -100.0
-                    
-                    sumDiffRssi += abs(curRssi - preRssi)
-                }
-                
-                if (curRfd.keys.count != 0) {
-                    sumDiffRssiArray.append(sumDiffRssi/Double(curRfd.keys.count))
+                    if (key != "empty" && value > -100.0) {
+                        let curRssi = value
+                        let preRssi = preRfd[key] ?? -100.0
+                        sumDiffRssi += abs(curRssi - preRssi)
+                        
+                        validKeyCount += 1
+                    }
                 }
             }
             
-            if (!sumDiffRssiArray.isEmpty) {
-                let avgValue = sumDiffRssiArray.average
+            if (validKeyCount != 0) {
+                let avgValue: Double = sumDiffRssi/Double(validKeyCount)
                 if (avgValue != 0) {
-                    result = calcScc(value: sumDiffRssiArray.average)
+                    result = calcScc(value: avgValue)
                 }
             }
         }
@@ -100,34 +102,37 @@ public class RflowCorrelator {
     public func getRflowForVelocityScale() -> Double {
         var result: Double = 0
         
+        
         if (self.rfdVelocityBuffer.count >= self.rfdVelocityBufferLength) {
             let preRfdBuffer = sliceDictionaryArray(self.rfdVelocityBuffer, startIndex: self.rfdVelocityBufferLength-T_V-D_V, endIndex: self.rfdVelocityBufferLength-T_V-1)
             let curRfdBuffer = sliceDictionaryArray(self.rfdVelocityBuffer, startIndex: self.rfdVelocityBufferLength-D_V, endIndex: self.rfdVelocityBufferLength-1)
             
-            var sumDiffRssiArray = [Double]()
+            var sumDiffRssi: Double = 0
+            var validKeyCount: Int = 0
+            
             for i in 0..<D_V {
                 let preRfd = preRfdBuffer[i]
                 let curRfd = curRfdBuffer[i]
                 
-                var sumDiffRssi: Double = 0
                 for (key, value) in curRfd {
-                    let curRssi = value
-                    let preRssi = preRfd[key] ?? -100.0
-                    
-                    sumDiffRssi += abs(curRssi - preRssi)
-                }
-                
-                if (curRfd.keys.count != 0) {
-                    sumDiffRssiArray.append(sumDiffRssi/Double(curRfd.keys.count))
+                    if (key != "empty" && value > -100.0) {
+                        let curRssi = value
+                        let preRssi = preRfd[key] ?? -100.0
+                        sumDiffRssi += abs(curRssi - preRssi)
+                        
+                        validKeyCount += 1
+                    }
                 }
             }
             
-            if (!sumDiffRssiArray.isEmpty) {
-                let avgValue = sumDiffRssiArray.average
+            if (validKeyCount != 0) {
+                let avgValue: Double = sumDiffRssi/Double(validKeyCount)
                 if (avgValue != 0) {
-                    result = calcScc(value: sumDiffRssiArray.average)
+                    result = calcScc(value: avgValue)
                 }
             }
+//            self.updateRflowQueue(data: result)
+//            result = self.smoothRflowForVelocity(rflow: result)
         }
         
         return result
@@ -150,5 +155,28 @@ public class RflowCorrelator {
         }
         
         return slicedArray
+    }
+    
+    func movingAverage(preMvalue: Double, curValue: Double, windowSize: Int) -> Double {
+        let windowSizeDouble: Double = Double(windowSize)
+        return preMvalue*((windowSizeDouble - 1)/windowSizeDouble) + (curValue/windowSizeDouble)
+    }
+    
+    func updateRflowQueue(data: Double) {
+        if (self.rflowQueue.count >= 6) {
+            self.rflowQueue.remove(at: 0)
+        }
+        self.rflowQueue.append(data)
+    }
+    
+    func smoothRflowForVelocity(rflow: Double) -> Double {
+        var smoothedRflow: Double = 1.0
+        if (self.rflowQueue.count == 1) {
+            smoothedRflow = rflow
+        } else {
+            smoothedRflow = movingAverage(preMvalue: self.preSmoothedRflowForVelocity, curValue: rflow, windowSize: self.rflowQueue.count)
+        }
+        preSmoothedRflowForVelocity = smoothedRflow
+        return smoothedRflow
     }
 }
