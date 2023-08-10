@@ -2,7 +2,7 @@ import Foundation
 import CoreMotion
 
 public class ServiceManager: Observation {
-    public static let sdkVersion: String = "3.0.7"
+    public static let sdkVersion: String = "3.0.7.1"
     
     func tracking(input: FineLocationTrackingResult, isPast: Bool) {
         for observer in observers {
