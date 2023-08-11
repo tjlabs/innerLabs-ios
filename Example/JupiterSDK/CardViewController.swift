@@ -2,7 +2,6 @@ import UIKit
 import Kingfisher
 import JupiterSDK
 
-
 class CardViewController: UIViewController, ServiceViewPageDelegate, FusionViewPageDelegate, GalleryViewPageDelegate, AddCardDelegate, ShowCardDelegate {
     
     func sendCardItemData(data: [CardItemData]) {
@@ -52,7 +51,7 @@ class CardViewController: UIViewController, ServiceViewPageDelegate, FusionViewP
     var isOneStepPaging = true
     var isCardSmall = true
     
-    var serviceManager = ServiceManager()
+    let serviceManager = ServiceManager()
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(false)

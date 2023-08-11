@@ -1,6 +1,6 @@
 import UIKit
-import JupiterSDK
 import Floaty
+import JupiterSDK
 
 class TipsTownViewController: UIViewController {
 
