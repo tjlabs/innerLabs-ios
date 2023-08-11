@@ -22,6 +22,7 @@ public class StepLengthEstimator: NSObject {
         } else {
             stepLength = calShortStepLength(differencePV: differencePV)
         }
+//        print("StepLengthEstimator / Step Length :", stepLength)
         
         stepLength = limitStepLength(stepLength: stepLength)
         
