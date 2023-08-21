@@ -479,12 +479,19 @@ extension CardViewController: UICollectionViewDataSource, UICollectionViewDelega
                 neptuneVC.page = currentPage
                 self.navigationController?.pushViewController(neptuneVC, animated: true)
             } else if (sector_id == 5) { //serviceName == "FLT+"
-                guard let fusionVC = self.storyboard?.instantiateViewController(withIdentifier: "FusionViewController") as? FusionViewController else { return }
-                fusionVC.cardData = cardItemData[mod]
-                fusionVC.region = region
-                fusionVC.uuid = uuid
-                fusionVC.page = currentPage
-                self.navigationController?.pushViewController(fusionVC, animated: true)
+//                guard let fusionVC = self.storyboard?.instantiateViewController(withIdentifier: "FusionViewController") as? FusionViewController else { return }
+//                fusionVC.cardData = cardItemData[mod]
+//                fusionVC.region = region
+//                fusionVC.uuid = uuid
+//                fusionVC.page = currentPage
+//                self.navigationController?.pushViewController(fusionVC, animated: true)
+                
+                guard let serviceVC = self.storyboard?.instantiateViewController(withIdentifier: "ServiceViewController") as? ServiceViewController else { return }
+                serviceVC.cardData = cardItemData[mod]
+                serviceVC.region = region
+                serviceVC.uuid = uuid
+                serviceVC.page = currentPage
+                self.navigationController?.pushViewController(serviceVC, animated: true)
             } else {
                 guard let serviceVC = self.storyboard?.instantiateViewController(withIdentifier: "ServiceViewController") as? ServiceViewController else { return }
                 serviceVC.cardData = cardItemData[mod]

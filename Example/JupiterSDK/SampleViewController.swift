@@ -7,7 +7,7 @@ protocol SampleViewPageDelegate {
     func sendPage(data: Int)
 }
 
-class SampleViewController: UIViewController, Observer {
+class SampleViewController: UIViewController, Observer, FlutterStreamHandler {
     @IBOutlet weak var buildingLabel: UILabel!
     @IBOutlet weak var levelLabel: UILabel!
     @IBOutlet weak var xLabel: UILabel!
@@ -15,6 +15,11 @@ class SampleViewController: UIViewController, Observer {
     @IBOutlet weak var backButton: UIButton!
     
     @IBOutlet weak var showMapButton: UIButton!
+    
+    lazy var flutterMapViewController: FlutterViewController = {
+        let view = FlutterViewController()
+        return view
+    }()
     
     var delegate : SampleViewPageDelegate?
     
@@ -29,11 +34,13 @@ class SampleViewController: UIViewController, Observer {
     let serviceManager = ServiceManager()
     
     var timer: Timer?
-    var TIMER_INTERVAL: TimeInterval = 1/20 // second
+    var TIMER_INTERVAL: TimeInterval = 1 // second
     
     var isStart: Bool = false
     
-    let channelName: String = "com.tjlabscorp.flutter.mapuimodule"
+    let channelName: String = "com.tjlabscorp.flutter.mapuimodule/fltResult"
+    var events: FlutterEventSink?
+    private var eventChannel: FlutterEventChannel?
     
     func report(flag: Int) {
         let localTime = getLocalTimeString()
@@ -71,6 +78,9 @@ class SampleViewController: UIViewController, Observer {
     func update(result: FineLocationTrackingResult) {
         DispatchQueue.main.async {
             let localTime: String = getLocalTimeString()
+//            print(localTime + " , (JupiterVC) Result = \(result)")
+            self.sendResult(result: result)
+            
             self.buildingLabel.text = result.building_name
             self.levelLabel.text = result.level_name
             self.xLabel.text = String(result.x)
@@ -111,7 +121,7 @@ class SampleViewController: UIViewController, Observer {
     
     @objc func timerUpdate() {
         if (!self.isStart) {
-            serviceManager.startService(id: "tjlabs_sample", sector_id: 6, service: "FLT", mode: "auto", completion: { isStart, message in
+            serviceManager.startService(id: "tjlabs_sample", sector_id: 9, service: "FLT", mode: "pdr", completion: { isStart, message in
                 if (isStart) {
                     print(getLocalTimeString() + " , (JupiterVC) Success : \(message)")
                     self.isStart = true
@@ -132,7 +142,7 @@ class SampleViewController: UIViewController, Observer {
     }
     
     func convertResultToNSDict(result: FineLocationTrackingResult) -> NSDictionary {
-        var fineLocationDict: NSDictionary = [
+        let fineLocationDict: NSDictionary = [
             "mobile_time": result.mobile_time,
             "building_name": result.building_name,
             "level_name": result.level_name,
@@ -153,21 +163,73 @@ class SampleViewController: UIViewController, Observer {
     }
     
     @IBAction func tapShowMapButton(_ sender: UIButton) {
-        if let flutterEngine = (UIApplication.shared.delegate as! AppDelegate).mapEngine {
-            let flutterViewController = FlutterViewController(engine: flutterEngine, nibName: nil, bundle: nil)
-            // 기존에 등록한 FlutterEngine으로 FlutterViewController를 생성
-            let newsChannel = FlutterMethodChannel(name:self.channelName, binaryMessenger: flutterViewController.binaryMessenger)
-            // 메소드채널 설정
-                      
-//            newsChannel.invokeMethod("getUserToken", arguments: mText, result: {
-//                (result) -> Void in
-//                print("swift-to-flutter result: \(String(describing: result))")
-//
-//            })
-            flutterViewController.modalPresentationStyle = .overCurrentContext
-            flutterViewController.isViewOpaque = false
-            present(flutterViewController, animated: false, completion: nil)
+        UIView.animate(withDuration: 0.2, delay: 0.0, options: .curveLinear, animations: {
+        }) { (success) in
+            sender.isSelected = !sender.isSelected
+            UIView.animate(withDuration: 0.2, delay: 0.0, options: .curveLinear, animations: {
+                sender.transform = .identity
+            }, completion: nil)
+        }
+        
+        if sender.isSelected == false {
+            self.showMapButton.titleLabel?.text = "Hide Map"
+            self.showFlutterMap()
+        } else {
+            self.showMapButton.titleLabel?.text = "Show Map"
+            self.removeFlutterMapViewController()
         }
     }
     
+    func onListen(withArguments arguments: Any?, eventSink events: @escaping FlutterEventSink) -> FlutterError? {
+        self.events = events
+        return nil
+    }
+
+    func onCancel(withArguments arguments: Any?) -> FlutterError? {
+        self.events = nil
+        return nil
+    }
+    
+    func sendResult(result: FineLocationTrackingResult) {
+        guard let events = self.events else {
+            print(getLocalTimeString() + " , (Flutter) Fail : Send result")
+            return
+        }
+//        print(getLocalTimeString() + " , (Flutter) Success : Send result : \(result)")
+        events (
+            NSDictionary(
+                dictionary: [
+                    "index" : result.index,
+                    "mobileTime": result.mobile_time,
+                    "building": result.building_name,
+                    "level": result.level_name,
+                    "x": Int(result.x),
+                    "y": Int(result.y),
+                    "absoluteHeading": result.absolute_heading
+                    ]
+                )
+        )
+    }
+    
+    private func addFlutterMapViewController() {
+        addChild(flutterMapViewController)
+        flutterMapViewController.view.frame = CGRect(x: 0, y: 100, width: self.view.frame.size.width, height: (self.view.frame.size.height/2))
+        self.view.addSubview(flutterMapViewController.view)
+        flutterMapViewController.didMove(toParent: self)
+    }
+    
+    @objc private func removeFlutterMapViewController() {
+        flutterMapViewController.willMove(toParent: nil)
+        flutterMapViewController.removeFromParent()
+        flutterMapViewController.view.removeFromSuperview()
+    }
+    
+    private func showFlutterMap() {
+        if let flutterEngine = (UIApplication.shared.delegate as! AppDelegate).mapEngine {
+            self.flutterMapViewController = FlutterViewController(engine: flutterEngine, nibName: nil, bundle: nil)
+            self.eventChannel = FlutterEventChannel(name: self.channelName, binaryMessenger: self.flutterMapViewController.binaryMessenger)
+            self.eventChannel?.setStreamHandler(self)
+            self.addFlutterMapViewController()
+        }
+    }
 }
