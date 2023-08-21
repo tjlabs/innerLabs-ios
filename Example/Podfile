@@ -2,12 +2,12 @@ use_frameworks!
 
 platform :ios, '12.0'
 
-flutter_application_path = './map_ui_module' # Added for Flutter
-load File.join(flutter_application_path, '.ios', 'Flutter', 'podhelper.rb') # Added for Flutter
+#flutter_application_path = './map_ui_module' # Added for Flutter
+#load File.join(flutter_application_path, '.ios', 'Flutter', 'podhelper.rb') # Added for Flutter
 
 target 'JupiterSDK_Example' do
   use_frameworks!
-  install_all_flutter_pods(flutter_application_path) # Added for Flutter
+  #install_all_flutter_pods(flutter_application_path) # Added for Flutter
   
   pod 'JupiterSDK', :path => '../'
   pod 'Alamofire'
@@ -28,7 +28,7 @@ target 'JupiterSDK_Example' do
   pod 'Firebase/Crashlytics'
   
   post_install do |installer|
-    flutter_post_install(installer) if defined?(flutter_post_install) # Added for Flutter
+    #flutter_post_install(installer) if defined?(flutter_post_install) # Added for Flutter
     
     installer.pods_project.targets.each do |target|
       target.build_configurations.each do |config|

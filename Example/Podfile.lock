@@ -75,9 +75,6 @@ PODS:
     - nanopb (< 2.30910.0, >= 2.30908.0)
     - PromisesSwift (~> 2.1)
   - Floaty (4.2.0)
-  - Flutter (1.0.0)
-  - FlutterPluginRegistrant (0.0.1):
-    - Flutter
   - GoogleAppMeasurement (10.13.0):
     - GoogleAppMeasurement/AdIdSupport (= 10.13.0)
     - GoogleUtilities/AppDelegateSwizzler (~> 7.11)
@@ -153,8 +150,6 @@ DEPENDENCIES:
   - Firebase/Crashlytics
   - FirebaseRemoteConfig
   - Floaty (~> 4.2.0)
-  - Flutter (from `map_ui_module/.ios/Flutter`)
-  - FlutterPluginRegistrant (from `map_ui_module/.ios/Flutter/FlutterPluginRegistrant`)
   - GoogleMaps (= 4.0.0)
   - GooglePlaces (= 4.0.0)
   - JupiterSDK (from `../`)
@@ -197,10 +192,6 @@ SPEC REPOS:
     - TextFieldEffects
 
 EXTERNAL SOURCES:
-  Flutter:
-    :path: map_ui_module/.ios/Flutter
-  FlutterPluginRegistrant:
-    :path: map_ui_module/.ios/Flutter/FlutterPluginRegistrant
   JupiterSDK:
     :path: "../"
 
@@ -222,8 +213,6 @@ SPEC CHECKSUMS:
   FirebaseRemoteConfig: 33e0dcf43899fbb4f8ef2d84200bf5f5e32eaf05
   FirebaseSessions: 991fb4c20b3505eef125f7cbfa20a5b5b189c2a4
   Floaty: e2bd5a0f6f7f70899e26ff2da31081c8bee8d1b0
-  Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
-  FlutterPluginRegistrant: 58acfb6cb31ee4ca14f920aba101815efda113ee
   GoogleAppMeasurement: 3ae505b44174bcc0775f5c86cecc5826259fbb1e
   GoogleDataTransport: 54dee9d48d14580407f8f5fbf2f496e92437a2f2
   GoogleMaps: b7f7fc569a9b354a3af0d9729dbec40957b7d41e
@@ -239,6 +228,6 @@ SPEC CHECKSUMS:
   SwiftCSVExport: d9db3fb80484115028792f8d539445e3fb2c0ecb
   TextFieldEffects: 529b8aff706fb40f82c41c780c0777941a893796
 
-PODFILE CHECKSUM: 97b0b2cf2028ff05ac6e8695bd83efcdaf863a26
+PODFILE CHECKSUM: 9c032389b519c19d8e1d72c2b7b3945ff18a1ee0
 
 COCOAPODS: 1.12.0
