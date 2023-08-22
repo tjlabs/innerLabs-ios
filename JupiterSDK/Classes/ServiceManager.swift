@@ -3894,7 +3894,6 @@ public class ServiceManager: Observation {
         let isInLevelChangeArea = self.checkInLevelChangeArea(result: self.lastResult, mode: self.runMode)
         if (isInLevelChangeArea) {
             levelArray = self.makeLevelChangeArray(buildingName: self.currentBuilding, levelName: self.currentLevel, buildingLevel: self.buildingsAndLevels)
-            self.isScRequested = true
         }
         
         // 사이즈 검사
@@ -3920,7 +3919,11 @@ public class ServiceManager: Observation {
                 if (self.isScRequested) {
                     requestScArray = [1.01]
                 } else {
-                    requestScArray = self.scCompensationArray
+                    if (isInLevelChangeArea) {
+                        requestScArray = [0.8, 1.0]
+                    } else {
+                        requestScArray = self.scCompensationArray
+                    }
                     self.scRequestTime = currentTime
                     self.isScRequested = true
                 }

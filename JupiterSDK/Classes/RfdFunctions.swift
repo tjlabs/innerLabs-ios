@@ -3,7 +3,11 @@ import Foundation
 let WEAK_THRESHOLD: Double = -92
 let STRONG_THRESHOLD: Double = -80
 
-public func trimBleData(bleInput: [String: [[Double]]], nowTime: Double, validTime: Double) -> [String: [[Double]]] {
+public func trimBleData(bleInput: [String: [[Double]]]?, nowTime: Double, validTime: Double) -> [String: [[Double]]] {
+    guard let bleInput = bleInput else {
+        return [:]
+    }
+    
     var trimmedData = [String: [[Double]]]()
     
     for (bleID, bleData) in bleInput {
