@@ -85,7 +85,7 @@ let BIAS_RANGE_MIN: Int = -3
 
 let STOP_THRESHOLD: Double = 2
 let SLEEP_THRESHOLD: Double = 600
-let SLEEP_THRESHOLD_RF: Double = 6
+let SLEEP_THRESHOLD_RF: Double = 10
 let BLE_OFF_THRESHOLD: Double = 4
 
 let HEADING_RANGE: Double = 46
