@@ -56,6 +56,7 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
     
     var bleDictionary = [String: [[Double]]]()
     var bleDiscoveredTime: Double = 0
+    public var bleLastScannedTime: Double = 0
     
     public var BLE_VALID_TIME: Double = 1000
     
@@ -102,11 +103,9 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
     }
     
     func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String : Any], rssi RSSI: NSNumber) {
-        
         discoveredPeripheral = peripheral
-        
         if let bleName = discoveredPeripheral.name {
-            
+            self.bleLastScannedTime = getCurrentTimeInMillisecondsDouble()
             if bleName.contains("TJ-") {
                 let deviceIDString = bleName.substring(from: 8, to: 15)
                 
