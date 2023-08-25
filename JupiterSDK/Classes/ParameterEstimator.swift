@@ -30,7 +30,6 @@ public class ParameterEstimator {
                 }
             }
         }
-//        print(getLocalTimeString() + " , Ward : (Min) = \(self.wardMinRssi)")
     }
     
     public func refreshWardMaxRssi(bleData: [String: Double]) {
@@ -42,7 +41,6 @@ public class ParameterEstimator {
                 self.wardMaxRssi = newArray
             }
         }
-//        print(getLocalTimeString() + " , Ward : (Max) = \(self.wardMaxRssi)")
     }
     
     public func calNormalizationScale(standardMin: Double, standardMax: Double) -> Double {
@@ -75,9 +73,9 @@ public class ParameterEstimator {
         } else {
             smoothedScale = movingAverage(preMvalue: self.preSmoothedNormalizationScale, curValue: scale, windowSize: self.scaleQueue.count)
         }
-        preSmoothedNormalizationScale = smoothedScale
-        
+        self.preSmoothedNormalizationScale = smoothedScale
 //        print(getLocalTimeString() + " , (Normalization) : smoothedScale = \(smoothedScale)")
+        
         return smoothedScale
     }
     

@@ -218,6 +218,8 @@ public class ServiceManager: Observation {
     var standardMinRss: Double = -99.0
     var standradMaxRss: Double = -60.0
     var normalizationScale: Double = 1.0
+//    var isScaleLoadedFromServer: Bool = false
+    var isScaleLoaded: Bool = false
     
     var isBiasConverged: Bool = false
     var sccBadCount: Int = 0
@@ -685,6 +687,7 @@ public class ServiceManager: Observation {
                                                                                                 // Need Bias Estimation
                                                                                                 displayOutput.bias = self.rssiBias
                                                                                                 displayOutput.isConverged = self.isBiasConverged
+                                                                                                self.isScaleLoaded = false
                                                                                                 
                                                                                                 self.isStartComplete = true
                                                                                                 self.startTimer()
@@ -708,6 +711,7 @@ public class ServiceManager: Observation {
                                                                                                     
                                                                                                     displayOutput.bias = self.rssiBias
                                                                                                     displayOutput.isConverged = self.isBiasConverged
+                                                                                                    self.isScaleLoaded = true
                                                                                                     
                                                                                                     self.isStartComplete = true
                                                                                                     self.startTimer()
@@ -718,6 +722,7 @@ public class ServiceManager: Observation {
                                                                                                 } else {
                                                                                                     displayOutput.bias = self.rssiBias
                                                                                                     displayOutput.isConverged = self.isBiasConverged
+                                                                                                    self.isScaleLoaded = false
                                                                                                     
                                                                                                     self.isStartComplete = true
                                                                                                     self.startTimer()
@@ -750,6 +755,7 @@ public class ServiceManager: Observation {
                                                                                     
                                                                                     displayOutput.bias = self.rssiBias
                                                                                     displayOutput.isConverged = self.isBiasConverged
+                                                                                    self.isScaleLoaded = true
                                                                                     
                                                                                     self.isStartComplete = true
                                                                                     self.startTimer()
@@ -1588,6 +1594,7 @@ public class ServiceManager: Observation {
         let checkLastScannedTime = (getCurrentTimeInMillisecondsDouble() - bleManager.bleLastScannedTime)*1e-3
         if (checkLastScannedTime >= 6) {
             // 스캔이 동작안한지 6초 이상 지남
+            self.reporting(input: BLE_SCAN_STOP_FLAG)
         }
         
         bleManager.setValidTime(mode: self.runMode)
@@ -1649,11 +1656,21 @@ public class ServiceManager: Observation {
             paramEstimator.refreshWardMinRssi(bleData: self.bleAvg)
             paramEstimator.refreshWardMaxRssi(bleData: self.bleAvg)
             if (self.isGetFirstResponse && self.isIndoor && self.indexAfterResponse >= 30 && (self.unitDrInfoIndex%5 == 0)) {
-                let normalizationScale: Double = paramEstimator.calNormalizationScale(standardMin: self.standardMinRss, standardMax: self.standradMaxRss)
-                let smoothedScale: Double = paramEstimator.smoothNormalizationScale(scale: normalizationScale)
-                self.normalizationScale = smoothedScale
-                let deviceMin: Double = paramEstimator.getDeviceMinRss()
-                self.deviceMinRss = deviceMin
+                if (self.isScaleLoaded) {
+                    if (self.currentLevel != "B0") {
+                        let normalizationScale: Double = paramEstimator.calNormalizationScale(standardMin: self.standardMinRss, standardMax: self.standradMaxRss)
+                        let smoothedScale: Double = paramEstimator.smoothNormalizationScale(scale: normalizationScale)
+                        self.normalizationScale = smoothedScale
+                        let deviceMin: Double = paramEstimator.getDeviceMinRss()
+                        self.deviceMinRss = deviceMin
+                    }
+                } else {
+                    let normalizationScale: Double = paramEstimator.calNormalizationScale(standardMin: self.standardMinRss, standardMax: self.standradMaxRss)
+                    let smoothedScale: Double = paramEstimator.smoothNormalizationScale(scale: normalizationScale)
+                    self.normalizationScale = smoothedScale
+                    let deviceMin: Double = paramEstimator.getDeviceMinRss()
+                    self.deviceMinRss = deviceMin
+                }
             }
             paramEstimator.refreshAllEntranceWardRssi(allEntranceWards: self.allEntranceWards, bleData: self.bleAvg)
             let isSufficientRfdBuffer = rflowCorrelator.accumulateRfdBuffer(bleData: self.bleAvg)
@@ -3331,7 +3348,7 @@ public class ServiceManager: Observation {
                         }
                         resultCorrected.1[2] = compensateHeading(heading: resultCorrected.1[2])
                         
-                        if (result.phase == 2 && result.scc < 0.4) {
+                        if (result.phase == 2 && result.scc < 0.25) {
                             self.isNeedTrajInit = true
                             self.phase = 1
                             if (self.isActiveKf) {
