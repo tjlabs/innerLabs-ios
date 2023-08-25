@@ -1990,11 +1990,6 @@ public class ServiceManager: Observation {
                         }
                         
                         self.resultToReturn = self.simulateEntrance(originalResult: self.outputResult, runMode: self.runMode, currentEntranceIndex: self.currentEntranceIndex)
-                        if (self.currentEntranceIndex == 0) {
-                            self.isIndoor = true
-                            self.reporting(input: INDOOR_FLAG)
-                        }
-                        
                         self.currentEntranceIndex += 1
                         if (self.indexAfterSimulate >= Int(Double(MINIMUN_INDEX_FOR_BIAS)*1.5)) {
                             let diffX = self.resultToReturn.x - self.outputResult.x
@@ -2007,6 +2002,28 @@ public class ServiceManager: Observation {
                             let diffXy = sqrt(diffX*diffX + diffY*diffY)
                             let cLevel = removeLevelDirectionString(levelName: self.currentLevel)
                             if (diffXy <= 10 && diffH <= 30 && self.isActiveKf && (cLevel == self.resultToReturn.level_name)) {
+                                let entraceKey: String = self.currentEntrance
+                                let entranceWardKey: [String] = entraceKey.components(separatedBy: "_")
+                                if let entranceWards = self.EntranceWards[entranceWardKey[entranceWardKey.count-1]] {
+                                    let biasInEntrance = paramEstimator.estimateRssiBiasInEntrance(entranceWard: entranceWards)
+                                    print(getLocalTimeString() + " , (Jupiter) Bias Est in Entrance : bias = \(biasInEntrance) (Position Matched)")
+                                    if (self.isBiasConverged) {
+                                        if (abs(biasInEntrance - self.rssiBias) >= 7) {
+                                            print(getLocalTimeString() + " , (Jupiter) Bias Est in Entrance : biasDiff = \(abs(biasInEntrance - self.rssiBias)) (Position Matched)")
+                                            self.rssiBias = biasInEntrance
+                                            self.rssiBiasArray = paramEstimator.makeRssiBiasArray(bias: biasInEntrance)
+                                            self.isBiasConverged = true
+                                            
+                                            paramEstimator.saveRssiBias(bias: self.rssiBias, biasArray: self.sccGoodBiasArray, isConverged: self.isBiasConverged, sector_id: self.sector_id)
+                                        }
+                                    } else {
+                                        self.rssiBias = biasInEntrance
+                                        self.rssiBiasArray = paramEstimator.makeRssiBiasArray(bias: biasInEntrance)
+                                        self.isBiasConverged = true
+                                    }
+                                    paramEstimator.clearEntranceWardRssi()
+                                }
+                                
                                 print(getLocalTimeString() + " , (Jupiter) Entrance Simulator : Finish (Position Matched)")
                                 self.isStartSimulate = false
                                 self.isInNetworkBadEntrance = false
@@ -2018,6 +2035,29 @@ public class ServiceManager: Observation {
                                 if (self.isActiveKf && (cLevel == self.resultToReturn.level_name)) {
                                     let isFind = self.findClosestSimulation(originalResult: self.outputResult, currentEntranceIndex: self.currentEntranceIndex)
                                     if (isFind) {
+                                        let entraceKey: String = self.currentEntrance
+                                        let entranceWardKey: [String] = entraceKey.components(separatedBy: "_")
+                                        if let entranceWards = self.EntranceWards[entranceWardKey[entranceWardKey.count-1]] {
+                                            let biasInEntrance = paramEstimator.estimateRssiBiasInEntrance(entranceWard: entranceWards)
+                                            print(getLocalTimeString() + " , (Jupiter) Bias Est in Entrance : bias = \(biasInEntrance) (Position Passed)")
+                                            
+                                            if (self.isBiasConverged) {
+                                                if (abs(biasInEntrance - self.rssiBias) >= 7) {
+                                                    print(getLocalTimeString() + " , (Jupiter) Bias Est in Entrance : biasDiff = \(abs(biasInEntrance - self.rssiBias)) (Position Passed)")
+                                                    self.rssiBias = biasInEntrance
+                                                    self.rssiBiasArray = paramEstimator.makeRssiBiasArray(bias: biasInEntrance)
+                                                    self.isBiasConverged = true
+                                                    
+                                                    paramEstimator.saveRssiBias(bias: self.rssiBias, biasArray: self.sccGoodBiasArray, isConverged: self.isBiasConverged, sector_id: self.sector_id)
+                                                }
+                                            } else {
+                                                self.rssiBias = biasInEntrance
+                                                self.rssiBiasArray = paramEstimator.makeRssiBiasArray(bias: biasInEntrance)
+                                                self.isBiasConverged = true
+                                            }
+                                            paramEstimator.clearEntranceWardRssi()
+                                        }
+                                        
                                         print(getLocalTimeString() + " , (Jupiter) Entrance Simulator : Finish (Position Passed)")
                                         self.isStartSimulate = false
                                         self.isInNetworkBadEntrance = false
@@ -2048,6 +2088,30 @@ public class ServiceManager: Observation {
                             self.outputResult.y = self.resultToReturn.y
                             self.outputResult.absolute_heading = self.resultToReturn.absolute_heading
                         }
+                        
+                        let entraceKey: String = self.currentEntrance
+                        let entranceWardKey: [String] = entraceKey.components(separatedBy: "_")
+                        if let entranceWards = self.EntranceWards[entranceWardKey[entranceWardKey.count-1]] {
+                            let biasInEntrance = paramEstimator.estimateRssiBiasInEntrance(entranceWard: entranceWards)
+                            print(getLocalTimeString() + " , (Jupiter) Bias Est in Entrance : bias = \(biasInEntrance) (End Simulating)")
+                            
+                            if (self.isBiasConverged) {
+                                if (abs(biasInEntrance - self.rssiBias) >= 7) {
+                                    print(getLocalTimeString() + " , (Jupiter) Bias Est in Entrance : biasDiff = \(abs(biasInEntrance - self.rssiBias)) (End Simulating)")
+                                    self.rssiBias = biasInEntrance
+                                    self.rssiBiasArray = paramEstimator.makeRssiBiasArray(bias: biasInEntrance)
+                                    self.isBiasConverged = true
+                                    
+                                    paramEstimator.saveRssiBias(bias: self.rssiBias, biasArray: self.sccGoodBiasArray, isConverged: self.isBiasConverged, sector_id: self.sector_id)
+                                }
+                            } else {
+                                self.rssiBias = biasInEntrance
+                                self.rssiBiasArray = paramEstimator.makeRssiBiasArray(bias: biasInEntrance)
+                                self.isBiasConverged = true
+                            }
+                            paramEstimator.clearEntranceWardRssi()
+                        }
+                        
                         print(getLocalTimeString() + " , (Jupiter) Entrance Simulator : Finish (End Simulating)")
                         self.isStartSimulate = false
                         self.isInNetworkBadEntrance = false
@@ -3623,6 +3687,40 @@ public class ServiceManager: Observation {
             if (statusCode == 200) {
                 let result = jsonToResult(json: returnedString)
                 if (result.x != 0 && result.y != 0) {
+                    if (self.isBiasRequested) {
+                        let biasCheckTime = abs(result.mobile_time - self.biasRequestTime)
+                        if (biasCheckTime < 100) {
+                            let resultEstRssiBias = paramEstimator.estimateRssiBias(sccResult: result.scc, biasResult: result.rss_compensation, biasArray: self.rssiBiasArray)
+                            self.rssiBias = result.rss_compensation
+                            let newBiasArray: [Int] = resultEstRssiBias.1
+                            self.rssiBiasArray = newBiasArray
+                            
+                            if (resultEstRssiBias.0) {
+                                self.sccGoodBiasArray.append(result.rss_compensation)
+                                if (self.sccGoodBiasArray.count >= GOOD_BIAS_ARRAY_SIZE) {
+                                    let biasAvg = paramEstimator.averageBiasArray(biasArray: self.sccGoodBiasArray)
+                                    self.sccGoodBiasArray.remove(at: 0)
+                                    self.rssiBias = biasAvg.0
+                                    self.isBiasConverged = biasAvg.1
+                                    if (!biasAvg.1) {
+                                        self.sccGoodBiasArray = [Int]()
+                                    }
+                                    
+                                    paramEstimator.saveRssiBias(bias: self.rssiBias, biasArray: self.sccGoodBiasArray, isConverged: self.isBiasConverged, sector_id: self.sector_id)
+                                    if (self.isBiasConverged) {
+                                        self.postRssiBias(sector_id: self.sector_id, bias: self.rssiBias)
+                                    }
+                                }
+                            }
+                            
+                            self.isBiasRequested = false
+                            displayOutput.bias = self.rssiBias
+                            displayOutput.isConverged = self.isBiasConverged
+                        } else if (biasCheckTime > 3000) {
+                            self.isBiasRequested = false
+                        }
+                    }
+                    
                     if (result.mobile_time > self.preOutputMobileTime) {
                         displayOutput.indexRx = result.index
                         displayOutput.scc = result.scc
@@ -3673,6 +3771,17 @@ public class ServiceManager: Observation {
                         
                         if (result.phase == 1) {
                             self.isNeedTrajInit = true
+                        }
+                        
+                        // Check Bias Re-estimation is needed
+                        if (self.isBiasConverged) {
+                            if (result.scc < 0.5) {
+                                self.sccBadCount += 1
+                                if (self.sccBadCount > 3) {
+                                    reEstimateRssiBias()
+                                    self.sccBadCount = 0
+                                }
+                            }
                         }
                         
                         self.pastSearchDirection = result.search_direction
@@ -3982,6 +4091,39 @@ public class ServiceManager: Observation {
             }
             if (statusCode == 200) {
                 let result = jsonToResult(json: returnedString)
+                // Bias Compensation
+                if (self.isBiasRequested) {
+                    let biasCheckTime = abs(result.mobile_time - self.biasRequestTime)
+                    if (biasCheckTime < 100) {
+                        let resultEstRssiBias = paramEstimator.estimateRssiBias(sccResult: result.scc, biasResult: result.rss_compensation, biasArray: self.rssiBiasArray)
+                        
+                        self.rssiBias = result.rss_compensation
+                        let newBiasArray: [Int] = resultEstRssiBias.1
+                        self.rssiBiasArray = newBiasArray
+                        if (resultEstRssiBias.0) {
+                            self.sccGoodBiasArray.append(result.rss_compensation)
+                            if (self.sccGoodBiasArray.count >= GOOD_BIAS_ARRAY_SIZE) {
+                                let biasAvg = paramEstimator.averageBiasArray(biasArray: self.sccGoodBiasArray)
+                                self.sccGoodBiasArray.remove(at: 0)
+                                self.rssiBias = biasAvg.0
+                                self.isBiasConverged = biasAvg.1
+                                if (!biasAvg.1) {
+                                    self.sccGoodBiasArray = [Int]()
+                                }
+                                paramEstimator.saveRssiBias(bias: self.rssiBias, biasArray: self.sccGoodBiasArray, isConverged: self.isBiasConverged, sector_id: self.sector_id)
+                                if (self.isBiasConverged) {
+                                    self.postRssiBias(sector_id: self.sector_id, bias: self.rssiBias)
+                                }
+                            }
+                        }
+                        self.isBiasRequested = false
+                        displayOutput.bias = self.rssiBias
+                        displayOutput.isConverged = self.isBiasConverged
+                    } else if (biasCheckTime > 3000) {
+                        self.isBiasRequested = false
+                    }
+                }
+                
                 // Sc Compensation
                 if (self.isScRequested) {
                     let compensationCheckTime = abs(result.mobile_time - self.scRequestTime)
@@ -4509,6 +4651,28 @@ public class ServiceManager: Observation {
                 print(localTime + " , (Jupiter) Success : Save Jupiter Param \(normailzationScale)")
             } else {
                 print(localTime + " , (Jupiter) Warnings : Save Jupiter Param ")
+            }
+        })
+    }
+    
+    func reEstimateRssiBias() {
+        print(getLocalTimeString() + " , (Jupiter) Bias is not correct -> Initialization")
+        self.isBiasConverged = false
+        
+        self.rssiBias = 2
+        self.rssiBiasArray = [2, 0, 4]
+        self.sccGoodBiasArray = [Int]()
+    }
+    
+    func postRssiBias(sector_id: Int, bias: Int) {
+        let localTime = getLocalTimeString()
+        
+        let input = JupiterBiasPost(device_model: self.deviceModel, os_version: self.osVersion, sector_id: sector_id, rss_compensation: bias)
+        NetworkManager.shared.postJupiterBias(url: RCR_URL, input: input, completion: { statusCode, returnedString in
+            if (statusCode == 200) {
+                print(localTime + " , (Jupiter) Success : Save Rssi Bias \(bias)")
+            } else {
+                print(localTime + " , (Jupiter) Warnings : Save Rssi Bias ")
             }
         })
     }
