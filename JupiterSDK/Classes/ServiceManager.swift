@@ -222,6 +222,7 @@ public class ServiceManager: Observation {
     var standardMinRss: Double = -99.0
     var standradMaxRss: Double = -60.0
     var normalizationScale: Double = 1.0
+    var isScaleLoaded: Bool = false
     
     var isBiasConverged: Bool = false
     var sccBadCount: Int = 0
@@ -1615,6 +1616,7 @@ public class ServiceManager: Observation {
         let checkLastScannedTime = (getCurrentTimeInMillisecondsDouble() - bleManager.bleLastScannedTime)*1e-3
         if (checkLastScannedTime >= 6) {
             // 스캔이 동작안한지 6초 이상 지남
+            self.reporting(input: BLE_SCAN_STOP_FLAG)
         }
         
         bleManager.setValidTime(mode: self.runMode)
@@ -3364,7 +3366,7 @@ public class ServiceManager: Observation {
                         }
                         resultCorrected.1[2] = compensateHeading(heading: resultCorrected.1[2])
                         
-                        if (result.phase == 2 && result.scc < 0.4) {
+                        if (result.phase == 2 && result.scc < 0.25) {
                             self.isNeedTrajInit = true
                             self.phase = 1
                             if (self.isActiveKf) {
