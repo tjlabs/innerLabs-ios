@@ -123,7 +123,7 @@
 /* Begin PBXFileReference section */
 		001F364143D86A2C5C1D9BB0 /* Pods-JupiterSDK_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-JupiterSDK_Tests.release.xcconfig"; path = "Target Support Files/Pods-JupiterSDK_Tests/Pods-JupiterSDK_Tests.release.xcconfig"; sourceTree = "<group>"; };
 		33536F035F43D878561B6254 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
-		38E38E00A30376AD81C0CB48 /* JupiterSDK.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = JupiterSDK.podspec; path = ../JupiterSDK.podspec; sourceTree = "<group>"; };
+		38E38E00A30376AD81C0CB48 /* JupiterSDK.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = JupiterSDK.podspec; path = ../JupiterSDK.podspec; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		4B6D660DDF3C43E212E26391 /* Pods-JupiterSDK_Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-JupiterSDK_Tests.debug.xcconfig"; path = "Target Support Files/Pods-JupiterSDK_Tests/Pods-JupiterSDK_Tests.debug.xcconfig"; sourceTree = "<group>"; };
 		607FACD01AFB9204008FA782 /* JupiterSDK_Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = JupiterSDK_Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		607FACD41AFB9204008FA782 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
