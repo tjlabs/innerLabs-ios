@@ -655,7 +655,6 @@ public class ServiceManager: Observation {
                                                         self.LevelChangeArea[key] = result.level_change_area
                                                         
                                                         countBuildingLevel += 1
-                                                        
                                                         if (countBuildingLevel == countAll) {
                                                             if (bleManager.bluetoothReady) {
                                                                 // Load Trajectory Info
