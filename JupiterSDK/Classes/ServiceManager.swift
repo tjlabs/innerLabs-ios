@@ -707,10 +707,17 @@ public class ServiceManager: Observation {
                                                                                                     let biasFromServer: rss_compensation = closest
                                                                                                     
                                                                                                     if (loadedBias.2) {
-                                                                                                        self.rssiBias = loadedBias.0
-                                                                                                        self.sccGoodBiasArray = loadedBias.1
-                                                                                                        self.isBiasConverged = true
-                                                                                                        print(localTime + " , (Jupiter) Bias Load (Device // Cache) : \(loadedBias.0)")
+                                                                                                        if (loadedBias.3) {
+                                                                                                            self.rssiBias = biasFromServer.rss_compensation
+                                                                                                            self.sccGoodBiasArray = loadedBias.1
+                                                                                                            self.isBiasConverged = false
+                                                                                                            print(localTime + " , (Jupiter) Bias Load (Device) : \(biasFromServer.rss_compensation)")
+                                                                                                        } else {
+                                                                                                            self.rssiBias = loadedBias.0
+                                                                                                            self.sccGoodBiasArray = loadedBias.1
+                                                                                                            self.isBiasConverged = true
+                                                                                                            print(localTime + " , (Jupiter) Bias Load (Device // Cache) : \(loadedBias.0)")
+                                                                                                        }
                                                                                                     } else {
                                                                                                         self.rssiBias = biasFromServer.rss_compensation
                                                                                                         self.sccGoodBiasArray = loadedBias.1
@@ -760,9 +767,15 @@ public class ServiceManager: Observation {
                                                                                     let biasFromServer: rss_compensation = result.rss_compensations[0]
                                                                                     
                                                                                     if (loadedBias.2) {
-                                                                                        self.rssiBias = loadedBias.0
-                                                                                        self.sccGoodBiasArray = loadedBias.1
-                                                                                        print(getLocalTimeString() + " , (Jupiter) Bias Load (Device & OS // Cache) : \(loadedBias.0)")
+                                                                                        if (loadedBias.3) {
+                                                                                            self.rssiBias = biasFromServer.rss_compensation
+                                                                                            self.sccGoodBiasArray = loadedBias.1
+                                                                                            print(getLocalTimeString() + " , (Jupiter) Bias Load (Device & OS) : \(biasFromServer.rss_compensation)")
+                                                                                        } else {
+                                                                                            self.rssiBias = loadedBias.0
+                                                                                            self.sccGoodBiasArray = loadedBias.1
+                                                                                            print(getLocalTimeString() + " , (Jupiter) Bias Load (Device & OS // Cache) : \(loadedBias.0)")
+                                                                                        }
                                                                                     } else {
                                                                                         self.rssiBias = biasFromServer.rss_compensation
                                                                                         self.sccGoodBiasArray = loadedBias.1
