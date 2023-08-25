@@ -3,7 +3,7 @@ import CoreMotion
 import UIKit
 
 public class ServiceManager: Observation {
-    public static let sdkVersion: String = "3.0.8.2"
+    public static let sdkVersion: String = "3.1.0"
     
     func tracking(input: FineLocationTrackingResult, isPast: Bool) {
         for observer in observers {
@@ -14,8 +14,6 @@ public class ServiceManager: Observation {
                 observer.update(result: result)
                 
                 if (self.isSaveFlag) {
-                    let scale = self.normalizationScale
-                    let deviceMin = self.deviceMinRss
                     let rsCompensation = self.rssiBias
                     let scCompensation = self.scCompensation
                     
@@ -221,8 +219,6 @@ public class ServiceManager: Observation {
     var deviceMinRss: Double = -100.0
     var standardMinRss: Double = -99.0
     var standradMaxRss: Double = -60.0
-    var normalizationScale: Double = 1.0
-    var isScaleLoaded: Bool = false
     
     var isBiasConverged: Bool = false
     var sccBadCount: Int = 0
@@ -1032,8 +1028,7 @@ public class ServiceManager: Observation {
             if (self.service == "FLT") {
                 unitDRInfo = UnitDRInfo()
                 userTrajectory = TrajectoryInfo()
-                paramEstimator.saveNormalizationScale(scale: self.normalizationScale, sector_id: self.sector_id)
-                self.postParam(sector_id: self.sector_id, normailzationScale: self.normalizationScale)
+                paramEstimator.saveRssiBias(bias: self.rssiBias, biasArray: self.sccGoodBiasArray, isConverged: self.isBiasConverged, sector_id: self.sector_id)
             }
             
             self.initVariables()
@@ -1195,30 +1190,30 @@ public class ServiceManager: Observation {
         
         switch(self.service) {
         case "SD":
-            let input = CoarseLevelDetection(user_id: self.user_id, mobile_time: currentTime, normalization_scale: self.normalizationScale, device_min_rss: Int(self.deviceMinRss), standard_min_rss: Int(self.standardMinRss))
+            let input = CoarseLevelDetection(user_id: self.user_id, mobile_time: currentTime)
             NetworkManager.shared.postCLD(url: CLD_URL, input: input, completion: { statusCode, returnedString in
                 let sdString = CLDtoSD(json: returnedString)
                 completion(statusCode, sdString)
             })
         case "BD":
-            let input = CoarseLevelDetection(user_id: self.user_id, mobile_time: currentTime, normalization_scale: self.normalizationScale, device_min_rss: Int(self.deviceMinRss), standard_min_rss: Int(self.standardMinRss))
+            let input = CoarseLevelDetection(user_id: self.user_id, mobile_time: currentTime)
             NetworkManager.shared.postCLD(url: CLD_URL, input: input, completion: { statusCode, returnedString in
                 let bdString = CLDtoBD(json: returnedString)
                 completion(statusCode, bdString)
             })
         case "CLD":
-            let input = CoarseLevelDetection(user_id: self.user_id, mobile_time: currentTime, normalization_scale: self.normalizationScale, device_min_rss: Int(self.deviceMinRss), standard_min_rss: Int(self.standardMinRss))
+            let input = CoarseLevelDetection(user_id: self.user_id, mobile_time: currentTime)
             NetworkManager.shared.postCLD(url: CLD_URL, input: input, completion: { statusCode, returnedString in
                 completion(statusCode, returnedString)
             })
         case "FLD":
-            let input = CoarseLocationEstimation(user_id: self.user_id, mobile_time: currentTime, sector_id: self.sector_id, search_direction_list: [0, 90, 180, 270], normalization_scale: self.normalizationScale, device_min_rss: Int(self.standardMinRss))
+            let input = CoarseLocationEstimation(user_id: self.user_id, mobile_time: currentTime, sector_id: self.sector_id, search_direction_list: [0, 90, 180, 270])
             NetworkManager.shared.postCLE(url: CLE_URL, input: input, completion: { statusCode, returnedString in
                 let fldString = CLEtoFLD(json: returnedString)
                 completion(statusCode, fldString)
             })
         case "CLE":
-            let input = CoarseLocationEstimation(user_id: self.user_id, mobile_time: currentTime, sector_id: self.sector_id, search_direction_list: [0, 90, 180, 270], normalization_scale: self.normalizationScale, device_min_rss: Int(self.standardMinRss))
+            let input = CoarseLocationEstimation(user_id: self.user_id, mobile_time: currentTime, sector_id: self.sector_id, search_direction_list: [0, 90, 180, 270])
             NetworkManager.shared.postCLE(url: CLE_URL, input: input, completion: { statusCode, returnedString in
                 completion(statusCode, returnedString)
             })
@@ -1657,7 +1652,6 @@ public class ServiceManager: Observation {
                                     if (entranceResult.0 != 0) {
                                         let velocityScale: Double = self.EntranceVelocityScale[i]
                                         print(getLocalTimeString() + " , (Jupiter) Entrance Simulator : number = \(entranceResult.0)")
-//                                        print(getLocalTimeString() + " , (Jupiter) Entrance Simulator : scale = \(velocityScale)")
                                         self.currentEntrance = "\(result.building_name)_\(result.level_name)_\(entranceResult.0)"
                                         self.currentEntranceLength = entranceResult.1
                                         self.entranceVelocityScale = velocityScale
@@ -1677,13 +1671,6 @@ public class ServiceManager: Observation {
             
             paramEstimator.refreshWardMinRssi(bleData: self.bleAvg)
             paramEstimator.refreshWardMaxRssi(bleData: self.bleAvg)
-            if (self.isGetFirstResponse && self.isIndoor && self.indexAfterResponse >= 30 && (self.unitDrInfoIndex%5 == 0)) {
-                let normalizationScale: Double = paramEstimator.calNormalizationScale(standardMin: self.standardMinRss, standardMax: self.standradMaxRss)
-                let smoothedScale: Double = paramEstimator.smoothNormalizationScale(scale: normalizationScale)
-                self.normalizationScale = smoothedScale
-                let deviceMin: Double = paramEstimator.getDeviceMinRss()
-                self.deviceMinRss = deviceMin
-            }
             paramEstimator.refreshAllEntranceWardRssi(allEntranceWards: self.allEntranceWards, bleData: self.bleAvg)
             let isSufficientRfdBuffer = rflowCorrelator.accumulateRfdBuffer(bleData: self.bleAvg)
             let isSufficientRfdVelocityBuffer = rflowCorrelator.accumulateRfdVelocityBuffer(bleData: self.bleAvg)
@@ -4324,7 +4311,6 @@ public class ServiceManager: Observation {
                 
                 if (isRunOsr) {
                     let input = OnSpotRecognition(user_id: self.user_id, mobile_time: currentTime, rss_compensation: self.rssiBias)
-//                    let input = OnSpotRecognition(user_id: self.user_id, mobile_time: currentTime, normalization_scale: self.normalizationScale, device_min_rss: Int(self.deviceMinRss), standard_min_rss: Int(self.standardMinRss))
                     NetworkManager.shared.postOSR(url: OSR_URL, input: input, completion: { [self] statusCode, returnedString in
                         if (statusCode == 200) {
                             let result = decodeOSR(json: returnedString)
@@ -4642,18 +4628,6 @@ public class ServiceManager: Observation {
         return (false, area)
     }
     
-    func postParam(sector_id: Int, normailzationScale: Double) {
-        let localTime = getLocalTimeString()
-        
-        let input = JupiterParamPost(device_model: self.deviceModel, os_version: self.osVersion, sector_id: sector_id, normalization_scale: normailzationScale)
-        NetworkManager.shared.postJupiterParam(url: NS_URL, input: input, completion: { statusCode, returnedString in
-            if (statusCode == 200) {
-                print(localTime + " , (Jupiter) Success : Save Jupiter Param \(normailzationScale)")
-            } else {
-                print(localTime + " , (Jupiter) Warnings : Save Jupiter Param ")
-            }
-        })
-    }
     
     func reEstimateRssiBias() {
         print(getLocalTimeString() + " , (Jupiter) Bias is not correct -> Initialization")

@@ -242,9 +242,6 @@ public struct BuildingDetectionResult: Codable {
 struct CoarseLevelDetection: Encodable {
     var user_id: String
     var mobile_time: Int
-    var normalization_scale: Double
-    var device_min_rss: Int
-    var standard_min_rss: Int
 }
 
 public struct CoarseLevelDetectionResult: Codable {
@@ -289,8 +286,6 @@ struct CoarseLocationEstimation: Encodable {
     var mobile_time: Int
     var sector_id: Int
     var search_direction_list: [Int]
-    var normalization_scale: Double
-    var device_min_rss: Int
 }
 
 public struct CoarseLocationEstimationResult: Codable {
