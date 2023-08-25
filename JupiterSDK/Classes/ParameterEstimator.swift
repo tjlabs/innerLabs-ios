@@ -184,17 +184,19 @@ public class ParameterEstimator {
         }
     }
 
-    public func loadRssiBias(sector_id: Int) -> (Int, [Int], Bool) {
+    public func loadRssiBias(sector_id: Int) -> (Int, [Int], Bool, Bool) {
         var bias: Int = 2
         var biasArray: [Int] = []
         var isConverged: Bool = false
+        var isOldBias: Bool = false
         
         let currentTime = getCurrentTimeInMilliseconds()
         let keyBiasTime: String = "JupiterRssiBiasTime_\(sector_id)"
         if let biasTime: Int = UserDefaults.standard.object(forKey: keyBiasTime) as? Int {
             if (currentTime - biasTime) > 1000*3600*24*15  {
+                isOldBias = true
                 print(getLocalTimeString() + " , (Jupiter) Cannot believe old bias (\(currentTime - biasTime))")
-                return (bias, biasArray, isConverged)
+                return (bias, biasArray, isConverged, isOldBias)
             }
         }
         
@@ -213,7 +215,7 @@ public class ParameterEstimator {
             biasArray = loadedRssiBiasArray
         }
         
-        return (bias, biasArray, isConverged)
+        return (bias, biasArray, isConverged, isOldBias)
     }
 
     public func makeRssiBiasArray(bias: Int) -> [Int] {
