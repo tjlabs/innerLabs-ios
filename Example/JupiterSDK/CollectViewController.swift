@@ -67,6 +67,8 @@ class CollectViewController: UIViewController {
     var saveFlag: Bool = false
     var isWriting: Bool = false
     var deviceModel: String = "Unknown"
+    var os: String = "Unknown"
+    var osVersion: String = "Unknown"
     
     @IBOutlet weak var fileButton: UIButton!
     
@@ -91,6 +93,9 @@ class CollectViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(false)
         deviceModel = UIDevice.modelName
+        os = UIDevice.current.systemVersion
+        let arr = os.components(separatedBy: ".")
+        osVersion = arr[0]
         
         let width = collectView.frame.size.width
         let height = collectView.frame.size.height
@@ -288,12 +293,12 @@ class CollectViewController: UIViewController {
         let nowDate = Date()
         let convertNowStr = dateFormatter.string(from: nowDate)
         
-        var fileHeader: String = "ios_\(self.deviceModel)_Korea_"
+        var fileHeader: String = "ios_Korea_"
         let locale = Locale.current
         if let countryCode = locale.regionCode, countryCode == "KR" {
-            fileHeader = "ios_\(self.deviceModel)_Korea_"
+            fileHeader = "ios_Korea_"
         } else {
-            fileHeader = "ios_\(self.deviceModel)_Canada_"
+            fileHeader = "ios_Canada_"
         }
         
         // Create a object for write CSV
@@ -301,7 +306,7 @@ class CollectViewController: UIViewController {
         writeCSVObj.rows = self.data
         writeCSVObj.delimiter = DividerType.comma.rawValue
         writeCSVObj.fields = header as NSArray
-        writeCSVObj.name = fileHeader + convertNowStr
+        writeCSVObj.name = fileHeader + convertNowStr + "_\(self.deviceModel)_\(self.osVersion)"
         
         // Write File using CSV class object
         let output = CSVExport.export(writeCSVObj)
