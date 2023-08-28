@@ -66,6 +66,7 @@ class CollectViewController: UIViewController {
     
     var saveFlag: Bool = false
     var isWriting: Bool = false
+    var deviceModel: String = "Unknown"
     
     @IBOutlet weak var fileButton: UIButton!
     
@@ -89,6 +90,7 @@ class CollectViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(false)
+        deviceModel = UIDevice.modelName
         
         let width = collectView.frame.size.width
         let height = collectView.frame.size.height
@@ -286,12 +288,12 @@ class CollectViewController: UIViewController {
         let nowDate = Date()
         let convertNowStr = dateFormatter.string(from: nowDate)
         
-        var fileHeader: String = "ios_Korea_"
+        var fileHeader: String = "ios_\(self.deviceModel)_Korea_"
         let locale = Locale.current
         if let countryCode = locale.regionCode, countryCode == "KR" {
-            fileHeader = "ios_Korea_"
+            fileHeader = "ios_\(self.deviceModel)_Korea_"
         } else {
-            fileHeader = "ios_Canada_"
+            fileHeader = "ios_\(self.deviceModel)_Canada_"
         }
         
         // Create a object for write CSV
