@@ -1989,6 +1989,11 @@ public class ServiceManager: Observation {
                         }
                         
                         self.resultToReturn = self.simulateEntrance(originalResult: self.outputResult, runMode: self.runMode, currentEntranceIndex: self.currentEntranceIndex)
+                        if (!self.isIndoor) {
+                            self.isIndoor = true
+                            self.reporting(input: INDOOR_FLAG)
+                        }
+                        
                         self.currentEntranceIndex += 1
                         if (self.indexAfterSimulate >= Int(Double(MINIMUN_INDEX_FOR_BIAS)*1.5)) {
                             let diffX = self.resultToReturn.x - self.outputResult.x
@@ -3215,7 +3220,7 @@ public class ServiceManager: Observation {
         if (mode == "pdr") {
             lengthCondition = USER_TRAJECTORY_DIAGONAL*0.6
         }
-        let SEARCH_LENGTH: Double = lengthCondition*0.3
+        let SEARCH_LENGTH: Double = lengthCondition*0.4
         
         let headingStart = heading[0]
         let headingEnd = heading[1]
