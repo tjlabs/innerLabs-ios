@@ -1478,9 +1478,7 @@ public class ServiceManager: Observation {
                     } else {
                         displayOutput.isPmSuccess = false
                         let localTime: String = getLocalTimeString()
-                        
                         let key: String = "\(buildingName)_\(levelName)"
-                        
                         var isLoadPathPoint: Bool = true
                         if let isLoad: Bool = self.LoadPathPoint[key] { isLoadPathPoint = isLoad }
                         if let mainRoad: [[Double]] = self.PathPoint[key] {
@@ -1489,7 +1487,6 @@ public class ServiceManager: Observation {
                             if (isLoadPathPoint) {
                                 self.LoadPathPoint[key] = false
                                 let url = self.getPpUrl(server: self.serverType, key: key)
-                                
                                 let urlComponents = URLComponents(string: url)
                                 let requestURL = URLRequest(url: (urlComponents?.url)!)
                                 let dataTask = URLSession.shared.dataTask(with: requestURL, completionHandler: { (data, response, error) in
