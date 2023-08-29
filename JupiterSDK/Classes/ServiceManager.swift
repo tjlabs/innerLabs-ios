@@ -3135,7 +3135,7 @@ public class ServiceManager: Observation {
         if (mode == "pdr") {
             lengthCondition = USER_TRAJECTORY_DIAGONAL*0.6
         }
-        let SEARCH_LENGTH: Double = lengthCondition*0.3
+        let SEARCH_LENGTH: Double = lengthCondition*0.4
         
         let headingStart = heading[0]
         let headingEnd = heading[1]
