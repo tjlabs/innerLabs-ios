@@ -3,7 +3,7 @@ import CoreMotion
 import UIKit
 
 public class ServiceManager: Observation {
-    public static let sdkVersion: String = "3.2.0"
+    public static let sdkVersion: String = "3.2.0.1"
     
     func tracking(input: FineLocationTrackingResult, isPast: Bool) {
         for observer in observers {
@@ -3818,20 +3818,25 @@ public class ServiceManager: Observation {
                         } else {
                             // Kalman Filter가 동작 중이면서 위치 요청시 input의 phase 가 1~3 인 경우
                             self.phaseBreakResult = result
-                            if (result.phase == 4 && resultCorrected.0) {
-                                let propagationResult = propagateUsingUvd(drBuffer: self.unitDrBuffer, result: result)
-                                let propagationValues: [Double] = propagationResult.1
-                                if (propagationResult.0) {
-                                    var propagatedResult: [Double] = [resultCorrected.1[0]+propagationValues[0] , resultCorrected.1[1]+propagationValues[1], resultCorrected.1[2]+propagationValues[2]]
-                                    let pathMatchingResult = self.pathMatching(building: result.building_name, level: result.level_name, x: propagatedResult[0], y: propagatedResult[1], heading: propagatedResult[2], tuXY: [0,0], isPast: false, HEADING_RANGE: HEADING_RANGE, isUseHeading: true, pathType: 1)
-                                    propagatedResult = pathMatchingResult.xyh
-                                    propagatedResult[2] = compensateHeading(heading: propagatedResult[2])
+                            let propagationResult = propagateUsingUvd(drBuffer: self.unitDrBuffer, result: result)
+                            let propagationValues: [Double] = propagationResult.1
+                            var propagatedResult: [Double] = [resultCorrected.1[0]+propagationValues[0] , resultCorrected.1[1]+propagationValues[1], resultCorrected.1[2]+propagationValues[2]]
+                            let pathMatchingResult = self.pathMatching(building: result.building_name, level: result.level_name, x: propagatedResult[0], y: propagatedResult[1], heading: propagatedResult[2], tuXY: [0,0], isPast: false, HEADING_RANGE: HEADING_RANGE, isUseHeading: true, pathType: 1)
+                            propagatedResult = pathMatchingResult.xyh
+                            propagatedResult[2] = compensateHeading(heading: propagatedResult[2])
+                            
+                            if (result.phase == 4) {
+                                if (pathMatchingResult.isSuccess) {
                                     self.updateAllResult(result: propagatedResult, inputPhase: inputPhase, mode: self.runMode)
                                 } else {
                                     self.updateAllResult(result: resultCorrected.1, inputPhase: inputPhase, mode: self.runMode)
                                 }
                             } else if (result.phase == 3) {
-                                self.updateAllResult(result: resultCorrected.1, inputPhase: inputPhase, mode: self.runMode)
+                                if (pathMatchingResult.isSuccess) {
+                                    self.updateAllResult(result: propagatedResult, inputPhase: inputPhase, mode: self.runMode)
+                                } else {
+                                    self.updateAllResult(result: resultCorrected.1, inputPhase: inputPhase, mode: self.runMode)
+                                }
                             } else {
                                 self.isNeedTrajInit = true
                             }

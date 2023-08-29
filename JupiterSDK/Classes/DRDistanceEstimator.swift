@@ -200,7 +200,7 @@ public class DRDistanceEstimator: NSObject {
         var velocityMps = (velocityInputScale/3.6)*turnScale
         if (velocityInputScale >= 15 && self.rflowForVelocity > 0.65 && self.isSufficientRfdVelocityBuffer) {
 //            print(getLocalTimeString() + " , (Jupiter) I'm fast : velocityInputScale = \(velocityInputScale) , rflowForVelocity = \(self.rflowForVelocity)")
-            velocityMps = velocityMps*rflowScale
+//            velocityMps = velocityMps*rflowScale
         }
         
 //        print(getLocalTimeString() + " , (Jupiter) DRDistanceEstimator : velocityMps = \(velocityMps)")
