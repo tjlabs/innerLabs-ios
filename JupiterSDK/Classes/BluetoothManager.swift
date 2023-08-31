@@ -104,8 +104,8 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
     
     func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String : Any], rssi RSSI: NSNumber) {
         discoveredPeripheral = peripheral
+        self.bleLastScannedTime = getCurrentTimeInMillisecondsDouble()
         if let bleName = discoveredPeripheral.name {
-            self.bleLastScannedTime = getCurrentTimeInMillisecondsDouble()
             if bleName.contains("TJ-") {
                 let deviceIDString = bleName.substring(from: 8, to: 15)
                 
