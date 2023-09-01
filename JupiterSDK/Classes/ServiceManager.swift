@@ -137,7 +137,8 @@ public class ServiceManager: Observation {
     
     var osrTimer: DispatchSourceTimer?
     var OSR_INTERVAL: TimeInterval = 2
-    var phase2Count: Int = 0
+    var phase2ReqCount: Int = 0
+    var phase2BadCount: Int = 0
     var isMovePhase2To4: Bool = false
     var distanceAfterPhase2To4: Double = 0
     var isEnterPhase2: Bool = false
@@ -1700,9 +1701,9 @@ public class ServiceManager: Observation {
                                 let localTime = getLocalTimeString()
                                 let log: String = localTime + " , (Jupiter) Error : RFD \(statusCode) " + returnedStrig
                                 print(log)
-                                
+                                self.reporting(input: RFD_FLAG)
                                 if (statusCode == 406) {
-                                    self.reporting(input: RFD_FLAG)
+                                    
                                 }
                             }
                         })
@@ -2058,9 +2059,9 @@ public class ServiceManager: Observation {
                             let localTime: String = getLocalTimeString()
                             let log: String = localTime + " , (Jupiter) Error : UVD \(statusCode) " + returnedString
                             print(log)
-                            
+                            self.reporting(input: UVD_FLAG)
                             if (statusCode == 406) {
-                                self.reporting(input: UVD_FLAG)
+                                
                             }
                         }
                     })
@@ -2103,10 +2104,20 @@ public class ServiceManager: Observation {
                         
                         if (self.isStartSimulate) {
                             if (accumulatedLength >= 40) {
+                                self.phase2ReqCount += 1
+                                if (self.phase2ReqCount > 3) {
+                                    let expandRange: Int = Int((accumulatedLength - 40)/2)
+                                    searchInfo.0 = [searchInfo.0[0]-expandRange, searchInfo.0[1]-expandRange, searchInfo.0[2]+expandRange, searchInfo.0[3]+expandRange]
+                                }
                                 processPhase2(currentTime: currentTime, localTime: localTime, userTrajectory: phase2Trajectory, searchInfo: searchInfo)
                             }
                         } else {
                             if (accumulatedLength >= 40) {
+                                self.phase2ReqCount += 1
+                                if (self.phase2ReqCount > 3) {
+                                    let expandRange: Int = Int((accumulatedLength - 40)/2)
+                                    searchInfo.0 = [searchInfo.0[0]-expandRange, searchInfo.0[1]-expandRange, searchInfo.0[2]+expandRange, searchInfo.0[3]+expandRange]
+                                }
                                 processPhase2(currentTime: currentTime, localTime: localTime, userTrajectory: phase2Trajectory, searchInfo: searchInfo)
                             }
                         }
@@ -2173,7 +2184,8 @@ public class ServiceManager: Observation {
             let newTraj = getTrajectoryFromLast(from: self.userTrajectoryInfo, N: 15)
             self.userTrajectoryInfo = newTraj
             self.accumulatedLengthWhenPhase2 = calculateAccumulatedLength(userTrajectory: self.userTrajectoryInfo)
-            self.phase2Count = 0
+            self.phase2ReqCount = 0
+            self.phase2BadCount = 0
             
             displayOutput.phase = String(2)
             self.phase = 2
@@ -3356,14 +3368,14 @@ public class ServiceManager: Observation {
                             }
                         } else if (result.phase == 2) {
                             if (result.scc < SCC_FOR_PHASE4) {
-                                self.phase2Count += 1
-                                if (self.phase2Count > 3) {
+                                self.phase2BadCount += 1
+                                if (self.phase2BadCount > 6) {
                                     self.isNeedTrajInit = true
                                     self.phase = 1
                                     if (self.isActiveKf) {
                                         self.isPhaseBreak = true
                                     }
-                                    self.phase2Count = 0
+                                    self.phase2BadCount = 0
                                 }
                             }
                         } else {
@@ -3445,7 +3457,7 @@ public class ServiceManager: Observation {
                                         self.resultToReturn = self.makeOutputResult(input: self.outputResult, isPast: self.flagPast, runMode: self.runMode, isVenusMode: self.isVenusMode)
                                     }
                                 }
-                                self.phase2Count = 0
+                                self.phase2BadCount = 0
                                 self.isMovePhase2To4 = true
                                 self.isEnterPhase2 = true
                             }
@@ -3593,7 +3605,7 @@ public class ServiceManager: Observation {
             levelArray = self.makeLevelChangeArray(buildingName: self.currentBuilding, levelName: self.currentLevel, buildingLevel: self.buildingsAndLevels)
         }
         
-        self.phase2Count = 0
+        self.phase2BadCount = 0
         let input = FineLocationTracking(user_id: self.user_id, mobile_time: currentTime, sector_id: self.sector_id, building_name: self.currentBuilding, level_name_list: levelArray, phase: self.phase, search_range: searchInfo.0, search_direction_list: searchInfo.1, normalization_scale: self.normalizationScale, device_min_rss: Int(self.deviceMinRss), sc_compensation_list: [1.0], tail_index: searchInfo.2)
         self.networkCount += 1
         
