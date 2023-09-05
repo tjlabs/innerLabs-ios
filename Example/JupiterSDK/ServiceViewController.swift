@@ -1167,18 +1167,13 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
         let yMin = yAxisValue.min()!
         let yMax = yAxisValue.max()!
         
-//        print("\(currentBuilding) \(currentLevel) MinMax : \(xMin) , \(xMax), \(yMin), \(yMax)")
-//        print("\(currentBuilding) \(currentLevel) Limits : \(limits[0]) , \(limits[1]), \(limits[2]), \(limits[3])")
-
-//        scatterChart.xAxis.axisMinimum = -35.0
-//        scatterChart.xAxis.axisMaximum = 316
-//        scatterChart.leftAxis.axisMinimum = -9.0
-//        scatterChart.leftAxis.axisMaximum = 510.0
+        print("\(currentBuilding) \(currentLevel) MinMax : \(xMin) , \(xMax), \(yMin), \(yMax)")
+        print("\(currentBuilding) \(currentLevel) Limits : \(limits[0]) , \(limits[1]), \(limits[2]), \(limits[3])")
         
-//        scatterChart.xAxis.axisMinimum = -28
-//        scatterChart.xAxis.axisMaximum = 312
-//        scatterChart.leftAxis.axisMinimum = -9.0
-//        scatterChart.leftAxis.axisMaximum = 510.0
+//        scatterChart.xAxis.axisMinimum = -2.4
+//        scatterChart.xAxis.axisMaximum = 28
+//        scatterChart.leftAxis.axisMinimum = -15.7
+//        scatterChart.leftAxis.axisMaximum = 32.8
         
         // Configure Chart
         if ( limits[0] == 0 && limits[1] == 0 && limits[2] == 0 && limits[3] == 0 ) {

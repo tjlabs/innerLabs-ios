@@ -140,6 +140,7 @@ public class ServiceManager: Observation {
     var phase2ReqCount: Int = 0
     var phase2BadCount: Int = 0
     var isMovePhase2To4: Bool = false
+    var isNeedRemovePhase2To4Trajectroy: Bool = false
     var distanceAfterPhase2To4: Double = 0
     var isEnterPhase2: Bool = false
     var SCC_FOR_PHASE4: Double = 0.5
@@ -1653,6 +1654,7 @@ public class ServiceManager: Observation {
 //            self.bleAvg = ["TJ-00CB-0000030D-0000":-76.0] // COEX B2
 //            self.bleAvg = ["TJ-00CB-00000242-0000":-76.0] // S3 7F
 //            self.bleAvg = ["TJ-00CB-000003E7-0000":-76.0] // Plan Group
+//            self.bleAvg = ["TJ-00CB-00000407-0000":-76.0] // Dabeeo 8F
             
             paramEstimator.refreshWardMinRssi(bleData: self.bleAvg)
             paramEstimator.refreshWardMaxRssi(bleData: self.bleAvg)
@@ -2177,7 +2179,7 @@ public class ServiceManager: Observation {
         }
     }
     
-    func accumulateLengthAndRemoveOldest(isDetermineSpot: Bool, LENGTH_CONDITION: Double) {
+    func accumulateLengthAndRemoveOldest(isDetermineSpot: Bool, isMovePhase2To4: Bool, LENGTH_CONDITION: Double) {
         if (isDetermineSpot) {
             self.isDetermineSpot = false
             
@@ -2191,10 +2193,18 @@ public class ServiceManager: Observation {
             self.phase = 2
             self.outputResult.phase = 2
         } else {
-            let accumulatedLength = calculateAccumulatedLength(userTrajectory: self.userTrajectoryInfo)
-            
-            if accumulatedLength > LENGTH_CONDITION {
-                self.userTrajectoryInfo.removeFirst()
+            if (isMovePhase2To4) {
+                let isInLevelChangeArea = self.checkInLevelChangeArea(result: self.lastResult, mode: self.runMode)
+                if (isInLevelChangeArea && self.isNeedRemovePhase2To4Trajectroy) {
+                    self.isNeedRemovePhase2To4Trajectroy = false
+                    let newTraj = getTrajectoryFromLast(from: self.userTrajectoryInfo, N: 30)
+                    self.userTrajectoryInfo = newTraj
+                }
+            } else {
+                let accumulatedLength = calculateAccumulatedLength(userTrajectory: self.userTrajectoryInfo)
+                if accumulatedLength > LENGTH_CONDITION {
+                    self.userTrajectoryInfo.removeFirst()
+                }
             }
         }
     }
@@ -2364,7 +2374,7 @@ public class ServiceManager: Observation {
                     self.userTrajectory.userPmSuccess = isPmSuccess
                     
                     self.userTrajectoryInfo.append(self.userTrajectory)
-                    self.accumulateLengthAndRemoveOldest(isDetermineSpot: self.isDetermineSpot, LENGTH_CONDITION: self.USER_TRAJECTORY_LENGTH)
+                    self.accumulateLengthAndRemoveOldest(isDetermineSpot: self.isDetermineSpot, isMovePhase2To4: self.isMovePhase2To4, LENGTH_CONDITION: self.USER_TRAJECTORY_LENGTH)
                 }
             }
         }
@@ -4293,6 +4303,7 @@ public class ServiceManager: Observation {
                     self.buildingLevelChangedTime = currentTime
                     
                     self.isDetermineSpot = true
+                    self.isNeedRemovePhase2To4Trajectroy = true
                     
                     if (self.isStartSimulate) {
                         self.makeOutputResult(input: self.outputResult, isPast: self.flagPast, runMode: self.runMode, isVenusMode: self.isVenusMode)
@@ -4331,6 +4342,7 @@ public class ServiceManager: Observation {
                         self.buildingLevelChangedTime = currentTime
                         
                         self.isDetermineSpot = true
+                        self.isNeedRemovePhase2To4Trajectroy = true
                         
                         if (self.isStartSimulate) {
                             self.makeOutputResult(input: self.outputResult, isPast: self.flagPast, runMode: self.runMode, isVenusMode: self.isVenusMode)
