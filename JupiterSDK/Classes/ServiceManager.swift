@@ -668,7 +668,8 @@ public class ServiceManager: Observation {
                                                                         let resultTraj = decodeTraj(json: returnedString)
                                                                         self.USER_TRAJECTORY_LENGTH_ORIGIN = Double(resultTraj.trajectory_length + 10)
                                                                         self.USER_TRAJECTORY_LENGTH = Double(resultTraj.trajectory_length + 10)
-                                                                        self.USER_TRAJECTORY_DIAGONAL = Double(resultTraj.trajectory_diagonal + 10)
+                                                                        self.USER_TRAJECTORY_DIAGONAL = 15
+//                                                                        self.USER_TRAJECTORY_DIAGONAL = Double(resultTraj.trajectory_diagonal + 5)
                                                                         
                                                                         self.NUM_STRAIGHT_INDEX_DR = Int(ceil(self.USER_TRAJECTORY_LENGTH/6))
                                                                         self.NUM_STRAIGHT_INDEX_PDR = Int(ceil(self.USER_TRAJECTORY_DIAGONAL/6))
@@ -2409,7 +2410,7 @@ public class ServiceManager: Observation {
                     let userH = userTrajectory[userTrajectory.count-1].userHeading
                     
                     var RANGE = CONDITION
-                    RANGE = CONDITION*0.55
+//                    RANGE = CONDITION
                     
                     // Search Area
                     let areaMinMax: [Double] = [userX - RANGE, userY - RANGE, userX + RANGE, userY + RANGE]
@@ -3606,6 +3607,23 @@ public class ServiceManager: Observation {
         let localTime = getLocalTimeString()
         self.isSufficientRfd = checkSufficientRfd(userTrajectory: userTrajectory)
         
+        var requestScArray: [Double] = [self.scCompensation]
+        if (self.runMode == "pdr") {
+            requestScArray = [1.0]
+            let accumulatedDiagnoal = calculateAccumulatedDiagonal(userTrajectory: userTrajectory)
+            if (accumulatedDiagnoal < USER_TRAJECTORY_DIAGONAL/2) {
+                requestScArray = [1.01]
+            } else {
+                if (self.isScRequested) {
+                    requestScArray = [1.01]
+                } else {
+                    requestScArray = [0.8, 1.0]
+                    self.scRequestTime = currentTime
+                    self.isScRequested = true
+                }
+            }
+        }
+        
         if (self.runMode == "pdr") {
             self.currentLevel = removeLevelDirectionString(levelName: self.currentLevel)
         }
@@ -3616,7 +3634,7 @@ public class ServiceManager: Observation {
         }
         
         self.phase2BadCount = 0
-        let input = FineLocationTracking(user_id: self.user_id, mobile_time: currentTime, sector_id: self.sector_id, building_name: self.currentBuilding, level_name_list: levelArray, phase: self.phase, search_range: searchInfo.0, search_direction_list: searchInfo.1, normalization_scale: self.normalizationScale, device_min_rss: Int(self.deviceMinRss), sc_compensation_list: [1.0], tail_index: searchInfo.2)
+        let input = FineLocationTracking(user_id: self.user_id, mobile_time: currentTime, sector_id: self.sector_id, building_name: self.currentBuilding, level_name_list: levelArray, phase: self.phase, search_range: searchInfo.0, search_direction_list: searchInfo.1, normalization_scale: self.normalizationScale, device_min_rss: Int(self.deviceMinRss), sc_compensation_list: requestScArray, tail_index: searchInfo.2)
         self.networkCount += 1
         
         NetworkManager.shared.postFLT(url: FLT_URL, input: input, completion: { [self] statusCode, returnedString, inputPhase in
@@ -3626,6 +3644,29 @@ public class ServiceManager: Observation {
             if (statusCode == 200) {
                 let result = jsonToResult(json: returnedString)
                 if (result.x != 0 && result.y != 0) {
+                    if (self.isScRequested) {
+                        let compensationCheckTime = abs(result.mobile_time - self.scRequestTime)
+                        if (compensationCheckTime < 100) {
+                            if (result.scc < 0.55) {
+                                self.scCompensationBadCount += 1
+                            } else {
+                                if (result.scc > 0.7) {
+                                    self.scCompensation = result.sc_compensation
+                                }
+                                self.scCompensationBadCount = 0
+                            }
+                            
+                            if (self.scCompensationBadCount > 1) {
+                                self.scCompensationBadCount = 0
+                                let resultEstScCompensation = estimateScCompensation(sccResult: result.scc, scResult: result.sc_compensation, scArray: self.scCompensationArray)
+                                self.scCompensationArray = resultEstScCompensation
+                                self.isScRequested = false
+                            }
+                        } else if (compensationCheckTime > 3000) {
+                            self.isScRequested = false
+                        }
+                    }
+                    
                     if (result.mobile_time > self.preOutputMobileTime) {
                         displayOutput.indexRx = result.index
                         displayOutput.scc = result.scc
@@ -3924,7 +3965,7 @@ public class ServiceManager: Observation {
                 }
             } else {
                 let log: String = localTime + " , (Jupiter) Error : \(statusCode) Fail to request indoor position in Phase 3"
-//                print(log)
+                print(log)
             }
         })
     }
