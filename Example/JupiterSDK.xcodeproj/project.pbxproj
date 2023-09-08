@@ -26,7 +26,6 @@
 		B30D4F89298A0BF000BFC124 /* morguard_6F.csv in Resources */ = {isa = PBXBuildFile; fileRef = B30D4F87298A0BF000BFC124 /* morguard_6F.csv */; };
 		B30EED7C28936CB5009A3EDA /* TipsTownViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B30EED7B28936CB5009A3EDA /* TipsTownViewController.swift */; };
 		B30EED872893B64C009A3EDA /* CollectViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B30EED862893B64C009A3EDA /* CollectViewController.swift */; };
-		B311BE782AA750B20033E77F /* Dabeeo_8F.csv in Resources */ = {isa = PBXBuildFile; fileRef = B311BE772AA750B20033E77F /* Dabeeo_8F.csv */; };
 		B31EC7D92876C03A00799659 /* ServiceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B31EC7D82876C03A00799659 /* ServiceViewController.swift */; };
 		B32F8AC92A568B36006C900B /* PG_1F.csv in Resources */ = {isa = PBXBuildFile; fileRef = B32F8AC82A568B36006C900B /* PG_1F.csv */; };
 		B340EE3328093FB20096E404 /* CardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B340EE3228093FB20096E404 /* CardViewController.swift */; };
@@ -61,6 +60,7 @@
 		B3AA004928313C97007CD284 /* UILabelExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3AA004828313C97007CD284 /* UILabelExtension.swift */; };
 		B3AA004B28313CDF007CD284 /* UITextFieldExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3AA004A28313CDF007CD284 /* UITextFieldExtension.swift */; };
 		B3AA004D28313CEA007CD284 /* UITextViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3AA004C28313CEA007CD284 /* UITextViewExtension.swift */; };
+		B3AE49DD2AAAD8C70035E8F0 /* Dabeeo_8F.csv in Resources */ = {isa = PBXBuildFile; fileRef = B3AE49DC2AAAD8C70035E8F0 /* Dabeeo_8F.csv */; };
 		B3B2963C29B9756F0010CC64 /* SecretConfig.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = B3B2963B29B9756F0010CC64 /* SecretConfig.xcconfig */; };
 		B3B4F85A28114EEB009F9E6C /* ShowCardCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3B4F85828114EEB009F9E6C /* ShowCardCollectionViewCell.swift */; };
 		B3B4F85B28114EEB009F9E6C /* ShowCardCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B3B4F85928114EEB009F9E6C /* ShowCardCollectionViewCell.xib */; };
@@ -149,7 +149,6 @@
 		B30D4F87298A0BF000BFC124 /* morguard_6F.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = morguard_6F.csv; sourceTree = "<group>"; };
 		B30EED7B28936CB5009A3EDA /* TipsTownViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TipsTownViewController.swift; sourceTree = "<group>"; };
 		B30EED862893B64C009A3EDA /* CollectViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectViewController.swift; sourceTree = "<group>"; };
-		B311BE772AA750B20033E77F /* Dabeeo_8F.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Dabeeo_8F.csv; sourceTree = "<group>"; };
 		B31EC7D82876C03A00799659 /* ServiceViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceViewController.swift; sourceTree = "<group>"; };
 		B32F8AC82A568B36006C900B /* PG_1F.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = PG_1F.csv; sourceTree = "<group>"; };
 		B340EE3228093FB20096E404 /* CardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardViewController.swift; sourceTree = "<group>"; };
@@ -185,6 +184,7 @@
 		B3AA004828313C97007CD284 /* UILabelExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UILabelExtension.swift; sourceTree = "<group>"; };
 		B3AA004A28313CDF007CD284 /* UITextFieldExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITextFieldExtension.swift; sourceTree = "<group>"; };
 		B3AA004C28313CEA007CD284 /* UITextViewExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITextViewExtension.swift; sourceTree = "<group>"; };
+		B3AE49DC2AAAD8C70035E8F0 /* Dabeeo_8F.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Dabeeo_8F.csv; sourceTree = "<group>"; };
 		B3B2963B29B9756F0010CC64 /* SecretConfig.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = SecretConfig.xcconfig; sourceTree = "<group>"; };
 		B3B4F85828114EEB009F9E6C /* ShowCardCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowCardCollectionViewCell.swift; sourceTree = "<group>"; };
 		B3B4F85928114EEB009F9E6C /* ShowCardCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ShowCardCollectionViewCell.xib; sourceTree = "<group>"; };
@@ -318,9 +318,9 @@
 				B369287D28C5BCAC005FD4A9 /* LUPIUM_B1.csv */,
 				B3FD74EB2869A38800CD4D74 /* Gallery_3F.csv */,
 				B3B9F4E4286C2EA300FEE914 /* Gallery_4F_Road.csv */,
-				B311BE772AA750B20033E77F /* Dabeeo_8F.csv */,
 				B3FD74EA2869A38800CD4D74 /* Gallery_4F.csv */,
 				B3021F0E29541D7C000CE9AD /* Museum_1F.csv */,
+				B3AE49DC2AAAD8C70035E8F0 /* Dabeeo_8F.csv */,
 				B364B35428BCD8C5001A8950 /* LUPIUM_3F.csv */,
 				B30638F12A36E58800C7FF89 /* COEX_B0.csv */,
 				B32F8AC82A568B36006C900B /* PG_1F.csv */,
@@ -620,7 +620,7 @@
 				B3F9F31E298B701500BA5833 /* morguard_7F.csv in Resources */,
 				B3D19DED29079CE000A5F7D4 /* SpotTableViewCell.xib in Resources */,
 				B369287E28C5BCAC005FD4A9 /* LUPIUM_B1.csv in Resources */,
-				B311BE782AA750B20033E77F /* Dabeeo_8F.csv in Resources */,
+				B3AE49DD2AAAD8C70035E8F0 /* Dabeeo_8F.csv in Resources */,
 				B3FD74ED2869A38800CD4D74 /* Gallery_3F.csv in Resources */,
 				B32F8AC92A568B36006C900B /* PG_1F.csv in Resources */,
 				B30638F82A36E58800C7FF89 /* COEX_B3.csv in Resources */,

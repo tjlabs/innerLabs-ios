@@ -90,6 +90,19 @@ public func compensateHeading(heading: Double) -> Double {
     return headingToReturn
 }
 
+public func checkIsSimilarXyh(input: [Double]) -> Bool {
+    var dh = input[2]
+    if (dh >= 270) {
+        dh = 360 - dh
+    }
+    
+    if (dh < 20) {
+        return true
+    } else {
+        return false
+    }
+}
+
 public func checkDiagonal(userTrajectory: [TrajectoryInfo], DIAGONAL_CONDITION: Double) -> [TrajectoryInfo] {
     var accumulatedDiagonal = 0.0
     

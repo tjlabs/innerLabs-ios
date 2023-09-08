@@ -1170,8 +1170,8 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
         print("\(currentBuilding) \(currentLevel) MinMax : \(xMin) , \(xMax), \(yMin), \(yMax)")
         print("\(currentBuilding) \(currentLevel) Limits : \(limits[0]) , \(limits[1]), \(limits[2]), \(limits[3])")
         
-//        scatterChart.xAxis.axisMinimum = -2.4
-//        scatterChart.xAxis.axisMaximum = 28
+//        scatterChart.xAxis.axisMinimum = -0.2
+//        scatterChart.xAxis.axisMaximum = 30
 //        scatterChart.leftAxis.axisMinimum = -15.7
 //        scatterChart.leftAxis.axisMaximum = 32.8
         

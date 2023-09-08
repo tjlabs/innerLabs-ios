@@ -92,7 +92,7 @@ let HEADING_RANGE: Double = 46
 let HEADING_RANGE_TU: Double = 30
 
 let UVD_BUFFER_SIZE = 10
-let HEADING_BUFFER_SIZE: Int = 20
+let HEADING_BUFFER_SIZE: Int = 5
 
 let MR_INPUT_NUM = 20
 
