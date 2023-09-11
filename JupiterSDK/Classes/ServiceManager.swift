@@ -2199,7 +2199,7 @@ public class ServiceManager: Observation {
                 let isInLevelChangeArea = self.checkInLevelChangeArea(result: self.lastResult, mode: self.runMode)
                 if (isInLevelChangeArea && self.isNeedRemovePhase2To4Trajectroy) {
                     self.isNeedRemovePhase2To4Trajectroy = false
-                    let newTraj = getTrajectoryFromLast(from: self.userTrajectoryInfo, N: 30)
+                    let newTraj = getTrajectoryFromLast(from: self.userTrajectoryInfo, N: 15)
                     self.userTrajectoryInfo = newTraj
                 } else {
                     let accumulatedLength = calculateAccumulatedLength(userTrajectory: self.userTrajectoryInfo)
@@ -5462,7 +5462,6 @@ public class ServiceManager: Observation {
                 xyd = minData
             }
         }
-        
 //        print(getLocalTimeString() + " , (PM) calDistacneFromNearestPp = \(xyd)")
         
         return xyd
