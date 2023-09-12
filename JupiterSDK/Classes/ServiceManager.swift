@@ -143,7 +143,6 @@ public class ServiceManager: Observation {
     var isNeedRemovePhase2To4Trajectroy: Bool = false
     var distanceAfterPhase2To4: Double = 0
     var SCC_FOR_PHASE4: Double = 0.5
-
     var isVenusMode: Bool = false
     var collectTimer: Timer?
     // ------------------ //
