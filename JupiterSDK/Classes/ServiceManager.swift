@@ -3771,7 +3771,8 @@ public class ServiceManager: Observation {
                 if (self.isScRequested) {
                     requestScArray = [1.01]
                 } else {
-                    requestScArray = [0.8, 1.0]
+//                    requestScArray = [0.8, 1.0]
+                    requestScArray = [1.01]
                     self.scRequestTime = currentTime
                     self.isScRequested = true
                 }
