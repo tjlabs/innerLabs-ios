@@ -600,7 +600,7 @@ public class NetworkManager {
         }
     }
     
-    func postFLT(url: String, input: FineLocationTracking, completion: @escaping (Int, String,  Int) -> Void) {
+    func postFLT(url: String, input: FineLocationTracking, completion: @escaping (Int, String, Int) -> Void) {
         // [http 비동기 방식을 사용해서 http 요청 수행 실시]
         let urlComponents = URLComponents(string: url)
         var requestURL = URLRequest(url: (urlComponents?.url)!)

@@ -66,6 +66,7 @@ public class ServiceManager: Observation {
     
     var PathType = [String: [Int]]()
     var PathPoint = [String: [[Double]]]()
+    var PathPointMinMax = [Double]()
     var PathMagScale = [String: [Double]]()
     var PathHeading = [String: [String]]()
     var LoadPathPoint = [String: Bool]()
@@ -104,7 +105,6 @@ public class ServiceManager: Observation {
     // ----------------------------- //
     
     // ----- UserVelocityData ----- //
-    var mobilePastTime: Int = 0
     var UVD_INPUT_NUM: Int = 3
     var VALUE_INPUT_NUM: Int = 5
     var INIT_INPUT_NUM: Int = 3
@@ -3091,6 +3091,9 @@ public class ServiceManager: Observation {
                         resultRange = [self.preSearchRange[0] - rangeConstant, self.preSearchRange[1] - rangeConstant, self.preSearchRange[2] + rangeConstant, self.preSearchRange[3] + rangeConstant]
                     }
                 }
+                
+                
+                
             } else {
                 tailIndex = self.pastTailIndex
                 if (resultRange.isEmpty) {
@@ -3108,6 +3111,8 @@ public class ServiceManager: Observation {
                 resultDirection = [0, 90, 180, 270]
             }
         }
+        
+//        resultRange = convertToValidSearchRange(inputRange: resultRange, pathPointMinMax: self.PathPointMinMax)
         
         return (resultRange, resultDirection, tailIndex, searchType)
     }
@@ -4799,6 +4804,7 @@ public class ServiceManager: Observation {
             }
         }
         road = [roadX, roadY]
+        self.PathPointMinMax = [roadX.min() ?? 0, roadY.min() ?? 0, roadX.max() ?? 0, roadY.max() ?? 0]
         
         return (roadType, road, roadScale, roadHeading)
     }
@@ -5572,7 +5578,7 @@ public class ServiceManager: Observation {
             self.USER_TRAJECTORY_LENGTH = self.USER_TRAJECTORY_DIAGONAL
             self.kalmanR = 2 // 0.5
             self.INIT_INPUT_NUM = 3
-            self.VALUE_INPUT_NUM = 11
+            self.VALUE_INPUT_NUM = 6 // 11
             self.SQUARE_RANGE = self.SQUARE_RANGE_SMALL
             
             if (phase == 4) {
@@ -5653,8 +5659,12 @@ public class ServiceManager: Observation {
     func timeUpdate(length: Double, diffHeading: Double, mobileTime: Int, isNeedHeadingCorrection: Bool, drBuffer: [UnitDRInfo], runMode: String) -> FineLocationTrackingFromServer {
         updateHeading = timeUpdatePosition.heading + diffHeading
         
-        let dx = length*cos(updateHeading*D2R)
-        let dy = length*sin(updateHeading*D2R)
+        var dx = length*cos(updateHeading*D2R)
+        var dy = length*sin(updateHeading*D2R)
+        if (self.sector_id == 18) {
+            dx = dx * 0.8
+            dy = dy * 0.8
+        }
         
         timeUpdatePosition.x = timeUpdatePosition.x + dx
         timeUpdatePosition.y = timeUpdatePosition.y + dy
@@ -5689,20 +5699,20 @@ public class ServiceManager: Observation {
                 timeUpdatePosition = timeUpdateCopy
             }
         } else {
-//            let isDrStraight: Bool = isDrBufferStraight(drBuffer: drBuffer)
-//            if ((self.unitDrInfoIndex%2) == 0 && !isDrStraight) {
-//                let drBufferForPathMatching = Array(drBuffer.suffix(DR_BUFFER_SIZE_FOR_STRAIGHT))
-//                let pathTrajMatchingResult = self.pathTrajectoryMatching(building: timeUpdateOutput.building_name, level: levelName, x: timeUpdateCopy.x, y: timeUpdateCopy.y, heading: compensatedHeading, pastResult: self.jupiterResult, drBuffer: drBufferForPathMatching, HEADING_RANGE: HEADING_RANGE, pathType: 0)
-//                if (pathTrajMatchingResult.isSuccess) {
-//                    timeUpdatePosition.x = timeUpdatePosition.x*0.5 + pathTrajMatchingResult.xyd[0]*0.5
-//                    timeUpdatePosition.y = timeUpdatePosition.y*0.5 + pathTrajMatchingResult.xyd[1]*0.5
-//                    displayOutput.trajectoryPm = pathTrajMatchingResult.minTrajectory
-//                } else {
-//                    displayOutput.trajectoryPm = [[0,0]]
-//                }
-//            } else {
-//                displayOutput.trajectoryPm = [[0,0]]
-//            }
+            let isDrStraight: Bool = isDrBufferStraight(drBuffer: drBuffer)
+            if ((self.unitDrInfoIndex%2) == 0 && !isDrStraight) {
+                let drBufferForPathMatching = Array(drBuffer.suffix(DR_BUFFER_SIZE_FOR_STRAIGHT))
+                let pathTrajMatchingResult = self.pathTrajectoryMatching(building: timeUpdateOutput.building_name, level: levelName, x: timeUpdateCopy.x, y: timeUpdateCopy.y, heading: compensatedHeading, pastResult: self.jupiterResult, drBuffer: drBufferForPathMatching, HEADING_RANGE: HEADING_RANGE, pathType: 0)
+                if (pathTrajMatchingResult.isSuccess) {
+                    timeUpdatePosition.x = timeUpdatePosition.x*0.5 + pathTrajMatchingResult.xyd[0]*0.5
+                    timeUpdatePosition.y = timeUpdatePosition.y*0.5 + pathTrajMatchingResult.xyd[1]*0.5
+                    displayOutput.trajectoryPm = pathTrajMatchingResult.minTrajectory
+                } else {
+                    displayOutput.trajectoryPm = [[0,0]]
+                }
+            } else {
+                displayOutput.trajectoryPm = [[0,0]]
+            }
         }
         
         kalmanP += kalmanQ
