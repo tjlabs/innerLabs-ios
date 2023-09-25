@@ -135,9 +135,11 @@ class SampleViewController: UIViewController, Observer, FlutterStreamHandler {
     @IBAction func tapBackButton(_ sender: UIButton) {
         serviceManager.removeObserver(self)
         serviceManager.stopService()
-        
+       
         self.stopTimer()
         self.delegate?.sendPage(data: page)
+        self.removeFlutterMapViewController()
+        self.eventChannel?.setStreamHandler(nil)
         self.navigationController?.popViewController(animated: true)
     }
     
@@ -195,7 +197,6 @@ class SampleViewController: UIViewController, Observer, FlutterStreamHandler {
             print(getLocalTimeString() + " , (Flutter) Fail : Send result")
             return
         }
-//        print(getLocalTimeString() + " , (Flutter) Success : Send result : \(result)")
         events (
             NSDictionary(
                 dictionary: [
@@ -226,10 +227,13 @@ class SampleViewController: UIViewController, Observer, FlutterStreamHandler {
     
     private func showFlutterMap() {
         if let flutterEngine = (UIApplication.shared.delegate as! AppDelegate).mapEngine {
+            flutterEngine.viewController = nil
             self.flutterMapViewController = FlutterViewController(engine: flutterEngine, nibName: nil, bundle: nil)
             self.eventChannel = FlutterEventChannel(name: self.channelName, binaryMessenger: self.flutterMapViewController.binaryMessenger)
             self.eventChannel?.setStreamHandler(self)
             self.addFlutterMapViewController()
+        } else {
+            print(getLocalTimeString() + " , (Flutter) Engine is nil")
         }
     }
 }
