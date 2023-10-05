@@ -9,7 +9,7 @@ public class ServiceManager: Observation {
         for observer in observers {
             let result = input
             if (result.x != 0 && result.y != 0 && result.building_name != "" && result.level_name != "") {
-                
+                let magHeading = self.locationManager.getMagHeading()
                 self.jupiterResult = result
                 observer.update(result: result)
                 
@@ -97,6 +97,7 @@ public class ServiceManager: Observation {
     // ----- Sensor & BLE ----- //
     public var collectData = CollectData()
     var sensorManager = SensorManager()
+    var locationManager = LocationManager()
     var bleManager = BLECentralManager()
     // ------------------------ //
     
@@ -179,6 +180,7 @@ public class ServiceManager: Observation {
     var NUM_STRAIGHT_INDEX_PDR = 10
     var preTailHeading: Double = 0
     var preTuMmHeading: Double = 0
+    var magHeading: Double = 0
     
     var unitDistane: Double = 0
     var isStartFlag: Bool = false
