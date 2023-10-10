@@ -409,8 +409,8 @@ extension CardViewController: UICollectionViewDataSource, UICollectionViewDelega
         }
         else {
             let urlSector = URL(string: "https://storage.googleapis.com/\(IMAGE_URL)/card/\(sectorID)/main_image.png")
-            let resourceSector = ImageResource(downloadURL: urlSector!, cacheKey: "\(sectorID)Main")
-            cell.sectorImageView.kf.setImage(with: resourceSector, placeholder: nil, options: [.transition(.fade(1.2))], completionHandler: nil)
+//            let resourceSector = ImageResource(downloadURL: urlSector!, cacheKey: "\(sectorID)Main")
+            cell.sectorImageView.kf.setImage(with: urlSector!, placeholder: nil, options: [.transition(.fade(1.2))], completionHandler: nil)
         }
         
         return cell

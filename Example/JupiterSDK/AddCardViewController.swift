@@ -137,11 +137,11 @@ class AddCardViewController: UIViewController, UITextFieldDelegate {
                     let urlSector = URL(string: "https://storage.googleapis.com/\(IMAGE_URL)/card/\(id)/main_image.png")
                     let urlSectorShow = URL(string: "https://storage.googleapis.com/\(IMAGE_URL)/card/\(id)/edit_image.png")
                     
-                    let resourceSector = ImageResource(downloadURL: urlSector!, cacheKey: "\(id)Main")
-                    let resourceSectorShow = ImageResource(downloadURL: urlSectorShow!, cacheKey: "\(id)Show")
+//                    let resourceSector = ImageResource(downloadURL: urlSector!, cacheKey: "\(id)Main")
+//                    let resourceSectorShow = ImageResource(downloadURL: urlSectorShow!, cacheKey: "\(id)Show")
                     
-                    KingfisherManager.shared.retrieveImage(with: resourceSector, completionHandler: nil)
-                    KingfisherManager.shared.retrieveImage(with: resourceSectorShow, completionHandler: nil)
+                    KingfisherManager.shared.retrieveImage(with: urlSector!, completionHandler: nil)
+                    KingfisherManager.shared.retrieveImage(with: urlSectorShow!, completionHandler: nil)
                 }
                 
                 self.cardItemData.append(CardItemData(sector_id: id, sector_name: name, description: description, cardColor: cardColor, mode: mode, service: service, infoBuilding: infoBuilding, infoLevel: infoLevel))

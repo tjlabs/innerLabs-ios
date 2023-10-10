@@ -128,7 +128,7 @@ PODS:
     - GoogleUtilities/Logger
   - GoogleUtilities/UserDefaults (7.11.5):
     - GoogleUtilities/Logger
-  - JupiterSDK (3.0.8)
+  - JupiterSDK (3.2.1)
   - Kingfisher (7.9.0)
   - nanopb (2.30909.0):
     - nanopb/decode (= 2.30909.0)
@@ -229,7 +229,7 @@ SPEC CHECKSUMS:
   GoogleMaps: b7f7fc569a9b354a3af0d9729dbec40957b7d41e
   GooglePlaces: ca8d4aba09ba79e0a829cf1dca03a41de6a09016
   GoogleUtilities: 13e2c67ede716b8741c7989e26893d151b2b2084
-  JupiterSDK: 544f7bc4d84458125db1d8be3d57745f9efabbdf
+  JupiterSDK: fe92434e55251a428c99377626cbe3726b5e3d33
   Kingfisher: 59f908b6d2f403b0a3e539debb0eec05cb27002c
   nanopb: b552cce312b6c8484180ef47159bc0f65a1f0431
   PromisesObjC: c50d2056b5253dadbd6c2bea79b0674bd5a52fa4
@@ -239,6 +239,6 @@ SPEC CHECKSUMS:
   SwiftCSVExport: d9db3fb80484115028792f8d539445e3fb2c0ecb
   TextFieldEffects: 529b8aff706fb40f82c41c780c0777941a893796
 
-PODFILE CHECKSUM: 97b0b2cf2028ff05ac6e8695bd83efcdaf863a26
+PODFILE CHECKSUM: bda6ec84fc5d7409102485dfa03b25d205fb6e06
 
 COCOAPODS: 1.12.0

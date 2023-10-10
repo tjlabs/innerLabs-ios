@@ -290,12 +290,12 @@ class NeptuneViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
             
             if (data != nil) {
                 // 빌딩 -> 층 이미지가 있는 경우
-                let resourceBuildingLevel = ImageResource(downloadURL: urlLevel, cacheKey: "\(sectorId)_\(building)_\(level)_image")
+//                let resourceBuildingLevel = ImageResource(downloadURL: urlLevel, cacheKey: "\(sectorId)_\(building)_\(level)_image")
                 
                 //                scatterChart.isHidden = false
                 imageLevel.isHidden = false
                 noImageLabel.isHidden = true
-                imageLevel.kf.setImage(with: resourceBuildingLevel, placeholder: nil, options: [.transition(.fade(0.8))], completionHandler: nil)
+                imageLevel.kf.setImage(with: urlLevel, placeholder: nil, options: [.transition(.fade(0.8))], completionHandler: nil)
             } else {
                 // 빌딩 -> 층 이미지가 없는 경우
                 if (flag) {

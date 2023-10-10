@@ -290,8 +290,8 @@ extension ShowCardViewController: UICollectionViewDataSource {
             cell.sectorShowImage.image = sectorShowImages[indexPath.item]
         } else {
             let urlSectorShow = URL(string: "https://storage.googleapis.com/\(IMAGE_URL)/card/\(sectorID)/edit_image.png")
-            let resourceSectorShow = ImageResource(downloadURL: urlSectorShow!, cacheKey: "\(sectorID)Show")
-            cell.sectorShowImage.kf.setImage(with: resourceSectorShow, placeholder: nil, options: [.transition(.fade(1.2))], completionHandler: nil)
+//            let resourceSectorShow = ImageResource(downloadURL: urlSectorShow!, cacheKey: "\(sectorID)Show")
+            cell.sectorShowImage.kf.setImage(with: urlSectorShow!, placeholder: nil, options: [.transition(.fade(1.2))], completionHandler: nil)
         }
         
         if (isEditMode) {
