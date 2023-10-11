@@ -48,7 +48,7 @@ public class ServiceManager: Observation {
     
     
     // 1 ~ 5 : Release  //  0 : Test
-    var serverType: Int = 5
+    var serverType: Int = 6
     var region: String = "Korea"
     
     let jupiterServices: [String] = ["SD", "BD", "CLD", "FLD", "CLE", "FLT", "OSA"]
@@ -1616,47 +1616,94 @@ public class ServiceManager: Observation {
         if let bleData = bleDictionary {
             if (!self.isRfdTimerRunningFinished) {
                 self.isRfdTimerRunningFinished = true
-                self.bleTrimed = trimBleData(bleInput: bleData, nowTime: getCurrentTimeInMillisecondsDouble(), validTime: validTime)
-                self.bleAvg = avgBleData(bleDictionary: self.bleTrimed)
-                let scannedResult = getLastScannedEntranceOuterWardTime(bleAvg: self.bleAvg, entranceOuterWards: self.EntranceOuterWards)
-                if (scannedResult.0) {
-                    self.lastScannedEntranceOuterWardTime = scannedResult.1
-                }
                 
-                if (!self.isGetFirstResponse) {
-                    let findResult = findNetworkBadEntrance(bleAvg: self.bleAvg, bias: self.rssiBias)
-                    self.isInNetworkBadEntrance = findResult.0
+                let trimmedResult = trimBleData(bleInput: bleData, nowTime: getCurrentTimeInMillisecondsDouble(), validTime: validTime)
+                switch trimmedResult {
+                case .success(let trimmedData):
+                    self.bleAvg = avgBleData(bleDictionary: trimmedData)
+                    let scannedResult = getLastScannedEntranceOuterWardTime(bleAvg: self.bleAvg, entranceOuterWards: self.EntranceOuterWards)
+                    if (scannedResult.0) {
+                        self.lastScannedEntranceOuterWardTime = scannedResult.1
+                    }
                     
-                    if (!self.isIndoor && (self.timeForInit >= TIME_INIT_THRESHOLD)) {
-                        if (self.isInNetworkBadEntrance) {
-                            self.isGetFirstResponse = true
-                            self.isIndoor = true
-                            self.reporting(input: INDOOR_FLAG)
-                            
-                            let result = findResult.1
-                            
-                            self.outputResult.building_name = result.building_name
-                            self.outputResult.level_name = result.level_name
-                            self.outputResult.isIndoor = self.isIndoor
-                            
-                            for i in 0..<self.EntranceNumbers {
-                                if (!self.isStartSimulate) {
-                                    let entranceResult = self.findEntrance(result: result, entrance: i)
-                                    print(getLocalTimeString() + " , (Jupiter) Entrance Simulator : findEntrance = \(entranceResult)")
-                                    if (entranceResult.0 != 0) {
-                                        let velocityScale: Double = self.EntranceVelocityScale[i]
-                                        print(getLocalTimeString() + " , (Jupiter) Entrance Simulator : number = \(entranceResult.0)")
-//                                        print(getLocalTimeString() + " , (Jupiter) Entrance Simulator : scale = \(velocityScale)")
-                                        self.currentEntrance = "\(result.building_name)_\(result.level_name)_\(entranceResult.0)"
-                                        self.currentEntranceLength = entranceResult.1
-                                        self.entranceVelocityScale = velocityScale
-                                        self.isStartSimulate = true
+                    if (!self.isGetFirstResponse) {
+                        let findResult = findNetworkBadEntrance(bleAvg: self.bleAvg, bias: self.rssiBias)
+                        self.isInNetworkBadEntrance = findResult.0
+                        
+                        if (!self.isIndoor && (self.timeForInit >= TIME_INIT_THRESHOLD)) {
+                            if (self.isInNetworkBadEntrance) {
+                                self.isGetFirstResponse = true
+                                self.isIndoor = true
+                                self.reporting(input: INDOOR_FLAG)
+                                
+                                let result = findResult.1
+                                
+                                self.outputResult.building_name = result.building_name
+                                self.outputResult.level_name = result.level_name
+                                self.outputResult.isIndoor = self.isIndoor
+                                
+                                for i in 0..<self.EntranceNumbers {
+                                    if (!self.isStartSimulate) {
+                                        let entranceResult = self.findEntrance(result: result, entrance: i)
+                                        print(getLocalTimeString() + " , (Jupiter) Entrance Simulator : findEntrance = \(entranceResult)")
+                                        if (entranceResult.0 != 0) {
+                                            let velocityScale: Double = self.EntranceVelocityScale[i]
+                                            print(getLocalTimeString() + " , (Jupiter) Entrance Simulator : number = \(entranceResult.0)")
+                                            self.currentEntrance = "\(result.building_name)_\(result.level_name)_\(entranceResult.0)"
+                                            self.currentEntranceLength = entranceResult.1
+                                            self.entranceVelocityScale = velocityScale
+                                            self.isStartSimulate = true
+                                        }
                                     }
                                 }
                             }
                         }
                     }
+                case .failure(let error):
+                    print(getLocalTimeString() + " , (Jupiter) Error : \(error)")
                 }
+                
+//                self.bleTrimed = trimBleData(bleInput: bleData, nowTime: getCurrentTimeInMillisecondsDouble(), validTime: validTime)
+//                self.bleAvg = avgBleData(bleDictionary: self.bleTrimed)
+//                let scannedResult = getLastScannedEntranceOuterWardTime(bleAvg: self.bleAvg, entranceOuterWards: self.EntranceOuterWards)
+//                if (scannedResult.0) {
+//                    self.lastScannedEntranceOuterWardTime = scannedResult.1
+//                }
+//                
+//                if (!self.isGetFirstResponse) {
+//                    let findResult = findNetworkBadEntrance(bleAvg: self.bleAvg, bias: self.rssiBias)
+//                    self.isInNetworkBadEntrance = findResult.0
+//                    
+//                    if (!self.isIndoor && (self.timeForInit >= TIME_INIT_THRESHOLD)) {
+//                        if (self.isInNetworkBadEntrance) {
+//                            self.isGetFirstResponse = true
+//                            self.isIndoor = true
+//                            self.reporting(input: INDOOR_FLAG)
+//                            
+//                            let result = findResult.1
+//                            
+//                            self.outputResult.building_name = result.building_name
+//                            self.outputResult.level_name = result.level_name
+//                            self.outputResult.isIndoor = self.isIndoor
+//                            
+//                            for i in 0..<self.EntranceNumbers {
+//                                if (!self.isStartSimulate) {
+//                                    let entranceResult = self.findEntrance(result: result, entrance: i)
+//                                    print(getLocalTimeString() + " , (Jupiter) Entrance Simulator : findEntrance = \(entranceResult)")
+//                                    if (entranceResult.0 != 0) {
+//                                        let velocityScale: Double = self.EntranceVelocityScale[i]
+//                                        print(getLocalTimeString() + " , (Jupiter) Entrance Simulator : number = \(entranceResult.0)")
+////                                        print(getLocalTimeString() + " , (Jupiter) Entrance Simulator : scale = \(velocityScale)")
+//                                        self.currentEntrance = "\(result.building_name)_\(result.level_name)_\(entranceResult.0)"
+//                                        self.currentEntranceLength = entranceResult.1
+//                                        self.entranceVelocityScale = velocityScale
+//                                        self.isStartSimulate = true
+//                                    }
+//                                }
+//                            }
+//                        }
+//                    }
+//                }
             }
             
 //            self.bleAvg = ["TJ-00CB-0000038C-0000":-76.0] // COEX B2 <-> B3
@@ -4772,13 +4819,25 @@ public class ServiceManager: Observation {
         let currentTime = getCurrentTimeInMilliseconds()
         let bleDictionary: [String: [[Double]]]? = bleManager.bleDictionary
         if let bleData = bleDictionary {
-            let bleTrimed = trimBleData(bleInput: bleData, nowTime: getCurrentTimeInMillisecondsDouble(), validTime: validTime)
-            let bleAvg = avgBleData(bleDictionary: bleTrimed)
-            let bleRaw = latestBleData(bleDictionary: bleTrimed)
-            
-            sensorManager.collectData.time = currentTime
-            sensorManager.collectData.bleRaw = bleRaw
-            sensorManager.collectData.bleAvg = bleAvg
+            let trimmedResult = trimBleData(bleInput: bleData, nowTime: getCurrentTimeInMillisecondsDouble(), validTime: validTime)
+            switch trimmedResult {
+            case .success(let trimmedData):
+                let bleAvg = avgBleData(bleDictionary: trimmedData)
+                let bleRaw = latestBleData(bleDictionary: trimmedData)
+                
+                sensorManager.collectData.time = currentTime
+                sensorManager.collectData.bleRaw = bleRaw
+                sensorManager.collectData.bleAvg = bleAvg
+            case .failure(let error):
+                print(getLocalTimeString() + " , (Jupiter) Error : \(error)")
+                //            let bleTrimed = trimBleData(bleInput: bleData, nowTime: getCurrentTimeInMillisecondsDouble(), validTime: validTime)
+                //            let bleAvg = avgBleData(bleDictionary: bleTrimed)
+                //            let bleRaw = latestBleData(bleDictionary: bleTrimed)
+                //
+                //            sensorManager.collectData.time = currentTime
+                //            sensorManager.collectData.bleRaw = bleRaw
+                //            sensorManager.collectData.bleAvg = bleAvg
+            }
         } else {
             let log: String = localTime + " , (Jupiter) Warnings : Fail to get recent ble"
             print(log)
@@ -6221,25 +6280,25 @@ public class ServiceManager: Observation {
                 timeUpdatePosition = timeUpdateCopy
             }
         } else {
-            let isDrStraight: Bool = isDrBufferStraight(drBuffer: drBuffer)
-            if ((self.unitDrInfoIndex%2) == 0 && !isDrStraight) {
-                let drBufferForPathMatching = Array(drBuffer.suffix(DR_BUFFER_SIZE_FOR_STRAIGHT))
-                let pathTrajMatchingResult = self.extendedPathTrajectoryMatching(building: timeUpdateOutput.building_name, level: levelName, x: timeUpdateCopy.x, y: timeUpdateCopy.y, heading: compensatedHeading, pastResult: self.jupiterResult, drBuffer: drBufferForPathMatching, HEADING_RANGE: HEADING_RANGE, pathType: 0, mode: self.runMode)
-                if (pathTrajMatchingResult.isSuccess) {
-                    timeUpdatePosition.x = timeUpdatePosition.x*0.5 + pathTrajMatchingResult.xyd[0]*0.5
-                    timeUpdatePosition.y = timeUpdatePosition.y*0.5 + pathTrajMatchingResult.xyd[1]*0.5
-                    displayOutput.trajectoryPm = pathTrajMatchingResult.minTrajectory
-                    displayOutput.trajectoryOg = pathTrajMatchingResult.minTrajectoryOriginal
-                    let ratio: Double = self.calTrajectoryRatio(trajPm: pathTrajMatchingResult.minTrajectory, trajOg: pathTrajMatchingResult.minTrajectoryOriginal)
-                    self.scCompensationArray = [ratio]
-                } else {
-                    displayOutput.trajectoryPm = [[0,0]]
-                    displayOutput.trajectoryOg = [[0,0]]
-                }
-            } else {
-                displayOutput.trajectoryPm = [[0,0]]
-                displayOutput.trajectoryOg = [[0,0]]
-            }
+//            let isDrStraight: Bool = isDrBufferStraight(drBuffer: drBuffer)
+//            if ((self.unitDrInfoIndex%2) == 0 && !isDrStraight) {
+//                let drBufferForPathMatching = Array(drBuffer.suffix(DR_BUFFER_SIZE_FOR_STRAIGHT))
+//                let pathTrajMatchingResult = self.extendedPathTrajectoryMatching(building: timeUpdateOutput.building_name, level: levelName, x: timeUpdateCopy.x, y: timeUpdateCopy.y, heading: compensatedHeading, pastResult: self.jupiterResult, drBuffer: drBufferForPathMatching, HEADING_RANGE: HEADING_RANGE, pathType: 0, mode: self.runMode)
+//                if (pathTrajMatchingResult.isSuccess) {
+//                    timeUpdatePosition.x = timeUpdatePosition.x*0.5 + pathTrajMatchingResult.xyd[0]*0.5
+//                    timeUpdatePosition.y = timeUpdatePosition.y*0.5 + pathTrajMatchingResult.xyd[1]*0.5
+//                    displayOutput.trajectoryPm = pathTrajMatchingResult.minTrajectory
+//                    displayOutput.trajectoryOg = pathTrajMatchingResult.minTrajectoryOriginal
+//                    let ratio: Double = self.calTrajectoryRatio(trajPm: pathTrajMatchingResult.minTrajectory, trajOg: pathTrajMatchingResult.minTrajectoryOriginal)
+//                    self.scCompensationArray = [ratio]
+//                } else {
+//                    displayOutput.trajectoryPm = [[0,0]]
+//                    displayOutput.trajectoryOg = [[0,0]]
+//                }
+//            } else {
+//                displayOutput.trajectoryPm = [[0,0]]
+//                displayOutput.trajectoryOg = [[0,0]]
+//            }
         }
         
         kalmanP += kalmanQ

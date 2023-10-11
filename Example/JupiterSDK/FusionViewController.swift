@@ -470,7 +470,7 @@ class FusionViewController: UIViewController, Observer {
     
     private func parseRP(url:URL) -> [[Double]] {
         var rpXY = [[Double]]()
-        
+        print(url)
         var rpX = [Double]()
         var rpY = [Double]()
         
@@ -832,8 +832,8 @@ class FusionViewController: UIViewController, Observer {
         let yMin = yAxisValue.min()!
         let yMax = yAxisValue.max()!
         
-//        print("\(currentBuilding) \(currentLevel) MinMax : \(xMin) , \(xMax), \(yMin), \(yMax)")
-//        print("\(currentBuilding) \(currentLevel) Limits : \(limits[0]) , \(limits[1]), \(limits[2]), \(limits[3])")
+        print("\(currentBuilding) \(currentLevel) MinMax : \(xMin) , \(xMax), \(yMin), \(yMax)")
+        print("\(currentBuilding) \(currentLevel) Limits : \(limits[0]) , \(limits[1]), \(limits[2]), \(limits[3])")
         
 //        scatterChart.xAxis.axisMinimum = 2.2
 //        scatterChart.xAxis.axisMaximum = 100.6
@@ -845,10 +845,10 @@ class FusionViewController: UIViewController, Observer {
 //        scatterChart.leftAxis.axisMinimum = 0.1
 //        scatterChart.leftAxis.axisMaximum = 110.4
         
-//        scatterChart.xAxis.axisMinimum = 2.0
-//        scatterChart.xAxis.axisMaximum = 100.6
-//        scatterChart.leftAxis.axisMinimum = -2.5
-//        scatterChart.leftAxis.axisMaximum = 112.6
+//        scatterChart.xAxis.axisMinimum = -1.0
+//        scatterChart.xAxis.axisMaximum = 77.4
+//        scatterChart.leftAxis.axisMinimum = -19.4
+//        scatterChart.leftAxis.axisMaximum = 70.2
         
         if ( limits[0] == 0 && limits[1] == 0 && limits[2] == 0 && limits[3] == 0 ) {
             scatterChart.xAxis.axisMinimum = xMin - 5

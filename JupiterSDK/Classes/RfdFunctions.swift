@@ -3,27 +3,59 @@ import Foundation
 let WEAK_THRESHOLD: Double = -92
 let STRONG_THRESHOLD: Double = -80
 
-public func trimBleData(bleInput: [String: [[Double]]]?, nowTime: Double, validTime: Double) -> [String: [[Double]]] {
+//public func trimBleData(bleInput: [String: [[Double]]]?, nowTime: Double, validTime: Double) -> [String: [[Double]]] {
+//    guard let bleInput = bleInput else {
+//        return [:]
+//    }
+//    
+//    var trimmedData = [String: [[Double]]]()
+//    
+//    for (bleID, bleData) in bleInput {
+//        let newValue = bleData.filter { data in
+//            let rssi = data[0]
+//            let time = data[1]
+//            
+//            return (nowTime - time <= validTime) && (rssi >= -100)
+//        }
+//        
+//        if !newValue.isEmpty {
+//            trimmedData[bleID] = newValue
+//        }
+//    }
+//    
+//    return trimmedData
+//}
+
+public func trimBleData(bleInput: [String: [[Double]]]?, nowTime: Double, validTime: Double) -> Result<[String: [[Double]]], Error> {
     guard let bleInput = bleInput else {
-        return [:]
-    }
-    
-    var trimmedData = [String: [[Double]]]()
-    
-    for (bleID, bleData) in bleInput {
-        let newValue = bleData.filter { data in
-            let rssi = data[0]
-            let time = data[1]
-            
-            return (nowTime - time <= validTime) && (rssi >= -100)
+            return .failure(TrimBleDataError.invalidInput)
         }
         
-        if !newValue.isEmpty {
-            trimmedData[bleID] = newValue
+        var trimmedData = [String: [[Double]]]()
+        
+        for (bleID, bleData) in bleInput {
+            let newValue = bleData.filter { data in
+                let rssi = data[0]
+                let time = data[1]
+                
+                return (nowTime - time <= validTime) && (rssi >= -100)
+            }
+            
+            if !newValue.isEmpty {
+                trimmedData[bleID] = newValue
+            }
         }
-    }
-    
-    return trimmedData
+        
+        if trimmedData.isEmpty {
+            return .failure(TrimBleDataError.noValidData)
+        } else {
+            return .success(trimmedData)
+        }
+}
+
+enum TrimBleDataError: Error {
+    case invalidInput
+    case noValidData
 }
 
 
