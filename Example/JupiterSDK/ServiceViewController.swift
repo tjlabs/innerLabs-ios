@@ -1177,31 +1177,31 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
         let yMin = yAxisValue.min()!
         let yMax = yAxisValue.max()!
         
-        print("\(currentBuilding) \(currentLevel) MinMax : \(xMin) , \(xMax), \(yMin), \(yMax)")
-        print("\(currentBuilding) \(currentLevel) Limits : \(limits[0]) , \(limits[1]), \(limits[2]), \(limits[3])")
+//        print("\(currentBuilding) \(currentLevel) MinMax : \(xMin) , \(xMax), \(yMin), \(yMax)")
+//        print("\(currentBuilding) \(currentLevel) Limits : \(limits[0]) , \(limits[1]), \(limits[2]), \(limits[3])")
         
 //        scatterChart.xAxis.axisMinimum = -1.2
 //        scatterChart.xAxis.axisMaximum = 77.4
 //        scatterChart.leftAxis.axisMinimum = -21.8
 //        scatterChart.leftAxis.axisMaximum = 67.8
         
-        scatterChart.xAxis.axisMinimum = -8.7
-        scatterChart.xAxis.axisMaximum = 39.5
-        scatterChart.leftAxis.axisMinimum = -8.7
-        scatterChart.leftAxis.axisMaximum = 66.0
+//        scatterChart.xAxis.axisMinimum = -8.7
+//        scatterChart.xAxis.axisMaximum = 39.5
+//        scatterChart.leftAxis.axisMinimum = -8.7
+//        scatterChart.leftAxis.axisMaximum = 66.0
         
         // Configure Chart
-//        if ( limits[0] == 0 && limits[1] == 0 && limits[2] == 0 && limits[3] == 0 ) {
-//            scatterChart.xAxis.axisMinimum = xMin - 5
-//            scatterChart.xAxis.axisMaximum = xMax + 5
-//            scatterChart.leftAxis.axisMinimum = yMin - 5
-//            scatterChart.leftAxis.axisMaximum = yMax + 5
-//        } else {
-//            scatterChart.xAxis.axisMinimum = limits[0]
-//            scatterChart.xAxis.axisMaximum = limits[1]
-//            scatterChart.leftAxis.axisMinimum = limits[2]
-//            scatterChart.leftAxis.axisMaximum = limits[3]
-//        }
+        if ( limits[0] == 0 && limits[1] == 0 && limits[2] == 0 && limits[3] == 0 ) {
+            scatterChart.xAxis.axisMinimum = xMin - 5
+            scatterChart.xAxis.axisMaximum = xMax + 5
+            scatterChart.leftAxis.axisMinimum = yMin - 5
+            scatterChart.leftAxis.axisMaximum = yMax + 5
+        } else {
+            scatterChart.xAxis.axisMinimum = limits[0]
+            scatterChart.xAxis.axisMaximum = limits[1]
+            scatterChart.leftAxis.axisMinimum = limits[2]
+            scatterChart.leftAxis.axisMaximum = limits[3]
+        }
         
         scatterChart.xAxis.drawGridLinesEnabled = chartFlag
         scatterChart.leftAxis.drawGridLinesEnabled = chartFlag
