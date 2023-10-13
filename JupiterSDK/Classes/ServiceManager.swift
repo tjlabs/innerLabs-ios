@@ -1660,6 +1660,7 @@ public class ServiceManager: Observation {
                     }
                 case .failure(let error):
                     print(getLocalTimeString() + " , (Jupiter) Error : \(error)")
+                    self.reporting(input: BLE_ERROR_FLAG)
                 }
                 
 //                self.bleTrimed = trimBleData(bleInput: bleData, nowTime: getCurrentTimeInMillisecondsDouble(), validTime: validTime)
@@ -1759,9 +1760,6 @@ public class ServiceManager: Observation {
                                 let log: String = localTime + " , (Jupiter) Error : RFD \(statusCode) " + returnedString
                                 print(log)
                                 self.reporting(input: RFD_FLAG)
-                                if (statusCode == 406) {
-                                    
-                                }
                             }
                         })
                         inputReceivedForce = [ReceivedForce(user_id: "", mobile_time: 0, ble: [:], pressure: 0)]
@@ -4831,13 +4829,7 @@ public class ServiceManager: Observation {
                 sensorManager.collectData.bleAvg = bleAvg
             case .failure(let error):
                 print(getLocalTimeString() + " , (Jupiter) Error : \(error)")
-                //            let bleTrimed = trimBleData(bleInput: bleData, nowTime: getCurrentTimeInMillisecondsDouble(), validTime: validTime)
-                //            let bleAvg = avgBleData(bleDictionary: bleTrimed)
-                //            let bleRaw = latestBleData(bleDictionary: bleTrimed)
-                //
-                //            sensorManager.collectData.time = currentTime
-                //            sensorManager.collectData.bleRaw = bleRaw
-                //            sensorManager.collectData.bleAvg = bleAvg
+                self.reporting(input: BLE_ERROR_FLAG)
             }
         } else {
             let log: String = localTime + " , (Jupiter) Warnings : Fail to get recent ble"
