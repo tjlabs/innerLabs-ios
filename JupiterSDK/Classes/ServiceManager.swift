@@ -48,7 +48,7 @@ public class ServiceManager: Observation {
     
     
     // 1 ~ 5 : Release  //  0 : Test
-    var serverType: Int = 6
+    var serverType: Int = 5
     var region: String = "Korea"
     
     let jupiterServices: [String] = ["SD", "BD", "CLD", "FLD", "CLE", "FLT", "OSA"]
@@ -175,7 +175,7 @@ public class ServiceManager: Observation {
     var DR_BUFFER_SIZE_FOR_STRAIGHT: Int = 10
     var USER_TRAJECTORY_LENGTH_ORIGIN: Double = 60
     var USER_TRAJECTORY_LENGTH: Double = 60
-    var USER_TRAJECTORY_DIAGONAL: Double = 200
+    var USER_TRAJECTORY_DIAGONAL: Double = 20
     var NUM_STRAIGHT_INDEX_DR = 10
     var NUM_STRAIGHT_INDEX_PDR = 10
     var preTailHeading: Double = 0
@@ -220,7 +220,6 @@ public class ServiceManager: Observation {
     var standardMinRss: Double = -99.0
     var standradMaxRss: Double = -60.0
     var normalizationScale: Double = 1.0
-//    var isScaleLoadedFromServer: Bool = false
     var isScaleLoaded: Bool = false
     
     var isBiasConverged: Bool = false
@@ -668,7 +667,7 @@ public class ServiceManager: Observation {
                                                                         let resultTraj = decodeTraj(json: returnedString)
                                                                         self.USER_TRAJECTORY_LENGTH_ORIGIN = Double(resultTraj.trajectory_length + 10)
                                                                         self.USER_TRAJECTORY_LENGTH = Double(resultTraj.trajectory_length + 10)
-                                                                        self.USER_TRAJECTORY_DIAGONAL = Double(resultTraj.trajectory_diagonal + 5)
+                                                                        self.USER_TRAJECTORY_DIAGONAL = Double(resultTraj.trajectory_diagonal)
                                                                         
                                                                         self.NUM_STRAIGHT_INDEX_DR = Int(ceil(self.USER_TRAJECTORY_LENGTH/6))
                                                                         self.NUM_STRAIGHT_INDEX_PDR = Int(ceil(self.USER_TRAJECTORY_DIAGONAL/6))
@@ -1814,7 +1813,8 @@ public class ServiceManager: Observation {
                         }
                     }
                 }
-
+                
+                self.timeSleepRF += RFD_INTERVAL
                 if (self.timeSleepRF >= SLEEP_THRESHOLD) {
                     self.isActiveService = false
                     self.timeSleepRF = 0
@@ -2275,7 +2275,8 @@ public class ServiceManager: Observation {
     }
     
     func accumulateDiagonalAndRemoveOldest(LENGTH_CONDITION: Double) {
-        let newTrajectoryInfo = checkDiagonal(userTrajectory: self.userTrajectoryInfo, DIAGONAL_CONDITION: LENGTH_CONDITION)
+//        let newTrajectoryInfo = checkDiagonal(userTrajectory: self.userTrajectoryInfo, DIAGONAL_CONDITION: LENGTH_CONDITION)
+        let newTrajectoryInfo = checkAccumulatedLength(userTrajectory: self.userTrajectoryInfo, LENGTH_CONDITION: LENGTH_CONDITION)
         self.userTrajectoryInfo = newTrajectoryInfo
     }
     
@@ -2456,7 +2457,7 @@ public class ServiceManager: Observation {
         var CONDITION: Double = USER_TRAJECTORY_LENGTH
         var accumulatedValue: Double = length
         if (mode == "pdr") {
-            CONDITION = USER_TRAJECTORY_DIAGONAL
+            CONDITION = USER_TRAJECTORY_DIAGONAL + 5
             accumulatedValue = diagonal
             
             if (!userTrajectory.isEmpty) {
@@ -2475,7 +2476,6 @@ public class ServiceManager: Observation {
                     let userH = userTrajectory[userTrajectory.count-1].userHeading
                     
                     var RANGE = CONDITION
-//                    RANGE = CONDITION
                     
                     // Search Area
                     let areaMinMax: [Double] = [userX - RANGE, userY - RANGE, userX + RANGE, userY + RANGE]
@@ -3857,7 +3857,7 @@ public class ServiceManager: Observation {
                 if (self.isScRequested) {
                     requestScArray = [1.01]
                 } else {
-                    requestScArray = [0.8, 1.0]
+                    requestScArray = [0.9, 1.0]
                     self.scRequestTime = currentTime
                     self.isScRequested = true
                 }
@@ -4225,13 +4225,14 @@ public class ServiceManager: Observation {
             if (accumulatedDiagnoal < USER_TRAJECTORY_DIAGONAL/2) {
                 requestScArray = [1.01]
             } else {
-//                if (self.isScRequested) {
-//                    requestScArray = [1.01]
-//                } else {
+                if (self.isScRequested) {
+                    requestScArray = [1.01]
+                } else {
 //                    requestScArray = self.scCompensationArray
-//                    self.scRequestTime = currentTime
-//                    self.isScRequested = true
-//                }
+                    requestScArray = [0.9, 1.0]
+                    self.scRequestTime = currentTime
+                    self.isScRequested = true
+                }
                 requestScArray = self.scCompensationArray
             }
         } else {
@@ -4373,8 +4374,8 @@ public class ServiceManager: Observation {
                                             resultForMu.absolute_heading = resultCorrected.1[2] + dh
                                         } else {
                                             resultForMu.absolute_heading = resultForMu.absolute_heading + dh
-                                            resultForMu.absolute_heading = compensateHeading(heading: resultForMu.absolute_heading)
                                         }
+                                        resultForMu.absolute_heading = compensateHeading(heading: resultForMu.absolute_heading)
                                     }
                                             
                                     let muOutput = measurementUpdate(timeUpdatePosition: timeUpdatePosition, serverOutputHat: resultForMu, originalResult: resultCorrected.1, isNeedHeadingCorrection: self.isNeedHeadingCorrection, mode: self.runMode)
@@ -5683,7 +5684,7 @@ public class ServiceManager: Observation {
                         }
                     }
                     
-                    print(getLocalTimeString() + " , (PM) minDistanceCoord = \(minDistanceCoord)")
+//                    print(getLocalTimeString() + " , (PM) minDistanceCoord = \(minDistanceCoord)")
                     if (!minDistanceCoord.isEmpty) {
                         if (minDistanceCoord[2] <= 15 && minDistanceCoord[3] <= 3) {
                             isSuccess = true
@@ -5699,7 +5700,7 @@ public class ServiceManager: Observation {
 //        print(getLocalTimeString() + " , (PM) isSuccess = \(isSuccess) // minTrajectory = \(minTrajectory)")
         let endTime: Double = getCurrentTimeInMillisecondsDouble()
         let checkTime = (endTime-startTime)*1e-3
-        print(getLocalTimeString() + " , (Jupiter) Path-Traj Matching : time = \(checkTime)")
+//        print(getLocalTimeString() + " , (Jupiter) Path-Traj Matching : time = \(checkTime)")
         return (isSuccess, xyd, minTrajectory, minTrajectoryOriginal)
     }
     
@@ -5804,7 +5805,7 @@ public class ServiceManager: Observation {
                 xyd = minData
             }
         }
-        print(getLocalTimeString() + " , (PM) extendedCalDistacneFromNearestPp = \(xyd)")
+//        print(getLocalTimeString() + " , (PM) extendedCalDistacneFromNearestPp = \(xyd)")
         
         return xyd
     }
@@ -6204,10 +6205,6 @@ public class ServiceManager: Observation {
         
         var dx = length*cos(updateHeading*D2R)
         var dy = length*sin(updateHeading*D2R)
-        if (self.sector_id == 18) {
-            dx = dx * 0.8
-            dy = dy * 0.8
-        }
         
         timeUpdatePosition.x = timeUpdatePosition.x + dx
         timeUpdatePosition.y = timeUpdatePosition.y + dy
@@ -6339,16 +6336,17 @@ public class ServiceManager: Observation {
             serverOutputHatMm.y = serverOutputHatCopyMm.1[1]
             if (isNeedHeadingCorrection) {
                 serverOutputHatMm.absolute_heading = serverOutputHatCopyMm.1[2]
-                if (timeUpdateHeadingCopy >= 270 && (serverOutputHatMm.absolute_heading >= 0 && serverOutputHatMm.absolute_heading < 90)) {
-                    serverOutputHatMm.absolute_heading = serverOutputHatMm.absolute_heading + 360
-                } else if (serverOutputHatMm.absolute_heading >= 270 && (timeUpdateHeadingCopy >= 0 && timeUpdateHeadingCopy < 90)) {
-                    timeUpdateHeadingCopy = timeUpdateHeadingCopy + 360
-                }
             } else {
                 serverOutputHatMm.absolute_heading = serverOutputHatCopy.absolute_heading
             }
         } else {
             serverOutputHatMm.absolute_heading = originalResult[2]
+        }
+        
+        if (timeUpdateHeadingCopy >= 270 && (serverOutputHatMm.absolute_heading >= 0 && serverOutputHatMm.absolute_heading < 90)) {
+            serverOutputHatMm.absolute_heading = serverOutputHatMm.absolute_heading + 360
+        } else if (serverOutputHatMm.absolute_heading >= 270 && (timeUpdateHeadingCopy >= 0 && timeUpdateHeadingCopy < 90)) {
+            timeUpdateHeadingCopy = timeUpdateHeadingCopy + 360
         }
         
         measurementOutput = serverOutputHatMm
