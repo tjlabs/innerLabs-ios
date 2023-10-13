@@ -392,8 +392,6 @@ public func convertToValidSearchRange(inputRange: [Int], pathPointMinMax: [Doubl
         }
     }
     
-    print("Search Range : input = \(inputRange) , minMax = \(pathPointMinMax) , result = \(searchRange)")
-    
     return searchRange
 }
 

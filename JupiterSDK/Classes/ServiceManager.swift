@@ -1662,48 +1662,6 @@ public class ServiceManager: Observation {
                     print(getLocalTimeString() + " , (Jupiter) Error : \(error)")
                     self.reporting(input: BLE_ERROR_FLAG)
                 }
-                
-//                self.bleTrimed = trimBleData(bleInput: bleData, nowTime: getCurrentTimeInMillisecondsDouble(), validTime: validTime)
-//                self.bleAvg = avgBleData(bleDictionary: self.bleTrimed)
-//                let scannedResult = getLastScannedEntranceOuterWardTime(bleAvg: self.bleAvg, entranceOuterWards: self.EntranceOuterWards)
-//                if (scannedResult.0) {
-//                    self.lastScannedEntranceOuterWardTime = scannedResult.1
-//                }
-//                
-//                if (!self.isGetFirstResponse) {
-//                    let findResult = findNetworkBadEntrance(bleAvg: self.bleAvg, bias: self.rssiBias)
-//                    self.isInNetworkBadEntrance = findResult.0
-//                    
-//                    if (!self.isIndoor && (self.timeForInit >= TIME_INIT_THRESHOLD)) {
-//                        if (self.isInNetworkBadEntrance) {
-//                            self.isGetFirstResponse = true
-//                            self.isIndoor = true
-//                            self.reporting(input: INDOOR_FLAG)
-//                            
-//                            let result = findResult.1
-//                            
-//                            self.outputResult.building_name = result.building_name
-//                            self.outputResult.level_name = result.level_name
-//                            self.outputResult.isIndoor = self.isIndoor
-//                            
-//                            for i in 0..<self.EntranceNumbers {
-//                                if (!self.isStartSimulate) {
-//                                    let entranceResult = self.findEntrance(result: result, entrance: i)
-//                                    print(getLocalTimeString() + " , (Jupiter) Entrance Simulator : findEntrance = \(entranceResult)")
-//                                    if (entranceResult.0 != 0) {
-//                                        let velocityScale: Double = self.EntranceVelocityScale[i]
-//                                        print(getLocalTimeString() + " , (Jupiter) Entrance Simulator : number = \(entranceResult.0)")
-////                                        print(getLocalTimeString() + " , (Jupiter) Entrance Simulator : scale = \(velocityScale)")
-//                                        self.currentEntrance = "\(result.building_name)_\(result.level_name)_\(entranceResult.0)"
-//                                        self.currentEntranceLength = entranceResult.1
-//                                        self.entranceVelocityScale = velocityScale
-//                                        self.isStartSimulate = true
-//                                    }
-//                                }
-//                            }
-//                        }
-//                    }
-//                }
             }
             
 //            self.bleAvg = ["TJ-00CB-0000038C-0000":-76.0] // COEX B2 <-> B3
@@ -1828,20 +1786,6 @@ public class ServiceManager: Observation {
             self.timeForInit += RFD_INTERVAL
         }
         self.isRfdTimerRunningFinished = false
-    }
-    
-    func checkBleChannelNum(bleDict: [String: Double]) -> Int {
-        var numChannels: Int = 0
-        
-        for key in bleDict.keys {
-            let bleRssi: Double = bleDict[key] ?? -100.0
-            
-            if (bleRssi > -95.0) {
-                numChannels += 1
-            }
-        }
-        
-        return numChannels
     }
     
     @objc func userVelocityTimerUpdate() {
@@ -2273,7 +2217,6 @@ public class ServiceManager: Observation {
     }
     
     func accumulateDiagonalAndRemoveOldest(LENGTH_CONDITION: Double) {
-//        let newTrajectoryInfo = checkDiagonal(userTrajectory: self.userTrajectoryInfo, DIAGONAL_CONDITION: LENGTH_CONDITION)
         let newTrajectoryInfo = checkAccumulatedLength(userTrajectory: self.userTrajectoryInfo, LENGTH_CONDITION: LENGTH_CONDITION)
         self.userTrajectoryInfo = newTrajectoryInfo
     }
@@ -2847,40 +2790,6 @@ public class ServiceManager: Observation {
                         searchType = -1
                     }
                     
-//                    if (length >= 40) {
-//                        let headingLeastChangeSection = extractSectionWithLeastChange(inputArray: uvRawHeading)
-//                        if (headingLeastChangeSection.isEmpty) {
-//                            var diffHeadingHeadTail = abs(uvRawHeading[uvRawHeading.count-1] - uvRawHeading[0])
-//                            for ppHeading in ppHeadings {
-//                                let defaultHeading = ppHeading - diffHeadingHeadTail
-//                                searchHeadings.append(compensateHeading(heading: defaultHeading))
-//                            }
-//                        } else {
-//                            let headingForCompensation = headingLeastChangeSection[headingLeastChangeSection.count-1] - uvRawHeading[0]
-//                            var trajCandidates: [MatchedTraj] = []
-//                            for ppHeading in ppHeadings {
-//                                let phase2TailHeading = compensateHeading(heading: ppHeading - headingForCompensation)
-//                                searchHeadings.append(phase2TailHeading)
-//
-//                                // Added
-//                                let bestMatchedTrajEachDirection = getBestMatchedTrajectory(building: userBuilding, level: userLevel, searchRange: resultRange, tailHeading: phase2TailHeading, uvHeading: uvRawHeading, uvLength: uvRawLength, pathType: 1, mode: "dr")
-//                                trajCandidates.append(bestMatchedTrajEachDirection)
-//                            }
-//
-//                            if let bestMatchedTraj = extractMinSuccessfulMatchedTraj(trajCandidates) {
-//                                let matchedRatio = calTrajectoryRatio(trajPm: bestMatchedTraj.minTrajectory, trajOg: bestMatchedTraj.minTrajectoryOriginal)
-//                                resultRatio = matchedRatio
-//                            }
-//                        }
-//                        displayOutput.searchType = 4
-//                        searchType = 4
-//                    } else {
-//                        searchHeadings = ppHeadings
-//
-//                        displayOutput.searchType = -1
-//                        searchType = -1
-//                    }
-                    
                     let uniqueSearchHeadings = Array(Set(searchHeadings))
                     resultDirection = uniqueSearchHeadings.map { Int($0) }
                     
@@ -3434,7 +3343,6 @@ public class ServiceManager: Observation {
                 }
             }
         }
-        print(getLocalTimeString() + " , (Phase2) Ratio = \(searchInfo.4)")
         let input = FineLocationTracking(user_id: self.user_id, mobile_time: currentTime, sector_id: self.sector_id, building_name: self.currentBuilding, level_name_list: [self.currentLevel], phase: 2, search_range: searchInfo.0, search_direction_list: searchInfo.1, normalization_scale: self.normalizationScale, device_min_rss: Int(self.deviceMinRss), sc_compensation_list: requestScArray, tail_index: searchInfo.2)
         self.networkCount += 1
         NetworkManager.shared.postFLT(url: FLT_URL, input: input, completion: { [self] statusCode, returnedString, inputPhase in
@@ -3868,8 +3776,8 @@ public class ServiceManager: Observation {
                 if (self.isScRequested) {
                     requestScArray = [1.01]
                 } else {
-//                    requestScArray = [0.8, 1.0]
-                    requestScArray = [1.01]
+                    requestScArray = [0.8, 1.0]
+//                    requestScArray = [1.01]
                     self.scRequestTime = currentTime
                     self.isScRequested = true
                 }
@@ -4249,18 +4157,6 @@ public class ServiceManager: Observation {
                         self.isScRequested = true
                     }
                 }
-                
-//                if (self.isScRequested) {
-//                    requestScArray = [1.01]
-//                } else {
-//                    if (isInLevelChangeArea) {
-//                        requestScArray = [0.8, 1.0]
-//                    } else {
-//                        requestScArray = self.scCompensationArray
-//                    }
-//                    self.scRequestTime = currentTime
-//                    self.isScRequested = true
-//                }
             }
         }
         
@@ -5820,8 +5716,6 @@ public class ServiceManager: Observation {
         
         ratio = lengthPm/lengthOg
         
-        print(getLocalTimeString() + " , (Ratio) ratio = \(ratio) // lengthPm = \(lengthPm) // lengthOg = \(lengthOg)")
-        
         return ratio
     }
     
@@ -6069,28 +5963,7 @@ public class ServiceManager: Observation {
         }
         return headings
     }
-    
-//    func checkHeadingCorrection(buffer: [Double]) -> Bool {
-//        if (buffer.count >= HEADING_BUFFER_SIZE) {
-//            let firstHeading: Double = buffer.first ?? 0.0
-//            let lastHeading: Double = buffer.last ?? 10.0
-//            let midHeading: Double = buffer[buffer.count/2]
-//
-//            self.headingBuffer.removeFirst()
-//
-//            let diffHeadingLastFirst: Double = abs(lastHeading - firstHeading)
-//            let diffHeadingMidFirst: Double = abs(midHeading - firstHeading)
-//            let diffHeadingMidLast: Double = abs(lastHeading - midHeading)
-//            if (diffHeadingLastFirst < 5.0 && diffHeadingMidLast < 5.0 && diffHeadingMidFirst < 5.0) {
-//                return true
-//            } else {
-//                return false
-//            }
-//        } else {
-//            return false
-//        }
-//    }
-    
+
     func checkHeadingCorrection(buffer: [Double]) -> Bool {
         if (buffer.count >= HEADING_BUFFER_SIZE) {
             let firstHeading: Double = buffer.first ?? 0.0

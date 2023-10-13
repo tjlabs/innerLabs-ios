@@ -35,7 +35,6 @@ enum TrimBleDataError: Error {
     case noValidData
 }
 
-
 public func avgBleData(bleDictionary: [String: [[Double]]]) -> [String: Double] {
     let digit: Double = pow(10, 2)
     var ble = [String: Double]()
@@ -61,6 +60,20 @@ public func avgBleData(bleDictionary: [String: [[Double]]]) -> [String: Double] 
         }
     }
     return ble
+}
+
+public func checkBleChannelNum(bleDict: [String: Double]) -> Int {
+    var numChannels: Int = 0
+    
+    for key in bleDict.keys {
+        let bleRssi: Double = bleDict[key] ?? -100.0
+        
+        if (bleRssi > -95.0) {
+            numChannels += 1
+        }
+    }
+    
+    return numChannels
 }
 
 public func checkSufficientRfd(userTrajectory: [TrajectoryInfo]) -> Bool {
