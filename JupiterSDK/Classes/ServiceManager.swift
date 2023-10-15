@@ -3,13 +3,13 @@ import CoreMotion
 import UIKit
 
 public class ServiceManager: Observation {
-    public static let sdkVersion: String = "3.2.3"
+    public static let sdkVersion: String = "3.2.2"
     
     func tracking(input: FineLocationTrackingResult, isPast: Bool) {
         for observer in observers {
             let result = input
             if (result.x != 0 && result.y != 0 && result.building_name != "" && result.level_name != "") {
-                let magHeading = self.locationManager.getMagHeading()
+//                let magHeading = self.locationManager.getMagHeading()
                 self.jupiterResult = result
                 observer.update(result: result)
                 
@@ -4724,7 +4724,7 @@ public class ServiceManager: Observation {
                 sensorManager.collectData.bleRaw = bleRaw
                 sensorManager.collectData.bleAvg = bleAvg
             case .failure(let error):
-                print(getLocalTimeString() + " , (Jupiter) Error : \(error)")
+                print(getLocalTimeString() + " , (Jupiter) Error : RFD \(error)")
                 self.reporting(input: BLE_ERROR_FLAG)
             }
         } else {
