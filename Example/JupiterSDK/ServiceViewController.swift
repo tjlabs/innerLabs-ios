@@ -56,7 +56,7 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
         case 10:
             print(localTime + " , (JupiterVC) Report : Fail to encode UVD")
         case 11:
-            print(localTime + " , (JupiterVC) Report : Fail to create UVD")
+            print(localTime + " , (JupiterVC) Report : Fail to create RFD")
         default:
             print(localTime + " , (JupiterVC) Default Flag")
         }
@@ -185,6 +185,7 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
     var isBleOnlyMode: Bool = false
     var isPathMatchingSuccess: Bool = true
     
+    var trajectoryOg: [[Double]] = [[0, 0]]
     // Level Collection View
     @IBOutlet weak var levelCollectionView: UICollectionView!
     
@@ -1182,10 +1183,10 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
 //        print("\(currentBuilding) \(currentLevel) MinMax : \(xMin) , \(xMax), \(yMin), \(yMax)")
 //        print("\(currentBuilding) \(currentLevel) Limits : \(limits[0]) , \(limits[1]), \(limits[2]), \(limits[3])")
         
-//        scatterChart.xAxis.axisMinimum = -1.2
-//        scatterChart.xAxis.axisMaximum = 77.4
-//        scatterChart.leftAxis.axisMinimum = -21.8
-//        scatterChart.leftAxis.axisMaximum = 67.8
+//        scatterChart.xAxis.axisMinimum = -28
+//        scatterChart.xAxis.axisMaximum = 312
+//        scatterChart.leftAxis.axisMinimum = -9
+//        scatterChart.leftAxis.axisMaximum = 510
         
 //        scatterChart.xAxis.axisMinimum = -8.7
 //        scatterChart.xAxis.axisMaximum = 39.5
@@ -1272,7 +1273,7 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
                     scatterChart.isHidden = true
                 } else {
 //                    drawRP(RP_X: rp[0], RP_Y: rp[1], XY: XY, heading: heading, limits: limits)
-                    drawDebug(XY: XY, RP_X: rp[0], RP_Y: rp[1], serverXY: serviceManager.serverResult, tuXY: serviceManager.timeUpdateResult, heading: heading, limits: limits, isBleOnlyMode: self.isBleOnlyMode, isPmSuccess: self.isPathMatchingSuccess, trajectoryStartCoord: serviceManager.displayOutput.trajectoryStartCoord, userTrajectory: serviceManager.displayOutput.userTrajectory, searchArea: serviceManager.displayOutput.searchArea, searchType: serviceManager.displayOutput.searchType, isIndoor: isIndoor, trajPm: serviceManager.displayOutput.trajectoryPm, trajOg: serviceManager.displayOutput.trajectoryOg)
+                    drawDebug(XY: XY, RP_X: rp[0], RP_Y: rp[1], serverXY: serviceManager.serverResult, tuXY: serviceManager.timeUpdateResult, heading: heading, limits: limits, isBleOnlyMode: self.isBleOnlyMode, isPmSuccess: self.isPathMatchingSuccess, trajectoryStartCoord: serviceManager.displayOutput.trajectoryStartCoord, userTrajectory: serviceManager.displayOutput.userTrajectory, searchArea: serviceManager.displayOutput.searchArea, searchType: serviceManager.displayOutput.searchType, isIndoor: isIndoor, trajPm: serviceManager.displayOutput.trajectoryPm, trajOg: self.trajectoryOg)
                 }
             }
         } else {
@@ -1324,7 +1325,7 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
                     scatterChart.isHidden = true
                 } else {
 //                    drawRP(RP_X: rp[0], RP_Y: rp[1], XY: XY, heading: heading, limits: limits)
-                    drawDebug(XY: XY, RP_X: rp[0], RP_Y: rp[1], serverXY: serviceManager.serverResult, tuXY: serviceManager.timeUpdateResult, heading: heading, limits: limits, isBleOnlyMode: self.isBleOnlyMode, isPmSuccess: self.isPathMatchingSuccess, trajectoryStartCoord: serviceManager.displayOutput.trajectoryStartCoord, userTrajectory: serviceManager.displayOutput.userTrajectory, searchArea: serviceManager.displayOutput.searchArea, searchType: serviceManager.displayOutput.searchType, isIndoor: isIndoor, trajPm: serviceManager.displayOutput.trajectoryPm, trajOg: serviceManager.displayOutput.trajectoryOg)
+                    drawDebug(XY: XY, RP_X: rp[0], RP_Y: rp[1], serverXY: serviceManager.serverResult, tuXY: serviceManager.timeUpdateResult, heading: heading, limits: limits, isBleOnlyMode: self.isBleOnlyMode, isPmSuccess: self.isPathMatchingSuccess, trajectoryStartCoord: serviceManager.displayOutput.trajectoryStartCoord, userTrajectory: serviceManager.displayOutput.userTrajectory, searchArea: serviceManager.displayOutput.searchArea, searchType: serviceManager.displayOutput.searchType, isIndoor: isIndoor, trajPm: serviceManager.displayOutput.trajectoryPm, trajOg: self.trajectoryOg)
                 }
             }
         } else {
@@ -1520,7 +1521,7 @@ extension ServiceViewController : UICollectionViewDelegate{
         } else {
             if (isShowRP) {
 //                drawRP(RP_X: rp[0], RP_Y: rp[1], XY: XY, heading: 0, limits: limits)
-                drawDebug(XY: XY, RP_X: rp[0], RP_Y: rp[1], serverXY: serviceManager.serverResult, tuXY: serviceManager.timeUpdateResult, heading: 0, limits: limits, isBleOnlyMode: self.isBleOnlyMode, isPmSuccess: self.isPathMatchingSuccess, trajectoryStartCoord: serviceManager.displayOutput.trajectoryStartCoord, userTrajectory: serviceManager.displayOutput.userTrajectory, searchArea: serviceManager.displayOutput.searchArea, searchType: serviceManager.displayOutput.searchType, isIndoor: false, trajPm: serviceManager.displayOutput.trajectoryPm, trajOg: serviceManager.displayOutput.trajectoryOg)
+                drawDebug(XY: XY, RP_X: rp[0], RP_Y: rp[1], serverXY: serviceManager.serverResult, tuXY: serviceManager.timeUpdateResult, heading: 0, limits: limits, isBleOnlyMode: self.isBleOnlyMode, isPmSuccess: self.isPathMatchingSuccess, trajectoryStartCoord: serviceManager.displayOutput.trajectoryStartCoord, userTrajectory: serviceManager.displayOutput.userTrajectory, searchArea: serviceManager.displayOutput.searchArea, searchType: serviceManager.displayOutput.searchType, isIndoor: false, trajPm: serviceManager.displayOutput.trajectoryPm, trajOg: self.trajectoryOg)
             }
             displayLevelImage(building: currentBuilding, level: currentLevel, flag: isShowRP)
         }
