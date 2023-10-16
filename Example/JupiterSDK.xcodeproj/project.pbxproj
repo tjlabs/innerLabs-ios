@@ -7,14 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		094712FBE9AB87C7271608AA /* Pods_JupiterSDK_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F53652D9802675AD38E29753 /* Pods_JupiterSDK_Tests.framework */; };
+		5305F6BE9E22DE5300413186 /* Pods_JupiterSDK_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A330FF60FC5C0FDCF4A71108 /* Pods_JupiterSDK_Tests.framework */; };
 		607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACD51AFB9204008FA782 /* AppDelegate.swift */; };
 		607FACD81AFB9204008FA782 /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACD71AFB9204008FA782 /* MainViewController.swift */; };
 		607FACDB1AFB9204008FA782 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 607FACD91AFB9204008FA782 /* Main.storyboard */; };
 		607FACDD1AFB9204008FA782 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 607FACDC1AFB9204008FA782 /* Images.xcassets */; };
 		607FACE01AFB9204008FA782 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 607FACDE1AFB9204008FA782 /* LaunchScreen.xib */; };
 		607FACEC1AFB9204008FA782 /* Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACEB1AFB9204008FA782 /* Tests.swift */; };
-		9A16870CE33E63FE35238C05 /* Pods_JupiterSDK_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DB77B350B78C4D6D3DA0D745 /* Pods_JupiterSDK_Example.framework */; };
 		B3021F0F29541D7C000CE9AD /* Museum_1F.csv in Resources */ = {isa = PBXBuildFile; fileRef = B3021F0E29541D7C000CE9AD /* Museum_1F.csv */; };
 		B30638F52A36E58800C7FF89 /* COEX_B4.csv in Resources */ = {isa = PBXBuildFile; fileRef = B30638F02A36E58800C7FF89 /* COEX_B4.csv */; };
 		B30638F62A36E58800C7FF89 /* COEX_B0.csv in Resources */ = {isa = PBXBuildFile; fileRef = B30638F12A36E58800C7FF89 /* COEX_B0.csv */; };
@@ -114,6 +113,7 @@
 		B3FD74EC2869A38800CD4D74 /* Gallery_4F.csv in Resources */ = {isa = PBXBuildFile; fileRef = B3FD74EA2869A38800CD4D74 /* Gallery_4F.csv */; };
 		B3FD74ED2869A38800CD4D74 /* Gallery_3F.csv in Resources */ = {isa = PBXBuildFile; fileRef = B3FD74EB2869A38800CD4D74 /* Gallery_3F.csv */; };
 		B3FE481D2967965600EDAE94 /* Eureka_KIST.csv in Resources */ = {isa = PBXBuildFile; fileRef = B3FE481C2967965600EDAE94 /* Eureka_KIST.csv */; };
+		B5D798E5C1371855BA2C91F9 /* Pods_JupiterSDK_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 426CC884D1721D25A9329566 /* Pods_JupiterSDK_Example.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -127,10 +127,11 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		001F364143D86A2C5C1D9BB0 /* Pods-JupiterSDK_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-JupiterSDK_Tests.release.xcconfig"; path = "Target Support Files/Pods-JupiterSDK_Tests/Pods-JupiterSDK_Tests.release.xcconfig"; sourceTree = "<group>"; };
+		0EBED0CEE82D2919A725736F /* Pods-JupiterSDK_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-JupiterSDK_Tests.release.xcconfig"; path = "Target Support Files/Pods-JupiterSDK_Tests/Pods-JupiterSDK_Tests.release.xcconfig"; sourceTree = "<group>"; };
 		33536F035F43D878561B6254 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
 		38E38E00A30376AD81C0CB48 /* JupiterSDK.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = JupiterSDK.podspec; path = ../JupiterSDK.podspec; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
-		4B6D660DDF3C43E212E26391 /* Pods-JupiterSDK_Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-JupiterSDK_Tests.debug.xcconfig"; path = "Target Support Files/Pods-JupiterSDK_Tests/Pods-JupiterSDK_Tests.debug.xcconfig"; sourceTree = "<group>"; };
+		426CC884D1721D25A9329566 /* Pods_JupiterSDK_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_JupiterSDK_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		43AC747292088B68D272BE88 /* Pods-JupiterSDK_Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-JupiterSDK_Tests.debug.xcconfig"; path = "Target Support Files/Pods-JupiterSDK_Tests/Pods-JupiterSDK_Tests.debug.xcconfig"; sourceTree = "<group>"; };
 		607FACD01AFB9204008FA782 /* JupiterSDK_Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = JupiterSDK_Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		607FACD41AFB9204008FA782 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		607FACD51AFB9204008FA782 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -141,8 +142,8 @@
 		607FACE51AFB9204008FA782 /* JupiterSDK_Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = JupiterSDK_Tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		607FACEA1AFB9204008FA782 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		607FACEB1AFB9204008FA782 /* Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tests.swift; sourceTree = "<group>"; };
-		6C664AF60D59718EECD6DBBC /* Pods-JupiterSDK_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-JupiterSDK_Example.debug.xcconfig"; path = "Target Support Files/Pods-JupiterSDK_Example/Pods-JupiterSDK_Example.debug.xcconfig"; sourceTree = "<group>"; };
-		8B538B887A8FED7CB659550A /* Pods-JupiterSDK_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-JupiterSDK_Example.release.xcconfig"; path = "Target Support Files/Pods-JupiterSDK_Example/Pods-JupiterSDK_Example.release.xcconfig"; sourceTree = "<group>"; };
+		9CFD47A7830F11AD5B6E85BC /* Pods-JupiterSDK_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-JupiterSDK_Example.release.xcconfig"; path = "Target Support Files/Pods-JupiterSDK_Example/Pods-JupiterSDK_Example.release.xcconfig"; sourceTree = "<group>"; };
+		A330FF60FC5C0FDCF4A71108 /* Pods_JupiterSDK_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_JupiterSDK_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B3021F0E29541D7C000CE9AD /* Museum_1F.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Museum_1F.csv; sourceTree = "<group>"; };
 		B30638F02A36E58800C7FF89 /* COEX_B4.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = COEX_B4.csv; sourceTree = "<group>"; };
 		B30638F12A36E58800C7FF89 /* COEX_B0.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = COEX_B0.csv; sourceTree = "<group>"; };
@@ -245,8 +246,7 @@
 		B3FD74EB2869A38800CD4D74 /* Gallery_3F.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Gallery_3F.csv; sourceTree = "<group>"; };
 		B3FE481C2967965600EDAE94 /* Eureka_KIST.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Eureka_KIST.csv; sourceTree = "<group>"; };
 		D004876B84847F9E6841D160 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
-		DB77B350B78C4D6D3DA0D745 /* Pods_JupiterSDK_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_JupiterSDK_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		F53652D9802675AD38E29753 /* Pods_JupiterSDK_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_JupiterSDK_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		FF46EB632FDBF2ABBFD7D512 /* Pods-JupiterSDK_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-JupiterSDK_Example.debug.xcconfig"; path = "Target Support Files/Pods-JupiterSDK_Example/Pods-JupiterSDK_Example.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -254,7 +254,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9A16870CE33E63FE35238C05 /* Pods_JupiterSDK_Example.framework in Frameworks */,
+				B5D798E5C1371855BA2C91F9 /* Pods_JupiterSDK_Example.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -262,7 +262,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				094712FBE9AB87C7271608AA /* Pods_JupiterSDK_Tests.framework in Frameworks */,
+				5305F6BE9E22DE5300413186 /* Pods_JupiterSDK_Tests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -272,10 +272,10 @@
 		55C75F73068E0C9C56DBFBAC /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				6C664AF60D59718EECD6DBBC /* Pods-JupiterSDK_Example.debug.xcconfig */,
-				8B538B887A8FED7CB659550A /* Pods-JupiterSDK_Example.release.xcconfig */,
-				4B6D660DDF3C43E212E26391 /* Pods-JupiterSDK_Tests.debug.xcconfig */,
-				001F364143D86A2C5C1D9BB0 /* Pods-JupiterSDK_Tests.release.xcconfig */,
+				FF46EB632FDBF2ABBFD7D512 /* Pods-JupiterSDK_Example.debug.xcconfig */,
+				9CFD47A7830F11AD5B6E85BC /* Pods-JupiterSDK_Example.release.xcconfig */,
+				43AC747292088B68D272BE88 /* Pods-JupiterSDK_Tests.debug.xcconfig */,
+				0EBED0CEE82D2919A725736F /* Pods-JupiterSDK_Tests.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -289,7 +289,7 @@
 				607FACE81AFB9204008FA782 /* Tests */,
 				607FACD11AFB9204008FA782 /* Products */,
 				55C75F73068E0C9C56DBFBAC /* Pods */,
-				FF4C89D2434460AC285975FD /* Frameworks */,
+				942D73D72FDA860AA4A15149 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -399,6 +399,15 @@
 				33536F035F43D878561B6254 /* LICENSE */,
 			);
 			name = "Podspec Metadata";
+			sourceTree = "<group>";
+		};
+		942D73D72FDA860AA4A15149 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				426CC884D1721D25A9329566 /* Pods_JupiterSDK_Example.framework */,
+				A330FF60FC5C0FDCF4A71108 /* Pods_JupiterSDK_Tests.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		B30EED7F289381F9009A3EDA /* ViewController */ = {
@@ -515,15 +524,6 @@
 			name = Guide;
 			sourceTree = "<group>";
 		};
-		FF4C89D2434460AC285975FD /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				DB77B350B78C4D6D3DA0D745 /* Pods_JupiterSDK_Example.framework */,
-				F53652D9802675AD38E29753 /* Pods_JupiterSDK_Tests.framework */,
-			);
-			name = Frameworks;
-			sourceTree = "<group>";
-		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -531,15 +531,15 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 607FACEF1AFB9204008FA782 /* Build configuration list for PBXNativeTarget "JupiterSDK_Example" */;
 			buildPhases = (
-				774B71CB4D5E4242C61C00C2 /* [CP] Check Pods Manifest.lock */,
-				9C59C8C7F2B0A199C33F7AD1 /* [CP-User] Run Flutter Build map_ui_module Script */,
+				E5FB031E877E558388550E41 /* [CP] Check Pods Manifest.lock */,
+				C72810F572AF7DEEEB3EFEFE /* [CP-User] Run Flutter Build map_ui_module Script */,
 				607FACCC1AFB9204008FA782 /* Sources */,
 				607FACCD1AFB9204008FA782 /* Frameworks */,
 				607FACCE1AFB9204008FA782 /* Resources */,
-				AF28ADD773DBAE740D1486FB /* [CP] Embed Pods Frameworks */,
-				D7C612C0D4746699094CBEA3 /* [CP] Copy Pods Resources */,
 				B3F7C8D429F7A46E00EC30E0 /* Run Script */,
-				F438E6A31E4A930DE921FB2A /* [CP-User] Embed Flutter Build map_ui_module Script */,
+				23B874579DED908C89C9DDAE /* [CP] Embed Pods Frameworks */,
+				22CE5EE675665624472ED0F0 /* [CP] Copy Pods Resources */,
+				BB57D3C2DFCEB9F0190FA3C9 /* [CP-User] Embed Flutter Build map_ui_module Script */,
 			);
 			buildRules = (
 			);
@@ -554,7 +554,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 607FACF21AFB9204008FA782 /* Build configuration list for PBXNativeTarget "JupiterSDK_Tests" */;
 			buildPhases = (
-				5EE5C1F2E68543DCD7BBD4F6 /* [CP] Check Pods Manifest.lock */,
+				6657163D5B4FDC4189F59794 /* [CP] Check Pods Manifest.lock */,
 				607FACE11AFB9204008FA782 /* Sources */,
 				607FACE21AFB9204008FA782 /* Frameworks */,
 				607FACE31AFB9204008FA782 /* Resources */,
@@ -683,61 +683,27 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		5EE5C1F2E68543DCD7BBD4F6 /* [CP] Check Pods Manifest.lock */ = {
+		22CE5EE675665624472ED0F0 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-			);
-			inputFileListPaths = (
 			);
 			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
+				"${PODS_ROOT}/Target Support Files/Pods-JupiterSDK_Example/Pods-JupiterSDK_Example-resources.sh",
+				"${PODS_ROOT}/GoogleMaps/Maps/Frameworks/GoogleMaps.framework/Resources/GoogleMaps.bundle",
+				"${PODS_ROOT}/GooglePlaces/Frameworks/GooglePlaces.framework/Resources/GooglePlaces.bundle",
 			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
+			name = "[CP] Copy Pods Resources";
 			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-JupiterSDK_Tests-checkManifestLockResult.txt",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/GoogleMaps.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/GooglePlaces.bundle",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-JupiterSDK_Example/Pods-JupiterSDK_Example-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		774B71CB4D5E4242C61C00C2 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-JupiterSDK_Example-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		9C59C8C7F2B0A199C33F7AD1 /* [CP-User] Run Flutter Build map_ui_module Script */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			name = "[CP-User] Run Flutter Build map_ui_module Script";
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "set -e\nset -u\nsource \"${SRCROOT}/map_ui_module/.ios/Flutter/flutter_export_environment.sh\"\nexport VERBOSE_SCRIPT_LOGGING=1 && \"$FLUTTER_ROOT\"/packages/flutter_tools/bin/xcode_backend.sh build";
-		};
-		AF28ADD773DBAE740D1486FB /* [CP] Embed Pods Frameworks */ = {
+		23B874579DED908C89C9DDAE /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -803,6 +769,28 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-JupiterSDK_Example/Pods-JupiterSDK_Example-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
+		6657163D5B4FDC4189F59794 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-JupiterSDK_Tests-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
 		B3F7C8D429F7A46E00EC30E0 /* Run Script */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -823,27 +811,7 @@
 			shellPath = /bin/sh;
 			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\n\"${PODS_ROOT}/FirebaseCrashlytics/run\"\n\"${PODS_ROOT}/FirebaseCrashlytics/upload-symbols\" -gsp ${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.app/GoogleService-Info.plist -p ios ${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}\n";
 		};
-		D7C612C0D4746699094CBEA3 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-JupiterSDK_Example/Pods-JupiterSDK_Example-resources.sh",
-				"${PODS_ROOT}/GoogleMaps/Maps/Frameworks/GoogleMaps.framework/Resources/GoogleMaps.bundle",
-				"${PODS_ROOT}/GooglePlaces/Frameworks/GooglePlaces.framework/Resources/GooglePlaces.bundle",
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/GoogleMaps.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/GooglePlaces.bundle",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-JupiterSDK_Example/Pods-JupiterSDK_Example-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		F438E6A31E4A930DE921FB2A /* [CP-User] Embed Flutter Build map_ui_module Script */ = {
+		BB57D3C2DFCEB9F0190FA3C9 /* [CP-User] Embed Flutter Build map_ui_module Script */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -852,6 +820,38 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "set -e\nset -u\nsource \"${SRCROOT}/map_ui_module/.ios/Flutter/flutter_export_environment.sh\"\nexport VERBOSE_SCRIPT_LOGGING=1 && \"$FLUTTER_ROOT\"/packages/flutter_tools/bin/xcode_backend.sh embed_and_thin";
+		};
+		C72810F572AF7DEEEB3EFEFE /* [CP-User] Run Flutter Build map_ui_module Script */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			name = "[CP-User] Run Flutter Build map_ui_module Script";
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "set -e\nset -u\nsource \"${SRCROOT}/map_ui_module/.ios/Flutter/flutter_export_environment.sh\"\nexport VERBOSE_SCRIPT_LOGGING=1 && \"$FLUTTER_ROOT\"/packages/flutter_tools/bin/xcode_backend.sh build";
+		};
+		E5FB031E877E558388550E41 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-JupiterSDK_Example-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -1058,7 +1058,7 @@
 		};
 		607FACF01AFB9204008FA782 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 6C664AF60D59718EECD6DBBC /* Pods-JupiterSDK_Example.debug.xcconfig */;
+			baseConfigurationReference = FF46EB632FDBF2ABBFD7D512 /* Pods-JupiterSDK_Example.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CURRENT_PROJECT_VERSION = 1;
@@ -1068,7 +1068,7 @@
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.lifestyle";
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 1.8.24;
+				MARKETING_VERSION = 1.8.25;
 				MODULE_NAME = ExampleApp;
 				PRODUCT_BUNDLE_IDENTIFIER = com.tjlabscorp.ios.innerLabs;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1079,7 +1079,7 @@
 		};
 		607FACF11AFB9204008FA782 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 8B538B887A8FED7CB659550A /* Pods-JupiterSDK_Example.release.xcconfig */;
+			baseConfigurationReference = 9CFD47A7830F11AD5B6E85BC /* Pods-JupiterSDK_Example.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = JupiterSDK_ExampleRelease.entitlements;
@@ -1091,7 +1091,7 @@
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.lifestyle";
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 1.8.24;
+				MARKETING_VERSION = 1.8.25;
 				MODULE_NAME = ExampleApp;
 				PRODUCT_BUNDLE_IDENTIFIER = com.tjlabscorp.ios.innerLabs;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1102,7 +1102,7 @@
 		};
 		607FACF31AFB9204008FA782 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 4B6D660DDF3C43E212E26391 /* Pods-JupiterSDK_Tests.debug.xcconfig */;
+			baseConfigurationReference = 43AC747292088B68D272BE88 /* Pods-JupiterSDK_Tests.debug.xcconfig */;
 			buildSettings = {
 				DEVELOPMENT_TEAM = G75UAV755N;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
@@ -1126,7 +1126,7 @@
 		};
 		607FACF41AFB9204008FA782 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 001F364143D86A2C5C1D9BB0 /* Pods-JupiterSDK_Tests.release.xcconfig */;
+			baseConfigurationReference = 0EBED0CEE82D2919A725736F /* Pods-JupiterSDK_Tests.release.xcconfig */;
 			buildSettings = {
 				DEVELOPMENT_TEAM = G75UAV755N;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
