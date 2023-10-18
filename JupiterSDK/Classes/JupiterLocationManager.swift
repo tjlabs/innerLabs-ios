@@ -1,6 +1,6 @@
 import CoreLocation
 
-public class LocationManager: NSObject, CLLocationManagerDelegate {
+public class JupiterLocationManager: NSObject, CLLocationManagerDelegate {
     public var locationManager = CLLocationManager()
     public var magHeading: Double = 0
 
