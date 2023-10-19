@@ -1617,7 +1617,6 @@ public class ServiceManager: Observation {
                 let trimmedResult = trimBleData(bleInput: bleData, nowTime: getCurrentTimeInMillisecondsDouble(), validTime: validTime)
                 switch trimmedResult {
                 case .success(let trimmedData):
-                    self.timeFailRF = 0
                     self.bleAvg = avgBleData(bleDictionary: trimmedData)
                     let scannedResult = getLastScannedEntranceOuterWardTime(bleAvg: self.bleAvg, entranceOuterWards: self.EntranceOuterWards)
                     if (scannedResult.0) {
