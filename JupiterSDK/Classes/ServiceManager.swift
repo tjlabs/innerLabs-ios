@@ -298,7 +298,6 @@ public class ServiceManager: Observation {
     
     var isActiveService: Bool = true
     var isActiveRF: Bool = true
-    var isEmptyRF: Bool = false
     var isAnswered: Bool = false
     var isActiveKf: Bool = false
     var isStartKf: Bool = false
@@ -309,8 +308,8 @@ public class ServiceManager: Observation {
     
     var timeBleOff: Double = 0
     var timeActiveRF: Double = 0
+    var timeFailRF: Double = 0
     var timeActiveUV: Double = 0
-    var timeEmptyRF: Double = 0
     var timeRequest: Double = 0
     var timePhaseChange: Double = 0
     var timeSleepRF: Double = 0
@@ -1131,6 +1130,7 @@ public class ServiceManager: Observation {
     
     private func initVariables() {
         self.timeForInit = 0
+        self.timeFailRF = 0
         self.lastScannedEntranceOuterWardTime = 0
         
         self.inputReceivedForce = [ReceivedForce(user_id: user_id, mobile_time: 0, ble: [:], pressure: 0)]
@@ -1697,13 +1697,13 @@ public class ServiceManager: Observation {
                         }
                     }
                 case .failure(let error):
-                    print(getLocalTimeString() + " , (Jupiter) Error : \(error)")
+                    self.timeFailRF += RFD_INTERVAL
                     self.reporting(input: BLE_ERROR_FLAG)
                     
                     if (self.isIndoor && self.isGetFirstResponse) {
                         if (!self.isBleOff) {
                             let lastResult = self.resultToReturn
-                            let isOutdoor = self.determineIsOutdoor(lastResult: lastResult, currentTime: getCurrentTimeInMillisecondsDouble())
+                            let isOutdoor = self.determineIsOutdoor(lastResult: lastResult, currentTime: getCurrentTimeInMillisecondsDouble(), inFailCondition: true)
                             if (isOutdoor) {
                                 self.bleAvg = [String: Double]()
                             }
@@ -1747,10 +1747,8 @@ public class ServiceManager: Observation {
                 self.timeBleOff = 0
                 self.timeActiveRF = 0
                 self.timeSleepRF = 0
-                self.timeEmptyRF = 0
                 
                 self.isActiveRF = true
-                self.isEmptyRF = false
                 self.isBleOff = false
                 self.isActiveService = true
                 
@@ -1788,7 +1786,7 @@ public class ServiceManager: Observation {
                     if (self.isIndoor && self.isGetFirstResponse) {
                         if (!self.isBleOff) {
                             let lastResult = self.resultToReturn
-                            let isOutdoor = self.determineIsOutdoor(lastResult: lastResult, currentTime: cTime)
+                            let isOutdoor = self.determineIsOutdoor(lastResult: lastResult, currentTime: cTime, inFailCondition: false)
                             if (isOutdoor) {
                                 self.initVariables()
                                 self.currentLevel = "B0"
@@ -5072,7 +5070,7 @@ public class ServiceManager: Observation {
         }
     }
     
-    private func determineIsOutdoor(lastResult: FineLocationTrackingResult, currentTime: Double) -> Bool {
+    private func determineIsOutdoor(lastResult: FineLocationTrackingResult, currentTime: Double, inFailCondition: Bool) -> Bool {
         let isInEntranceMatchingArea = self.checkInEntranceMatchingArea(x: lastResult.x, y: lastResult.y, building: lastResult.building_name, level: lastResult.level_name)
         
         let diffEntranceWardTime = currentTime - self.lastScannedEntranceOuterWardTime
@@ -5084,11 +5082,18 @@ public class ServiceManager: Observation {
             return true
         } else {
             // 3min
-            if (self.timeActiveRF >= SLEEP_THRESHOLD_RF*6*3) {
-                return true
+            if (inFailCondition) {
+                if (self.timeFailRF >= SLEEP_THRESHOLD_RF*6*3) {
+                    self.timeActiveRF = self.timeFailRF
+                    self.timeFailRF = 0
+                    return true
+                }
+            } else {
+                if (self.timeActiveRF >= SLEEP_THRESHOLD_RF*6*3) {
+                    return true
+                }
             }
         }
-        
         return false
     }
     

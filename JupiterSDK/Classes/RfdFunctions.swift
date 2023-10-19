@@ -8,7 +8,6 @@ enum TrimBleDataError: Error {
     case noValidData
 }
 
-
 public func trimBleData(bleInput: [String: [[Double]]]?, nowTime: Double, validTime: Double) -> Result<[String: [[Double]]], Error> {
     guard let bleInput = bleInput else {
             return .failure(TrimBleDataError.invalidInput)
