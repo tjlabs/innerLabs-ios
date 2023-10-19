@@ -4984,7 +4984,7 @@ public class ServiceManager: Observation {
         } else {
             // 3min
             if (inFailCondition) {
-                if (self.timeFailRF >= SLEEP_THRESHOLD_RF*6*3) {
+                if (self.timeFailRF >= SLEEP_THRESHOLD_RF) {
                     self.timeActiveRF = self.timeFailRF
                     self.timeFailRF = 0
                     return true
