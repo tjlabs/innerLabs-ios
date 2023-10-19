@@ -669,12 +669,12 @@ class FusionViewController: UIViewController, Observer {
         }
         
         var valueColor = UIColor.systemRed
-        if (!isPmSuccess) {
-            valueColor = .systemOrange
+        if (!isIndoor) {
+            valueColor = .systemGray
         } else if (isBleOnlyMode) {
             valueColor = UIColor.systemBlue
-        } else if (!isIndoor) {
-            valueColor = .systemGray
+        } else if (!isPmSuccess) {
+            valueColor = .systemOrange
         } else {
             valueColor = UIColor.systemRed
         }
@@ -742,12 +742,12 @@ class FusionViewController: UIViewController, Observer {
         }
         
         var valueColor = UIColor.systemRed
-        if (!isPmSuccess) {
-            valueColor = UIColor.systemPink
+        if (!isIndoor) {
+            valueColor = UIColor.systemGray
         } else if (isBleOnlyMode) {
             valueColor = UIColor.systemBlue
         } else if (!isIndoor) {
-            valueColor = .systemGray
+            valueColor = .systemOrange
         } else {
             valueColor = UIColor.systemRed
         }
