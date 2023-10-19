@@ -56,6 +56,8 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
         case 10:
             print(localTime + " , (JupiterVC) Report : Fail to encode UVD")
         case 11:
+            print(localTime + " , (JupiterVC) Report : Fail to scan RFD")
+        case 12:
             print(localTime + " , (JupiterVC) Report : Fail to create RFD")
         default:
             print(localTime + " , (JupiterVC) Default Flag")

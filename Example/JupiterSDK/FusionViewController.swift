@@ -18,26 +18,38 @@ class FusionViewController: UIViewController, Observer {
         
         switch(flag) {
         case 0:
-            print(localTime + " , (Jupiter) Report : Stop!! Out of the Service Area")
+            print(localTime + " , (JupiterVC) Report : Stop!! Out of the Service Area")
             DispatchQueue.main.async { [self] in
-                self.switchButton.isOn = false
+//                self.switchButton.isOn = false
             }
         case 1:
-            print(localTime + " , (Jupiter) Report : Start!! Enter the Service Area")
+            print(localTime + " , (JupiterVC) Report : Start!! Enter the Service Area")
         case 2:
-            print(localTime + " , (Jupiter) Report : BLE is Off")
+            print(localTime + " , (JupiterVC) Report : BLE is Off")
         case -1:
-            print(localTime + " , (Jupiter) Report : Abnormal!! Restart the Service")
+            print(localTime + " , (JupiterVC) Report : Abnormal!! Restart the Service")
         case 3:
-            print(localTime + " , (Jupiter) Report : Start!! Run Venus Mode")
+            print(localTime + " , (JupiterVC) Report : Start!! Run Venus Mode")
         case 4:
-            print(localTime + " , (Jupiter) Report : Start!! Run Jupiter Mode")
+            print(localTime + " , (JupiterVC) Report : Start!! Run Jupiter Mode")
         case 5:
-            print(localTime + " , (Jupiter) Report : Waiting Server Result...")
+            print(localTime + " , (JupiterVC) Report : Waiting Server Result...")
         case 6:
-            print(localTime + " , (Jupiter) Report : Network Connection Lost")
+            print(localTime + " , (JupiterVC) Report : Network Connection Lost")
+        case 7:
+            print(localTime + " , (JupiterVC) Report : Enter Backgroud")
+        case 8:
+            print(localTime + " , (JupiterVC) Report : Enter Foreground")
+        case 9:
+            print(localTime + " , (JupiterVC) Report : Fail to encode RFD")
+        case 10:
+            print(localTime + " , (JupiterVC) Report : Fail to encode UVD")
+        case 11:
+            print(localTime + " , (JupiterVC) Report : Fail to scan RFD")
+        case 12:
+            print(localTime + " , (JupiterVC) Report : Fail to create RFD")
         default:
-            print(localTime + " , (Jupiter) Default Flag")
+            print(localTime + " , (JupiterVC) Default Flag")
         }
     }
     

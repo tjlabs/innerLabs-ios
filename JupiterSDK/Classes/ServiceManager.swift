@@ -1654,8 +1654,6 @@ public class ServiceManager: Observation {
         let bleDictionary: [String: [[Double]]]? = bleManager.bleDictionary
         if let bleData = bleDictionary {
             if (!self.isRfdTimerRunningFinished) {
-                self.isRfdTimerRunningFinished = true
-                
                 let trimmedResult = trimBleData(bleInput: bleData, nowTime: getCurrentTimeInMillisecondsDouble(), validTime: validTime)
                 switch trimmedResult {
                 case .success(let trimmedData):
@@ -1701,49 +1699,18 @@ public class ServiceManager: Observation {
                 case .failure(let error):
                     print(getLocalTimeString() + " , (Jupiter) Error : \(error)")
                     self.reporting(input: BLE_ERROR_FLAG)
+                    
+                    if (self.isIndoor && self.isGetFirstResponse) {
+                        if (!self.isBleOff) {
+                            let lastResult = self.resultToReturn
+                            let isOutdoor = self.determineIsOutdoor(lastResult: lastResult, currentTime: getCurrentTimeInMillisecondsDouble())
+                            if (isOutdoor) {
+                                self.bleAvg = [String: Double]()
+                            }
+                        }
+                    }
                 }
-                
-//                self.bleTrimed = trimBleData(bleInput: bleData, nowTime: getCurrentTimeInMillisecondsDouble(), validTime: validTime)
-//                self.bleAvg = avgBleData(bleDictionary: self.bleTrimed)
-//                let scannedResult = getLastScannedEntranceOuterWardTime(bleAvg: self.bleAvg, entranceOuterWards: self.EntranceOuterWards)
-//                if (scannedResult.0) {
-//                    self.lastScannedEntranceOuterWardTime = scannedResult.1
-//                }
-//
-//                if (!self.isGetFirstResponse) {
-//                    let findResult = findNetworkBadEntrance(bleAvg: self.bleAvg, bias: self.rssiBias)
-//                    self.isInNetworkBadEntrance = findResult.0
-//
-//                    if (!self.isIndoor && (self.timeForInit >= TIME_INIT_THRESHOLD)) {
-//                        if (self.isInNetworkBadEntrance) {
-//                            self.isGetFirstResponse = true
-//                            self.isIndoor = true
-//                            self.reporting(input: INDOOR_FLAG)
-//
-//                            let result = findResult.1
-//
-//                            self.outputResult.building_name = result.building_name
-//                            self.outputResult.level_name = result.level_name
-//                            self.outputResult.isIndoor = self.isIndoor
-//
-//                            for i in 0..<self.EntranceNumbers {
-//                                if (!self.isStartSimulate) {
-//                                    let entranceResult = self.findEntrance(result: result, entrance: i)
-//                                    print(getLocalTimeString() + " , (Jupiter) Entrance Simulator : findEntrance = \(entranceResult)")
-//                                    if (entranceResult.0 != 0) {
-//                                        let velocityScale: Double = self.EntranceVelocityScale[i]
-//                                        print(getLocalTimeString() + " , (Jupiter) Entrance Simulator : number = \(entranceResult.0)")
-////                                        print(getLocalTimeString() + " , (Jupiter) Entrance Simulator : scale = \(velocityScale)")
-//                                        self.currentEntrance = "\(result.building_name)_\(result.level_name)_\(entranceResult.0)"
-//                                        self.currentEntranceLength = entranceResult.1
-//                                        self.entranceVelocityScale = velocityScale
-//                                        self.isStartSimulate = true
-//                                    }
-//                                }
-//                            }
-//                        }
-//                    }
-//                }
+                self.isRfdTimerRunningFinished = true
             }
             
 //            self.bleAvg = ["TJ-00CB-0000038C-0000":-76.0] // COEX B2 <-> B3
@@ -1821,32 +1788,12 @@ public class ServiceManager: Observation {
                     if (self.isIndoor && self.isGetFirstResponse) {
                         if (!self.isBleOff) {
                             let lastResult = self.resultToReturn
-                            let isInEntranceMatchingArea = self.checkInEntranceMatchingArea(x: lastResult.x, y: lastResult.y, building: lastResult.building_name, level: lastResult.level_name)
-                            
-                            let diffEntranceWardTime = cTime - self.lastScannedEntranceOuterWardTime
-                            if (lastResult.building_name != "" && lastResult.level_name == "B0") {
+                            let isOutdoor = self.determineIsOutdoor(lastResult: lastResult, currentTime: cTime)
+                            if (isOutdoor) {
                                 self.initVariables()
                                 self.currentLevel = "B0"
                                 self.isIndoor = false
                                 self.reporting(input: OUTDOOR_FLAG)
-                            } else if (isInEntranceMatchingArea.0) {
-                                self.initVariables()
-                                self.currentLevel = "B0"
-                                self.isIndoor = false
-                                self.reporting(input: OUTDOOR_FLAG)
-                            } else if (diffEntranceWardTime <= 30*1000) {
-                                self.initVariables()
-                                self.currentLevel = "B0"
-                                self.isIndoor = false
-                                self.reporting(input: OUTDOOR_FLAG)
-                            } else {
-                                // 3min
-                                if (self.timeActiveRF >= SLEEP_THRESHOLD_RF*6*3) {
-                                    self.initVariables()
-                                    self.currentLevel = "B0"
-                                    self.isIndoor = false
-                                    self.reporting(input: OUTDOOR_FLAG)
-                                }
                             }
                         }
                     }
@@ -5129,6 +5076,26 @@ public class ServiceManager: Observation {
         } else {
             self.resultToReturn = self.makeOutputResult(input: self.outputResult, isPast: self.flagPast, runMode: self.runMode, isVenusMode: self.isVenusMode)
         }
+    }
+    
+    private func determineIsOutdoor(lastResult: FineLocationTrackingResult, currentTime: Double) -> Bool {
+        let isInEntranceMatchingArea = self.checkInEntranceMatchingArea(x: lastResult.x, y: lastResult.y, building: lastResult.building_name, level: lastResult.level_name)
+        
+        let diffEntranceWardTime = currentTime - self.lastScannedEntranceOuterWardTime
+        if (lastResult.building_name != "" && lastResult.level_name == "B0") {
+            return true
+        } else if (isInEntranceMatchingArea.0) {
+            return true
+        } else if (diffEntranceWardTime <= 30*1000) {
+            return true
+        } else {
+            // 3min
+            if (self.timeActiveRF >= SLEEP_THRESHOLD_RF*6*3) {
+                return true
+            }
+        }
+        
+        return false
     }
     
 //    public func pathMatching(building: String, level: String, x: Double, y: Double, heading: Double, tuXY: [Double], isPast: Bool, HEADING_RANGE: Double, isUseHeading: Bool, pathType: Int) -> (isSuccess: Bool, xyh: [Double]) {

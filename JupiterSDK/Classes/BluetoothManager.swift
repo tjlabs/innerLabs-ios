@@ -140,8 +140,7 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
                     } else {
                         bleScaned.updateValue([[rssiValue, bleTime]], forKey: bleName)
                     }
-//                    let bleTrimed = trimBleData(bleData: bleScaned, nowTime: bleTime, validTime: validTime)
-//                    self.bleDictionary = bleTrimed
+                    
                     let trimmedResult = trimBleData(bleInput: bleScaned, nowTime: bleTime, validTime: validTime)
                     switch trimmedResult {
                     case .success(let trimmedData):
@@ -149,7 +148,6 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
                     case .failure(let error):
                         print(getLocalTimeString() + " , (Jupiter) Error : BleManager \(error)")
                     }
-                    
                     
                     NotificationCenter.default.post(name: .scanInfo, object: nil, userInfo: userInfo)
                 }
