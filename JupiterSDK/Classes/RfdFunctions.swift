@@ -36,6 +36,29 @@ public func trimBleData(bleInput: [String: [[Double]]]?, nowTime: Double, validT
         }
 }
 
+public func trimBleForCollect(bleData:[String: [[Double]]], nowTime: Double, validTime: Double) -> [String: [[Double]]] {
+    var trimmedData = [String: [[Double]]]()
+
+    for (bleID, bleData) in bleData {
+        var newValue = [[Double]]()
+        for data in bleData {
+            let rssi = data[0]
+            let time = data[1]
+
+            if ((nowTime - time <= validTime) && (rssi >= -100)) {
+                let dataToAdd: [Double] = [rssi, time]
+                newValue.append(dataToAdd)
+            }
+        }
+
+        if (newValue.count > 0) {
+            trimmedData[bleID] = newValue
+        }
+    }
+
+    return trimmedData
+}
+
 public func avgBleData(bleDictionary: [String: [[Double]]]) -> [String: Double] {
     let digit: Double = pow(10, 2)
     var ble = [String: Double]()

@@ -4802,19 +4802,13 @@ public class ServiceManager: Observation {
         let currentTime = getCurrentTimeInMilliseconds()
         let bleDictionary: [String: [[Double]]]? = bleManager.bleDictionary
         if let bleData = bleDictionary {
-            let trimmedResult = trimBleData(bleInput: bleData, nowTime: getCurrentTimeInMillisecondsDouble(), validTime: validTime)
-            switch trimmedResult {
-            case .success(let trimmedData):
-                let bleAvg = avgBleData(bleDictionary: trimmedData)
-                let bleRaw = latestBleData(bleDictionary: trimmedData)
-                
-                sensorManager.collectData.time = currentTime
-                sensorManager.collectData.bleRaw = bleRaw
-                sensorManager.collectData.bleAvg = bleAvg
-            case .failure(let error):
-                print(getLocalTimeString() + " , (Jupiter) Error : \(error)")
-                self.reporting(input: BLE_ERROR_FLAG)
-            }
+            let trimmedResult = trimBleForCollect(bleData: bleData, nowTime: getCurrentTimeInMillisecondsDouble(), validTime: validTime)
+            let bleAvg = avgBleData(bleDictionary: trimmedResult)
+            let bleRaw = latestBleData(bleDictionary: trimmedResult)
+            
+            sensorManager.collectData.time = currentTime
+            sensorManager.collectData.bleRaw = bleRaw
+            sensorManager.collectData.bleAvg = bleAvg
         } else {
             let log: String = localTime + " , (Jupiter) Warnings : Fail to get recent ble"
             print(log)
