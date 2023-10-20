@@ -695,6 +695,7 @@ public class ServiceManager: Observation {
                                                                                                 print(localTime + " , (Jupiter) Information : Need Estimation")
                                                                                                 let log: String = localTime + " , (Jupiter) Success : Service Initalization"
                                                                                                 message = log
+                                                                                                self.reporting(input: START_FLAG)
                                                                                                 completion(true, message)
                                                                                             } else {
                                                                                                 // Success Load without OS
@@ -718,6 +719,7 @@ public class ServiceManager: Observation {
                                                                                                     
                                                                                                     let log: String = localTime + " , (Jupiter) Success : Service Initalization"
                                                                                                     message = log
+                                                                                                    self.reporting(input: START_FLAG)
                                                                                                     completion(true, message)
                                                                                                 } else {
                                                                                                     displayOutput.bias = self.rssiBias
@@ -730,6 +732,7 @@ public class ServiceManager: Observation {
                                                                                                     print(localTime + " , (Jupiter) Information : Need Estimation")
                                                                                                     let log: String = localTime + " , (Jupiter) Success : Service Initalization"
                                                                                                     message = log
+                                                                                                    self.reporting(input: START_FLAG)
                                                                                                     completion(true, message)
                                                                                                 }
                                                                                             }
@@ -762,6 +765,7 @@ public class ServiceManager: Observation {
                                                                                     
                                                                                     let log: String = localTime + " , (Jupiter) Success : Service Initalization"
                                                                                     message = log
+                                                                                    self.reporting(input: START_FLAG)
                                                                                     completion(true, message)
                                                                                 }
                                                                             } else {
@@ -4990,7 +4994,10 @@ public class ServiceManager: Observation {
                     return true
                 }
             } else {
-                if (self.timeActiveRF >= SLEEP_THRESHOLD_RF*6*3) {
+//                if (self.timeActiveRF >= SLEEP_THRESHOLD_RF*6*3) {
+//                    return true
+//                }
+                if (self.timeActiveRF >= SLEEP_THRESHOLD_RF*2) {
                     return true
                 }
             }
