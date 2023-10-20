@@ -31,12 +31,10 @@ struct Info: Codable {
 struct InfoResult: Codable {
     var building_level: [[String]]
     var entrances: [Entrance]
-    var standard_rss_list: [Int]
     
     init() {
         self.building_level = [[]]
         self.entrances = []
-        self.standard_rss_list = []
     }
 }
 
@@ -159,13 +157,6 @@ public struct TrajectoryInfo {
     public var userTuHeading: Double = 0
 }
 
-public struct MatchedTraj {
-    public var isSuccess: Bool = false
-    public var xyd: [Double] = []
-    public var minTrajectory: [[Double]] = [[]]
-    public var minTrajectoryOriginal: [[Double]] = [[]]
-}
-
 public struct ServiceResult {
     public var isIndexChanged: Bool = false
     
@@ -188,15 +179,12 @@ public struct ServiceResult {
     public var trajectoryStartCoord: [Double] = [0, 0]
     public var searchArea: [[Double]] = [[0, 0]]
     public var searchType: Int = 0
-    
     public var trajectoryPm: [[Double]] = [[0, 0]]
-    public var trajectoryOg: [[Double]] = [[0, 0]]
 }
 
 // ------------------------------------------------- //
 // -------------------- Network -------------------- //
 // ------------------------------------------------- //
-
 struct ReceivedForce: Encodable {
     var user_id: String
     var mobile_time: Int
@@ -250,9 +238,6 @@ public struct BuildingDetectionResult: Codable {
 struct CoarseLevelDetection: Encodable {
     var user_id: String
     var mobile_time: Int
-    var normalization_scale: Double
-    var device_min_rss: Int
-    var standard_min_rss: Int
 }
 
 public struct CoarseLevelDetectionResult: Codable {
@@ -297,8 +282,6 @@ struct CoarseLocationEstimation: Encodable {
     var mobile_time: Int
     var sector_id: Int
     var search_direction_list: [Int]
-    var normalization_scale: Double
-    var device_min_rss: Int
 }
 
 public struct CoarseLocationEstimationResult: Codable {
@@ -324,7 +307,6 @@ public struct CoarseLocationEstimationResult: Codable {
 }
 
 
-
 // Fine Location Tracking
 struct FineLocationTracking: Encodable {
     var user_id: String
@@ -332,21 +314,13 @@ struct FineLocationTracking: Encodable {
     var sector_id: Int
     var building_name: String
     var level_name_list: [String]
+    var spot_id: Int
     var phase: Int
     var search_range: [Int]
     var search_direction_list: [Int]
-    var normalization_scale: Double
-    var device_min_rss: Int
+    var rss_compensation_list: [Int]
     var sc_compensation_list: [Double]
     var tail_index: Int
-}
-
-public struct FineLocationTrackingListFromServer: Codable {
-    public var flt_outputs: [FineLocationTrackingFromServer]
-    
-    public init() {
-        self.flt_outputs = []
-    }
 }
 
 public struct FineLocationTrackingFromServer: Codable {
@@ -360,6 +334,7 @@ public struct FineLocationTrackingFromServer: Codable {
     public var phase: Int
     public var calculated_time: Double
     public var index: Int
+    public var rss_compensation: Int
     public var sc_compensation: Double
     public var search_direction: Int
     
@@ -374,6 +349,7 @@ public struct FineLocationTrackingFromServer: Codable {
         self.phase = 0
         self.calculated_time = 0
         self.index = 0
+        self.rss_compensation = 0
         self.sc_compensation = 0
         self.search_direction = 0
     }
@@ -417,9 +393,7 @@ public struct FineLocationTrackingResult: Codable {
 struct OnSpotRecognition: Encodable {
     var user_id: String
     var mobile_time: Int
-    var normalization_scale: Double
-    var device_min_rss: Int
-    var standard_min_rss: Int
+    var rss_compensation: Int
 }
 
 public struct OnSpotRecognitionResult: Codable {
@@ -430,6 +404,7 @@ public struct OnSpotRecognitionResult: Codable {
     public var spot_id: Int
     public var spot_distance: Double
     public var spot_range: [Int]
+//    public var spot_direction_list: [Int]
     public var spot_direction_down: [Int]
     public var spot_direction_up: [Int]
 
@@ -441,6 +416,7 @@ public struct OnSpotRecognitionResult: Codable {
         self.spot_id = 0
         self.spot_distance = 0
         self.spot_range = []
+//        self.spot_direction_list = []
         self.spot_direction_down = []
         self.spot_direction_up = []
     }
@@ -527,19 +503,19 @@ public struct JupiterGeoResult: Codable {
 }
 
 // Bias
-public struct JupiterParamGet: Encodable {
+public struct JupiterBiasGet: Encodable {
     var device_model: String
     var os_version: Int
     var sector_id: Int
 }
 
-public struct JupiterDeviceParamGet: Encodable {
+public struct JupiterDeviceBiasGet: Encodable {
     var device_model: String
     var sector_id: Int
 }
 
 
-public struct JupiterParamResult: Codable {
+public struct JupiterBiasResult: Codable {
     public var rss_compensations: [rss_compensation]
     
     public init() {
@@ -551,13 +527,11 @@ public struct rss_compensation: Codable {
     public var os_version: Int
     public var rss_compensation: Int
     public var scale_factor: Double
-    public var normalization_scale: Double
     
     public init() {
         self.os_version = 0
         self.rss_compensation = 0
         self.scale_factor = 1.0
-        self.normalization_scale = 1.0
     }
 }
 
@@ -566,13 +540,6 @@ public struct JupiterBiasPost: Encodable {
     var os_version: Int
     var sector_id: Int
     var rss_compensation: Int
-}
-
-public struct JupiterParamPost: Encodable {
-    var device_model: String
-    var os_version: Int
-    var sector_id: Int
-    var normalization_scale: Double
 }
 
 // Traj
@@ -618,8 +585,7 @@ public struct MobileResult: Encodable {
     public var index: Int
     public var velocity: Double
     public var ble_only_position: Bool
-    public var normalization_scale: Double
-    public var device_min_rss: Int
+    public var rss_compensation: Int
     public var sc_compensation: Double
     public var is_indoor: Bool
 }

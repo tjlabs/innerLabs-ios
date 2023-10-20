@@ -1,5 +1,6 @@
 import Foundation
 
+let START_FLAG: Int = -2
 let ABNORMAL_FLAG: Int = -1
 let OUTDOOR_FLAG: Int = 0
 let INDOOR_FLAG: Int = 1
@@ -12,8 +13,7 @@ let BACKGROUND_FLAG: Int = 7
 let FOREGROUND_FLAG: Int = 8
 let RFD_FLAG: Int = 9
 let UVD_FLAG: Int = 10
-let BLE_SCAN_STOP_FLAG: Int = 11
-let BLE_ERROR_FLAG: Int = 12
+let BLE_ERROR_FLAG: Int = 11
 
 public protocol Observable {
     func addObserver(_ observer: Observer)
