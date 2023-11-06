@@ -2021,10 +2021,11 @@ public class ServiceManager: Observation {
                             self.measurementOutput.x = self.resultToReturn.x
                             self.measurementOutput.y = self.resultToReturn.y
                             self.measurementOutput.absolute_heading = self.resultToReturn.absolute_heading
-                            self.outputResult.x = self.resultToReturn.x
-                            self.outputResult.y = self.resultToReturn.y
-                            self.outputResult.absolute_heading = self.resultToReturn.absolute_heading
                         }
+                        self.outputResult.x = self.resultToReturn.x
+                        self.outputResult.y = self.resultToReturn.y
+                        self.outputResult.absolute_heading = self.resultToReturn.absolute_heading
+                        
                         print(getLocalTimeString() + " , (Jupiter) Entrance Simulator : Finish (End Simulating)")
                         self.isStartSimulate = false
                         self.isInNetworkBadEntrance = false

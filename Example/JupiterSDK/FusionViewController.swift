@@ -1303,6 +1303,7 @@ extension FusionViewController: CustomSwitchButtonDelegate {
                     self.pastBuilding = ""
                     self.pastLevel = ""
                     self.displayLevelImage(building: currentBuilding, level: currentLevel, flag: isShowRP)
+                    self.notificationCenterRemoveObserver()
                     
                     print("(FusionVC) Success : \(isStop.1)")
                     serviceManager.removeObserver(self)
@@ -1311,7 +1312,7 @@ extension FusionViewController: CustomSwitchButtonDelegate {
                     print("(FusionVC) Fail : \(isStop.1)")
                     let message: String = isStop.1
 //                    showPopUp(title: "Service Fail", message: message)
-                    goToBackServiceFail()
+                    self.goToBackServiceFail()
                 }
             }
         }
