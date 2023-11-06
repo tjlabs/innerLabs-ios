@@ -466,44 +466,6 @@ public class ServiceManager: Observation {
     }
     
     public func startService(id: String, sector_id: Int, service: String, mode: String, completion: @escaping (Bool, String) -> Void) {
-//        let data: [[Double]] = [
-//            [1.0, 2.0, 180.0],
-//            [2.0, 2.0, 190.0],
-//            [1.0, 1.0, 170.0],
-//            [6.0, 2.0, 180.0],
-//            [7.0, 2.0, 180.0],
-//            [8.0, 2.0, 180.0],
-//            [10.0, 9.0, 0.0],
-//            [10.0, 11.0, 0.0],
-//            [12.0, 10.0, 0.0],
-//            [-10.0, -10.0, 270.0]
-//        ]
-//
-//        let numClusters = 3
-//        let clusterLabels = kmeansClustering(data: data, numClusters: numClusters)
-//        print("Cluster Labels 1: \(clusterLabels)")
-//
-//        let classifiedData = classifyData(data: data, labels: clusterLabels)
-//        print("Cluster 1 : \(classifiedData)")
-//
-//        let data2: [[Double]] = [
-//            [1.0, 2.0, 180.0],
-//            [2.0, 2.0, 190.0],
-//            [1.0, 1.0, 170.0],
-//            [1.0, 8.0, 180.0],
-//            [2.0, 8.0, 180.0],
-//            [1.0, 7.0, 180.0],
-//            [1.0, 9.0, 190.0],
-//            [1.0, 10.0, 170.0],
-//            [2.0, 0.0, 180.0],
-//            [2.0, 1.0, 180.0],
-//        ]
-//        let numClusters2 = 2
-//        let clusterLabels2 = kmeansClustering(data: data2, numClusters: numClusters2)
-//        print("Cluster Labels 2: \(clusterLabels2)")
-//        let classifiedData2 = classifyData(data: data2, labels: clusterLabels2)
-//        print("Cluster 2 : \(classifiedData2)")
-        
         let localTime = getLocalTimeString()
         print(localTime + " , (Jupiter) Information : Try startService")
         let log: String = localTime + " , (Jupiter) Success : Service Initalization"
@@ -523,7 +485,7 @@ public class ServiceManager: Observation {
         
         var countBuildingLevel: Int = 0
         
-        let numInput = 3
+        let numInput = 2
         let interval: Double = 1/2
         self.RFD_INPUT_NUM = numInput
         self.RFD_INTERVAL = interval
@@ -3448,11 +3410,12 @@ public class ServiceManager: Observation {
                             resultCorrected.0 = pathMatchingResult.isSuccess
                             resultCorrected.1 = pathMatchingResult.xyh
                         }
-                        resultCorrected.1[2] = compensateHeading(heading: resultCorrected.1[2])
-//                        print(getLocalTimeString() + " , (Jupiter) propagateUsingUvd : serverH = \(resultCorrected.1)")
+//                        resultCorrected.1[2] = compensateHeading(heading: resultCorrected.1[2])
+                        resultCorrected.1[2] = resultHeading
+                        
                         result.x = resultCorrected.1[0]
                         result.y = resultCorrected.1[1]
-                        result.absolute_heading = resultCorrected.1[2]
+//                        result.absolute_heading = resultCorrected.1[2]
                         
                         if (result.phase == 2 && result.scc < 0.25) {
                             self.isNeedTrajInit = true
@@ -3547,7 +3510,6 @@ public class ServiceManager: Observation {
                                     self.phase2BadCount = 0
                                     self.isMovePhase2To4 = true
                                 } else {
-                                    //
                                     let trajLength = calculateAccumulatedLength(userTrajectory: self.userTrajectoryInfo)
                                     if (result.scc > 0.6) {
                                         let propagationResult = propagateUsingUvd(drBuffer: self.unitDrBuffer, result: result)
@@ -3776,6 +3738,7 @@ public class ServiceManager: Observation {
                         }
                         
                         self.pastSearchDirection = result.search_direction
+                        let resultHeading = compensateHeading(heading: result.absolute_heading)
                         var resultCorrected = (true, [result.x, result.y, result.absolute_heading])
                         if (self.runMode == "pdr") {
                             let pathMatchingResult = self.pathMatching(building: result.building_name, level: result.level_name, x: result.x, y: result.y, heading: result.absolute_heading, tuXY: [0,0], isPast: false, HEADING_RANGE: HEADING_RANGE, isUseHeading: false, pathType: 0)
@@ -3786,11 +3749,12 @@ public class ServiceManager: Observation {
                             resultCorrected.0 = pathMatchingResult.isSuccess
                             resultCorrected.1 = pathMatchingResult.xyh
                         }
-                        resultCorrected.1[2] = compensateHeading(heading: resultCorrected.1[2])
+                        resultCorrected.1[2] = resultHeading
+//                        resultCorrected.1[2] = compensateHeading(heading: resultCorrected.1[2])
                         
                         self.serverResult[0] = resultCorrected.1[0]
                         self.serverResult[1] = resultCorrected.1[1]
-                        self.serverResult[2] = resultCorrected.1[2]
+                        self.serverResult[2] = resultHeading
                         
                         if (!self.isActiveKf) {
                             // Add
@@ -5793,60 +5757,16 @@ public class ServiceManager: Observation {
         }
     }
     
-//    func propagateUsingUvd(drBuffer: [UnitDRInfo], result: FineLocationTrackingFromServer) -> (Bool, [Double]) {
-//        var isSuccess: Bool = false
-//        var propagationValues: [Double] = [0, 0, 0]
-//        let resultIndex = result.index
-//        var matchedIndex: Int = -1
-//        
-//        for i in 0..<drBuffer.count {
-//            let drBufferIndex = drBuffer[i].index
-//            if (drBufferIndex == resultIndex) {
-//                matchedIndex = i
-//            }
-//        }
-//        
-//        var dx: Double = 0
-//        var dy: Double = 0
-//        var dh: Double = 0
-//        
-//        if (matchedIndex != -1) {
-//            let drBuffrerFromIndex = sliceArray(drBuffer, startingFrom: matchedIndex)
-//            let headingCompensation: Double = result.absolute_heading - drBuffrerFromIndex[0].heading
-//            var headingBuffer = [Double]()
-//            for i in 0..<drBuffrerFromIndex.count {
-//                let compensatedHeading = compensateHeading(heading: drBuffrerFromIndex[i].heading + headingCompensation)
-//                headingBuffer.append(compensatedHeading)
-//                
-//                dx += drBuffrerFromIndex[i].length * cos(compensatedHeading*D2R)
-//                dy += drBuffrerFromIndex[i].length * sin(compensatedHeading*D2R)
-//            }
-//            dh = headingBuffer[headingBuffer.count-1] - headingBuffer[0]
-//            
-//            isSuccess = true
-//            propagationValues = [dx, dy, dh]
-//        }
-//        
-//        return (isSuccess, propagationValues)
-//    }
-    
     func propagateUsingUvd(drBuffer: [UnitDRInfo], result: FineLocationTrackingFromServer) -> (Bool, [Double]) {
         var isSuccess: Bool = false
         var propagationValues: [Double] = [0, 0, 0]
         let resultIndex = result.index
-        let resultIndexPast = result.index - UVD_INPUT_NUM
-        
         var matchedIndex: Int = -1
-        var matchedPostUvdTailIndex: Int = -1
         
         for i in 0..<drBuffer.count {
             let drBufferIndex = drBuffer[i].index
             if (drBufferIndex == resultIndex) {
                 matchedIndex = i
-            }
-            
-            if (drBufferIndex == resultIndexPast) {
-                matchedPostUvdTailIndex = i
             }
         }
         
@@ -5854,19 +5774,9 @@ public class ServiceManager: Observation {
         var dy: Double = 0
         var dh: Double = 0
         
-        var dhFromHeadTail: Double = 0
-        var dhFromPostTail: Double = 0
-        
-        if (matchedIndex != -1 && matchedPostUvdTailIndex != -1) {
+        if (matchedIndex != -1) {
             let drBuffrerFromIndex = sliceArray(drBuffer, startingFrom: matchedIndex)
             let headingCompensation: Double = result.absolute_heading - drBuffrerFromIndex[0].heading
-            var headingBufferAll = [Double]()
-            
-            for i in 0..<drBuffer.count {
-                let compensatedHeading = compensateHeading(heading: drBuffer[i].heading + headingCompensation)
-                headingBufferAll.append(compensatedHeading)
-            }
-            
             var headingBuffer = [Double]()
             for i in 0..<drBuffrerFromIndex.count {
                 let compensatedHeading = compensateHeading(heading: drBuffrerFromIndex[i].heading + headingCompensation)
@@ -5876,13 +5786,6 @@ public class ServiceManager: Observation {
                 dy += drBuffrerFromIndex[i].length * sin(compensatedHeading*D2R)
             }
             dh = headingBuffer[headingBuffer.count-1] - headingBuffer[0]
-            dhFromHeadTail = headingBufferAll[headingBufferAll.count-1] - headingBufferAll[matchedPostUvdTailIndex]
-            dhFromPostTail = headingBufferAll[matchedIndex] - headingBufferAll[matchedPostUvdTailIndex]
-            
-            if (abs(dhFromPostTail) <= 40 && abs(dh) <= 40) {
-                print(getLocalTimeString() + " , (Jupiter) propagateUsingUvd : index = \(drBuffer[drBuffer.count-1].index) // serverMmH = \(result.absolute_heading) // dh = \(dh) // dhFromHeadTail = \(dhFromHeadTail)")
-                dh = dhFromHeadTail
-            }
             
             isSuccess = true
             propagationValues = [dx, dy, dh]
@@ -5890,6 +5793,67 @@ public class ServiceManager: Observation {
         
         return (isSuccess, propagationValues)
     }
+    
+//    func propagateUsingUvd(drBuffer: [UnitDRInfo], result: FineLocationTrackingFromServer) -> (Bool, [Double]) {
+//        var isSuccess: Bool = false
+//        var propagationValues: [Double] = [0, 0, 0]
+//        let resultIndex = result.index
+//        let resultIndexPast = result.index - UVD_INPUT_NUM
+//        
+//        var matchedIndex: Int = -1
+//        var matchedPostUvdTailIndex: Int = -1
+//        
+//        for i in 0..<drBuffer.count {
+//            let drBufferIndex = drBuffer[i].index
+//            if (drBufferIndex == resultIndex) {
+//                matchedIndex = i
+//            }
+//            
+//            if (drBufferIndex == resultIndexPast) {
+//                matchedPostUvdTailIndex = i
+//            }
+//        }
+//        
+//        var dx: Double = 0
+//        var dy: Double = 0
+//        var dh: Double = 0
+//        
+//        var dhFromHeadTail: Double = 0
+//        var dhFromPostTail: Double = 0
+//        
+//        if (matchedIndex != -1 && matchedPostUvdTailIndex != -1) {
+//            let drBuffrerFromIndex = sliceArray(drBuffer, startingFrom: matchedIndex)
+//            let headingCompensation: Double = result.absolute_heading - drBuffrerFromIndex[0].heading
+//            var headingBufferAll = [Double]()
+//            
+//            for i in 0..<drBuffer.count {
+//                let compensatedHeading = compensateHeading(heading: drBuffer[i].heading + headingCompensation)
+//                headingBufferAll.append(compensatedHeading)
+//            }
+//            
+//            var headingBuffer = [Double]()
+//            for i in 0..<drBuffrerFromIndex.count {
+//                let compensatedHeading = compensateHeading(heading: drBuffrerFromIndex[i].heading + headingCompensation)
+//                headingBuffer.append(compensatedHeading)
+//                
+//                dx += drBuffrerFromIndex[i].length * cos(compensatedHeading*D2R)
+//                dy += drBuffrerFromIndex[i].length * sin(compensatedHeading*D2R)
+//            }
+//            dh = headingBuffer[headingBuffer.count-1] - headingBuffer[0]
+//            dhFromHeadTail = headingBufferAll[headingBufferAll.count-1] - headingBufferAll[matchedPostUvdTailIndex]
+//            dhFromPostTail = headingBufferAll[matchedIndex] - headingBufferAll[matchedPostUvdTailIndex]
+//            
+//            if (abs(dhFromPostTail) <= 40 && abs(dh) <= 40) {
+//                print(getLocalTimeString() + " , (Jupiter) propagateUsingUvd : index = \(drBuffer[drBuffer.count-1].index) // serverMmH = \(result.absolute_heading) // dh = \(dh) // dhFromHeadTail = \(dhFromHeadTail)")
+//                dh = dhFromHeadTail
+//            }
+//            
+//            isSuccess = true
+//            propagationValues = [dx, dy, dh]
+//        }
+//        
+//        return (isSuccess, propagationValues)
+//    }
     
     
     // Kalman Filter
@@ -6195,7 +6159,7 @@ public class ServiceManager: Observation {
         for (key, value) in bleAvg {
             if networkBadEntranceWards.contains(key) {
                 let rssi = value + Double(bias)
-                if (rssi >= -80.0) {
+                if (rssi >= -82.0) {
                     isInNetworkBadEntrance = true
                     
                     entrance.building_name = "COEX"
