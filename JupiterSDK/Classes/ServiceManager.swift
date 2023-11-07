@@ -2019,10 +2019,11 @@ public class ServiceManager: Observation {
                             self.measurementOutput.x = self.resultToReturn.x
                             self.measurementOutput.y = self.resultToReturn.y
                             self.measurementOutput.absolute_heading = self.resultToReturn.absolute_heading
-                            self.outputResult.x = self.resultToReturn.x
-                            self.outputResult.y = self.resultToReturn.y
-                            self.outputResult.absolute_heading = self.resultToReturn.absolute_heading
                         }
+                        self.outputResult.x = self.resultToReturn.x
+                        self.outputResult.y = self.resultToReturn.y
+                        self.outputResult.absolute_heading = self.resultToReturn.absolute_heading
+                        
                         print(getLocalTimeString() + " , (Jupiter) Entrance Simulator : Finish (End Simulating)")
                         self.isStartSimulate = false
                         self.isInNetworkBadEntrance = false
@@ -3378,7 +3379,7 @@ public class ServiceManager: Observation {
                         }
                         
                         self.pastSearchDirection = result.search_direction
-                        let resultHeading = compensateHeading(heading: result.absolute_heading)
+                        var resultHeading = compensateHeading(heading: result.absolute_heading)
                         var resultCorrected = (true, [result.x, result.y, resultHeading])
                         if (self.runMode == "pdr") {
                             let pathMatchingResult = self.pathMatching(building: result.building_name, level: result.level_name, x: result.x, y: result.y, heading: resultHeading, tuXY: [0,0], isPast: false, HEADING_RANGE: HEADING_RANGE, isUseHeading: false, pathType: 0)
@@ -3390,6 +3391,16 @@ public class ServiceManager: Observation {
                             resultCorrected.1 = pathMatchingResult.xyh
                         }
                         resultCorrected.1[2] = compensateHeading(heading: resultCorrected.1[2])
+                        var resultHeadingMm = resultCorrected.1[2]
+                        
+                        // 서버 헤딩 & 서버 헤딩 (맵매칭) 비교 : 회전 손실된 방향확인
+                        if (resultHeading >= 270 && (resultHeadingMm >= 0 && resultHeadingMm < 90)) {
+                            resultHeadingMm = resultHeadingMm + 360
+                        } else if (resultHeadingMm >= 270 && (resultHeading >= 0 && resultHeading < 90)) {
+                            resultHeading = resultHeading + 360
+                        }
+                        var lostHeading = abs(resultHeadingMm - resultHeading)
+                        
                         
                         if (result.phase == 2 && result.scc < 0.25) {
                             self.isNeedTrajInit = true
@@ -3408,9 +3419,7 @@ public class ServiceManager: Observation {
                                     }
                                     self.phase2BadCount = 0
                                 }
-                            }
-                        } else {
-                            if (result.phase == 4) {
+                            } else if (result.scc > 0.55) {
                                 if (!self.isActiveKf) {
                                     // 최초 Phase 2-> 4 진입
                                     if (self.isIndoor) {
@@ -3426,12 +3435,13 @@ public class ServiceManager: Observation {
                                         self.measurementOutput.level_name = outputLevel
                                         self.measurementOutput.phase = outputPhase
                                         
+                                        self.phase = 4
                                         self.isActiveKf = true
                                         self.timeUpdateFlag = true
                                         self.isStartKf = true
                                     }
                                     
-                                    let propagationResult = propagateUsingUvd(drBuffer: self.unitDrBuffer, result: result)
+                                    let propagationResult = propagateUsingUvd(drBuffer: self.unitDrBuffer, result: result, lostHeading: lostHeading)
                                     let propagationValues: [Double] = propagationResult.1
                                     if (propagationResult.0) {
                                         var propagatedResult: [Double] = [resultCorrected.1[0]+propagationValues[0] , resultCorrected.1[1]+propagationValues[1], resultCorrected.1[2]+propagationValues[2]]
@@ -3484,10 +3494,9 @@ public class ServiceManager: Observation {
                                     self.phase2BadCount = 0
                                     self.isMovePhase2To4 = true
                                 } else {
-                                    //
                                     let trajLength = calculateAccumulatedLength(userTrajectory: self.userTrajectoryInfo)
                                     if (result.scc > 0.6) {
-                                        let propagationResult = propagateUsingUvd(drBuffer: self.unitDrBuffer, result: result)
+                                        let propagationResult = propagateUsingUvd(drBuffer: self.unitDrBuffer, result: result, lostHeading: lostHeading)
                                         let propagationValues: [Double] = propagationResult.1
                                         if (propagationResult.0) {
                                             var propgatedResult: [Double] = [resultCorrected.1[0]+propagationValues[0] , resultCorrected.1[1]+propagationValues[1], resultCorrected.1[2]+propagationValues[2]]
@@ -3550,87 +3559,147 @@ public class ServiceManager: Observation {
                                         }
                                     }
                                 }
-                                
-                                // 기존
-//                                if (!self.isActiveKf) {
-//                                    if (self.isIndoor) {
-//                                        let outputBuilding = self.outputResult.building_name
-//                                        let outputLevel = self.outputResult.level_name
-//                                        let outputPhase = self.outputResult.phase
-//
-//                                        self.timeUpdateOutput.building_name = outputBuilding
-//                                        self.timeUpdateOutput.level_name = outputLevel
-//                                        self.timeUpdateOutput.phase = outputPhase
-//
-//                                        self.measurementOutput.building_name = outputBuilding
-//                                        self.measurementOutput.level_name = outputLevel
-//                                        self.measurementOutput.phase = outputPhase
-//
-//                                        self.isActiveKf = true
-//                                        self.timeUpdateFlag = true
-//                                        self.isStartKf = true
-//                                    }
-//
-//                                    let propagationResult = propagateUsingUvd(drBuffer: self.unitDrBuffer, result: result)
-//                                    let propagationValues: [Double] = propagationResult.1
-//                                    if (propagationResult.0) {
-//                                        var propagatedResult: [Double] = [resultCorrected.1[0]+propagationValues[0] , resultCorrected.1[1]+propagationValues[1], resultCorrected.1[2]+propagationValues[2]]
-//                                        let pathMatchingResult = self.pathMatching(building: result.building_name, level: result.level_name, x: propagatedResult[0], y: propagatedResult[1], heading: propagatedResult[2], tuXY: [0,0], isPast: false, HEADING_RANGE: HEADING_RANGE, isUseHeading: true, pathType: 1)
-//                                        propagatedResult = pathMatchingResult.xyh
-//                                        propagatedResult[2] = compensateHeading(heading: propagatedResult[2])
-//
-//                                        self.timeUpdatePosition.x = propagatedResult[0]
-//                                        self.timeUpdatePosition.y = propagatedResult[1]
-//                                        self.timeUpdatePosition.heading = propagatedResult[2]
-//                                        self.updateHeading = propagatedResult[2]
-//
-//                                        self.timeUpdateOutput.x = propagatedResult[0]
-//                                        self.timeUpdateOutput.y = propagatedResult[1]
-//                                        self.timeUpdateOutput.absolute_heading = propagatedResult[2]
-//
-//                                        self.measurementPosition.x = propagatedResult[0]
-//                                        self.measurementPosition.y = propagatedResult[1]
-//                                        self.measurementPosition.heading = propagatedResult[2]
-//
-//                                        self.measurementOutput.x = propagatedResult[0]
-//                                        self.measurementOutput.y = propagatedResult[1]
-//                                        self.measurementOutput.absolute_heading = propagatedResult[2]
-//
-//                                        self.outputResult.x = propagatedResult[0]
-//                                        self.outputResult.y = propagatedResult[1]
-//                                        self.outputResult.absolute_heading = propagatedResult[2]
-//                                    } else {
-//                                        self.timeUpdatePosition.x = resultCorrected.1[0]
-//                                        self.timeUpdatePosition.y = resultCorrected.1[1]
-//                                        self.timeUpdatePosition.heading = resultHeading
-//                                        self.updateHeading = resultHeading
-//
-//                                        self.timeUpdateOutput.x = resultCorrected.1[0]
-//                                        self.timeUpdateOutput.y = resultCorrected.1[1]
-//                                        self.timeUpdateOutput.absolute_heading = resultHeading
-//
-//                                        self.measurementPosition.x = resultCorrected.1[0]
-//                                        self.measurementPosition.y = resultCorrected.1[1]
-//                                        self.measurementPosition.heading = resultHeading
-//
-//                                        self.measurementOutput.x = resultCorrected.1[0]
-//                                        self.measurementOutput.y = resultCorrected.1[1]
-//                                        self.measurementOutput.absolute_heading = resultHeading
-//
-//                                        self.outputResult.x = resultCorrected.1[0]
-//                                        self.outputResult.y = resultCorrected.1[1]
-//                                        self.outputResult.absolute_heading = resultHeading
-//                                    }
-//
-//
-//                                    if (self.isStartSimulate) {
-//                                        self.makeOutputResult(input: self.outputResult, isPast: self.flagPast, runMode: self.runMode, isVenusMode: self.isVenusMode)
-//                                    } else {
-//                                        self.resultToReturn = self.makeOutputResult(input: self.outputResult, isPast: self.flagPast, runMode: self.runMode, isVenusMode: self.isVenusMode)
-//                                    }
-//                                }
-//                                self.phase2BadCount = 0
-//                                self.isMovePhase2To4 = true
+                            }
+                        } else {
+                            if (result.phase == 4) {
+                                if (!self.isActiveKf) {
+                                    // 최초 Phase 2-> 4 진입
+                                    if (self.isIndoor) {
+                                        let outputBuilding = self.outputResult.building_name
+                                        let outputLevel = self.outputResult.level_name
+                                        let outputPhase = self.outputResult.phase
+                                        
+                                        self.timeUpdateOutput.building_name = outputBuilding
+                                        self.timeUpdateOutput.level_name = outputLevel
+                                        self.timeUpdateOutput.phase = outputPhase
+                                        
+                                        self.measurementOutput.building_name = outputBuilding
+                                        self.measurementOutput.level_name = outputLevel
+                                        self.measurementOutput.phase = outputPhase
+                                        
+                                        self.isActiveKf = true
+                                        self.timeUpdateFlag = true
+                                        self.isStartKf = true
+                                    }
+                                    
+                                    let propagationResult = propagateUsingUvd(drBuffer: self.unitDrBuffer, result: result, lostHeading: lostHeading)
+                                    let propagationValues: [Double] = propagationResult.1
+                                    if (propagationResult.0) {
+                                        var propagatedResult: [Double] = [resultCorrected.1[0]+propagationValues[0] , resultCorrected.1[1]+propagationValues[1], resultCorrected.1[2]+propagationValues[2]]
+                                        let pathMatchingResult = self.pathMatching(building: result.building_name, level: result.level_name, x: propagatedResult[0], y: propagatedResult[1], heading: propagatedResult[2], tuXY: [0,0], isPast: false, HEADING_RANGE: HEADING_RANGE, isUseHeading: true, pathType: 1)
+                                        propagatedResult = pathMatchingResult.xyh
+                                        propagatedResult[2] = compensateHeading(heading: propagatedResult[2])
+                                        
+                                        self.timeUpdatePosition.x = propagatedResult[0]
+                                        self.timeUpdatePosition.y = propagatedResult[1]
+                                        self.timeUpdatePosition.heading = propagatedResult[2]
+                                        self.updateHeading = propagatedResult[2]
+
+                                        self.timeUpdateOutput.x = propagatedResult[0]
+                                        self.timeUpdateOutput.y = propagatedResult[1]
+                                        self.timeUpdateOutput.absolute_heading = propagatedResult[2]
+
+                                        self.measurementPosition.x = propagatedResult[0]
+                                        self.measurementPosition.y = propagatedResult[1]
+                                        self.measurementPosition.heading = propagatedResult[2]
+
+                                        self.measurementOutput.x = propagatedResult[0]
+                                        self.measurementOutput.y = propagatedResult[1]
+                                        self.measurementOutput.absolute_heading = propagatedResult[2]
+
+                                        self.outputResult.x = propagatedResult[0]
+                                        self.outputResult.y = propagatedResult[1]
+                                        self.outputResult.absolute_heading = propagatedResult[2]
+                                    } else {
+                                        self.timeUpdatePosition.x = resultCorrected.1[0]
+                                        self.timeUpdatePosition.y = resultCorrected.1[1]
+                                        self.timeUpdatePosition.heading = resultHeading
+                                        self.updateHeading = resultHeading
+
+                                        self.timeUpdateOutput.x = resultCorrected.1[0]
+                                        self.timeUpdateOutput.y = resultCorrected.1[1]
+                                        self.timeUpdateOutput.absolute_heading = resultHeading
+
+                                        self.measurementPosition.x = resultCorrected.1[0]
+                                        self.measurementPosition.y = resultCorrected.1[1]
+                                        self.measurementPosition.heading = resultHeading
+
+                                        self.measurementOutput.x = resultCorrected.1[0]
+                                        self.measurementOutput.y = resultCorrected.1[1]
+                                        self.measurementOutput.absolute_heading = resultHeading
+
+                                        self.outputResult.x = resultCorrected.1[0]
+                                        self.outputResult.y = resultCorrected.1[1]
+                                        self.outputResult.absolute_heading = resultHeading
+                                    }
+                                    self.phase2BadCount = 0
+                                    self.isMovePhase2To4 = true
+                                } else {
+                                    let trajLength = calculateAccumulatedLength(userTrajectory: self.userTrajectoryInfo)
+                                    if (result.scc > 0.6) {
+                                        let propagationResult = propagateUsingUvd(drBuffer: self.unitDrBuffer, result: result, lostHeading: lostHeading)
+                                        let propagationValues: [Double] = propagationResult.1
+                                        if (propagationResult.0) {
+                                            var propgatedResult: [Double] = [resultCorrected.1[0]+propagationValues[0] , resultCorrected.1[1]+propagationValues[1], resultCorrected.1[2]+propagationValues[2]]
+                                            if (self.runMode == "pdr") {
+                                                let pathMatchingResult = self.pathMatching(building: result.building_name, level: result.level_name, x: propgatedResult[0], y: propgatedResult[1], heading: propgatedResult[2], tuXY: [0,0], isPast: false, HEADING_RANGE: HEADING_RANGE, isUseHeading: true, pathType: 0)
+                                                propgatedResult = pathMatchingResult.xyh
+                                            } else {
+                                                let pathMatchingResult = self.pathMatching(building: result.building_name, level: result.level_name, x: propgatedResult[0], y: propgatedResult[1], heading: propgatedResult[2], tuXY: [0,0], isPast: false, HEADING_RANGE: HEADING_RANGE, isUseHeading: true, pathType: 1)
+                                                propgatedResult = pathMatchingResult.xyh
+                                            }
+                                            propgatedResult[2] = compensateHeading(heading: propgatedResult[2])
+                                            
+                                            self.timeUpdatePosition.x = propgatedResult[0]
+                                            self.timeUpdatePosition.y = propgatedResult[1]
+
+                                            self.timeUpdateOutput.x = propgatedResult[0]
+                                            self.timeUpdateOutput.y = propgatedResult[1]
+
+                                            self.measurementPosition.x = propgatedResult[0]
+                                            self.measurementPosition.y = propgatedResult[1]
+
+                                            self.measurementOutput.x = propgatedResult[0]
+                                            self.measurementOutput.y = propgatedResult[1]
+
+                                            self.outputResult.x = propgatedResult[0]
+                                            self.outputResult.y = propgatedResult[1]
+                                            
+                                            if (trajLength >= USER_TRAJECTORY_LENGTH*0.6) {
+                                                self.updateHeading = propgatedResult[2]
+                                                self.timeUpdatePosition.heading = propgatedResult[2]
+                                                self.timeUpdateOutput.absolute_heading = propgatedResult[2]
+                                                self.measurementPosition.heading = propgatedResult[2]
+                                                self.measurementOutput.absolute_heading = propgatedResult[2]
+                                                self.outputResult.absolute_heading = propgatedResult[2]
+                                            }
+                                        } else {
+                                            self.timeUpdatePosition.x = resultCorrected.1[0]
+                                            self.timeUpdatePosition.y = resultCorrected.1[1]
+
+                                            self.timeUpdateOutput.x = resultCorrected.1[0]
+                                            self.timeUpdateOutput.y = resultCorrected.1[1]
+
+                                            self.measurementPosition.x = resultCorrected.1[0]
+                                            self.measurementPosition.y = resultCorrected.1[1]
+
+                                            self.measurementOutput.x = resultCorrected.1[0]
+                                            self.measurementOutput.y = resultCorrected.1[1]
+
+                                            self.outputResult.x = resultCorrected.1[0]
+                                            self.outputResult.y = resultCorrected.1[1]
+                                            
+                                            if (trajLength >= USER_TRAJECTORY_LENGTH*0.6) {
+                                                self.updateHeading = resultCorrected.1[2]
+                                                self.timeUpdatePosition.heading = resultCorrected.1[2]
+                                                self.timeUpdateOutput.absolute_heading = resultCorrected.1[2]
+                                                self.measurementPosition.heading = resultCorrected.1[2]
+                                                self.measurementOutput.absolute_heading = resultCorrected.1[2]
+                                                self.outputResult.absolute_heading = resultCorrected.1[2]
+                                            }
+                                        }
+                                    }
+                                }
                             }
                             
                             if (self.currentLevel == "0F") {
@@ -3646,78 +3715,6 @@ public class ServiceManager: Observation {
                         self.serverResult[0] = result.x
                         self.serverResult[1] = result.y
                         self.serverResult[2] = result.absolute_heading
-                        
-                        
-//                        if (!self.isActiveKf) {
-//                            self.outputResult.x = resultCorrected.1[0]
-//                            self.outputResult.y = resultCorrected.1[1]
-//                            self.outputResult.absolute_heading = resultCorrected.1[2]
-//                        } else {
-//                            let trajLength = calculateAccumulatedLength(userTrajectory: self.userTrajectoryInfo)
-//                            if (result.scc > 0.6) {
-//                                let propagationResult = propagateUsingUvd(drBuffer: self.unitDrBuffer, result: result)
-//                                let propagationValues: [Double] = propagationResult.1
-//                                if (propagationResult.0) {
-//                                    var propgatedResult: [Double] = [resultCorrected.1[0]+propagationValues[0] , resultCorrected.1[1]+propagationValues[1], resultCorrected.1[2]+propagationValues[2]]
-//                                    if (self.runMode == "pdr") {
-//                                        let pathMatchingResult = self.pathMatching(building: result.building_name, level: result.level_name, x: propgatedResult[0], y: propgatedResult[1], heading: propgatedResult[2], tuXY: [0,0], isPast: false, HEADING_RANGE: HEADING_RANGE, isUseHeading: true, pathType: 0)
-//                                        propgatedResult = pathMatchingResult.xyh
-//                                    } else {
-//                                        let pathMatchingResult = self.pathMatching(building: result.building_name, level: result.level_name, x: propgatedResult[0], y: propgatedResult[1], heading: propgatedResult[2], tuXY: [0,0], isPast: false, HEADING_RANGE: HEADING_RANGE, isUseHeading: true, pathType: 1)
-//                                        propgatedResult = pathMatchingResult.xyh
-//                                    }
-//                                    propgatedResult[2] = compensateHeading(heading: propgatedResult[2])
-//
-//                                    self.timeUpdatePosition.x = propgatedResult[0]
-//                                    self.timeUpdatePosition.y = propgatedResult[1]
-//
-//                                    self.timeUpdateOutput.x = propgatedResult[0]
-//                                    self.timeUpdateOutput.y = propgatedResult[1]
-//
-//                                    self.measurementPosition.x = propgatedResult[0]
-//                                    self.measurementPosition.y = propgatedResult[1]
-//
-//                                    self.measurementOutput.x = propgatedResult[0]
-//                                    self.measurementOutput.y = propgatedResult[1]
-//
-//                                    self.outputResult.x = propgatedResult[0]
-//                                    self.outputResult.y = propgatedResult[1]
-//
-//                                    if (trajLength >= USER_TRAJECTORY_LENGTH*0.6) {
-//                                        self.updateHeading = propgatedResult[2]
-//                                        self.timeUpdatePosition.heading = propgatedResult[2]
-//                                        self.timeUpdateOutput.absolute_heading = propgatedResult[2]
-//                                        self.measurementPosition.heading = propgatedResult[2]
-//                                        self.measurementOutput.absolute_heading = propgatedResult[2]
-//                                        self.outputResult.absolute_heading = propgatedResult[2]
-//                                    }
-//                                } else {
-//                                    self.timeUpdatePosition.x = resultCorrected.1[0]
-//                                    self.timeUpdatePosition.y = resultCorrected.1[1]
-//
-//                                    self.timeUpdateOutput.x = resultCorrected.1[0]
-//                                    self.timeUpdateOutput.y = resultCorrected.1[1]
-//
-//                                    self.measurementPosition.x = resultCorrected.1[0]
-//                                    self.measurementPosition.y = resultCorrected.1[1]
-//
-//                                    self.measurementOutput.x = resultCorrected.1[0]
-//                                    self.measurementOutput.y = resultCorrected.1[1]
-//
-//                                    self.outputResult.x = resultCorrected.1[0]
-//                                    self.outputResult.y = resultCorrected.1[1]
-//
-//                                    if (trajLength >= USER_TRAJECTORY_LENGTH*0.6) {
-//                                        self.updateHeading = resultCorrected.1[2]
-//                                        self.timeUpdatePosition.heading = resultCorrected.1[2]
-//                                        self.timeUpdateOutput.absolute_heading = resultCorrected.1[2]
-//                                        self.measurementPosition.heading = resultCorrected.1[2]
-//                                        self.measurementOutput.absolute_heading = resultCorrected.1[2]
-//                                        self.outputResult.absolute_heading = resultCorrected.1[2]
-//                                    }
-//                                }
-//                            }
-//                        }
                         
                         self.outputResult.scc = result.scc
                         self.outputResult.phase = self.phase
@@ -3867,7 +3864,8 @@ public class ServiceManager: Observation {
                         }
                         
                         self.pastSearchDirection = result.search_direction
-                        var resultCorrected = (true, [result.x, result.y, result.absolute_heading])
+                        var resultHeading = compensateHeading(heading: result.absolute_heading)
+                        var resultCorrected = (true, [result.x, result.y, resultHeading])
                         if (self.runMode == "pdr") {
                             let pathMatchingResult = self.pathMatching(building: result.building_name, level: result.level_name, x: result.x, y: result.y, heading: result.absolute_heading, tuXY: [0,0], isPast: false, HEADING_RANGE: HEADING_RANGE, isUseHeading: false, pathType: 0)
                             resultCorrected.0 = pathMatchingResult.isSuccess
@@ -3878,6 +3876,15 @@ public class ServiceManager: Observation {
                             resultCorrected.1 = pathMatchingResult.xyh
                         }
                         resultCorrected.1[2] = compensateHeading(heading: resultCorrected.1[2])
+                        var resultHeadingMm = resultCorrected.1[2]
+                        
+                        // 서버 헤딩 & 서버 헤딩 (맵매칭) 비교 : 회전 손실된 방향확인
+                        if (resultHeading >= 270 && (resultHeadingMm >= 0 && resultHeadingMm < 90)) {
+                            resultHeadingMm = resultHeadingMm + 360
+                        } else if (resultHeadingMm >= 270 && (resultHeading >= 0 && resultHeading < 90)) {
+                            resultHeading = resultHeading + 360
+                        }
+                        var lostHeading = abs(resultHeadingMm - resultHeading)
                         
                         self.serverResult[0] = resultCorrected.1[0]
                         self.serverResult[1] = resultCorrected.1[1]
@@ -3906,7 +3913,7 @@ public class ServiceManager: Observation {
                             }
                             
                             if (result.phase == 4) {
-                                let propagationResult = propagateUsingUvd(drBuffer: self.unitDrBuffer, result: result)
+                                let propagationResult = propagateUsingUvd(drBuffer: self.unitDrBuffer, result: result, lostHeading: lostHeading)
                                 var propagationValues: [Double] = propagationResult.1
                                 if (propagationResult.0) {
                                     var propagatedResult: [Double] = [resultCorrected.1[0]+propagationValues[0] , resultCorrected.1[1]+propagationValues[1], resultCorrected.1[2]+propagationValues[2]]
@@ -4007,7 +4014,7 @@ public class ServiceManager: Observation {
                         } else {
                             // Kalman Filter가 동작 중이면서 위치 요청시 input의 phase 가 1~3 인 경우
                             self.phaseBreakResult = result
-                            let propagationResult = propagateUsingUvd(drBuffer: self.unitDrBuffer, result: result)
+                            let propagationResult = propagateUsingUvd(drBuffer: self.unitDrBuffer, result: result, lostHeading: lostHeading)
                             let propagationValues: [Double] = propagationResult.1
                             var propagatedResult: [Double] = [resultCorrected.1[0]+propagationValues[0] , resultCorrected.1[1]+propagationValues[1], resultCorrected.1[2]+propagationValues[2]]
                             let pathMatchingResult = self.pathMatching(building: result.building_name, level: result.level_name, x: propagatedResult[0], y: propagatedResult[1], heading: propagatedResult[2], tuXY: [0,0], isPast: false, HEADING_RANGE: HEADING_RANGE, isUseHeading: true, pathType: 1)
@@ -5878,16 +5885,60 @@ public class ServiceManager: Observation {
         }
     }
     
-    func propagateUsingUvd(drBuffer: [UnitDRInfo], result: FineLocationTrackingFromServer) -> (Bool, [Double]) {
+//    func propagateUsingUvd(drBuffer: [UnitDRInfo], result: FineLocationTrackingFromServer, lostHeading: Double) -> (Bool, [Double]) {
+//        var isSuccess: Bool = false
+//        var propagationValues: [Double] = [0, 0, 0]
+//        let resultIndex = result.index
+//        var matchedIndex: Int = -1
+//        
+//        for i in 0..<drBuffer.count {
+//            let drBufferIndex = drBuffer[i].index
+//            if (drBufferIndex == resultIndex) {
+//                matchedIndex = i
+//            }
+//        }
+//        
+//        var dx: Double = 0
+//        var dy: Double = 0
+//        var dh: Double = 0
+//        
+//        if (matchedIndex != -1) {
+//            let drBuffrerFromIndex = sliceArray(drBuffer, startingFrom: matchedIndex)
+//            let headingCompensation: Double = result.absolute_heading - drBuffrerFromIndex[0].heading
+//            var headingBuffer = [Double]()
+//            for i in 0..<drBuffrerFromIndex.count {
+//                let compensatedHeading = compensateHeading(heading: drBuffrerFromIndex[i].heading + headingCompensation)
+//                headingBuffer.append(compensatedHeading)
+//                
+//                dx += drBuffrerFromIndex[i].length * cos(compensatedHeading*D2R)
+//                dy += drBuffrerFromIndex[i].length * sin(compensatedHeading*D2R)
+//            }
+//            dh = headingBuffer[headingBuffer.count-1] - headingBuffer[0]
+//            
+//            isSuccess = true
+//            propagationValues = [dx, dy, dh]
+//        }
+//        
+//        return (isSuccess, propagationValues)
+//    }
+    
+    func propagateUsingUvd(drBuffer: [UnitDRInfo], result: FineLocationTrackingFromServer, lostHeading: Double) -> (Bool, [Double]) {
         var isSuccess: Bool = false
         var propagationValues: [Double] = [0, 0, 0]
         let resultIndex = result.index
+        let pastResultIndex = resultIndex-self.INIT_INPUT_NUM
+        
         var matchedIndex: Int = -1
+        var matchedPastIndex: Int = -1
         
         for i in 0..<drBuffer.count {
             let drBufferIndex = drBuffer[i].index
             if (drBufferIndex == resultIndex) {
                 matchedIndex = i
+            }
+            
+            if (drBufferIndex == pastResultIndex) {
+                matchedPastIndex = i
             }
         }
         
@@ -5906,11 +5957,28 @@ public class ServiceManager: Observation {
                 dx += drBuffrerFromIndex[i].length * cos(compensatedHeading*D2R)
                 dy += drBuffrerFromIndex[i].length * sin(compensatedHeading*D2R)
             }
+            
             dh = headingBuffer[headingBuffer.count-1] - headingBuffer[0]
+            
+            if (matchedPastIndex != -1) {
+                let drBufferFromPastIndex = sliceArray(drBuffer, startingFrom: matchedPastIndex)
+                let turnHeading = drBufferFromPastIndex[drBufferFromPastIndex.count-1].heading - drBufferFromPastIndex[0].heading
+                // turnHeading > 0 이면 좌회전, < 0 이면 우회전
+                if (abs(turnHeading) >= HEADING_RANGE) {
+                    if (turnHeading > 0) {
+                        // 사용자는 좌회전
+                        dh += lostHeading
+                        print(getLocalTimeString() + " , (Jupiter) propagateUsingUvd : Left Turn // dh = \(headingBuffer[headingBuffer.count-1] - headingBuffer[0]) // dh_new = \(dh)")
+                    } else {
+                        // 사용자는 우회전
+                        dh -= lostHeading
+                        print(getLocalTimeString() + " , (Jupiter) propagateUsingUvd : Right Turn // dh = \(headingBuffer[headingBuffer.count-1] - headingBuffer[0]) // dh_new = \(dh)")
+                    }
+                }
+            }
             
             isSuccess = true
             propagationValues = [dx, dy, dh]
-//            print(getLocalTimeString() + " , Propagation : resultIndex = \(resultIndex) , drBuffer = \(drBuffrerFromIndex) , propagationValues = \(propagationValues)")
         }
         
         return (isSuccess, propagationValues)
