@@ -3,7 +3,7 @@ import CoreMotion
 import UIKit
 
 public class ServiceManager: Observation {
-    public static let sdkVersion: String = "3.2.5"
+    public static let sdkVersion: String = "3.3.0.0"
     
     func tracking(input: FineLocationTrackingResult, isPast: Bool) {
         for observer in observers {
@@ -534,6 +534,7 @@ public class ServiceManager: Observation {
                                 NetworkManager.shared.postInfo(url: INFO_URL, input: inputInfo, completion: { [self] statusCode, returnedString in
                                     if (statusCode == 200) {
                                         let sectorInfoResult = jsonToInfoResult(json: returnedString)
+                                        print("(Jupiter) standard_rss_list = \(sectorInfoResult.standard_rss_list)")	
                                         let entranceInfo = sectorInfoResult.entrances
                                         if (sectorInfoResult.standard_rss_list.isEmpty) {
                                             self.standardMinRss = -99.5
@@ -3961,7 +3962,7 @@ public class ServiceManager: Observation {
                 }
             } else {
                 let log: String = localTime + " , (Jupiter) Error : \(statusCode) Fail to request indoor position in Phase 3"
-                print(log)
+//                print(log)
             }
         })
     }
