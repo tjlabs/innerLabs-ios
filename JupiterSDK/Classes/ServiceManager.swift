@@ -3,7 +3,7 @@ import CoreMotion
 import UIKit
 
 public class ServiceManager: Observation {
-    public static let sdkVersion: String = "3.3.0.0"
+    public static let sdkVersion: String = "3.3.0.1"
     
     func tracking(input: FineLocationTrackingResult, isPast: Bool) {
         for observer in observers {
@@ -25,7 +25,7 @@ public class ServiceManager: Observation {
                         NetworkManager.shared.postMobileResult(url: MR_URL, input: inputMobileResult, completion: { [self] statusCode, returnedStrig in
                             if (statusCode != 200) {
                                 let localTime = getLocalTimeString()
-                                let log: String = localTime + " , (Jupiter) Error : Fail to send mobile result"
+                                let log: String = localTime + " , (Jupiter) Error \(statusCode) : Fail to send mobile result"
                                 print(log)
                             }
                         })
@@ -667,7 +667,7 @@ public class ServiceManager: Observation {
                                                                         let resultTraj = decodeTraj(json: returnedString)
                                                                         self.USER_TRAJECTORY_LENGTH_ORIGIN = Double(resultTraj.trajectory_length + 10)
                                                                         self.USER_TRAJECTORY_LENGTH = Double(resultTraj.trajectory_length + 10)
-                                                                        self.USER_TRAJECTORY_DIAGONAL = Double(resultTraj.trajectory_diagonal)
+                                                                        self.USER_TRAJECTORY_DIAGONAL = Double(resultTraj.trajectory_diagonal + 5)
                                                                         
                                                                         self.NUM_STRAIGHT_INDEX_DR = Int(ceil(self.USER_TRAJECTORY_LENGTH/6))
                                                                         self.NUM_STRAIGHT_INDEX_PDR = Int(ceil(self.USER_TRAJECTORY_DIAGONAL/6))
@@ -2130,6 +2130,10 @@ public class ServiceManager: Observation {
                                     processPhase3(currentTime: currentTime, localTime: localTime, userTrajectory: phase3Trajectory, searchInfo: searchInfo)
                                 }
                             } else {
+                                processPhase3(currentTime: currentTime, localTime: localTime, userTrajectory: phase3Trajectory, searchInfo: searchInfo)
+                            }
+                        } else {
+                            if (self.currentLevel != "B0") {
                                 processPhase3(currentTime: currentTime, localTime: localTime, userTrajectory: phase3Trajectory, searchInfo: searchInfo)
                             }
                         }
@@ -4553,6 +4557,7 @@ public class ServiceManager: Observation {
                 if (statusCode == 200) {
                     let localTime = getLocalTimeString()
                     let log: String = localTime + " , (Jupiter) Success : Record Mobile Report \(report)"
+//                    print(log)
                 }
             })
         }
@@ -5934,25 +5939,25 @@ public class ServiceManager: Observation {
                 timeUpdatePosition = timeUpdateCopy
             }
         } else {
-//            let isDrStraight: Bool = isDrBufferStraight(drBuffer: drBuffer)
-//            if ((self.unitDrInfoIndex%2) == 0 && !isDrStraight) {
-//                let drBufferForPathMatching = Array(drBuffer.suffix(DR_BUFFER_SIZE_FOR_STRAIGHT))
-//                let pathTrajMatchingResult = self.extendedPathTrajectoryMatching(building: timeUpdateOutput.building_name, level: levelName, x: timeUpdateCopy.x, y: timeUpdateCopy.y, heading: compensatedHeading, pastResult: self.jupiterResult, drBuffer: drBufferForPathMatching, HEADING_RANGE: HEADING_RANGE, pathType: 0, mode: self.runMode)
-//                if (pathTrajMatchingResult.isSuccess) {
-//                    timeUpdatePosition.x = timeUpdatePosition.x*0.5 + pathTrajMatchingResult.xyd[0]*0.5
-//                    timeUpdatePosition.y = timeUpdatePosition.y*0.5 + pathTrajMatchingResult.xyd[1]*0.5
-//                    displayOutput.trajectoryPm = pathTrajMatchingResult.minTrajectory
-//                    displayOutput.trajectoryOg = pathTrajMatchingResult.minTrajectoryOriginal
-//                    let ratio: Double = self.calTrajectoryRatio(trajPm: pathTrajMatchingResult.minTrajectory, trajOg: pathTrajMatchingResult.minTrajectoryOriginal)
-//                    self.scCompensationArray = [ratio]
-//                } else {
-//                    displayOutput.trajectoryPm = [[0,0]]
-//                    displayOutput.trajectoryOg = [[0,0]]
-//                }
-//            } else {
-//                displayOutput.trajectoryPm = [[0,0]]
-//                displayOutput.trajectoryOg = [[0,0]]
-//            }
+            let isDrStraight: Bool = isDrBufferStraight(drBuffer: drBuffer)
+            if ((self.unitDrInfoIndex%2) == 0 && !isDrStraight) {
+                let drBufferForPathMatching = Array(drBuffer.suffix(DR_BUFFER_SIZE_FOR_STRAIGHT))
+                let pathTrajMatchingResult = self.extendedPathTrajectoryMatching(building: timeUpdateOutput.building_name, level: levelName, x: timeUpdateCopy.x, y: timeUpdateCopy.y, heading: compensatedHeading, pastResult: self.jupiterResult, drBuffer: drBufferForPathMatching, HEADING_RANGE: HEADING_RANGE, pathType: 0, mode: self.runMode)
+                if (pathTrajMatchingResult.isSuccess) {
+                    timeUpdatePosition.x = timeUpdatePosition.x*0.5 + pathTrajMatchingResult.xyd[0]*0.5
+                    timeUpdatePosition.y = timeUpdatePosition.y*0.5 + pathTrajMatchingResult.xyd[1]*0.5
+                    displayOutput.trajectoryPm = pathTrajMatchingResult.minTrajectory
+                    displayOutput.trajectoryOg = pathTrajMatchingResult.minTrajectoryOriginal
+                    let ratio: Double = self.calTrajectoryRatio(trajPm: pathTrajMatchingResult.minTrajectory, trajOg: pathTrajMatchingResult.minTrajectoryOriginal)
+                    self.scCompensationArray = [ratio]
+                } else {
+                    displayOutput.trajectoryPm = [[0,0]]
+                    displayOutput.trajectoryOg = [[0,0]]
+                }
+            } else {
+                displayOutput.trajectoryPm = [[0,0]]
+                displayOutput.trajectoryOg = [[0,0]]
+            }
         }
         
         kalmanP += kalmanQ
