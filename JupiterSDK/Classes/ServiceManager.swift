@@ -85,6 +85,7 @@ public class ServiceManager: Observation {
     var currentEntranceLength: Int = 0
     var currentEntranceIndex: Int = 0
     var isStartSimulate: Bool = false
+    var isPhaseBreakInSimulate: Bool = false
     var isStopReqeust: Bool = false
     var indexAfterSimulate: Int = 0
     var posBufferForEndSimulate =  [[Double]]()
@@ -1985,6 +1986,7 @@ public class ServiceManager: Observation {
                             if (diffXy <= 10 && diffH <= 30 && self.isActiveKf && (cLevel == self.resultToReturn.level_name)) {
                                 print(getLocalTimeString() + " , (Jupiter) Entrance Simulator : Finish (Position Matched)")
                                 self.isStartSimulate = false
+                                self.isPhaseBreakInSimulate = false
                                 self.isInNetworkBadEntrance = false
                                 self.indexAfterSimulate = 0
                                 self.currentEntrance = ""
@@ -1996,6 +1998,7 @@ public class ServiceManager: Observation {
                                     if (isFind) {
                                         print(getLocalTimeString() + " , (Jupiter) Entrance Simulator : Finish (Position Passed)")
                                         self.isStartSimulate = false
+                                        self.isPhaseBreakInSimulate = false
                                         self.isInNetworkBadEntrance = false
                                         self.indexAfterSimulate = 0
                                         self.currentEntrance = ""
@@ -2027,6 +2030,7 @@ public class ServiceManager: Observation {
                         
                         print(getLocalTimeString() + " , (Jupiter) Entrance Simulator : Finish (End Simulating)")
                         self.isStartSimulate = false
+                        self.isPhaseBreakInSimulate = false
                         self.isInNetworkBadEntrance = false
                         self.currentEntrance = ""
                         self.currentEntranceLength = 0
@@ -2133,7 +2137,7 @@ public class ServiceManager: Observation {
                                 processPhase3(currentTime: currentTime, localTime: localTime, userTrajectory: phase3Trajectory, searchInfo: searchInfo)
                             }
                         } else {
-                            if (self.currentLevel != "B0") {
+                            if (self.isPhaseBreakInSimulate) {
                                 processPhase3(currentTime: currentTime, localTime: localTime, userTrajectory: phase3Trajectory, searchInfo: searchInfo)
                             }
                         }
@@ -3410,6 +3414,9 @@ public class ServiceManager: Observation {
                         if (result.phase == 2 && result.scc < 0.25) {
                             self.isNeedTrajInit = true
                             self.phase = 1
+                            if (self.isStartSimulate) {
+                                self.isPhaseBreakInSimulate = true
+                            }
                             if (self.isActiveKf) {
                                 self.isPhaseBreak = true
                             }
@@ -3419,6 +3426,9 @@ public class ServiceManager: Observation {
                                 if (self.phase2BadCount > 6) {
                                     self.isNeedTrajInit = true
                                     self.phase = 1
+                                    if (self.isStartSimulate) {
+                                        self.isPhaseBreakInSimulate = true
+                                    }
                                     if (self.isActiveKf) {
                                         self.isPhaseBreak = true
                                     }
@@ -3570,6 +3580,9 @@ public class ServiceManager: Observation {
                             if (self.currentLevel == "0F") {
                                 self.isNeedTrajInit = true
                                 self.phase = 1
+                                if (self.isStartSimulate) {
+                                    self.isPhaseBreakInSimulate = true
+                                }
                                 if (self.isActiveKf) {
                                     self.isPhaseBreak = true
                                 }
@@ -3593,6 +3606,9 @@ public class ServiceManager: Observation {
                     }
                 } else {
                     self.phase = 1
+                    if (self.isStartSimulate) {
+                        self.isPhaseBreakInSimulate = true
+                    }
                     self.isNeedTrajInit = true
                 }
             } else {
@@ -3630,7 +3646,6 @@ public class ServiceManager: Observation {
                     requestScArray = [1.01]
                 } else {
                     requestScArray = [0.8, 1.0]
-//                    requestScArray = [1.01]
                     self.scRequestTime = currentTime
                     self.isScRequested = true
                 }
@@ -5939,25 +5954,25 @@ public class ServiceManager: Observation {
                 timeUpdatePosition = timeUpdateCopy
             }
         } else {
-            let isDrStraight: Bool = isDrBufferStraight(drBuffer: drBuffer)
-            if ((self.unitDrInfoIndex%2) == 0 && !isDrStraight) {
-                let drBufferForPathMatching = Array(drBuffer.suffix(DR_BUFFER_SIZE_FOR_STRAIGHT))
-                let pathTrajMatchingResult = self.extendedPathTrajectoryMatching(building: timeUpdateOutput.building_name, level: levelName, x: timeUpdateCopy.x, y: timeUpdateCopy.y, heading: compensatedHeading, pastResult: self.jupiterResult, drBuffer: drBufferForPathMatching, HEADING_RANGE: HEADING_RANGE, pathType: 0, mode: self.runMode)
-                if (pathTrajMatchingResult.isSuccess) {
-                    timeUpdatePosition.x = timeUpdatePosition.x*0.5 + pathTrajMatchingResult.xyd[0]*0.5
-                    timeUpdatePosition.y = timeUpdatePosition.y*0.5 + pathTrajMatchingResult.xyd[1]*0.5
-                    displayOutput.trajectoryPm = pathTrajMatchingResult.minTrajectory
-                    displayOutput.trajectoryOg = pathTrajMatchingResult.minTrajectoryOriginal
-                    let ratio: Double = self.calTrajectoryRatio(trajPm: pathTrajMatchingResult.minTrajectory, trajOg: pathTrajMatchingResult.minTrajectoryOriginal)
-                    self.scCompensationArray = [ratio]
-                } else {
-                    displayOutput.trajectoryPm = [[0,0]]
-                    displayOutput.trajectoryOg = [[0,0]]
-                }
-            } else {
-                displayOutput.trajectoryPm = [[0,0]]
-                displayOutput.trajectoryOg = [[0,0]]
-            }
+//            let isDrStraight: Bool = isDrBufferStraight(drBuffer: drBuffer)
+//            if ((self.unitDrInfoIndex%2) == 0 && !isDrStraight) {
+//                let drBufferForPathMatching = Array(drBuffer.suffix(DR_BUFFER_SIZE_FOR_STRAIGHT))
+//                let pathTrajMatchingResult = self.extendedPathTrajectoryMatching(building: timeUpdateOutput.building_name, level: levelName, x: timeUpdateCopy.x, y: timeUpdateCopy.y, heading: compensatedHeading, pastResult: self.jupiterResult, drBuffer: drBufferForPathMatching, HEADING_RANGE: HEADING_RANGE, pathType: 0, mode: self.runMode)
+//                if (pathTrajMatchingResult.isSuccess) {
+//                    timeUpdatePosition.x = timeUpdatePosition.x*0.5 + pathTrajMatchingResult.xyd[0]*0.5
+//                    timeUpdatePosition.y = timeUpdatePosition.y*0.5 + pathTrajMatchingResult.xyd[1]*0.5
+//                    displayOutput.trajectoryPm = pathTrajMatchingResult.minTrajectory
+//                    displayOutput.trajectoryOg = pathTrajMatchingResult.minTrajectoryOriginal
+//                    let ratio: Double = self.calTrajectoryRatio(trajPm: pathTrajMatchingResult.minTrajectory, trajOg: pathTrajMatchingResult.minTrajectoryOriginal)
+//                    self.scCompensationArray = [ratio]
+//                } else {
+//                    displayOutput.trajectoryPm = [[0,0]]
+//                    displayOutput.trajectoryOg = [[0,0]]
+//                }
+//            } else {
+//                displayOutput.trajectoryPm = [[0,0]]
+//                displayOutput.trajectoryOg = [[0,0]]
+//            }
         }
         
         kalmanP += kalmanQ
