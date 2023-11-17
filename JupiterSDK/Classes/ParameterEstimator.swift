@@ -54,19 +54,22 @@ public class ParameterEstimator {
         }
     }
     
-    public func calNormalizationScale(standardMin: Double, standardMax: Double) -> Double {
+    public func calNormalizationScale(standardMin: Double, standardMax: Double) -> (Bool, Double) {
         let standardAmplitude: Double = abs(standardMax - standardMin)
         
-        let avgMax = self.wardMaxRssi.average
-        let avgMin = self.wardMinRssi.average
-        self.deviceMinValue = avgMin
-        
-        let amplitude: Double = abs(avgMax - avgMin)
-        
-        let normalizationScale: Double = standardAmplitude/amplitude
-        updateScaleQueue(data: normalizationScale)
-//        print(getLocalTimeString() + " , (Jupiter) Ward Scale : normalizationScale = \(normalizationScale)")
-        return normalizationScale
+        if (self.wardMaxRssi.isEmpty || self.wardMinRssi.isEmpty) {
+            return (false, 1.0)
+        } else {
+            let avgMax = self.wardMaxRssi.average
+            let avgMin = self.wardMinRssi.average
+            self.deviceMinValue = avgMin
+            
+            let amplitude: Double = abs(avgMax - avgMin)
+            
+            let normalizationScale: Double = standardAmplitude/amplitude
+            updateScaleQueue(data: normalizationScale)
+            return (true, normalizationScale)
+        }
     }
     
     func updateScaleQueue(data: Double) {

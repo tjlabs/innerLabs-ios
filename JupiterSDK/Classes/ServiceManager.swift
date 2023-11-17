@@ -219,8 +219,9 @@ public class ServiceManager: Observation {
     var isPossibleNormalize: Bool = false
     var deviceMinRss: Double = -100.0
     var standardMinRss: Double = -99.0
-    var standradMaxRss: Double = -60.0
+    var standradMaxRss: Double = -58.0
     var normalizationScale: Double = 1.0
+    var preNormalizationScale: Double = 1.0
     var isScaleLoaded: Bool = false
     
     var isBiasConverged: Bool = false
@@ -305,7 +306,7 @@ public class ServiceManager: Observation {
     var isPossibleToIndoor: Bool = false
     var isBleOff: Bool = false
     
-    var timeBleOff: Double = 0
+    var timeBleOff: Double = BLE_OFF_THRESHOLD
     var timeActiveRF: Double = 0
     var timeFailRF: Double = 0
     var timeActiveUV: Double = 0
@@ -535,7 +536,6 @@ public class ServiceManager: Observation {
                                 NetworkManager.shared.postInfo(url: INFO_URL, input: inputInfo, completion: { [self] statusCode, returnedString in
                                     if (statusCode == 200) {
                                         let sectorInfoResult = jsonToInfoResult(json: returnedString)
-//                                        print("(Jupiter) standard_rss_list = \(sectorInfoResult.standard_rss_list)")	
                                         let entranceInfo = sectorInfoResult.entrances
                                         if (sectorInfoResult.standard_rss_list.isEmpty) {
                                             self.standardMinRss = -99.9
@@ -706,9 +706,11 @@ public class ServiceManager: Observation {
                                                                                                     
                                                                                                     if (loadedScale.0) {
                                                                                                         self.normalizationScale = loadedScale.1
+                                                                                                        self.preNormalizationScale = loadedScale.1
                                                                                                         print(localTime + " , (Jupiter) Load Param (Device // Cache) : \(loadedScale.0)")
                                                                                                     } else {
                                                                                                         self.normalizationScale = paramFromServer.normalization_scale
+                                                                                                        self.preNormalizationScale = paramFromServer.normalization_scale
                                                                                                         print(localTime + " , (Jupiter) Load Param (Device) : \(paramFromServer.normalization_scale)")
                                                                                                     }
                                                                                                     
@@ -752,9 +754,11 @@ public class ServiceManager: Observation {
                                                                                     let paramFromServer: rss_compensation = result.rss_compensations[0]
                                                                                     if (loadedScale.0) {
                                                                                         self.normalizationScale = loadedScale.1
+                                                                                        self.preNormalizationScale = loadedScale.1
                                                                                         print(localTime + " , (Jupiter) Load Param (Device // Cache) : \(loadedScale.0)")
                                                                                     } else {
                                                                                         self.normalizationScale = paramFromServer.normalization_scale
+                                                                                        self.preNormalizationScale = paramFromServer.normalization_scale
                                                                                         print(localTime + " , (Jupiter) Load Param (Device) : \(paramFromServer.normalization_scale)")
                                                                                     }
                                                                                     
@@ -1095,6 +1099,7 @@ public class ServiceManager: Observation {
     }
     
     private func initVariables() {
+        self.timeBleOff = BLE_OFF_THRESHOLD
         self.timeForInit = 0
         self.timeFailRF = 0
         self.lastScannedEntranceOuterWardTime = 0
@@ -1692,16 +1697,29 @@ public class ServiceManager: Observation {
             if (self.isGetFirstResponse && self.isIndoor && self.indexAfterResponse >= 30 && (self.unitDrInfoIndex%5 == 0)) {
                 if (self.isScaleLoaded) {
                     if (self.currentLevel != "B0") {
-                        let normalizationScale: Double = paramEstimator.calNormalizationScale(standardMin: self.standardMinRss, standardMax: self.standradMaxRss)
-                        let smoothedScale: Double = paramEstimator.smoothNormalizationScale(scale: normalizationScale)
-                        self.normalizationScale = smoothedScale
+                        let normalizationScale = paramEstimator.calNormalizationScale(standardMin: self.standardMinRss, standardMax: self.standradMaxRss)
+                        if (normalizationScale.0) {
+                            let smoothedScale: Double = paramEstimator.smoothNormalizationScale(scale: normalizationScale.1)
+                            self.normalizationScale = smoothedScale
+                            self.preNormalizationScale = smoothedScale
+                        } else {
+                            let smoothedScale: Double = paramEstimator.smoothNormalizationScale(scale: self.preNormalizationScale)
+                            self.normalizationScale = smoothedScale
+                        }
+                        
                         let deviceMin: Double = paramEstimator.getDeviceMinRss()
                         self.deviceMinRss = deviceMin
                     }
                 } else {
-                    let normalizationScale: Double = paramEstimator.calNormalizationScale(standardMin: self.standardMinRss, standardMax: self.standradMaxRss)
-                    let smoothedScale: Double = paramEstimator.smoothNormalizationScale(scale: normalizationScale)
-                    self.normalizationScale = smoothedScale
+                    let normalizationScale = paramEstimator.calNormalizationScale(standardMin: self.standardMinRss, standardMax: self.standradMaxRss)
+                    if (normalizationScale.0) {
+                        let smoothedScale: Double = paramEstimator.smoothNormalizationScale(scale: normalizationScale.1)
+                        self.normalizationScale = smoothedScale
+                        self.preNormalizationScale = smoothedScale
+                    } else {
+                        let smoothedScale: Double = paramEstimator.smoothNormalizationScale(scale: self.preNormalizationScale)
+                        self.normalizationScale = smoothedScale
+                    }
                     let deviceMin: Double = paramEstimator.getDeviceMinRss()
                     self.deviceMinRss = deviceMin
                 }
@@ -4304,7 +4322,6 @@ public class ServiceManager: Observation {
     }
     
     @objc func osrTimerUpdate() {
-        let localTime: String = getLocalTimeString()
         let currentTime = getCurrentTimeInMilliseconds()
         
         var isRunOsr: Bool = true
@@ -4330,7 +4347,7 @@ public class ServiceManager: Observation {
                                 }
                             }
                         } else {
-                            print(getLocalTimeString() + " , (Jupiter) Fail : \(statusCode) OSR")
+//                            print(getLocalTimeString() + " , (Jupiter) Fail : \(statusCode) OSR")
                         }
                     })
                 }
@@ -4339,18 +4356,24 @@ public class ServiceManager: Observation {
             self.travelingOsrDistance = 0
         }
         
+        if (!NetworkCheck.shared.isConnectedToInternet()) {
+            self.reporting(input: NETWORK_CONNECTION_FLAG)
+        }
+        
+        
         if (self.networkCount >= 5 && NetworkCheck.shared.isConnectedToInternet()) {
             self.reporting(input: NETWORK_WAITING_FLAG)
         }
         
-        if (NetworkCheck.shared.isConnectedToInternet()) {
-            self.isNetworkConnectReported = false
-        } else {
-            if (!self.isNetworkConnectReported) {
-                self.isNetworkConnectReported = true
-                self.reporting(input: NETWORK_CONNECTION_FLAG)
-            }
-        }
+//        if (NetworkCheck.shared.isConnectedToInternet()) {
+//            self.isNetworkConnectReported = false
+//        } else {
+//            if (!self.isNetworkConnectReported) {
+//                self.isNetworkConnectReported = true
+//                print(getLocalTimeString() + " , (Jupiter) Network : Connection Lost")
+//                self.reporting(input: NETWORK_CONNECTION_FLAG)
+//            }
+//        }
     }
     
     func isOnSpotRecognition(result: OnSpotRecognitionResult, level: String) -> (isOn: Bool, levelDestination: String, levelDirection: String) {
