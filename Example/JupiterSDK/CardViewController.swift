@@ -534,7 +534,6 @@ extension CardViewController: UICollectionViewDataSource, UICollectionViewDelega
             } else {
                 guard let serviceVC = self.storyboard?.instantiateViewController(withIdentifier: "ServiceViewController") as? ServiceViewController else { return }
                 serviceVC.cardData = cardItemData[mod]
-                print("Leo : card = \(cardItemData[mod])")
                 serviceVC.region = region
                 serviceVC.uuid = uuid
                 serviceVC.page = currentPage
