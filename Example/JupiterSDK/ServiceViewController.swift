@@ -1587,7 +1587,7 @@ extension ServiceViewController: CustomSwitchButtonDelegate {
                 serviceManager.changeRegion(regionName: self.region)
                 
                 var inputMode: String = "auto"
-                if (self.sector_id == 6) {
+                if (self.sector_id == 6 && self.region != "Canada") {
                     inputMode = "auto"
                 } else {
                     inputMode = cardData!.mode
