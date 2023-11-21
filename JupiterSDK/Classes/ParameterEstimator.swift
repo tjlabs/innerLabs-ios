@@ -10,6 +10,7 @@ public class ParameterEstimator {
     var deviceMinValue: Double = -99.0
     var updateMinArrayCount: Int = 0
     var updateMaxArrayCount: Int = 0
+    let ARRAY_SIZE: Int = 3
     
     var preSmoothedNormalizationScale: Double = 1.0
     var scaleQueue = [Double]()
@@ -20,18 +21,47 @@ public class ParameterEstimator {
     }
 
     
+//    public func refreshWardMinRssi(bleData: [String: Double]) {
+//        self.updateMinArrayCount += 1
+//        if (self.updateMinArrayCount%20 == 0) {
+//            self.wardMinRssi = updateWardMinRss(inputArray: self.wardMinRssi, size: self.ARRAY_SIZE)
+//            self.updateMinArrayCount = 0
+//        }
+//        for (_, value) in bleData {
+//            if (value > -100) {
+//                if (self.wardMinRssi.isEmpty) {
+//                    self.wardMinRssi.append(value)
+//                } else {
+//                    let newArray = appendAndKeepMin(inputArray: self.wardMinRssi, newValue: value, size: self.ARRAY_SIZE)
+//                    self.wardMinRssi = newArray
+//                }
+//            }
+//        }
+//    }
+//    
+//    public func refreshWardMaxRssi(bleData: [String: Double]) {
+//        self.updateMaxArrayCount += 1
+//        if (self.updateMaxArrayCount%20 == 0) {
+//            self.wardMaxRssi = updateWardMaxRss(inputArray: self.wardMaxRssi, size: self.ARRAY_SIZE)
+//            self.updateMaxArrayCount = 0
+//        }
+//        for (_, value) in bleData {
+//            if (self.wardMaxRssi.isEmpty) {
+//                self.wardMaxRssi.append(value)
+//            } else {
+//                let newArray = appendAndKeepMax(inputArray: self.wardMaxRssi, newValue: value, size: self.ARRAY_SIZE)
+//                self.wardMaxRssi = newArray
+//            }
+//        }
+//    }
+    
     public func refreshWardMinRssi(bleData: [String: Double]) {
-        self.updateMinArrayCount += 1
-        if (self.updateMinArrayCount%20 == 0) {
-            self.wardMinRssi = updateWardMinRss(inputArray: self.wardMinRssi, size: 15)
-            self.updateMinArrayCount = 0
-        }
         for (_, value) in bleData {
             if (value > -100) {
                 if (self.wardMinRssi.isEmpty) {
                     self.wardMinRssi.append(value)
                 } else {
-                    let newArray = appendAndKeepMin(inputArray: self.wardMinRssi, newValue: value, size: 15)
+                    let newArray = appendAndKeepMin(inputArray: self.wardMinRssi, newValue: value, size: self.ARRAY_SIZE)
                     self.wardMinRssi = newArray
                 }
             }
@@ -39,16 +69,11 @@ public class ParameterEstimator {
     }
     
     public func refreshWardMaxRssi(bleData: [String: Double]) {
-        self.updateMaxArrayCount += 1
-        if (self.updateMaxArrayCount%20 == 0) {
-            self.wardMaxRssi = updateWardMaxRss(inputArray: self.wardMaxRssi, size: 15)
-            self.updateMaxArrayCount = 0
-        }
         for (_, value) in bleData {
             if (self.wardMaxRssi.isEmpty) {
                 self.wardMaxRssi.append(value)
             } else {
-                let newArray = appendAndKeepMax(inputArray: self.wardMaxRssi, newValue: value, size: 15)
+                let newArray = appendAndKeepMax(inputArray: self.wardMaxRssi, newValue: value, size: self.ARRAY_SIZE)
                 self.wardMaxRssi = newArray
             }
         }

@@ -233,17 +233,17 @@ public class NetworkManager {
         dataTask.resume()
     }
     
-    func postReceivedForce(url: String, input: [ReceivedForce], completion: @escaping (Int, String) -> Void){
+    func postReceivedForce(url: String, input: [ReceivedForce], completion: @escaping (Int, String, [ReceivedForce]) -> Void){
         // [http 비동기 방식을 사용해서 http 요청 수행 실시]
         let urlComponents = URLComponents(string: url)
         var requestURL = URLRequest(url: (urlComponents?.url)!)
+        let inputRfd = input
 
         requestURL.httpMethod = "POST"
         let encodingData = JSONConverter.encodeJson(param: input)
         if (encodingData != nil) {
             requestURL.httpBody = encodingData
-            requestURL.addValue("application/json", forHTTPHeaderField: "Content-Type")
-            requestURL.setValue("\(encodingData)", forHTTPHeaderField: "Content-Length")
+            requestURL.addValue("application/json; charset=utf-8", forHTTPHeaderField: "Content-Type")
             
             // [http 요청 수행 실시]
 //            print("")
@@ -258,9 +258,18 @@ public class NetworkManager {
             sessionConfig.timeoutIntervalForRequest = TIMEOUT_VALUE_PUT
             let session = URLSession(configuration: sessionConfig)
             let dataTask = session.dataTask(with: requestURL, completionHandler: { (data, response, error) in
+                let code = (response as? HTTPURLResponse)?.statusCode ?? 500
                 // [error가 존재하면 종료]
                 guard error == nil else {
-                    completion(500, error?.localizedDescription ?? "Fail to send bluetooth data")
+                    if let timeoutError = error as? URLError, timeoutError.code == .timedOut {
+                        DispatchQueue.main.async {
+                            completion(timeoutError.code.rawValue, error?.localizedDescription ?? "timed out", inputRfd)
+                        }
+                    } else {
+                        DispatchQueue.main.async {
+                            completion(code, error?.localizedDescription ?? "Fail to send bluetooth data", inputRfd)
+                        }
+                    }
                     return
                 }
 
@@ -268,14 +277,18 @@ public class NetworkManager {
                 let successsRange = 200..<300
                 guard let statusCode = (response as? HTTPURLResponse)?.statusCode, successsRange.contains(statusCode)
                 else {
-                    completion(500, (response as? HTTPURLResponse)?.description ?? "Fail to send bluetooth data")
+                    DispatchQueue.main.async {
+                        completion(code, (response as? HTTPURLResponse)?.description ?? "Fail to send bluetooth data", inputRfd)
+                    }
                     return
                 }
 
                 // [response 데이터 획득]
                 let resultCode = (response as? HTTPURLResponse)?.statusCode ?? 500 // [상태 코드]
                 guard let resultLen = data else {
-                    completion(500, (response as? HTTPURLResponse)?.description ?? "Fail to send bluetooth data")
+                    DispatchQueue.main.async {
+                        completion(code, (response as? HTTPURLResponse)?.description ?? "Fail to send bluetooth data", inputRfd)
+                    }
                     return
                 }
 
@@ -286,26 +299,28 @@ public class NetworkManager {
 //                    print("RESPONSE RF 데이터 :: ", resultCode)
 //                    print("====================================")
 //                    print("")
-                    completion(resultCode, "Fail to send bluetooth data")
+                    completion(resultCode, "Fail to send bluetooth data", inputRfd)
                 }
             })
             dataTask.resume()
         } else {
-            completion(406, "Fail to encode RFD")
+            DispatchQueue.main.async {
+                completion(406, "Fail to encode RFD", inputRfd)
+            }
         }
     }
 
-    func postUserVelocity(url: String, input: [UserVelocity], completion: @escaping (Int, String) -> Void) {
+    func postUserVelocity(url: String, input: [UserVelocity], completion: @escaping (Int, String, [UserVelocity]) -> Void) {
         // [http 비동기 방식을 사용해서 http 요청 수행 실시]
         let urlComponents = URLComponents(string: url)
         var requestURL = URLRequest(url: (urlComponents?.url)!)
+        let inputUvd = input
 
         requestURL.httpMethod = "POST"
         let encodingData = JSONConverter.encodeJson(param: input)
         if (encodingData != nil) {
             requestURL.httpBody = encodingData
-            requestURL.addValue("application/json", forHTTPHeaderField: "Content-Type")
-            requestURL.setValue("\(encodingData)", forHTTPHeaderField: "Content-Length")
+            requestURL.addValue("application/json; charset=utf-8", forHTTPHeaderField: "Content-Type")
             
             // [http 요청 수행 실시]
     //        print("")
@@ -319,9 +334,18 @@ public class NetworkManager {
             sessionConfig.timeoutIntervalForRequest = TIMEOUT_VALUE_PUT
             let session = URLSession(configuration: sessionConfig)
             let dataTask = session.dataTask(with: requestURL, completionHandler: { (data, response, error) in
+                let code = (response as? HTTPURLResponse)?.statusCode ?? 400
                 // [error가 존재하면 종료]
                 guard error == nil else {
-                    completion(500, error?.localizedDescription ?? "Fail to send sensor measurements")
+                    if let timeoutError = error as? URLError, timeoutError.code == .timedOut {
+                        DispatchQueue.main.async {
+                            completion(timeoutError.code.rawValue, error?.localizedDescription ?? "timed out", inputUvd)
+                        }
+                    } else {
+                        DispatchQueue.main.async {
+                            completion(code, error?.localizedDescription ?? "Fail to send sensor measurements", inputUvd)
+                        }
+                    }
                     return
                 }
 
@@ -329,14 +353,18 @@ public class NetworkManager {
                 let successsRange = 200..<300
                 guard let statusCode = (response as? HTTPURLResponse)?.statusCode, successsRange.contains(statusCode)
                 else {
-                    completion(500, (response as? HTTPURLResponse)?.description ?? "Fail to send sensor measurements")
+                    DispatchQueue.main.async {
+                        completion(code, (response as? HTTPURLResponse)?.description ?? "Fail to send sensor measurements", inputUvd)
+                    }
                     return
                 }
 
                 // [response 데이터 획득]
                 let resultCode = (response as? HTTPURLResponse)?.statusCode ?? 500 // [상태 코드]
                 guard let resultLen = data else {
-                    completion(500, (response as? HTTPURLResponse)?.description ?? "Fail to send sensor measurements")
+                    DispatchQueue.main.async {
+                        completion(code, (response as? HTTPURLResponse)?.description ?? "Fail to send sensor measurements", inputUvd)
+                    }
                     return
                 }
 
@@ -347,12 +375,14 @@ public class NetworkManager {
     //                print("RESPONSE UV 데이터 :: ", resultCode)
     //                print("====================================")
     //                print("")
-                    completion(resultCode, String(input[input.count-1].index))
+                    completion(resultCode, String(input[input.count-1].index), inputUvd)
                 }
             })
             dataTask.resume()
         } else {
-            completion(406, "Fail to encode UVD")
+            DispatchQueue.main.async {
+                completion(406, "Fail to encode UVD", inputUvd)
+            }
         }
     }
     
@@ -1230,8 +1260,15 @@ public class NetworkManager {
                 
                 // [error가 존재하면 종료]
                 guard error == nil else {
-                    // [콜백 반환]
-                    completion(500, error?.localizedDescription ?? "Fail")
+                    if let timeoutError = error as? URLError, timeoutError.code == .timedOut {
+                        DispatchQueue.main.async {
+                            completion(timeoutError.code.rawValue, error?.localizedDescription ?? "timed out")
+                        }
+                    } else {
+                        DispatchQueue.main.async {
+                            completion(500, error?.localizedDescription ?? "Fail")
+                        }
+                    }
                     return
                 }
                 
@@ -1279,8 +1316,7 @@ public class NetworkManager {
         let encodingData = JSONConverter.encodeJson(param: input)
         if (encodingData != nil) {
             requestURL.httpBody = encodingData
-            requestURL.addValue("application/json", forHTTPHeaderField: "Content-Type")
-            requestURL.setValue("\(encodingData)", forHTTPHeaderField: "Content-Length")
+            requestURL.addValue("application/json; charset=utf-8", forHTTPHeaderField: "Content-Type")
             
 //            print("")
 //            print("====================================")
@@ -1297,8 +1333,15 @@ public class NetworkManager {
                 
                 // [error가 존재하면 종료]
                 guard error == nil else {
-                    // [콜백 반환]
-                    completion(500, error?.localizedDescription ?? "Fail")
+                    if let timeoutError = error as? URLError, timeoutError.code == .timedOut {
+                        DispatchQueue.main.async {
+                            completion(timeoutError.code.rawValue, error?.localizedDescription ?? "timed out")
+                        }
+                    } else {
+                        DispatchQueue.main.async {
+                            completion(500, error?.localizedDescription ?? "Fail")
+                        }
+                    }
                     return
                 }
                 
@@ -1306,26 +1349,24 @@ public class NetworkManager {
                 let successsRange = 200..<300
                 guard let statusCode = (response as? HTTPURLResponse)?.statusCode, successsRange.contains(statusCode)
                 else {
-                    // [콜백 반환]
-                    completion(500, (response as? HTTPURLResponse)?.description ?? "Fail")
+                    DispatchQueue.main.async {
+                        completion(500, (response as? HTTPURLResponse)?.description ?? "Fail")
+                    }
                     return
                 }
                 
                 // [response 데이터 획득]
                 let resultCode = (response as? HTTPURLResponse)?.statusCode ?? 500 // [상태 코드]
                 guard let resultLen = data else {
-                    completion(500, (response as? HTTPURLResponse)?.description ?? "Fail")
+                    DispatchQueue.main.async {
+                        completion(500, (response as? HTTPURLResponse)?.description ?? "Fail")
+                    }
                     return
                 }
                 let resultData = String(data: resultLen, encoding: .utf8) ?? "" // [데이터 확인]
                 
                 // [콜백 반환]
                 DispatchQueue.main.async {
-//                    print("")
-//                    print("====================================")
-//                    print("RESPONSE Mobile Result 데이터 :: ", resultCode)
-//                    print("====================================")
-//                    print("")
                     completion(resultCode, resultData)
                 }
             })
@@ -1333,7 +1374,9 @@ public class NetworkManager {
             // [network 통신 실행]
             dataTask.resume()
         } else {
-            completion(500, "Fail to encode")
+            DispatchQueue.main.async {
+                completion(500, "Fail to encode")
+            }
         }
     }
     
