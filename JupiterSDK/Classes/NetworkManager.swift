@@ -243,7 +243,8 @@ public class NetworkManager {
         let encodingData = JSONConverter.encodeJson(param: input)
         if (encodingData != nil) {
             requestURL.httpBody = encodingData
-            requestURL.addValue("application/json; charset=utf-8", forHTTPHeaderField: "Content-Type")
+            requestURL.addValue("application/json", forHTTPHeaderField: "Content-Type")
+            requestURL.setValue("\(encodingData)", forHTTPHeaderField: "Content-Length")
             
             // [http 요청 수행 실시]
 //            print("")
@@ -320,7 +321,8 @@ public class NetworkManager {
         let encodingData = JSONConverter.encodeJson(param: input)
         if (encodingData != nil) {
             requestURL.httpBody = encodingData
-            requestURL.addValue("application/json; charset=utf-8", forHTTPHeaderField: "Content-Type")
+            requestURL.addValue("application/json", forHTTPHeaderField: "Content-Type")
+            requestURL.setValue("\(encodingData)", forHTTPHeaderField: "Content-Length")
             
             // [http 요청 수행 실시]
     //        print("")
