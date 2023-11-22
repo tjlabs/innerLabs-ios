@@ -1269,30 +1269,25 @@ extension FusionViewController: CustomSwitchButtonDelegate {
     func isOnValueChange(isOn: Bool) {
         DispatchQueue.main.async { [self] in
             self.modeAuto = isOn
-            
             if (isOn) {
                 self.hideDropDown(flag: true)
-                
                 serviceManager = ServiceManager()
                 serviceManager.changeRegion(regionName: self.region)
-                serviceManager.addObserver(self)
+                
                 serviceManager.startService(id: uuid, sector_id: cardData!.sector_id, service: serviceName, mode: cardData!.mode, completion: { isStart, message in
                     if (isStart) {
+                        serviceManager.addObserver(self)
                         print("(FusionVC) Success : \(message)")
-//                        serviceManager.enableMockMode()
                         self.notificationCenterAddObserver()
                         self.startTimer()
                     } else {
                         print("(FusionVC) Fail : \(message)")
                         serviceManager.stopService()
-//                        self.showPopUp(title: "Service Fail", message: message)
                         self.goToBackServiceFail()
                     }
                 })
             } else {
                 self.hideDropDown(flag: false)
-                
-                
                 let isStop = serviceManager.stopService()
                 if (isStop.0) {
                     self.coordToDisplay = CoordToDisplay()
