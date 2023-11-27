@@ -19,41 +19,24 @@ public class ParameterEstimator {
         self.entranceWardRssi = [String: Double]()
         self.allEntranceWardRssi = [String: Double]()
     }
-
     
-//    public func refreshWardMinRssi(bleData: [String: Double]) {
-//        self.updateMinArrayCount += 1
-//        if (self.updateMinArrayCount%20 == 0) {
-//            self.wardMinRssi = updateWardMinRss(inputArray: self.wardMinRssi, size: self.ARRAY_SIZE)
-//            self.updateMinArrayCount = 0
-//        }
-//        for (_, value) in bleData {
-//            if (value > -100) {
-//                if (self.wardMinRssi.isEmpty) {
-//                    self.wardMinRssi.append(value)
-//                } else {
-//                    let newArray = appendAndKeepMin(inputArray: self.wardMinRssi, newValue: value, size: self.ARRAY_SIZE)
-//                    self.wardMinRssi = newArray
-//                }
-//            }
-//        }
-//    }
-//    
-//    public func refreshWardMaxRssi(bleData: [String: Double]) {
-//        self.updateMaxArrayCount += 1
-//        if (self.updateMaxArrayCount%20 == 0) {
-//            self.wardMaxRssi = updateWardMaxRss(inputArray: self.wardMaxRssi, size: self.ARRAY_SIZE)
-//            self.updateMaxArrayCount = 0
-//        }
-//        for (_, value) in bleData {
-//            if (self.wardMaxRssi.isEmpty) {
-//                self.wardMaxRssi.append(value)
-//            } else {
-//                let newArray = appendAndKeepMax(inputArray: self.wardMaxRssi, newValue: value, size: self.ARRAY_SIZE)
-//                self.wardMaxRssi = newArray
-//            }
-//        }
-//    }
+    public func getMaxRssi() -> Double {
+        if (self.wardMaxRssi.isEmpty) {
+            return -90.0
+        } else {
+            let avgMax = self.wardMaxRssi.average
+            return avgMax
+        }
+    }
+    
+    public func getMinRssi() -> Double {
+        if (self.wardMinRssi.isEmpty) {
+            return -60.0
+        } else {
+            let avgMin = self.wardMinRssi.average
+            return avgMin
+        }
+    }
     
     public func refreshWardMinRssi(bleData: [String: Double]) {
         for (_, value) in bleData {
@@ -176,7 +159,6 @@ public class ParameterEstimator {
             } else {
                 result = biasWithOutMax
             }
-//            print(getLocalTimeString() + " , (Jupiter) Bias in Entrance : Bias = \(result)")
         }
         
         return result
@@ -358,6 +340,9 @@ public class ParameterEstimator {
         if let loadedScale: Double = UserDefaults.standard.object(forKey: keyScale) as? Double {
             scale = loadedScale
             isLoadedFromCache = true
+            if (scale >= 1.7) {
+                scale = 1.0
+            }
         }
         
         return (isLoadedFromCache, scale)
@@ -365,7 +350,6 @@ public class ParameterEstimator {
     
     public func saveNormalizationScale(scale: Double, sector_id: Int) {
         let currentTime = getCurrentTimeInMilliseconds()
-        
         print(getLocalTimeString() + " , (Jupiter) Save NormalizationScale : \(scale)")
         
         // Scale
@@ -424,7 +408,6 @@ public class ParameterEstimator {
     
     func updateWardMinRss(inputArray: [Double], size: Int) -> [Double] {
         var array: [Double] = inputArray
-//        print(getLocalTimeString() + " , (Jupiter) Ward Min : input = \(inputArray)")
         if array.count < size {
             return array
         } else {
@@ -434,13 +417,11 @@ public class ParameterEstimator {
                 }
             }
         }
-//        print(getLocalTimeString() + " , (Jupiter) Ward Min : result = \(array)")
         return array
     }
     
     func updateWardMaxRss(inputArray: [Double], size: Int) -> [Double] {
         var array: [Double] = inputArray
-//        print(getLocalTimeString() + " , (Jupiter) Ward Max : input = \(inputArray)")
         if array.count < size {
             return array
         } else {
@@ -450,7 +431,6 @@ public class ParameterEstimator {
                 }
             }
         }
-//        print(getLocalTimeString() + " , (Jupiter) Ward Max : result = \(array)")
         return array
     }
     

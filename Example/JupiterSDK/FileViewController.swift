@@ -298,10 +298,6 @@ extension FileViewController: UICollectionViewDataSource {
             arrSelectedIndex.append(indexPath)
             arrSelectedFile.append(selectedFileUrl)
         }
-        
-        print("Selected : \(arrSelectedIndex)")
-        print("Selected : \(arrSelectedFile)")
-        
         collectionView.reloadData()
     }
 }

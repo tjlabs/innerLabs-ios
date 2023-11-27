@@ -1184,7 +1184,7 @@ class FusionViewController: UIViewController, Observer {
     
     @objc func goToBackServiceFail() {
         serviceManager.removeObserver(self)
-        self.notificationCenterRemoveObserver()
+//        self.notificationCenterRemoveObserver()
         self.delegate?.sendPage(data: self.page)
         DispatchQueue.main.async {
             self.navigationController?.popViewController(animated: true)
@@ -1278,7 +1278,7 @@ extension FusionViewController: CustomSwitchButtonDelegate {
                     if (isStart) {
                         serviceManager.addObserver(self)
                         print("(FusionVC) Success : \(message)")
-                        self.notificationCenterAddObserver()
+//                        self.notificationCenterAddObserver()
                         self.startTimer()
                     } else {
                         print("(FusionVC) Fail : \(message)")
@@ -1298,7 +1298,7 @@ extension FusionViewController: CustomSwitchButtonDelegate {
                     self.pastBuilding = ""
                     self.pastLevel = ""
                     self.displayLevelImage(building: currentBuilding, level: currentLevel, flag: isShowRP)
-                    self.notificationCenterRemoveObserver()
+//                    self.notificationCenterRemoveObserver()
                     
                     print("(FusionVC) Success : \(isStop.1)")
                     serviceManager.removeObserver(self)
