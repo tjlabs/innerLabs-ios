@@ -3,7 +3,7 @@ import CoreMotion
 import UIKit
 
 public class ServiceManager: Observation {
-    public static let sdkVersion: String = "3.3.3"
+    public static let sdkVersion: String = "3.3.3.1"
     
     func tracking(input: FineLocationTrackingResult, isPast: Bool) {
         for observer in observers {
@@ -142,6 +142,7 @@ public class ServiceManager: Observation {
     var phase2ReqCount: Int = 0
     var phase2BadCount: Int = 0
     var isMovePhase2To4: Bool = false
+    var isUnknownTraj: Bool = false
     var isNeedRemovePhase2To4Trajectroy: Bool = false
     var distanceAfterPhase2To4: Double = 0
     var SCC_FOR_PHASE4: Double = 0.5
@@ -1162,6 +1163,7 @@ public class ServiceManager: Observation {
             self.timeUpdateOutput = FineLocationTrackingFromServer()
             self.measurementOutput = FineLocationTrackingFromServer()
             self.isVenusMode = true
+            self.isStartSimulate = false
             self.reporting(input: VENUS_FLAG)
         }
     
@@ -1837,7 +1839,7 @@ public class ServiceManager: Observation {
         }
         self.pastUvdTime = currentTime
         
-        if (unitDRInfo.isIndexChanged) {
+        if (unitDRInfo.isIndexChanged && !self.isVenusMode) {
             self.headingBuffer.append(unitDRInfo.heading)
             self.isNeedHeadingCorrection = self.checkHeadingCorrection(buffer: self.headingBuffer)
             
@@ -2115,6 +2117,8 @@ public class ServiceManager: Observation {
                             self.pastTailIndex = searchInfo.2
                             if (searchInfo.3 != 0) {
                                 processPhase4(currentTime: currentTime, localTime: localTime, userTrajectory: phase4Trajectory, searchInfo: searchInfo)
+                            } else {
+                                self.isUnknownTraj = true
                             }
                         } else {
                             let searchInfo = makeSearchAreaAndDirection(userTrajectory: phase4Trajectory, pastUserTrajectory: self.pastUserTrajectoryInfo, pastSearchDirection: self.pastSearchDirection, length: accumulatedLength, diagonal: accumulatedDiagonal, mode: self.runMode, phase: self.phase, isKf: self.isActiveKf, isPhaseBreak: self.isPhaseBreak)
@@ -2122,6 +2126,8 @@ public class ServiceManager: Observation {
                             self.pastTailIndex = searchInfo.2
                             if (searchInfo.3 != 0) {
                                 processPhase4(currentTime: currentTime, localTime: localTime, userTrajectory: phase4Trajectory, searchInfo: searchInfo)
+                            } else {
+                                self.isUnknownTraj = true
                             }
                         }
                     }
@@ -2183,15 +2189,26 @@ public class ServiceManager: Observation {
             }
         } else {
             self.timeRequest += UVD_INTERVAL
-            if (!self.isGetFirstResponse && self.timeRequest >= 2) {
+            if (self.isVenusMode && self.timeRequest >= 2) {
                 self.timeRequest = 0
                 let phase3Trajectory = self.userTrajectoryInfo
                 let accumulatedLength = calculateAccumulatedLength(userTrajectory: phase3Trajectory)
                 let accumulatedDiagonal = calculateAccumulatedDiagonal(userTrajectory: phase3Trajectory)
-                let searchInfo = makeSearchAreaAndDirection(userTrajectory: phase3Trajectory, pastUserTrajectory: self.pastUserTrajectoryInfo, pastSearchDirection: self.pastSearchDirection, length: accumulatedLength, diagonal: accumulatedDiagonal, mode: self.runMode, phase: self.phase, isKf: self.isActiveKf, isPhaseBreak: self.isPhaseBreak)
+                let searchInfo = makeSearchAreaAndDirection(userTrajectory: phase3Trajectory, pastUserTrajectory: self.pastUserTrajectoryInfo, pastSearchDirection: self.pastSearchDirection, length: accumulatedLength, diagonal: accumulatedDiagonal, mode: self.runMode, phase: 1, isKf: self.isActiveKf, isPhaseBreak: self.isPhaseBreak)
                 self.pastUserTrajectoryInfo = phase3Trajectory
                 self.pastTailIndex = searchInfo.2
                 processPhase3(currentTime: currentTime, localTime: localTime, userTrajectory: phase3Trajectory, searchInfo: searchInfo)
+            } else {
+                if (!self.isGetFirstResponse && self.timeRequest >= 2) {
+                    self.timeRequest = 0
+                    let phase3Trajectory = self.userTrajectoryInfo
+                    let accumulatedLength = calculateAccumulatedLength(userTrajectory: phase3Trajectory)
+                    let accumulatedDiagonal = calculateAccumulatedDiagonal(userTrajectory: phase3Trajectory)
+                    let searchInfo = makeSearchAreaAndDirection(userTrajectory: phase3Trajectory, pastUserTrajectory: self.pastUserTrajectoryInfo, pastSearchDirection: self.pastSearchDirection, length: accumulatedLength, diagonal: accumulatedDiagonal, mode: self.runMode, phase: self.phase, isKf: self.isActiveKf, isPhaseBreak: self.isPhaseBreak)
+                    self.pastUserTrajectoryInfo = phase3Trajectory
+                    self.pastTailIndex = searchInfo.2
+                    processPhase3(currentTime: currentTime, localTime: localTime, userTrajectory: phase3Trajectory, searchInfo: searchInfo)
+                }
             }
             
             // UV가 발생하지 않음
@@ -2215,10 +2232,9 @@ public class ServiceManager: Observation {
         }
     }
     
-    func accumulateLengthAndRemoveOldest(isDetermineSpot: Bool, isMovePhase2To4: Bool, LENGTH_CONDITION: Double) {
+    func accumulateLengthAndRemoveOldest(isDetermineSpot: Bool, isUnknownTraj: Bool, isMovePhase2To4: Bool, LENGTH_CONDITION: Double) {
         if (isDetermineSpot) {
             self.isDetermineSpot = false
-            
             let newTraj = getTrajectoryFromLast(from: self.userTrajectoryInfo, N: 15)
             self.userTrajectoryInfo = newTraj
             self.accumulatedLengthWhenPhase2 = calculateAccumulatedLength(userTrajectory: self.userTrajectoryInfo)
@@ -2228,12 +2244,16 @@ public class ServiceManager: Observation {
             displayOutput.phase = String(2)
             self.phase = 2
             self.outputResult.phase = 2
+        } else if (isUnknownTraj) {
+            self.isUnknownTraj = false
+            let newTraj = getTrajectoryFromLast(from: self.userTrajectoryInfo, N: 50)
+            self.userTrajectoryInfo = newTraj
         } else {
             if (isMovePhase2To4) {
                 let isInLevelChangeArea = self.checkInLevelChangeArea(result: self.lastResult, mode: self.runMode)
                 if (isInLevelChangeArea && self.isNeedRemovePhase2To4Trajectroy) {
                     self.isNeedRemovePhase2To4Trajectroy = false
-                    let newTraj = getTrajectoryFromLast(from: self.userTrajectoryInfo, N: 15)
+                    let newTraj = getTrajectoryFromLast(from: self.userTrajectoryInfo, N: 30)
                     self.userTrajectoryInfo = newTraj
                 } else {
                     let accumulatedLength = calculateAccumulatedLength(userTrajectory: self.userTrajectoryInfo)
@@ -2419,7 +2439,7 @@ public class ServiceManager: Observation {
                     self.userTrajectory.userPmSuccess = isPmSuccess
                     
                     self.userTrajectoryInfo.append(self.userTrajectory)
-                    self.accumulateLengthAndRemoveOldest(isDetermineSpot: self.isDetermineSpot, isMovePhase2To4: self.isMovePhase2To4, LENGTH_CONDITION: self.USER_TRAJECTORY_LENGTH)
+                    self.accumulateLengthAndRemoveOldest(isDetermineSpot: self.isDetermineSpot, isUnknownTraj: self.isUnknownTraj, isMovePhase2To4: self.isMovePhase2To4, LENGTH_CONDITION: self.USER_TRAJECTORY_LENGTH)
                 }
             }
         }
@@ -2521,7 +2541,7 @@ public class ServiceManager: Observation {
                     }
                     
                     tailIndex = userTrajectory[0].index
-                    let isStraight = isTrajectoryStraight(for: uvHeading, size: uvHeading.count, mode: mode)
+                    let isStraight = isTrajectoryStraight(for: uvHeading, size: uvHeading.count, mode: mode, conditionPdr: NUM_STRAIGHT_INDEX_PDR, conditionDr: NUM_STRAIGHT_INDEX_DR)
             
                     let closestIndex = findClosestValueIndex(to: tailIndex, in: pastTrajIndex)
                     if let headingIndex = closestIndex {
@@ -2841,7 +2861,10 @@ public class ServiceManager: Observation {
                     let RANGE = CONDITION
                     
                     // Search Area
-                    let areaMinMax: [Double] = [userX - RANGE, userY - RANGE, userX + RANGE, userY + RANGE]
+                    var areaMinMax: [Double] = [userX - RANGE, userY - RANGE, userX + RANGE, userY + RANGE]
+//                    if (areaMinMax.isEmpty) {
+//                        areaMinMax = [self.jupiterResult.x - RANGE, self.jupiterResult.y - RANGE, self.jupiterResult.x + RANGE, self.jupiterResult.y + RANGE]
+//                    }
                     let searchArea = getSearchCoordinates(areaMinMax: areaMinMax, interval: 1.0)
                     
                     let headInfo = userTrajectory[userTrajectory.count-1]
@@ -2889,8 +2912,7 @@ public class ServiceManager: Observation {
                     displayOutput.searchType = -2
                     searchType = -2
                 } else {
-                    let isStraight = isTrajectoryStraight(for: uvHeading, size: uvHeading.count, mode: mode)
-                    
+                    let isStraight = isTrajectoryStraight(for: uvHeading, size: uvHeading.count, mode: mode, conditionPdr: NUM_STRAIGHT_INDEX_PDR, conditionDr: NUM_STRAIGHT_INDEX_DR)
                     let headInfo = userTrajectory[userTrajectory.count-1]
                     let headInfoHeading = headInfo.userTuHeading
                                         
@@ -2962,16 +2984,13 @@ public class ServiceManager: Observation {
                             xyFromHead[1] = xyFromHead[1] + userTrajectory[i].length*sin(headAngle*D2R)
                             trajectoryFromHead.append(xyFromHead)
                         }
-                        
                         let xyMinMax: [Double] = getMinMaxValues(for: trajectoryFromHead)
-                        
                         let headingStart = compensateHeading(heading: headingFromHead[headingFromHead.count-1]-180)
                         let headingEnd = compensateHeading(heading: headingFromHead[0]-180)
                         let diffHeading = abs(90 - abs(headingStart - headingEnd))
                         
                         let areaMinMax: [Double] = getSearchAreaMinMax(xyMinMax: xyMinMax, heading: [headingStart, headingEnd], recentScc: recentScc, searchType: isStraight, mode: mode)
                         let searchArea = getSearchCoordinates(areaMinMax: areaMinMax, interval: 1.0)
-                        
                         var searchHeadings: [Double] = []
                         
                         if (diffHeading < 90) {
@@ -3020,9 +3039,7 @@ public class ServiceManager: Observation {
                             xyFromTail[1] = xyFromTail[1] + userTrajectory[i].length*sin(tailAngle*D2R)
                             trajectoryFromTail.append(xyFromTail)
                         }
-
                         let xyMinMax: [Double] = getMinMaxValues(for: trajectoryFromTail)
-
                         let headingStart = compensateHeading(heading: headingFromTail[headingFromTail.count-1])
                         let headingEnd = compensateHeading(heading: headingFromTail[0])
                         let diffHeading = abs(90 - abs(headingStart - headingEnd))
@@ -3032,7 +3049,6 @@ public class ServiceManager: Observation {
 
                         let areaMinMax: [Double] = getSearchAreaMinMax(xyMinMax: xyMinMax, heading: [headingStart, headingEnd], recentScc: recentScc, searchType: isStraight, mode: mode)
                         let searchArea = getSearchCoordinates(areaMinMax: areaMinMax, interval: 1.0)
-
                         var searchHeadings: [Double] = []
                         
                         if (diffHeading < 90) {
@@ -3093,16 +3109,13 @@ public class ServiceManager: Observation {
                             xyFromHead[1] = xyFromHead[1] + userTrajectory[i].length*sin(headAngle*D2R)
                             trajectoryFromHead.append(xyFromHead)
                         }
-                        
                         let xyMinMax: [Double] = getMinMaxValues(for: trajectoryFromHead)
-
                         let headingStart = compensateHeading(heading: headingFromHead[headingFromHead.count-1]-180)
                         let headingEnd = compensateHeading(heading: headingFromHead[0]-180)
                         let diffHeading = abs(headingStart - headingEnd)
                         
                         let areaMinMax: [Double] = getSearchAreaMinMax(xyMinMax: xyMinMax, heading: [headingStart, headingEnd], recentScc: recentScc, searchType: isStraight, mode: mode)
                         let searchArea = getSearchCoordinates(areaMinMax: areaMinMax, interval: 1.0)
-                        
                         let searchHeadings: [Double] = [compensateHeading(heading: headingEnd)]
                         
                         resultRange = areaMinMax.map { Int($0) }
@@ -3155,43 +3168,6 @@ public class ServiceManager: Observation {
 //        resultRange = convertToValidSearchRange(inputRange: resultRange, pathPointMinMax: self.PathPointMinMax)
         
         return (resultRange, resultDirection, tailIndex, searchType, resultRatio)
-    }
-    
-    func isTrajectoryStraight(for array: [Double], size: Int, mode: String) -> Int {
-        var CONDITON: Int = 10
-        if (mode == "pdr") {
-            CONDITON = NUM_STRAIGHT_INDEX_PDR
-        } else {
-            CONDITON = NUM_STRAIGHT_INDEX_DR
-        }
-        if (size < CONDITON) {
-            return 0
-        }
-        
-        let straightAngle: Double = 1.0
-        // All Straight
-        let circularStandardDeviationAll = circularStandardDeviation(for: array)
-        if (circularStandardDeviationAll <= straightAngle) {
-            return 1
-        }
-        
-        // Head Straight
-        let lastTenValues = Array(array[(size-CONDITON)..<size])
-        let circularStandardDeviationHead = circularStandardDeviation(for: lastTenValues)
-        
-        if (circularStandardDeviationHead <= straightAngle) {
-            return 2
-        }
-        
-        // Tail Straight
-        let firstTenValues = Array(array[0..<CONDITON])
-        let circularStandardDeviationTail = circularStandardDeviation(for: firstTenValues)
-        
-        if (circularStandardDeviationTail <= straightAngle) {
-            return 3
-        }
-        
-        return 0
     }
     
     func isDrBufferStraight(drBuffer: [UnitDRInfo]) -> Bool {
@@ -3383,7 +3359,7 @@ public class ServiceManager: Observation {
         }
         let input = FineLocationTracking(user_id: self.user_id, mobile_time: currentTime, sector_id: self.sector_id, building_name: self.currentBuilding, level_name_list: [self.currentLevel], phase: 2, search_range: searchInfo.0, search_direction_list: searchInfo.1, normalization_scale: self.normalizationScale, device_min_rss: Int(self.deviceMinRss), sc_compensation_list: requestScArray, tail_index: searchInfo.2)
         self.networkCount += 1
-        NetworkManager.shared.postFLT(url: FLT_URL, input: input, completion: { [self] statusCode, returnedString, inputPhase in
+        NetworkManager.shared.postFLT(url: FLT_URL, input: input, trajType: searchInfo.3, completion: { [self] statusCode, returnedString, inputPhase, inputTrajType in
             if (!returnedString.contains("timed out")) {
                 self.networkCount = 0
             }
@@ -3485,9 +3461,11 @@ public class ServiceManager: Observation {
                                         self.measurementOutput.level_name = outputLevel
                                         self.measurementOutput.phase = outputPhase
                                         
-                                        self.isActiveKf = true
-                                        self.timeUpdateFlag = true
-                                        self.isStartKf = true
+                                        if (!self.isVenusMode) {
+                                            self.isActiveKf = true
+                                            self.timeUpdateFlag = true
+                                            self.isStartKf = true
+                                        }
                                     }
                                     
                                     let propagationResult = propagateUsingUvd(drBuffer: self.unitDrBuffer, result: result)
@@ -3607,6 +3585,7 @@ public class ServiceManager: Observation {
                                             }
                                         }
                                     }
+                                    self.isMovePhase2To4 = true
                                 }
                             }
                             
@@ -3698,7 +3677,7 @@ public class ServiceManager: Observation {
         let input = FineLocationTracking(user_id: self.user_id, mobile_time: currentTime, sector_id: self.sector_id, building_name: self.currentBuilding, level_name_list: levelArray, phase: self.phase, search_range: searchInfo.0, search_direction_list: searchInfo.1, normalization_scale: self.normalizationScale, device_min_rss: Int(self.deviceMinRss), sc_compensation_list: requestScArray, tail_index: searchInfo.2)
         self.networkCount += 1
         
-        NetworkManager.shared.postFLT(url: FLT_URL, input: input, completion: { [self] statusCode, returnedString, inputPhase in
+        NetworkManager.shared.postFLT(url: FLT_URL, input: input, trajType: searchInfo.3, completion: { [self] statusCode, returnedString, inputPhase, inputTrajType in
             if (!returnedString.contains("timed out")) {
                 self.networkCount = 0
             }
@@ -3816,9 +3795,11 @@ public class ServiceManager: Observation {
                                     self.measurementOutput.level_name = outputLevel
                                     self.measurementOutput.phase = outputPhase
                                     
-                                    self.isActiveKf = true
-                                    self.timeUpdateFlag = true
-                                    self.isStartKf = true
+                                    if (!self.isVenusMode) {
+                                        self.isActiveKf = true
+                                        self.timeUpdateFlag = true
+                                        self.isStartKf = true
+                                    }
                                 }
                             }
                             
@@ -4077,7 +4058,7 @@ public class ServiceManager: Observation {
         self.sccBadCount = 0
         let input = FineLocationTracking(user_id: self.user_id, mobile_time: currentTime, sector_id: self.sector_id, building_name: self.currentBuilding, level_name_list: levelArray, phase: self.phase, search_range: searchInfo.0, search_direction_list: searchInfo.1, normalization_scale: self.normalizationScale, device_min_rss: Int(self.deviceMinRss), sc_compensation_list: requestScArray, tail_index: searchInfo.2)
         self.networkCount += 1
-        NetworkManager.shared.postFLT(url: FLT_URL, input: input, completion: { [self] statusCode, returnedString, inputPhase in
+        NetworkManager.shared.postFLT(url: FLT_URL, input: input, trajType: searchInfo.3, completion: { [self] statusCode, returnedString, inputPhase, inputTrajType in
             if (!returnedString.contains("timed out")) {
                 self.networkCount = 0
             }
@@ -4115,7 +4096,6 @@ public class ServiceManager: Observation {
                             if (self.isPhaseBreak) {
                                 self.kalmanR = 0.5
                                 self.headingKalmanR = 1
-                                    
                                 self.SQUARE_RANGE = self.SQUARE_RANGE_SMALL
                                 self.isPhaseBreak = false
                             }
@@ -4142,9 +4122,11 @@ public class ServiceManager: Observation {
                                         resultCorrected.0 = pathMatchingResult.isSuccess
                                         resultCorrected.1 = pathMatchingResult.xyh
                                         
-                                        let isResultStraight = isResultHeadingStraight(drBuffer: self.unitDrBuffer, result: result)
-                                        if (!isResultStraight) {
-                                            resultCorrected.1[2] = result.absolute_heading
+                                        if (inputTrajType == 0) {
+                                            let isResultStraight = isResultHeadingStraight(drBuffer: self.unitDrBuffer, result: result)
+                                            if (!isResultStraight) {
+                                                resultCorrected.1[2] = result.absolute_heading
+                                            }
                                         }
                                     }
                                     resultCorrected.1[2] = compensateHeading(heading: resultCorrected.1[2])
