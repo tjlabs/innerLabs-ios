@@ -3,7 +3,7 @@ import CoreMotion
 import UIKit
 
 public class ServiceManager: Observation {
-    public static let sdkVersion: String = "3.3.3.1"
+    public static let sdkVersion: String = "3.3.4"
     
     func tracking(input: FineLocationTrackingResult, isPast: Bool) {
         for observer in observers {
@@ -37,6 +37,28 @@ public class ServiceManager: Observation {
     }
     
     func reporting(input: Int) {
+//        switch (input) {
+//        case -1:
+//            self.isSolutionValid = false
+//            self.solutionMessage = "The state is abnormal"
+//        case 2:
+//            self.isSolutionValid = false
+//            self.solutionMessage = "BLE is off"
+//        case 3:
+//            self.isSolutionValid = false
+//            self.solutionMessage = "BLE only mode"
+//        case 5:
+//            self.isSolutionValid = false
+//            self.solutionMessage = "Newtwork is bad"
+//        case 6:
+//            self.isSolutionValid = false
+//            self.solutionMessage = "Newtwork connection lost"
+//        default:
+//            self.isSolutionValid = true
+//            self.solutionMessage = "Valid"
+//        }
+//        self.pastReportTime = getCurrentTimeInMillisecondsDouble()
+//        self.pastReportFlag = input
         postReport(report: input)
         for observer in observers {
             observer.report(flag: input)
@@ -347,6 +369,10 @@ public class ServiceManager: Observation {
     var lastOutputTime: Int = 0
     var pastOutputTime: Int = 0
     var isIndoor: Bool = false
+    var pastReportTime: Double = 0
+    var pastReportFlag: Int = 0
+    var isSolutionValid: Bool = true
+    var solutionMessage: String = "Valid"
     var timeForInit: Double = 26
     public var TIME_INIT_THRESHOLD: Double = 25
     
@@ -1674,7 +1700,9 @@ public class ServiceManager: Observation {
                     }
                 case .failure(let error):
                     self.timeFailRF += RFD_INTERVAL
-                    self.reporting(input: BLE_ERROR_FLAG)
+                    if (self.isIndoor) {
+                        self.reporting(input: BLE_ERROR_FLAG)
+                    }
                     
                     if (self.isIndoor && self.isGetFirstResponse) {
                         if (!self.isBleOff) {
