@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="21701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="KJ4-Co-KT0">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="22155" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="KJ4-Co-KT0">
     <device id="retina6_0" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21678"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22131"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
@@ -612,12 +612,6 @@
                                             <action selector="tapShowButton:" destination="LqI-KL-YbA" eventType="touchUpInside" id="dSx-PH-05j"/>
                                         </connections>
                                     </button>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="0" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Bw8-XC-7QL">
-                                        <rect key="frame" x="100" y="60.666666666666657" width="13" height="24"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="20"/>
-                                        <nil key="textColor"/>
-                                        <nil key="highlightedColor"/>
-                                    </label>
                                 </subviews>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <constraints>
@@ -626,9 +620,7 @@
                                     <constraint firstAttribute="trailing" secondItem="1ZL-rE-6mK" secondAttribute="trailing" constant="20" id="32k-bc-egn"/>
                                     <constraint firstAttribute="bottom" secondItem="dMH-0F-2Pr" secondAttribute="bottom" id="AX3-Mh-5gb"/>
                                     <constraint firstAttribute="bottom" secondItem="WrS-xQ-mlg" secondAttribute="bottom" constant="15" id="BGB-QZ-zKn"/>
-                                    <constraint firstItem="Bw8-XC-7QL" firstAttribute="centerY" secondItem="WrS-xQ-mlg" secondAttribute="centerY" id="BT0-iz-BSG"/>
                                     <constraint firstItem="1ZL-rE-6mK" firstAttribute="centerY" secondItem="Gyz-ns-ttr" secondAttribute="centerY" id="HQ2-iJ-l4s"/>
-                                    <constraint firstItem="Bw8-XC-7QL" firstAttribute="leading" secondItem="WrS-xQ-mlg" secondAttribute="trailing" constant="30" id="Ink-Ab-Qgl"/>
                                     <constraint firstItem="dMH-0F-2Pr" firstAttribute="leading" secondItem="jqI-TW-uug" secondAttribute="leading" constant="-2" id="Q58-AA-lAA"/>
                                     <constraint firstItem="dMH-0F-2Pr" firstAttribute="top" secondItem="jqI-TW-uug" secondAttribute="top" constant="-2" id="Xx0-sZ-HQt"/>
                                     <constraint firstAttribute="height" constant="100" id="Y17-h7-ku3"/>
@@ -688,7 +680,6 @@
                     </view>
                     <connections>
                         <outlet property="ServiceView" destination="sN5-rv-fuL" id="Z3l-L4-WE9"/>
-                        <outlet property="biasLabel" destination="Bw8-XC-7QL" id="HeJ-bV-9mf"/>
                         <outlet property="cardTopImage" destination="dMH-0F-2Pr" id="iaV-zb-qgA"/>
                         <outlet property="containerTableView" destination="I1t-vY-NpJ" id="sCR-wM-4cc"/>
                         <outlet property="containerViewHeight" destination="oIA-KX-3vG" id="qNu-5y-egH"/>
@@ -2770,34 +2761,34 @@
             <color red="0.85100001096725464" green="0.35699999332427979" blue="0.35699999332427979" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <systemColor name="labelColor">
-            <color red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
         <systemColor name="systemBlueColor">
-            <color red="0.0" green="0.47843137254901963" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemGray2Color">
-            <color red="0.68235294117647061" green="0.68235294117647061" blue="0.69803921568627447" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.68235294120000001" green="0.68235294120000001" blue="0.69803921570000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemGray4Color">
-            <color red="0.81960784313725488" green="0.81960784313725488" blue="0.83921568627450982" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.81960784310000001" green="0.81960784310000001" blue="0.83921568629999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemGray5Color">
-            <color red="0.89803921568627454" green="0.89803921568627454" blue="0.91764705882352937" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.8980392157" green="0.8980392157" blue="0.91764705879999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemGray6Color">
-            <color red="0.94901960784313721" green="0.94901960784313721" blue="0.96862745098039216" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.94901960780000005" green="0.94901960780000005" blue="0.96862745100000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemGrayColor">
-            <color red="0.55686274509803924" green="0.55686274509803924" blue="0.57647058823529407" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.5568627451" green="0.5568627451" blue="0.57647058819999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemYellowColor">
             <color red="1" green="0.80000000000000004" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="tintColor">
-            <color red="0.0" green="0.47843137254901963" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>

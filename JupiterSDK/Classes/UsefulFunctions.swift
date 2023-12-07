@@ -25,6 +25,54 @@ public func convertToDoubleArray(intArray: [Int]) -> [Double] {
     return intArray.map { Double($0) }
 }
 
+public func containsArray(_ array2D: [[Double]], _ targetArray: [Double]) -> Bool {
+    for array in array2D {
+        if array == targetArray {
+            return true
+        }
+    }
+    return false
+}
+
+public func fromServerToResult(fromServer: FineLocationTrackingFromServer, velocity: Double) -> FineLocationTrackingResult {
+    var result = FineLocationTrackingResult()
+    
+    result.mobile_time = fromServer.mobile_time
+    result.building_name = fromServer.building_name
+    result.level_name = fromServer.level_name
+    result.scc = fromServer.scc
+    result.x = fromServer.x
+    result.y = fromServer.y
+    result.absolute_heading = fromServer.absolute_heading
+    result.phase = fromServer.phase
+    result.calculated_time = fromServer.calculated_time
+    result.index = fromServer.index
+    result.velocity = velocity
+    
+    return result
+}
+
+public func calTrajectoryRatio(trajPm: [[Double]], trajOg: [[Double]]) -> Double {
+    var ratio = 1.0
+    
+    var lengthPm: Double = 0
+    var lengthOg: Double = 0
+    
+    for i in 1..<trajPm.count {
+        let pmDiffX = trajPm[i][0] - trajPm[i-1][0]
+        let pmDiffY = trajPm[i][1] - trajPm[i-1][1]
+        lengthPm += sqrt(pmDiffX*pmDiffX + pmDiffY*pmDiffY)
+        
+        let ogDiffX = trajOg[i][0] - trajOg[i-1][0]
+        let ogDiffY = trajOg[i][1] - trajOg[i-1][1]
+        lengthOg += sqrt(ogDiffX*ogDiffX + ogDiffY*ogDiffY)
+    }
+    
+    ratio = lengthPm/lengthOg
+    
+    return ratio
+}
+
 public func checkLevelDirection(currentLevel: Int, destinationLevel: Int) -> String {
     var levelDirection: String = ""
     let diffLevel: Int = destinationLevel - currentLevel
@@ -60,6 +108,22 @@ public func findClosestValueIndex(to target: Int, in array: [Int]) -> Int? {
     }
 
     return closestIndex
+}
+
+public func findClosestStructure(to myOsVersion: Int, in array: [rss_compensation]) -> rss_compensation? {
+    guard let first = array.first else {
+        return nil
+    }
+    var closest = first
+    var closestDistance = closest.os_version - myOsVersion
+    for d in array {
+        let distance = d.os_version - myOsVersion
+        if abs(distance) < abs(closestDistance) {
+            closest = d
+            closestDistance = distance
+        }
+    }
+    return closest
 }
 
 public func countAllValuesInDictionary(_ dictionary: [String: [String]]) -> Int {
@@ -227,6 +291,41 @@ public func calculateAccumulatedDiagonal(userTrajectory: [TrajectoryInfo]) -> Do
     return accumulatedDiagonal
 }
 
+public func isTrajectoryStraight(for array: [Double], size: Int, mode: String, conditionPdr: Int, conditionDr: Int) -> Int {
+    var CONDITON: Int = 10
+    if (mode == "pdr") {
+        CONDITON = conditionPdr
+    } else {
+        CONDITON = conditionDr
+    }
+    if (size < CONDITON) {
+        return 0
+    }
+    
+    let straightAngle: Double = 1.5
+    // All Straight
+    let circularStandardDeviationAll = circularStandardDeviation(for: array)
+    if (circularStandardDeviationAll <= straightAngle) {
+        return 1
+    }
+    
+    // Head Straight
+    let lastTenValues = Array(array[(size-CONDITON)..<size])
+    let circularStandardDeviationHead = circularStandardDeviation(for: lastTenValues)
+    if (circularStandardDeviationHead <= straightAngle) {
+        return 2
+    }
+    
+    // Tail Straight
+    let firstTenValues = Array(array[0..<CONDITON])
+    let circularStandardDeviationTail = circularStandardDeviation(for: firstTenValues)
+    if (circularStandardDeviationTail <= straightAngle) {
+        return 3
+    }
+    
+    return 0
+}
+
 public func getTrajectoryFromIndex(from userTrajectory: [TrajectoryInfo], index: Int) -> [TrajectoryInfo] {
     var result: [TrajectoryInfo] = []
     
@@ -340,6 +439,136 @@ public func getSearchCoordinates(areaMinMax: [Double], interval: Double) -> [[Do
     return coordinates
 }
 
+public func getSearchAreaMinMax(xyMinMax: [Double], heading: [Double], recentScc: Double, searchType: Int, lengthCondition: Double) -> [Double] {
+    var areaMinMax: [Double] = []
+    
+    var xMin = xyMinMax[0]
+    var yMin = xyMinMax[1]
+    var xMax = xyMinMax[2]
+    var yMax = xyMinMax[3]
+    
+    let SEARCH_LENGTH: Double = lengthCondition*0.4
+    
+    let headingStart = heading[0]
+    let headingEnd = heading[1]
+
+    let startCos = cos(headingStart*D2R)
+    let startSin = sin(headingStart*D2R)
+
+    let endCos = cos(headingEnd*D2R)
+    let endSin = sin(headingEnd*D2R)
+    
+    if (searchType == 3) {
+        // Tail Straight
+        if (startCos > 0) {
+            xMin = xMin - SEARCH_LENGTH*startCos
+            xMax = xMax + SEARCH_LENGTH*startCos
+        } else {
+            xMin = xMin + SEARCH_LENGTH*startCos
+            xMax = xMax - SEARCH_LENGTH*startCos
+        }
+
+        if (startSin > 0) {
+            yMin = yMin - SEARCH_LENGTH*startSin
+            yMax = yMax + SEARCH_LENGTH*startSin
+        } else {
+            yMin = yMin + SEARCH_LENGTH*startSin
+            yMax = yMax - SEARCH_LENGTH*startSin
+        }
+
+        if (endCos > 0) {
+            xMin = xMin - 1.2*SEARCH_LENGTH*endCos
+            xMax = xMax + 1.2*SEARCH_LENGTH*endCos
+        } else {
+            xMin = xMin + 1.2*SEARCH_LENGTH*endCos
+            xMax = xMax - 1.2*SEARCH_LENGTH*endCos
+        }
+
+        if (endSin > 0) {
+            yMin = yMin - 1.2*SEARCH_LENGTH*endSin
+            yMax = yMax + 1.2*SEARCH_LENGTH*endSin
+        } else {
+            yMin = yMin + 1.2*SEARCH_LENGTH*endSin
+            yMax = yMax - 1.2*SEARCH_LENGTH*endSin
+        }
+    } else {
+        // All & Head Straight
+        if (startCos > 0) {
+            xMin = xMin - 1.2*SEARCH_LENGTH*startCos
+            xMax = xMax + 1.2*SEARCH_LENGTH*startCos
+        } else {
+            xMin = xMin + 1.2*SEARCH_LENGTH*startCos
+            xMax = xMax - 1.2*SEARCH_LENGTH*startCos
+        }
+
+        if (startSin > 0) {
+            yMin = yMin - 1.2*SEARCH_LENGTH*startSin
+            yMax = yMax + 1.2*SEARCH_LENGTH*startSin
+        } else {
+            yMin = yMin + 1.2*SEARCH_LENGTH*startSin
+            yMax = yMax - 1.2*SEARCH_LENGTH*startSin
+        }
+
+        if (endCos > 0) {
+            xMin = xMin - SEARCH_LENGTH*endCos
+            xMax = xMax + SEARCH_LENGTH*endCos
+        } else {
+            xMin = xMin + SEARCH_LENGTH*endCos
+            xMax = xMax - SEARCH_LENGTH*endCos
+        }
+
+        if (endSin > 0) {
+            yMin = yMin - SEARCH_LENGTH*endSin
+            yMax = yMax + SEARCH_LENGTH*endSin
+        } else {
+            yMin = yMin + SEARCH_LENGTH*endSin
+            yMax = yMax - SEARCH_LENGTH*endSin
+        }
+    }
+    
+    // 직선인 경우
+    if (abs(xMin - xMax) < 5.0) {
+        xMin = xMin - lengthCondition*0.05
+        xMax = xMax + lengthCondition*0.05
+    }
+
+    if (abs(yMin - yMax) < 5.0) {
+        yMin = yMin - lengthCondition*0.05
+        yMax = yMax + lengthCondition*0.05
+    }
+    
+    // U-Turn인 경우
+    let diffHeading = compensateHeading(heading: abs(headingStart - headingEnd))
+    let diffX = abs(xMax - xMin)
+    let diffY = abs(yMax - yMin)
+    let diffXy = abs(diffX - diffY)*0.2
+    
+    if (diffHeading > 150) {
+        if (diffX < diffY) {
+            xMin = xMin - diffXy
+            xMax = xMax + diffXy
+        } else {
+            yMin = yMin - diffXy
+            yMax = yMax + diffXy
+        }
+    } else {
+        // Check ㄹ Trajectory
+        if (diffHeading < 30 && searchType != 1) {
+            if (diffX < diffY) {
+                xMin = xMin - diffXy
+                xMax = xMax + diffXy
+            } else {
+                yMin = yMin - diffXy
+                yMax = yMax + diffXy
+            }
+        }
+    }
+
+    areaMinMax = [xMin, yMin, xMax, yMax]
+    
+    return areaMinMax
+}
+
 public func convertToValidSearchRange(inputRange: [Int], pathPointMinMax: [Double]) -> [Int] {
     var searchRange = inputRange
     
@@ -418,6 +647,77 @@ public func extractSectionWithLeastChange(inputArray: [Double]) -> [Double] {
     }
 
     return Array(inputArray[bestSliceStartIndex...bestSliceEndIndex])
+}
+
+public func propagateUsingUvd(drBuffer: [UnitDRInfo], result: FineLocationTrackingFromServer) -> (Bool, [Double]) {
+    var isSuccess: Bool = false
+    var propagationValues: [Double] = [0, 0, 0]
+    let resultIndex = result.index
+    var matchedIndex: Int = -1
+    
+    for i in 0..<drBuffer.count {
+        let drBufferIndex = drBuffer[i].index
+        if (drBufferIndex == resultIndex) {
+            matchedIndex = i
+        }
+    }
+    
+    var dx: Double = 0
+    var dy: Double = 0
+    var dh: Double = 0
+    
+    if (matchedIndex != -1) {
+        let drBuffrerFromIndex = sliceArray(drBuffer, startingFrom: matchedIndex)
+        let headingCompensation: Double = result.absolute_heading - drBuffrerFromIndex[0].heading
+        var headingBuffer = [Double]()
+        for i in 0..<drBuffrerFromIndex.count {
+            let compensatedHeading = compensateHeading(heading: drBuffrerFromIndex[i].heading + headingCompensation)
+            headingBuffer.append(compensatedHeading)
+            
+            dx += drBuffrerFromIndex[i].length * cos(compensatedHeading*D2R)
+            dy += drBuffrerFromIndex[i].length * sin(compensatedHeading*D2R)
+        }
+        dh = headingBuffer[headingBuffer.count-1] - headingBuffer[0]
+        
+        isSuccess = true
+        propagationValues = [dx, dy, dh]
+    }
+    
+    return (isSuccess, propagationValues)
+}
+
+public func isResultHeadingStraight(drBuffer: [UnitDRInfo], result: FineLocationTrackingFromServer) -> Bool {
+    var isStraight: Bool = false
+    let resultIndex = result.index
+    
+    var matchedIndex: Int = -1
+    
+    for i in 0..<drBuffer.count {
+        let drBufferIndex = drBuffer[i].index
+        if (drBufferIndex == resultIndex) {
+            matchedIndex = i
+        }
+    }
+    
+    if (matchedIndex != -1 && matchedIndex >= 4) {
+        var startHeading: Double = 0
+        var endHeading: Double = 0
+        if (drBuffer.count < 5) {
+            startHeading = drBuffer[0].heading
+            endHeading = drBuffer[matchedIndex].heading
+        } else {
+            startHeading = drBuffer[matchedIndex-4].heading
+            endHeading = drBuffer[matchedIndex].heading
+        }
+        
+        if (abs(endHeading - startHeading) < 5.0) {
+            isStraight = true
+        } else {
+            isStraight = false
+        }
+    }
+    
+    return isStraight
 }
 
 

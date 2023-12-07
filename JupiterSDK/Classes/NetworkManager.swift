@@ -5,23 +5,38 @@ public class NetworkManager {
     let TIMEOUT_VALUE_PUT: Double = 5.0
     let TIMEOUT_VALUE_POST: Double = 5.0
     
-    let rfdSession: URLSession
-    let uvdSession: URLSession
+    let rfdSession1: URLSession
+    let rfdSession2: URLSession
+    var rfdSessionCount: Int = 0
+    
+    let uvdSession1: URLSession
+    let uvdSession2: URLSession
+    var uvdSessionCount: Int = 0
+    
     let osrSession: URLSession
     let fltSession: URLSession
     let resultSession: URLSession
     let reportSession: URLSession
     
+    var rfdSessions = [URLSession]()
+    var uvdSessions = [URLSession]()
+
     init() {
         let rfdConfig = URLSessionConfiguration.default
         rfdConfig.timeoutIntervalForResource = TIMEOUT_VALUE_PUT
         rfdConfig.timeoutIntervalForRequest = TIMEOUT_VALUE_PUT
-        self.rfdSession = URLSession(configuration: rfdConfig)
+        self.rfdSession1 = URLSession(configuration: rfdConfig)
+        self.rfdSession2 = URLSession(configuration: rfdConfig)
+        self.rfdSessions.append(self.rfdSession1)
+        self.rfdSessions.append(self.rfdSession2)
         
         let uvdConfig = URLSessionConfiguration.default
         uvdConfig.timeoutIntervalForResource = TIMEOUT_VALUE_PUT
         uvdConfig.timeoutIntervalForRequest = TIMEOUT_VALUE_PUT
-        self.uvdSession = URLSession(configuration: uvdConfig)
+        self.uvdSession1 = URLSession(configuration: uvdConfig)
+        self.uvdSession2 = URLSession(configuration: uvdConfig)
+        self.uvdSessions.append(self.uvdSession1)
+        self.uvdSessions.append(self.uvdSession2)
         
         let osrConfig = URLSessionConfiguration.default
         osrConfig.timeoutIntervalForResource = TIMEOUT_VALUE_POST
@@ -291,8 +306,10 @@ public class NetworkManager {
 //            print("POST RF 데이터 :: ", input)
 //            print("====================================")
 //            print("")
-            
-            let dataTask = self.rfdSession.dataTask(with: requestURL, completionHandler: { (data, response, error) in
+
+            let rfdSession = self.rfdSessions[self.rfdSessionCount%2]
+            self.rfdSessionCount+=1
+            let dataTask = rfdSession.dataTask(with: requestURL, completionHandler: { (data, response, error) in
                 let code = (response as? HTTPURLResponse)?.statusCode ?? 500
                 // [error가 존재하면 종료]
                 guard error == nil else {
@@ -365,7 +382,9 @@ public class NetworkManager {
     //        print("====================================")
     //        print("")
             
-            let dataTask = self.uvdSession.dataTask(with: requestURL, completionHandler: { (data, response, error) in
+            let uvdSession = self.uvdSessions[self.uvdSessionCount%2]
+            self.uvdSessionCount+=1
+            let dataTask = uvdSession.dataTask(with: requestURL, completionHandler: { (data, response, error) in
                 let code = (response as? HTTPURLResponse)?.statusCode ?? 400
                 // [error가 존재하면 종료]
                 guard error == nil else {
@@ -641,11 +660,12 @@ public class NetworkManager {
         }
     }
     
-    func postFLT(url: String, input: FineLocationTracking, completion: @escaping (Int, String, Int) -> Void) {
+    func postFLT(url: String, input: FineLocationTracking, trajType: Int, completion: @escaping (Int, String, Int, Int) -> Void) {
         // [http 비동기 방식을 사용해서 http 요청 수행 실시]
         let urlComponents = URLComponents(string: url)
         var requestURL = URLRequest(url: (urlComponents?.url)!)
         let inputPhase: Int = input.phase
+        let inputTrajType: Int = trajType
         
         requestURL.httpMethod = "POST"
         let encodingData = JSONConverter.encodeJson(param: input)
@@ -668,7 +688,7 @@ public class NetworkManager {
                 guard error == nil else {
                     // [콜백 반환]
                     DispatchQueue.main.async {
-                        completion(500, error?.localizedDescription ?? "Fail", inputPhase)
+                        completion(500, error?.localizedDescription ?? "Fail", inputPhase, inputTrajType)
                     }
                     return
                 }
@@ -679,7 +699,7 @@ public class NetworkManager {
                 else {
                     // [콜백 반환]
                     DispatchQueue.main.async {
-                        completion(500, (response as? HTTPURLResponse)?.description ?? "Fail", inputPhase)
+                        completion(500, (response as? HTTPURLResponse)?.description ?? "Fail", inputPhase, inputTrajType)
                     }
                     return
                 }
@@ -687,7 +707,7 @@ public class NetworkManager {
                 // [response 데이터 획득]
                 let resultCode = (response as? HTTPURLResponse)?.statusCode ?? 500 // [상태 코드]
                 guard let resultLen = data else {
-                    completion(500, (response as? HTTPURLResponse)?.description ?? "Fail", inputPhase)
+                    completion(500, (response as? HTTPURLResponse)?.description ?? "Fail", inputPhase, inputTrajType)
                     return
                 }
                 let resultData = String(data: resultLen, encoding: .utf8) ?? "" // [데이터 확인]
@@ -699,14 +719,14 @@ public class NetworkManager {
 //                    print("RESPONSE FLT 데이터 :: ", resultData)
 //                    print("====================================")
 //                    print("")
-                    completion(resultCode, resultData, inputPhase)
+                    completion(resultCode, resultData, inputPhase, inputTrajType)
                 }
             })
 
             // [network 통신 실행]
             dataTask.resume()
         } else {
-            completion(500, "Fail to encode", inputPhase)
+            completion(500, "Fail to encode", inputPhase, inputTrajType)
         }
     }
     

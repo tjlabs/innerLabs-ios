@@ -114,8 +114,6 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
     
     @IBOutlet weak var sectorNameLabel: UILabel!
     @IBOutlet weak var cardTopImage: UIImageView!
-    
-    @IBOutlet weak var biasLabel: UILabel!
     @IBOutlet weak var infoLabel: UILabel!
     
     var currentRegion: String = ""
@@ -242,7 +240,6 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        biasLabel.isHidden = true
         let locale = Locale.current
         if let countryCode = locale.regionCode, countryCode == "KR" {
             self.currentRegion = "Korea"
@@ -423,7 +420,6 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
         
         if (countTap == 5) {
             isShowRP = true
-            biasLabel.isHidden = false
             self.sectorNameLabel.textColor = .yellow
             for view in self.scatterChart.subviews {
                 view.removeFromSuperview()
@@ -431,7 +427,6 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
             
         } else if (countTap > 9) {
             isShowRP = false
-            biasLabel.isHidden = true
             countTap = 0
             self.sectorNameLabel.textColor = .white
         }
@@ -669,20 +664,16 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
         
         // Map
         if (self.isMonitor) {
-            serviceManager.getRecentResult(id: self.idToMonitor, completion: { [self] statusCode, returnedString in
+            serviceManager.getRecentResult(id: self.idToMonitor, completion: { [self] statusCode, result in
                 if (statusCode == 200) {
-                    let result = jsonToResult(json: returnedString)
-                    let pathMatchingResult = serviceManager.pathMatching(building: result.building_name, level: result.level_name, x: result.x, y: result.y, heading: result.absolute_heading, tuXY: [0,0], isPast: false, HEADING_RANGE: 50, isUseHeading: true, pathType: 0)
-                    let resultTime: Int = result.mobile_time
-                    let resultIndex = result.index
-                    let resultBuildingName: String = result.building_name
-                    let resultLevelNameAll: String = result.level_name
-                    let resultLevelName: String = removeLevelDirectionString(levelName: resultLevelNameAll)
-
-                    let resultCoordX = pathMatchingResult.xyh[0]
-                    let resultCoordY = pathMatchingResult.xyh[1]
-                    let resultHeading = pathMatchingResult.xyh[2]
-
+                    let recentResult: FineLocationTrackingFromServer = result
+                    let resultCoordX = recentResult.x
+                    let resultCoordY = recentResult.y
+                    let resultHeading = recentResult.absolute_heading
+                    
+                    let resultBuildingName = recentResult.building_name
+                    let resultLevelName = recentResult.level_name
+                    
                     if (resultCoordX != 0 && resultCoordY != 0) {
                         self.monitorToDisplay.x = resultCoordX
                         self.monitorToDisplay.y = resultCoordY
@@ -716,12 +707,6 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
             resultToDisplay.unitLength = serviceManager.displayOutput.length
             resultToDisplay.scc = serviceManager.displayOutput.scc
             resultToDisplay.phase = serviceManager.displayOutput.phase
-            
-            var biasText: String = String(serviceManager.displayOutput.bias) + " // " + serviceManager.displayOutput.mode
-            if (serviceManager.displayOutput.isConverged) {
-                biasText = "_" + String(serviceManager.displayOutput.bias) + "_" + " // " + serviceManager.displayOutput.mode
-            }
-            self.biasLabel.text = biasText
             
             if (isOpen) {
                 UIView.performWithoutAnimation { self.containerTableView.reloadSections(IndexSet(0...0), with: .none) }
