@@ -1606,6 +1606,7 @@ public class ServiceManager: Observation {
         let bleDictionary: [String: [[Double]]]? = bleManager.bleDictionary
         if let bleData = bleDictionary {
             if (!self.isRfdTimerRunningFinished) {
+                self.isRfdTimerRunningFinished = true
                 let trimmedResult = trimBleData(bleInput: bleData, nowTime: getCurrentTimeInMillisecondsDouble(), validTime: validTime)
                 switch trimmedResult {
                 case .success(let trimmedData):
@@ -1665,7 +1666,6 @@ public class ServiceManager: Observation {
                         }
                     }
                 }
-                self.isRfdTimerRunningFinished = true
             }
             
 //            self.bleAvg = ["TJ-00CB-0000038C-0000":-76.0] // COEX B2 <-> B3
@@ -1746,6 +1746,7 @@ public class ServiceManager: Observation {
                             if (statusCode != 200) {
                                 let localTime = getLocalTimeString()
                                 let log: String = localTime + " , (Jupiter) Record Error : RFD \(statusCode) // " + returnedString
+
                                 if (self.isIndoor) {
                                     print(log)
                                     self.reporting(input: RFD_FLAG)
@@ -3458,6 +3459,9 @@ public class ServiceManager: Observation {
                         self.indexPast = result.index
                     }
                 } else {
+                    if (self.isStartSimulate) {
+                        self.isPhaseBreakInSimulate = true
+                    }
                     self.phase = 1
                     if (self.isStartSimulate) {
                         self.isPhaseBreakInSimulate = true
@@ -3750,8 +3754,7 @@ public class ServiceManager: Observation {
                             let pathMatchingResult = pmCalculator.pathMatching(building: result.building_name, level: result.level_name, x: propagatedResult[0], y: propagatedResult[1], heading: propagatedResult[2], isPast: false, HEADING_RANGE: HEADING_RANGE, isUseHeading: true, pathType: 1, range: SQUARE_RANGE)
                             propagatedResult = pathMatchingResult.xyhs
                             propagatedResult[2] = compensateHeading(heading: propagatedResult[2])
-                            
-                            
+                                  
                             var tuHeading = compensateHeading(heading: timeUpdatePosition.heading)
                             var muHeading = propagatedResult[2]
                             if (tuHeading >= 270 && (muHeading >= 0 && muHeading < 90)) {
@@ -3760,7 +3763,7 @@ public class ServiceManager: Observation {
                                 tuHeading = tuHeading + 360
                             }
                             let diffH = abs(tuHeading-muHeading)
-                            
+
                             if (result.phase == 4) {
                                 if (pathMatchingResult.isSuccess) {
                                     self.updateAllResult(result: propagatedResult, inputPhase: inputPhase, mode: self.runMode)

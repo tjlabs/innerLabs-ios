@@ -431,19 +431,19 @@ extension CardViewController: UICollectionViewDataSource, UICollectionViewDelega
                 guard let guideVC = self.storyboard?.instantiateViewController(withIdentifier: "GuideViewController") as? GuideViewController else { return }
                 guideVC.page = currentPage
                 self.navigationController?.pushViewController(guideVC, animated: true)
-            } else if (sector_id == 1) {
-//                guard let fusionVC = self.storyboard?.instantiateViewController(withIdentifier: "FusionViewController") as? FusionViewController else { return }
-//                fusionVC.cardData = cardItemData[mod]
-//                fusionVC.region = region
-//                fusionVC.uuid = uuid
-//                fusionVC.page = currentPage
-//                self.navigationController?.pushViewController(fusionVC, animated: true)
-                guard let serviceVC = self.storyboard?.instantiateViewController(withIdentifier: "ServiceViewController") as? ServiceViewController else { return }
-                serviceVC.cardData = cardItemData[mod]
-                serviceVC.region = region
-                serviceVC.uuid = uuid
-                serviceVC.page = currentPage
-                self.navigationController?.pushViewController(serviceVC, animated: true)
+            } else if (sector_id == 9) {
+                guard let fusionVC = self.storyboard?.instantiateViewController(withIdentifier: "FusionViewController") as? FusionViewController else { return }
+                fusionVC.cardData = cardItemData[mod]
+                fusionVC.region = region
+                fusionVC.uuid = uuid
+                fusionVC.page = currentPage
+                self.navigationController?.pushViewController(fusionVC, animated: true)
+//                guard let serviceVC = self.storyboard?.instantiateViewController(withIdentifier: "ServiceViewController") as? ServiceViewController else { return }
+//                serviceVC.cardData = cardItemData[mod]
+//                serviceVC.region = region
+//                serviceVC.uuid = uuid
+//                serviceVC.page = currentPage
+//                self.navigationController?.pushViewController(serviceVC, animated: true)
             }
             else if (sector_id == 10) {
                 guard let collectVC = self.storyboard?.instantiateViewController(withIdentifier: "CollectViewController") as? CollectViewController else { return }

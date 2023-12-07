@@ -20,7 +20,7 @@ public class NetworkManager {
     
     var rfdSessions = [URLSession]()
     var uvdSessions = [URLSession]()
-    
+
     init() {
         let rfdConfig = URLSessionConfiguration.default
         rfdConfig.timeoutIntervalForResource = TIMEOUT_VALUE_PUT
@@ -306,6 +306,7 @@ public class NetworkManager {
 //            print("POST RF 데이터 :: ", input)
 //            print("====================================")
 //            print("")
+
             let rfdSession = self.rfdSessions[self.rfdSessionCount%2]
             self.rfdSessionCount+=1
             let dataTask = rfdSession.dataTask(with: requestURL, completionHandler: { (data, response, error) in

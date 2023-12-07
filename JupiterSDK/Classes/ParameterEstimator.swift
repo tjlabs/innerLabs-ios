@@ -19,7 +19,7 @@ public class ParameterEstimator {
         self.entranceWardRssi = [String: Double]()
         self.allEntranceWardRssi = [String: Double]()
     }
-    
+
     public func getMaxRssi() -> Double {
         if (self.wardMaxRssi.isEmpty) {
             return -90.0
@@ -208,6 +208,7 @@ public class ParameterEstimator {
         }
         return array
     }
+    
     
     func updateWardMinRss(inputArray: [Double], size: Int) -> [Double] {
         var array: [Double] = inputArray
