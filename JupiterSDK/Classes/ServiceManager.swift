@@ -37,28 +37,9 @@ public class ServiceManager: Observation {
     }
     
     func reporting(input: Int) {
-//        switch (input) {
-//        case -1:
-//            self.isSolutionValid = false
-//            self.solutionMessage = "The state is abnormal"
-//        case 2:
-//            self.isSolutionValid = false
-//            self.solutionMessage = "BLE is off"
-//        case 3:
-//            self.isSolutionValid = false
-//            self.solutionMessage = "BLE only mode"
-//        case 5:
-//            self.isSolutionValid = false
-//            self.solutionMessage = "Newtwork is bad"
-//        case 6:
-//            self.isSolutionValid = false
-//            self.solutionMessage = "Newtwork connection lost"
-//        default:
-//            self.isSolutionValid = true
-//            self.solutionMessage = "Valid"
-//        }
-//        self.pastReportTime = getCurrentTimeInMillisecondsDouble()
-//        self.pastReportFlag = input
+        self.pastReportTime = getCurrentTimeInMillisecondsDouble()
+        self.pastReportFlag = input
+        
         postReport(report: input)
         for observer in observers {
             observer.report(flag: input)
@@ -877,6 +858,8 @@ public class ServiceManager: Observation {
             SERVER_TYPE = "-5"
         case 6:
             SERVER_TYPE = "-6"
+        case 7:
+            SERVER_TYPE = "-7"
         default:
             SERVER_TYPE = ""
         }
@@ -903,6 +886,8 @@ public class ServiceManager: Observation {
             url = "https://storage.googleapis.com/\(IMAGE_URL)/ios/pp-5/\(self.sectorIdOrigin)/\(key).csv"
         case 6:
             url = "https://storage.googleapis.com/\(IMAGE_URL)/ios/pp-6/\(self.sectorIdOrigin)/\(key).csv"
+        case 7:
+            url = "https://storage.googleapis.com/\(IMAGE_URL)/ios/pp-7/\(self.sectorIdOrigin)/\(key).csv"
         default:
             url = "https://storage.googleapis.com/\(IMAGE_URL)/ios/pp/\(self.sectorIdOrigin)/\(key).csv"
         }
@@ -986,6 +971,8 @@ public class ServiceManager: Observation {
             url = "https://storage.googleapis.com/\(IMAGE_URL)/ios/entrance-5/\(self.sectorIdOrigin)/\(key).csv"
         case 6:
             url = "https://storage.googleapis.com/\(IMAGE_URL)/ios/entrance-6/\(self.sectorIdOrigin)/\(key).csv"
+        case 7:
+            url = "https://storage.googleapis.com/\(IMAGE_URL)/ios/entrance-7/\(self.sectorIdOrigin)/\(key).csv"
         default:
             url = "https://storage.googleapis.com/\(IMAGE_URL)/ios/entrance/\(self.sectorIdOrigin)/\(key).csv"
         }
@@ -4993,5 +4980,48 @@ public class ServiceManager: Observation {
         } else {
             self.BLE_VALID_TIME = 1500
         }
+    }
+    
+    func checkSolutionValidity(reportFlag: Int, reportTime: Double, isIndoor: Bool) -> (Bool, String) {
+        var isValid: Bool = true
+        var validMessage: String = "Valid"
+        let currentTime = getCurrentTimeInMillisecondsDouble()
+        
+        if (isIndoor) {
+            let diffTime = (currentTime - reportTime)*1e-3
+            switch (reportFlag) {
+            case -1:
+                self.isSolutionValid = false
+                self.solutionMessage = "The state is abnormal"
+            case 2:
+                self.isSolutionValid = false
+                self.solutionMessage = "BLE is off"
+            case 3:
+                self.isSolutionValid = false
+                self.solutionMessage = "BLE only mode"
+            case 4:
+                self.isSolutionValid = true
+                self.solutionMessage = "Jupiter is running"
+            case 5:
+                self.isSolutionValid = false
+                self.solutionMessage = "Newtwork is bad"
+            case 6:
+                if (NetworkCheck.shared.isConnectedToInternet()) {
+                    self.isSolutionValid = true
+                    self.solutionMessage = "Valid"
+                } else {
+                    self.isSolutionValid = false
+                    self.solutionMessage = "Newtwork connection lost"
+                }
+            default:
+                self.isSolutionValid = true
+                self.solutionMessage = "Valid"
+            }
+        } else {
+            isValid = false
+            validMessage = "Solution in outdoor is not valid"
+        }
+        
+        return (isValid, validMessage)
     }
 }
