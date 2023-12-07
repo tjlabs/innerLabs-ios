@@ -1299,7 +1299,6 @@ extension FusionViewController: CustomSwitchButtonDelegate {
                     self.pastLevel = ""
                     self.displayLevelImage(building: currentBuilding, level: currentLevel, flag: isShowRP)
 //                    self.notificationCenterRemoveObserver()
-                    
                     print("(FusionVC) Success : \(isStop.1)")
                     serviceManager.removeObserver(self)
                     self.stopTimer()

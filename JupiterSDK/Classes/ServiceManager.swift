@@ -118,7 +118,6 @@ public class ServiceManager: Observation {
     
     var receivedForceTimer: DispatchSourceTimer?
     var RFD_INTERVAL: TimeInterval = 1/2 // second
-    var isRfdTimerRunningFinished: Bool = false
     var BLE_VALID_TIME: Double = 1000
     var bleTrimed = [String: [[Double]]]()
     var bleAvg = [String: Double]()
@@ -1605,69 +1604,65 @@ public class ServiceManager: Observation {
         let currentTime = getCurrentTimeInMilliseconds() - (Int(validTime)/2)
         let bleDictionary: [String: [[Double]]]? = bleManager.bleDictionary
         if let bleData = bleDictionary {
-            if (!self.isRfdTimerRunningFinished) {
-                self.isRfdTimerRunningFinished = true
-                let trimmedResult = trimBleData(bleInput: bleData, nowTime: getCurrentTimeInMillisecondsDouble(), validTime: validTime)
-                switch trimmedResult {
-                case .success(let trimmedData):
-                    self.bleAvg = avgBleData(bleDictionary: trimmedData)
-                    let scannedResult = getLastScannedEntranceOuterWardTime(bleAvg: self.bleAvg, entranceOuterWards: self.EntranceOuterWards)
-                    if (scannedResult.0) {
-                        self.lastScannedEntranceOuterWardTime = scannedResult.1
-                    }
+            let trimmedResult = trimBleData(bleInput: bleData, nowTime: getCurrentTimeInMillisecondsDouble(), validTime: validTime)
+            switch trimmedResult {
+            case .success(let trimmedData):
+                self.bleAvg = avgBleData(bleDictionary: trimmedData)
+                let scannedResult = getLastScannedEntranceOuterWardTime(bleAvg: self.bleAvg, entranceOuterWards: self.EntranceOuterWards)
+                if (scannedResult.0) {
+                    self.lastScannedEntranceOuterWardTime = scannedResult.1
+                }
+                
+                if (!self.isGetFirstResponse) {
+                    let findResult = findNetworkBadEntrance(bleAvg: self.bleAvg)
+                    self.isInNetworkBadEntrance = findResult.0
                     
-                    if (!self.isGetFirstResponse) {
-                        let findResult = findNetworkBadEntrance(bleAvg: self.bleAvg)
-                        self.isInNetworkBadEntrance = findResult.0
-                        
-                        if (!self.isIndoor && (self.timeForInit >= TIME_INIT_THRESHOLD)) {
-                            if (self.isInNetworkBadEntrance) {
-                                self.isGetFirstResponse = true
-                                self.isIndoor = true
-                                self.reporting(input: INDOOR_FLAG)
-                                
-                                let result = findResult.1
-                                
-                                self.outputResult.phase = 3
-                                self.outputResult.building_name = result.building_name
-                                self.outputResult.level_name = result.level_name
-                                self.outputResult.isIndoor = self.isIndoor
-                                
-                                for i in 0..<self.EntranceNumbers {
-                                    if (!self.isStartSimulate) {
-                                        let entranceResult = self.findEntrance(result: result, entrance: i)
-                                        print(getLocalTimeString() + " , (Jupiter) Entrance Simulator : findEntrance = \(entranceResult)")
-                                        if (entranceResult.0 != 0) {
-                                            let velocityScale: Double = self.EntranceVelocityScale[i]
-                                            print(getLocalTimeString() + " , (Jupiter) Entrance Simulator : number = \(entranceResult.0)")
-                                            self.currentEntrance = "\(result.building_name)_\(result.level_name)_\(entranceResult.0)"
-                                            self.currentEntranceLength = entranceResult.1
-                                            self.entranceVelocityScale = velocityScale
-                                            self.isStartSimulate = true
-                                        }
+                    if (!self.isIndoor && (self.timeForInit >= TIME_INIT_THRESHOLD)) {
+                        if (self.isInNetworkBadEntrance) {
+                            self.isGetFirstResponse = true
+                            self.isIndoor = true
+                            self.reporting(input: INDOOR_FLAG)
+                            
+                            let result = findResult.1
+                            
+                            self.outputResult.phase = 3
+                            self.outputResult.building_name = result.building_name
+                            self.outputResult.level_name = result.level_name
+                            self.outputResult.isIndoor = self.isIndoor
+                            
+                            for i in 0..<self.EntranceNumbers {
+                                if (!self.isStartSimulate) {
+                                    let entranceResult = self.findEntrance(result: result, entrance: i)
+                                    print(getLocalTimeString() + " , (Jupiter) Entrance Simulator : findEntrance = \(entranceResult)")
+                                    if (entranceResult.0 != 0) {
+                                        let velocityScale: Double = self.EntranceVelocityScale[i]
+                                        print(getLocalTimeString() + " , (Jupiter) Entrance Simulator : number = \(entranceResult.0)")
+                                        self.currentEntrance = "\(result.building_name)_\(result.level_name)_\(entranceResult.0)"
+                                        self.currentEntranceLength = entranceResult.1
+                                        self.entranceVelocityScale = velocityScale
+                                        self.isStartSimulate = true
                                     }
                                 }
                             }
                         }
                     }
-                case .failure(let error):
-                    self.timeFailRF += RFD_INTERVAL
-                    if (self.isIndoor) {
-                        self.reporting(input: BLE_ERROR_FLAG)
-                    }
-                    
-                    if (self.isIndoor && self.isGetFirstResponse) {
-                        if (!self.isBleOff) {
-                            let lastResult = self.resultToReturn
-                            let isFailTrimBle = self.determineIsOutdoor(lastResult: lastResult, currentTime: getCurrentTimeInMillisecondsDouble(), inFailCondition: true)
-                            if (isFailTrimBle) {
-                                self.bleAvg = [String: Double]()
-                            }
+                }
+            case .failure(let error):
+                self.timeFailRF += RFD_INTERVAL
+                if (self.isIndoor) {
+                    self.reporting(input: BLE_ERROR_FLAG)
+                }
+                
+                if (self.isIndoor && self.isGetFirstResponse) {
+                    if (!self.isBleOff) {
+                        let lastResult = self.resultToReturn
+                        let isFailTrimBle = self.determineIsOutdoor(lastResult: lastResult, currentTime: getCurrentTimeInMillisecondsDouble(), inFailCondition: true)
+                        if (isFailTrimBle) {
+                            self.bleAvg = [String: Double]()
                         }
                     }
                 }
             }
-            
 //            self.bleAvg = ["TJ-00CB-0000038C-0000":-76.0] // COEX B2 <-> B3
 //            self.bleAvg = ["TJ-00CB-0000030D-0000":-76.0] // COEX B2
 //            self.bleAvg = ["TJ-00CB-00000242-0000":-76.0] // S3 7F
@@ -1746,7 +1741,6 @@ public class ServiceManager: Observation {
                             if (statusCode != 200) {
                                 let localTime = getLocalTimeString()
                                 let log: String = localTime + " , (Jupiter) Record Error : RFD \(statusCode) // " + returnedString
-
                                 if (self.isIndoor) {
                                     print(log)
                                     self.reporting(input: RFD_FLAG)
@@ -1798,7 +1792,6 @@ public class ServiceManager: Observation {
         if (!self.isIndoor) {
             self.timeForInit += RFD_INTERVAL
         }
-        self.isRfdTimerRunningFinished = false
     }
     
     @objc func userVelocityTimerUpdate() {
@@ -3459,9 +3452,6 @@ public class ServiceManager: Observation {
                         self.indexPast = result.index
                     }
                 } else {
-                    if (self.isStartSimulate) {
-                        self.isPhaseBreakInSimulate = true
-                    }
                     self.phase = 1
                     if (self.isStartSimulate) {
                         self.isPhaseBreakInSimulate = true
@@ -3754,7 +3744,8 @@ public class ServiceManager: Observation {
                             let pathMatchingResult = pmCalculator.pathMatching(building: result.building_name, level: result.level_name, x: propagatedResult[0], y: propagatedResult[1], heading: propagatedResult[2], isPast: false, HEADING_RANGE: HEADING_RANGE, isUseHeading: true, pathType: 1, range: SQUARE_RANGE)
                             propagatedResult = pathMatchingResult.xyhs
                             propagatedResult[2] = compensateHeading(heading: propagatedResult[2])
-                                  
+                            
+                            
                             var tuHeading = compensateHeading(heading: timeUpdatePosition.heading)
                             var muHeading = propagatedResult[2]
                             if (tuHeading >= 270 && (muHeading >= 0 && muHeading < 90)) {
@@ -3763,7 +3754,7 @@ public class ServiceManager: Observation {
                                 tuHeading = tuHeading + 360
                             }
                             let diffH = abs(tuHeading-muHeading)
-
+                            
                             if (result.phase == 4) {
                                 if (pathMatchingResult.isSuccess) {
                                     self.updateAllResult(result: propagatedResult, inputPhase: inputPhase, mode: self.runMode)
