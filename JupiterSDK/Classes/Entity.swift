@@ -354,11 +354,12 @@ public struct FineLocationTrackingFromServer: Codable {
     public var x: Double
     public var y: Double
     public var absolute_heading: Double
-    public var phase: Int
     public var calculated_time: Double
     public var index: Int
     public var sc_compensation: Double
     public var search_direction: Int
+    public var cumulative_length: Double
+    public var channel_condition: Bool
     
     public init() {
         self.mobile_time = 0
@@ -368,11 +369,12 @@ public struct FineLocationTrackingFromServer: Codable {
         self.x = 0
         self.y = 0
         self.absolute_heading = 0
-        self.phase = 0
         self.calculated_time = 0
         self.index = 0
         self.sc_compensation = 0
         self.search_direction = 0
+        self.cumulative_length = 0
+        self.channel_condition = false
     }
 }
 
@@ -645,11 +647,12 @@ public struct RecentResultFromServer: Codable {
     public var x: Double
     public var y: Double
     public var absolute_heading: Double
-    public var phase: Int
     public var calculated_time: Double
     public var index: Int
     public var rss_compensation: Int
     public var sc_compensation: Double
+    public var cumulative_length: Double
+    public var channel_condition: Bool
     
     public init() {
         self.mobile_time = 0
@@ -659,11 +662,12 @@ public struct RecentResultFromServer: Codable {
         self.x = 0
         self.y = 0
         self.absolute_heading = 0
-        self.phase = 0
         self.calculated_time = 0
         self.index = 0
         self.rss_compensation = 0
         self.sc_compensation = 0
+        self.cumulative_length = 0
+        self.channel_condition = false
     }
 }
 

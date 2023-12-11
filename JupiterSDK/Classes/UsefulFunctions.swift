@@ -34,7 +34,7 @@ public func containsArray(_ array2D: [[Double]], _ targetArray: [Double]) -> Boo
     return false
 }
 
-public func fromServerToResult(fromServer: FineLocationTrackingFromServer, velocity: Double) -> FineLocationTrackingResult {
+public func fromServerToResult(fromServer: FineLocationTrackingFromServer, velocity: Double, resultPhase: Int) -> FineLocationTrackingResult {
     var result = FineLocationTrackingResult()
     
     result.mobile_time = fromServer.mobile_time
@@ -43,8 +43,8 @@ public func fromServerToResult(fromServer: FineLocationTrackingFromServer, veloc
     result.scc = fromServer.scc
     result.x = fromServer.x
     result.y = fromServer.y
+    result.phase = resultPhase
     result.absolute_heading = fromServer.absolute_heading
-    result.phase = fromServer.phase
     result.calculated_time = fromServer.calculated_time
     result.index = fromServer.index
     result.velocity = velocity

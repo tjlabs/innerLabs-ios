@@ -7,8 +7,11 @@ public class ServiceManager: Observation {
     
     func tracking(input: FineLocationTrackingResult, isPast: Bool) {
         for observer in observers {
-            let result = input
+            var result = input
             if (result.x != 0 && result.y != 0 && result.building_name != "" && result.level_name != "") {
+                if (result.ble_only_position) {
+                    result.absolute_heading = 0
+                }
 //                let magHeading = self.jupiterLocationManager.getMagHeading()
                 self.jupiterResult = result
                 observer.update(result: result)
@@ -51,7 +54,7 @@ public class ServiceManager: Observation {
     
     
     // 1 ~ 5 : Release  //  0 : Test
-    var serverType: Int = 6
+    var serverType: Int = 7
     var region: String = "Korea"
     
     let jupiterServices: [String] = ["SD", "BD", "CLD", "FLD", "CLE", "FLT", "OSA"]
@@ -108,6 +111,7 @@ public class ServiceManager: Observation {
     var INIT_INPUT_NUM: Int = 3
     // ---------------------------- //
     
+    var phaseController = PhaseController()
     var paramEstimator = ParameterEstimator()
     var pmCalculator = PathMatchingCalculator()
     
@@ -313,6 +317,7 @@ public class ServiceManager: Observation {
     var pastMatchingResult: [Double] = [0, 0, 0, 0]
     
     var uvdIndexBuffer = [Int]()
+    var uvdHeadingBuffer = [Double]()
     var tuResultBuffer = [[Double]]()
     var isNeedUvdIndexBufferClear: Bool = false
     var usedUvdIndex: Int = 0
@@ -422,7 +427,7 @@ public class ServiceManager: Observation {
                 self.mockFltResult.x = fltResult.x
                 self.mockFltResult.y = fltResult.y
                 self.mockFltResult.absolute_heading = fltResult.absolute_heading
-                self.mockFltResult.phase = fltResult.phase
+                self.mockFltResult.phase = 3
                 self.mockFltResult.calculated_time = fltResult.calculated_time
                 self.mockFltResult.index = fltResult.index
                 self.mockFltResult.velocity = displayOutput.velocity
@@ -662,6 +667,7 @@ public class ServiceManager: Observation {
                                                                         
                                                                         self.NUM_STRAIGHT_INDEX_DR = Int(ceil(self.USER_TRAJECTORY_LENGTH/6))
                                                                         self.NUM_STRAIGHT_INDEX_PDR = Int(ceil(self.USER_TRAJECTORY_DIAGONAL/6))
+                                                                        self.phaseController.setPhaseLengthParam(lengthConditionPdr: Double(resultTraj.trajectory_diagonal), lengthConditionDr: Double(resultTraj.trajectory_length))
                                                                         print(getLocalTimeString() + " , (Jupiter) Trajectory Info Load : \(self.USER_TRAJECTORY_LENGTH) // \(self.USER_TRAJECTORY_DIAGONAL) // \(self.NUM_STRAIGHT_INDEX_DR)")
                                                                         
                                                                         // Load Bias
@@ -1406,7 +1412,7 @@ public class ServiceManager: Observation {
                             self.mockFltResult.x = fltResult.x
                             self.mockFltResult.y = fltResult.y
                             self.mockFltResult.absolute_heading = fltResult.absolute_heading
-                            self.mockFltResult.phase = fltResult.phase
+                            self.mockFltResult.phase = 3
                             self.mockFltResult.calculated_time = fltResult.calculated_time
                             self.mockFltResult.index = fltResult.index
                             self.mockFltResult.velocity = displayOutput.velocity
@@ -1948,7 +1954,7 @@ public class ServiceManager: Observation {
                 if (self.isActiveKf) {
                     if (self.timeUpdateFlag) {
                         let tuOutput = timeUpdate(length: curUnitDRLength, diffHeading: diffHeading, mobileTime: currentTime, isNeedHeadingCorrection: isNeedHeadingCorrection, drBuffer: self.unitDrBuffer, runMode: self.runMode)
-                        var tuResult = fromServerToResult(fromServer: tuOutput, velocity: displayOutput.velocity)
+                        var tuResult = fromServerToResult(fromServer: tuOutput, velocity: displayOutput.velocity, resultPhase: self.phase)
                         
                         self.timeUpdateResult[0] = tuResult.x
                         self.timeUpdateResult[1] = tuResult.y
@@ -1956,11 +1962,13 @@ public class ServiceManager: Observation {
                         
                         if (self.isNeedUvdIndexBufferClear) {
                             self.uvdIndexBuffer = sliceArray(self.uvdIndexBuffer, startingFrom: self.usedUvdIndex)
+                            self.uvdHeadingBuffer = sliceArray(self.uvdHeadingBuffer, startingFrom: self.usedUvdIndex)
                             self.tuResultBuffer = sliceArray(self.tuResultBuffer, startingFrom: self.usedUvdIndex)
                             self.isNeedUvdIndexBufferClear = false
                         }
                         
                         self.uvdIndexBuffer.append(unitDRInfo.index)
+                        self.uvdHeadingBuffer.append(unitDRInfo.heading)
                         self.tuResultBuffer.append([tuResult.x, tuResult.y, tuResult.absolute_heading])
                         
                         self.currentTuResult = tuResult
@@ -2098,6 +2106,7 @@ public class ServiceManager: Observation {
                             self.pastUserTrajectoryInfo = phase4Trajectory
                             self.pastTailIndex = searchInfo.2
                             if (searchInfo.3 != 0) {
+                                print(getLocalTimeString() + " , (Jupiter) Phase 4 : index = \(unitDrInfoIndex) // searchInfo = \(searchInfo)")
                                 processPhase4(currentTime: currentTime, localTime: localTime, userTrajectory: phase4Trajectory, searchInfo: searchInfo)
                             } else {
                                 self.isUnknownTraj = true
@@ -2505,6 +2514,7 @@ public class ServiceManager: Observation {
                     
                     let pastTraj = pastUserTrajectory
                     let pastDirection = pastSearchDirection
+                    print(getLocalTimeString() + " , (Jupiter) Phase 4 : pastSearchDirection = \(pastSearchDirection)")
                     let pastDirectionCompensation = pastDirection - Int(round(pastTraj[0].heading))
                     var pastTrajIndex = [Int]()
                     var pastTrajHeading = [Int]()
@@ -2512,6 +2522,7 @@ public class ServiceManager: Observation {
                         pastTrajIndex.append(pastTraj[i].index)
                         pastTrajHeading.append(Int(round(pastTraj[i].heading)) + pastDirectionCompensation)
                     }
+                    print(getLocalTimeString() + " , (Jupiter) Phase 4 : pastTrajHeading = \(pastTrajHeading)")
                     
                     tailIndex = userTrajectory[0].index
                     let isStraight = isTrajectoryStraight(for: uvHeading, size: uvHeading.count, mode: mode, conditionPdr: NUM_STRAIGHT_INDEX_PDR, conditionDr: NUM_STRAIGHT_INDEX_DR)
@@ -2565,6 +2576,7 @@ public class ServiceManager: Observation {
                         displayOutput.searchArea = searchArea
                         displayOutput.searchType = 6
                         searchType = 6
+                        print(getLocalTimeString() + " , (Jupiter) Phase 4 : tailIndex = \(tailIndex) // resultDirection = \(resultDirection)")
                     } else {
                         resultDirection = [pastDirection-10, pastDirection, pastDirection+10]
                         
@@ -3227,16 +3239,14 @@ public class ServiceManager: Observation {
                 }
                 
                 if (result.x != 0 && result.y != 0) {
+                    let resultPhase = phaseController.controlJupiterPhase(serverResult: result, inputPhase: inputPhase, mode: self.runMode, isVenusMode: self.isVenusMode)
+                    self.outputResult.phase = self.phase
+                    
                     displayOutput.indexRx = result.index
                     displayOutput.scc = result.scc
-                    displayOutput.phase = String(result.phase)
+                    displayOutput.phase = String(resultPhase)
                     
                     if (result.mobile_time > self.preOutputMobileTime) {
-                        if (self.isVenusMode) {
-                            result.phase = 1
-                            result.absolute_heading = 0
-                        }
-                        
                         self.pastSearchDirection = result.search_direction
                         let resultHeading = compensateHeading(heading: result.absolute_heading)
                         var resultCorrected = (true, [result.x, result.y, resultHeading, 1.0])
@@ -3255,7 +3265,7 @@ public class ServiceManager: Observation {
                             }
                         }
                         resultCorrected.1[2] = compensateHeading(heading: resultCorrected.1[2])
-                        if (result.phase == 2 && result.scc < 0.25) {
+                        if (resultPhase == 2 && result.scc < 0.25) {
                             self.isNeedTrajInit = true
                             self.phase = 1
                             if (self.isStartSimulate) {
@@ -3264,7 +3274,7 @@ public class ServiceManager: Observation {
                             if (self.isActiveKf) {
                                 self.isPhaseBreak = true
                             }
-                        } else if (result.phase == 2) {
+                        } else if (resultPhase == 2) {
                             if (result.scc < SCC_FOR_PHASE4) {
                                 self.phase2BadCount += 1
                                 if (self.phase2BadCount > 5) {
@@ -3280,21 +3290,18 @@ public class ServiceManager: Observation {
                                 }
                             }
                         } else {
-                            if (result.phase == 4) {
+                            if (resultPhase == 4) {
                                 if (!self.isActiveKf) {
                                     // 최초 Phase 2-> 4 진입
                                     if (self.isIndoor) {
                                         let outputBuilding = self.outputResult.building_name
                                         let outputLevel = self.outputResult.level_name
-                                        let outputPhase = self.outputResult.phase
-                                        
+
                                         self.timeUpdateOutput.building_name = outputBuilding
                                         self.timeUpdateOutput.level_name = outputLevel
-                                        self.timeUpdateOutput.phase = outputPhase
                                         
                                         self.measurementOutput.building_name = outputBuilding
                                         self.measurementOutput.level_name = outputLevel
-                                        self.measurementOutput.phase = outputPhase
                                         
                                         if (!self.isVenusMode) {
                                             self.isActiveKf = true
@@ -3434,7 +3441,7 @@ public class ServiceManager: Observation {
                                     self.isPhaseBreak = true
                                 }
                             } else {
-                                self.phase = result.phase
+                                self.phase = resultPhase
                             }
                         }
                         self.serverResult[0] = result.x
@@ -3444,6 +3451,7 @@ public class ServiceManager: Observation {
                         self.outputResult.scc = result.scc
                         self.outputResult.phase = self.phase
                         if (self.isStartSimulate) {
+                            self.resultToReturn.phase = self.phase
                             self.makeOutputResult(input: self.outputResult, isPast: self.flagPast, runMode: self.runMode, isVenusMode: self.isVenusMode)
                         } else {
                             self.resultToReturn = self.makeOutputResult(input: self.outputResult, isPast: self.flagPast, runMode: self.runMode, isVenusMode: self.isVenusMode)
@@ -3544,9 +3552,11 @@ public class ServiceManager: Observation {
                     }
                     
                     if (result.mobile_time > self.preOutputMobileTime) {
-                        displayOutput.indexRx = result.index
-                        displayOutput.scc = result.scc
-                        displayOutput.phase = String(result.phase)
+                        let resultPhase = phaseController.controlJupiterPhase(serverResult: result, inputPhase: inputPhase, mode: self.runMode, isVenusMode: self.isVenusMode)
+                        
+//                        displayOutput.indexRx = result.index
+//                        displayOutput.scc = result.scc
+//                        displayOutput.phase = String(self.phase)
                         
                         let buildingName = result.building_name
                         let levelName = result.level_name
@@ -3587,7 +3597,7 @@ public class ServiceManager: Observation {
                             }
                         }
                         
-                        if (result.phase == 1) {
+                        if (resultPhase == 1) {
                             self.isNeedTrajInit = true
                         }
                         
@@ -3615,19 +3625,16 @@ public class ServiceManager: Observation {
                         
                         if (!self.isActiveKf) {
                             // Add
-                            if (result.phase == 4) {
+                            if (resultPhase == 4) {
                                 if (self.isIndoor) {
                                     let outputBuilding = self.outputResult.building_name
                                     let outputLevel = self.outputResult.level_name
-                                    let outputPhase = self.outputResult.phase
                                     
                                     self.timeUpdateOutput.building_name = outputBuilding
                                     self.timeUpdateOutput.level_name = outputLevel
-                                    self.timeUpdateOutput.phase = outputPhase
                                     
                                     self.measurementOutput.building_name = outputBuilding
                                     self.measurementOutput.level_name = outputLevel
-                                    self.measurementOutput.phase = outputPhase
                                     
                                     if (!self.isVenusMode) {
                                         self.isActiveKf = true
@@ -3637,7 +3644,7 @@ public class ServiceManager: Observation {
                                 }
                             }
                             
-                            if (result.phase == 4) {
+                            if (resultPhase == 4) {
                                 let propagationResult = propagateUsingUvd(drBuffer: self.unitDrBuffer, result: result)
                                 var propagationValues: [Double] = propagationResult.1
                                 if (propagationResult.0) {
@@ -3725,11 +3732,10 @@ public class ServiceManager: Observation {
                                     resultCopy.level_name = self.currentLevel
                                 }
                             }
-                            let finalResult = fromServerToResult(fromServer: resultCopy, velocity: displayOutput.velocity)
+                            let finalResult = fromServerToResult(fromServer: resultCopy, velocity: displayOutput.velocity, resultPhase: resultPhase)
                             
                             self.flagPast = false
                             self.outputResult = finalResult
-//                            print(getLocalTimeString() + " , (Jupiter) Phase3 Result : index = \(result.index) // simulate = \(self.isStartSimulate)")
                             if (self.isStartSimulate) {
                                 self.makeOutputResult(input: self.outputResult, isPast: self.flagPast, runMode: self.runMode, isVenusMode: self.isVenusMode)
                             } else {
@@ -3755,13 +3761,13 @@ public class ServiceManager: Observation {
                             }
                             let diffH = abs(tuHeading-muHeading)
                             
-                            if (result.phase == 4) {
+                            if (resultPhase == 4) {
                                 if (pathMatchingResult.isSuccess) {
                                     self.updateAllResult(result: propagatedResult, inputPhase: inputPhase, mode: self.runMode)
                                 } else {
                                     self.updateAllResult(result: resultCorrected.1, inputPhase: inputPhase, mode: self.runMode)
                                 }
-                            } else if (result.phase == 3) {
+                            } else if (resultPhase == 3) {
                                 if (pathMatchingResult.isSuccess) {
                                     self.updateAllResult(result: propagatedResult, inputPhase: inputPhase, mode: self.runMode)
                                 } else {
@@ -3771,7 +3777,6 @@ public class ServiceManager: Observation {
                                 self.isNeedTrajInit = true
                             }
                             var timUpdateOutputCopy = self.timeUpdateOutput
-                            timUpdateOutputCopy.phase = result.phase
                             
                             let resultLevelName = removeLevelDirectionString(levelName: result.level_name)
                             let currentLevelName = removeLevelDirectionString(levelName: self.currentLevel)
@@ -3797,7 +3802,7 @@ public class ServiceManager: Observation {
                                 timUpdateOutputCopy.mobile_time = result.mobile_time
                             }
                             
-                            let updatedResult = fromServerToResult(fromServer: timUpdateOutputCopy, velocity: displayOutput.velocity)
+                            let updatedResult = fromServerToResult(fromServer: timUpdateOutputCopy, velocity: displayOutput.velocity, resultPhase: resultPhase)
                             self.timeUpdateOutput = timUpdateOutputCopy
                             
                             self.flagPast = false
@@ -3820,11 +3825,15 @@ public class ServiceManager: Observation {
                             } else {
                                 self.resultToReturn = self.makeOutputResult(input: self.outputResult, isPast: self.flagPast, runMode: self.runMode, isVenusMode: self.isVenusMode)
                             }
-                        } else {
-                            self.phase = result.phase
+                        } else{
+                            self.phase = resultPhase
                         }
                         self.indexPast = result.index
                         self.preOutputMobileTime = result.mobile_time
+                        
+                        displayOutput.indexRx = result.index
+                        displayOutput.scc = result.scc
+                        displayOutput.phase = String(self.phase)
                     }
                 } else {
                     self.phase = 1
@@ -3924,8 +3933,10 @@ public class ServiceManager: Observation {
                 }
                 
                 if (result.index > self.indexPast) {
+                    let resultPhase = phaseController.controlJupiterPhase(serverResult: result, inputPhase: inputPhase, mode: self.runMode, isVenusMode: self.isVenusMode)
+                    
                     self.pastSearchDirection = result.search_direction
-                    if (self.isActiveKf && result.phase == 4) {
+                    if (self.isActiveKf && resultPhase == 4) {
                         if (!(result.x == 0 && result.y == 0) && !self.isDetermineSpot && self.phase != 2) {
                             if (self.isPhaseBreak) {
                                 self.kalmanR = 0.5
@@ -3941,11 +3952,11 @@ public class ServiceManager: Observation {
                                 if (measurementUpdateFlag) {
                                     displayOutput.indexRx = result.index
                                     displayOutput.scc = result.scc
-                                    displayOutput.phase = String(result.phase)
+                                    displayOutput.phase = String(self.phase)
                                     // Measurement Update 하기전에 현재 Time Update 위치를 고려
                                     var resultForMu = result
+                                    var isNeedCalDhFromUvd: Bool = false
                                     resultForMu.absolute_heading = compensateHeading(heading: resultForMu.absolute_heading)
-                                    let resultHeading =  resultForMu.absolute_heading
                                     var resultCorrected = (true, [resultForMu.x, resultForMu.y, resultForMu.absolute_heading, 1.0])
                                     if (self.runMode == "pdr") {
                                         let pathMatchingResult = pmCalculator.pathMatching(building: resultForMu.building_name, level: resultForMu.level_name, x: resultForMu.x, y: resultForMu.y, heading: resultForMu.absolute_heading, isPast: false, HEADING_RANGE: HEADING_RANGE, isUseHeading: false, pathType: 0, range: SQUARE_RANGE)
@@ -3960,6 +3971,7 @@ public class ServiceManager: Observation {
                                             let isResultStraight = isResultHeadingStraight(drBuffer: self.unitDrBuffer, result: result)
                                             if (!isResultStraight) {
                                                 resultCorrected.1[2] = result.absolute_heading
+                                                isNeedCalDhFromUvd = true
                                             }
                                         }
                                     }
@@ -3969,6 +3981,7 @@ public class ServiceManager: Observation {
                                     self.serverResult[2] = resultCorrected.1[2]
                                             
                                     let indexBuffer: [Int] = self.uvdIndexBuffer
+                                    let uvdHeadingBuffer: [Double] = self.uvdHeadingBuffer
                                     let tuBuffer: [[Double]] = self.tuResultBuffer
                                             
                                     var currentTuResult = self.currentTuResult
@@ -3984,8 +3997,12 @@ public class ServiceManager: Observation {
                                             dy = currentTuResult.y - tuBuffer[idx][1]
                                             currentTuResult.absolute_heading = compensateHeading(heading: currentTuResult.absolute_heading)
                                             let tuBufferHeading = compensateHeading(heading: tuBuffer[idx][2])
-                                                    
-                                            dh = currentTuResult.absolute_heading - tuBufferHeading
+                                            
+                                            if (isNeedCalDhFromUvd) {
+                                                dh = uvdHeadingBuffer[uvdHeadingBuffer.count-1] - uvdHeadingBuffer[idx]
+                                            } else {
+                                                dh = currentTuResult.absolute_heading - tuBufferHeading
+                                            }
                                             
                                             self.usedUvdIndex = idx
                                             self.isNeedUvdIndexBufferClear = true
@@ -4009,7 +4026,7 @@ public class ServiceManager: Observation {
                                     }
                                             
                                     let muOutput = measurementUpdate(timeUpdatePosition: timeUpdatePosition, serverOutputHat: resultForMu, serverResult: result, originalResult: resultCorrected.1, isNeedHeadingCorrection: self.isNeedHeadingCorrection, mode: self.runMode)
-                                    var muResult = fromServerToResult(fromServer: muOutput, velocity: displayOutput.velocity)
+                                    var muResult = fromServerToResult(fromServer: muOutput, velocity: displayOutput.velocity, resultPhase: resultPhase)
                                     muResult.mobile_time = result.mobile_time
                                             
                                     let resultLevelName = removeLevelDirectionString(levelName: result.level_name)
@@ -4068,7 +4085,6 @@ public class ServiceManager: Observation {
                     }
                     self.indexPast = result.index
                 }
-                self.phase = result.phase
                 self.preOutputMobileTime = result.mobile_time
             } else {
                 let log: String = localTime + " , (Jupiter) Error : \(statusCode) Fail to request indoor position in Phase 4"
@@ -4716,8 +4732,8 @@ public class ServiceManager: Observation {
     func timeUpdate(length: Double, diffHeading: Double, mobileTime: Int, isNeedHeadingCorrection: Bool, drBuffer: [UnitDRInfo], runMode: String) -> FineLocationTrackingFromServer {
         updateHeading = timeUpdatePosition.heading + diffHeading
         
-        var dx = length*cos(updateHeading*D2R)
-        var dy = length*sin(updateHeading*D2R)
+        let dx = length*cos(updateHeading*D2R)
+        let dy = length*sin(updateHeading*D2R)
         
         timeUpdatePosition.x = timeUpdatePosition.x + dx
         timeUpdatePosition.y = timeUpdatePosition.y + dy
