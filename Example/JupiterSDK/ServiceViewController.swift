@@ -1095,6 +1095,7 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
             set6.setColor(.blue3)
         case 4:
             // Phase == 2 & Request
+            // PDR Phase = 4 & Major Heading
             set6.setColor(.systemOrange)
         case 5:
             // PDR Phase < 4
@@ -1105,9 +1106,6 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
         case 7:
             // PDR Phase = 4 & Empty Closest Index
             set6.setColor(.blue3)
-        case 8:
-            // PDR Phase = 4 & Major Heading
-            set6.setColor(.systemOrange)
         case -1:
             // Phase 2 & No Request
             set6.setColor(.red)
