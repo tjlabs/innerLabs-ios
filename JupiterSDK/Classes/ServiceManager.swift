@@ -9,6 +9,10 @@ public class ServiceManager: Observation {
         for observer in observers {
             var result = input
             if (result.x != 0 && result.y != 0 && result.building_name != "" && result.level_name != "") {
+                let validInfo = self.checkSolutionValidity(reportFlag: self.pastReportFlag, reportTime: self.pastReportTime, isIndoor: result.isIndoor)
+                result.validity = validInfo.0
+                result.message = validInfo.1
+                
                 if (result.ble_only_position) {
                     result.absolute_heading = 0
                 }
@@ -40,9 +44,11 @@ public class ServiceManager: Observation {
     }
     
     func reporting(input: Int) {
-        self.pastReportTime = getCurrentTimeInMillisecondsDouble()
-        self.pastReportFlag = input
-        
+        if (input != -2) {
+            self.pastReportTime = getCurrentTimeInMillisecondsDouble()
+            self.pastReportFlag = input
+        }
+
         postReport(report: input)
         for observer in observers {
             observer.report(flag: input)
@@ -5163,8 +5169,8 @@ public class ServiceManager: Observation {
         }
     }
     
-    func checkSolutionValidity(reportFlag: Int, reportTime: Double, isIndoor: Bool) -> (Bool, String) {
-        var isValid: Bool = true
+    func checkSolutionValidity(reportFlag: Int, reportTime: Double, isIndoor: Bool) -> (Int, String) {
+        var validFlag: Int = 0
         var validMessage: String = "Valid"
         let currentTime = getCurrentTimeInMillisecondsDouble()
         
@@ -5172,37 +5178,100 @@ public class ServiceManager: Observation {
             let diffTime = (currentTime - reportTime)*1e-3
             switch (reportFlag) {
             case -1:
-                self.isSolutionValid = false
-                self.solutionMessage = "The state is abnormal"
+                validFlag = 1
+                validMessage = "Valid"
             case 2:
-                self.isSolutionValid = false
-                self.solutionMessage = "BLE is off"
-            case 3:
-                self.isSolutionValid = false
-                self.solutionMessage = "BLE only mode"
-            case 4:
-                self.isSolutionValid = true
-                self.solutionMessage = "Jupiter is running"
-            case 5:
-                self.isSolutionValid = false
-                self.solutionMessage = "Newtwork is bad"
-            case 6:
-                if (NetworkCheck.shared.isConnectedToInternet()) {
-                    self.isSolutionValid = true
-                    self.solutionMessage = "Valid"
+                // 1. 시간 체크
+                // 2. 3초 지났으면 BLE 꺼진거 체크
+                // 3. BLE 여전히 꺼져 있으며 pastReportTime 값 업데이트
+                // 4. 아니면 valid하다고 바꿈
+                if (diffTime > 3) {
+                    if (bleManager.bluetoothReady) {
+                        validFlag = 1
+                        validMessage = "Valid"
+                        self.pastReportFlag = -1
+                    } else {
+                        validFlag = 3
+                        validMessage = "BLE is off"
+                        self.pastReportTime = currentTime
+                    }
                 } else {
-                    self.isSolutionValid = false
-                    self.solutionMessage = "Newtwork connection lost"
+                    validFlag = 3
+                    validMessage = "BLE is off"
+                }
+            case 3:
+                validFlag = 3
+                validMessage = "Providing BLE only mode solution"
+            case 4:
+                // 1. 시간 체크
+                // 2. 3초 지났으면 Valid로 수정
+                if (diffTime > 3) {
+                    validFlag = 1
+                    validMessage = "Valid"
+                    self.pastReportFlag = -1
+                } else {
+                    validFlag = 2
+                    validMessage = "Recently start to provide jupiter mode solution"
+                }
+            case 5:
+                // 1. 시간 체크
+                // 2. 10초 지났으면 Valid로 수정
+                if (diffTime > 5) {
+                    if (self.networkCount > 1) {
+                        validFlag = 3
+                        validMessage = "Newtwork status is bad"
+                    } else {
+                        validFlag = 1
+                        validMessage = "Valid"
+                        self.pastReportFlag = -1
+                    }
+                } else {
+                    validFlag = 3
+                    validMessage = "Newtwork status is bad"
+                }
+            case 6:
+                // 1. 시간 체크
+                // 2. 3초 지났으면 네트워크 끊긴거 체크
+                // 3. 네트워크 여전히 꺼져 있으며 pastReportTime 값 업데이트
+                // 4. 아니면 valid하다고 바꿈
+                
+                if (diffTime > 3) {
+                    if (NetworkCheck.shared.isConnectedToInternet()) {
+                        validFlag = 1
+                        validMessage = "Valid"
+                        self.pastReportFlag = -1
+                    } else {
+                        validFlag = 3
+                        validMessage = "Newtwork connection lost"
+                        self.pastReportTime = currentTime
+                    }
+                } else {
+                    validFlag = 3
+                    validMessage = "Newtwork connection lost"
+                }
+            case 7:
+                validFlag = 3
+                validMessage = "Solution in background is invalid"
+            case 8:
+                // 1. 시간 체크
+                // 2. 3초 지났으면 Valid로 수정
+                if (diffTime > 3) {
+                    validFlag = 1
+                    validMessage = "Valid"
+                    self.pastReportFlag = -1
+                } else {
+                    validFlag = 2
+                    validMessage = "Recently in foreground"
                 }
             default:
-                self.isSolutionValid = true
-                self.solutionMessage = "Valid"
+                validFlag = 1
+                validMessage = "Valid"
             }
         } else {
-            isValid = false
-            validMessage = "Solution in outdoor is not valid"
+            validFlag = 3
+            validMessage = "Solution in outdoor is invalid"
         }
         
-        return (isValid, validMessage)
+        return (validFlag, validMessage)
     }
 }
