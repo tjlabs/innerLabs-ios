@@ -42,6 +42,7 @@
 		B3455284282AB7B400F0DD3E /* ServiceInfoTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B3455282282AB7B400F0DD3E /* ServiceInfoTableViewCell.xib */; };
 		B3497310293847DC0078C872 /* FusionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B349730F293847DC0078C872 /* FusionViewController.swift */; };
 		B35272B2281F8DC300321CC6 /* SplashScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B35272B1281F8DC300321CC6 /* SplashScreen.storyboard */; };
+		B35B58942B2AC52F00D93834 /* ASJTM_0F.csv in Resources */ = {isa = PBXBuildFile; fileRef = B35B58932B2AC52F00D93834 /* ASJTM_0F.csv */; };
 		B3607E4E29B8C34700F11AA6 /* ProgressCircleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3607E4D29B8C34700F11AA6 /* ProgressCircleView.swift */; };
 		B360D88E28090D6A0084FB22 /* NotoSansKR-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = B360D88828090D680084FB22 /* NotoSansKR-Bold.otf */; };
 		B360D88F28090D6A0084FB22 /* NotoSansKR-Light.otf in Resources */ = {isa = PBXBuildFile; fileRef = B360D88928090D680084FB22 /* NotoSansKR-Light.otf */; };
@@ -172,6 +173,7 @@
 		B3455282282AB7B400F0DD3E /* ServiceInfoTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ServiceInfoTableViewCell.xib; sourceTree = "<group>"; };
 		B349730F293847DC0078C872 /* FusionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FusionViewController.swift; sourceTree = "<group>"; };
 		B35272B1281F8DC300321CC6 /* SplashScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = SplashScreen.storyboard; sourceTree = "<group>"; };
+		B35B58932B2AC52F00D93834 /* ASJTM_0F.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ASJTM_0F.csv; sourceTree = "<group>"; };
 		B3607E4D29B8C34700F11AA6 /* ProgressCircleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressCircleView.swift; sourceTree = "<group>"; };
 		B360D8642807C6090084FB22 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../../Downloads/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		B360D88828090D680084FB22 /* NotoSansKR-Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "NotoSansKR-Bold.otf"; sourceTree = "<group>"; };
@@ -343,6 +345,7 @@
 				B34111B52AD6503400CFA422 /* L1_2F.csv */,
 				B34111B72AD6503400CFA422 /* L1_3F.csv */,
 				B34111B32AD6503400CFA422 /* L3_2F.csv */,
+				B35B58932B2AC52F00D93834 /* ASJTM_0F.csv */,
 				B34111C32AD6694300CFA422 /* L3_1F.csv */,
 				B34111B42AD6503400CFA422 /* L3_3F.csv */,
 				B34111B02AD6503300CFA422 /* L3_4F.csv */,
@@ -641,6 +644,7 @@
 				B30638FB2A36E82100C7FF89 /* S3_7F.csv in Resources */,
 				B3F9F31E298B701500BA5833 /* morguard_7F.csv in Resources */,
 				B3D19DED29079CE000A5F7D4 /* SpotTableViewCell.xib in Resources */,
+				B35B58942B2AC52F00D93834 /* ASJTM_0F.csv in Resources */,
 				B369287E28C5BCAC005FD4A9 /* LUPIUM_B1.csv in Resources */,
 				B3AE49DD2AAAD8C70035E8F0 /* Dabeeo_8F.csv in Resources */,
 				B3FD74ED2869A38800CD4D74 /* Gallery_3F.csv in Resources */,
