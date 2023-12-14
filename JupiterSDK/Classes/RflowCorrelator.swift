@@ -11,7 +11,7 @@ public class RflowCorrelator {
     let D_V = 15*2
     let T_V = 3*2
     
-    let D_AUTO = 15*2
+    let D_AUTO = 5*2
     let T_AUTO = 10*2
     
     var rfdVelocityBufferLength = 36
@@ -19,7 +19,7 @@ public class RflowCorrelator {
     var rflowQueue = [Double]()
     var preSmoothedRflowForVelocity: Double = 0
     
-    var rfdAutoModeBufferLength = 50
+    var rfdAutoModeBufferLength = 30
     var rfdAutoModeBuffer = [[String: Double]]()
     var rflowForAutoModeQueue = [Double]()
     var preSmoothedRflowForAutoMode: Double = 0
@@ -203,12 +203,33 @@ public class RflowCorrelator {
                 }
             }
             
+            let curSortedKeys = maxCurValues.keys.sorted { maxCurValues[$0]! > maxCurValues[$1]! }
+            let preSortedKeys = maxPreValues.keys.sorted { maxPreValues[$0]! > maxPreValues[$1]! }
+
+            var topRatioCount = Int(Double(curSortedKeys.count) * 0.7)
+
+            if topRatioCount == 0 {
+                topRatioCount = 1
+            }
+
+            let curTopKeys = Array(curSortedKeys.prefix(topRatioCount))
+            let preTopKeys = Array(preSortedKeys.prefix(topRatioCount))
+
+            let curNewMap = Dictionary(uniqueKeysWithValues: curTopKeys.map { key in
+                (key, maxCurValues[key]!)
+            })
+
+            let preNewMap = Dictionary(uniqueKeysWithValues: preTopKeys.map { key in
+                (key, maxPreValues[key]!)
+            })
+
+            
             var sumDiffRssi: Double = 0
             var validKeyCount: Int = 0
             
-            for (key, value) in maxCurValues {
+            for (key, value) in curNewMap {
                 let curRssi = value
-                let preRssi = maxPreValues[key] ?? -100.0
+                let preRssi = preNewMap[key] ?? -130.0
                 sumDiffRssi += (curRssi - preRssi)*(curRssi - preRssi)
                 validKeyCount += 1
             }
@@ -217,9 +238,9 @@ public class RflowCorrelator {
                 let avgValue: Double = sqrt(sumDiffRssi/Double(validKeyCount))
                 if (avgValue != 0) {
                     let rflowScc = calcScc(value: avgValue)
-//                    print(getLocalTimeString() + " , (Jupiter) Rflow : rflowScc = \(rflowScc) ")
+                    print(getLocalTimeString() + " , (Jupiter) Rflow : rflowScc = \(rflowScc) ")
                     result = smoothRflowForAutoMode(rflow: rflowScc)
-//                    print(getLocalTimeString() + " , (Jupiter) Rflow : smoothedRflowScc = \(result) ")
+                    print(getLocalTimeString() + " , (Jupiter) Rflow : smoothedRflowScc = \(result) ")
                 }
             }
         }
