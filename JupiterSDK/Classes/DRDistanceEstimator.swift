@@ -48,8 +48,10 @@ public class DRDistanceEstimator: NSObject {
     
     public var rflow: Double = 0
     public var rflowForVelocity: Double = 0
+    public var rflowForAutoMode: Double = 0
     public var isSufficientRfdBuffer: Bool = false
     public var isSufficientRfdVelocityBuffer: Bool = false
+    public var isSufficientRfdAutoModeBuffer: Bool = false
     
     public func argmax(array: [Float]) -> Int {
         let output1 = array[0]
@@ -269,11 +271,14 @@ public class DRDistanceEstimator: NSObject {
         velocityQueue.append(data)
     }
     
-    public func setRflow(rflow: Double, rflowForVelocity: Double, isSufficient: Bool, isSufficientForVelocity: Bool) {
+    public func setRflow(rflow: Double, rflowForVelocity: Double, rflowForAutoMode: Double, isSufficient: Bool, isSufficientForVelocity: Bool, isSufficientForAutoMode: Bool) {
         self.rflow = rflow
         self.rflowForVelocity = rflowForVelocity
+        self.rflowForAutoMode = rflowForAutoMode
+        
         self.isSufficientRfdBuffer = isSufficient
         self.isSufficientRfdVelocityBuffer = isSufficientForVelocity
+        self.isSufficientRfdAutoModeBuffer = isSufficientForAutoMode
     }
     
     public func calRflowVelocityScale(rflowForVelocity: Double, isSufficientForVelocity: Bool) -> Double {

@@ -12,6 +12,7 @@ public class ServiceManager: Observation {
                 let validInfo = self.checkSolutionValidity(reportFlag: self.pastReportFlag, reportTime: self.pastReportTime, isIndoor: result.isIndoor)
                 result.validity = validInfo.0
                 result.message = validInfo.1
+                print(getLocalTimeString() + " , (Jupiter) Validity : flag = \(result.validity) // msg = \(result.message)")
                 
                 if (result.ble_only_position) {
                     result.absolute_heading = 0
@@ -1725,7 +1726,8 @@ public class ServiceManager: Observation {
             paramEstimator.refreshAllEntranceWardRssi(allEntranceWards: self.allEntranceWards, bleData: self.bleAvg)
             let isSufficientRfdBuffer = rflowCorrelator.accumulateRfdBuffer(bleData: self.bleAvg)
             let isSufficientRfdVelocityBuffer = rflowCorrelator.accumulateRfdVelocityBuffer(bleData: self.bleAvg)
-            unitDRGenerator.setRflow(rflow: rflowCorrelator.getRflow(), rflowForVelocity: rflowCorrelator.getRflowForVelocityScale(), isSufficient: isSufficientRfdBuffer, isSufficientForVelocity: isSufficientRfdVelocityBuffer)
+            let isSufficientRfdAutoMode = rflowCorrelator.accumulateRfdAutoModeBuffer(bleData: self.bleAvg)
+            unitDRGenerator.setRflow(rflow: rflowCorrelator.getRflow(), rflowForVelocity: rflowCorrelator.getRflowForVelocityScale(), rflowForAutoMode: rflowCorrelator.getRflowForAutoMode(), isSufficient: isSufficientRfdBuffer, isSufficientForVelocity: isSufficientRfdVelocityBuffer, isSufficientForAutoMode: isSufficientRfdAutoMode)
             
             if (!self.bleAvg.isEmpty) {
                 self.timeBleOff = 0
@@ -3310,7 +3312,7 @@ public class ServiceManager: Observation {
         return (resultRange, resultDirection, tailIndex, searchType, resultRatio)
     }
     
-    func isDrBufferStraight(drBuffer: [UnitDRInfo]) -> Bool {
+    func isDrBufferStraight(drBuffer: [UnitDRInfo], condition: Double) -> Bool {
         if (drBuffer.count >= DR_BUFFER_SIZE_FOR_STRAIGHT) {
             let firstIndex = drBuffer.count-DR_BUFFER_SIZE_FOR_STRAIGHT
             let firstHeading: Double = drBuffer[firstIndex].heading
@@ -3320,7 +3322,7 @@ public class ServiceManager: Observation {
                 diffHeading = 360 - diffHeading
             }
             
-            if (diffHeading < 20.0) {
+            if (diffHeading < condition) {
                 return true
             } else {
                 return false
@@ -3357,7 +3359,7 @@ public class ServiceManager: Observation {
                 if (self.isScRequested) {
                     requestScArray = [1.0]
                 } else {
-                    requestScArray = self.scCompensationArray
+                    requestScArray = [0.8, 1.0]
                     self.scRequestTime = currentTime
                     self.isScRequested = true
                 }
@@ -4030,7 +4032,7 @@ public class ServiceManager: Observation {
                 requestScArray = [1.01]
             } else {
                 if (self.isScRequested) {
-                    requestScArray = [1.0]
+                    requestScArray = [1.01]
                 } else {
                     requestScArray = [0.9, 1.0, 1.2]
                     self.scRequestTime = currentTime
@@ -4044,7 +4046,7 @@ public class ServiceManager: Observation {
                 requestScArray = [1.01]
             } else {
                 if (isInLevelChangeArea) {
-                    requestScArray = [0.8, 1.0, 1.2]
+                    requestScArray = [0.8, 1.0]
                 } else {
                     if (self.isScRequested) {
                         requestScArray = [1.0]
@@ -4118,7 +4120,12 @@ public class ServiceManager: Observation {
                                     resultForMu.absolute_heading = compensateHeading(heading: resultForMu.absolute_heading)
                                     var resultCorrected = (true, [resultForMu.x, resultForMu.y, resultForMu.absolute_heading, 1.0])
                                     if (self.runMode == "pdr") {
-                                        let pathMatchingResult = pmCalculator.pathMatching(building: resultForMu.building_name, level: resultForMu.level_name, x: resultForMu.x, y: resultForMu.y, heading: resultForMu.absolute_heading, isPast: false, HEADING_RANGE: HEADING_RANGE, isUseHeading: false, pathType: 0, range: SQUARE_RANGE)
+                                        let isResultStraight = isResultHeadingStraight(drBuffer: self.unitDrBuffer, result: result)
+                                        var isUseHeading: Bool = false
+                                        if (isResultStraight) {
+                                            isUseHeading = true
+                                        }
+                                        let pathMatchingResult = pmCalculator.pathMatching(building: resultForMu.building_name, level: resultForMu.level_name, x: resultForMu.x, y: resultForMu.y, heading: resultForMu.absolute_heading, isPast: false, HEADING_RANGE: HEADING_RANGE, isUseHeading: isUseHeading, pathType: 0, range: SQUARE_RANGE)
                                         resultCorrected.0 = pathMatchingResult.isSuccess
                                         resultCorrected.1 = pathMatchingResult.xyhs
                                     } else {
@@ -4153,12 +4160,20 @@ public class ServiceManager: Observation {
                                             
                                     if (currentTuResult.mobile_time != 0 && pastTuResult.mobile_time != 0) {
                                         if let idx = indexBuffer.firstIndex(of: result.index) {
+                                            var isNeedUvdPropagation: Bool = false
                                             if (self.runMode == "pdr") {
                                                 let propagationResult = propagateUsingUvd(drBuffer: self.unitDrBuffer, result: result)
-                                                dx = propagationResult.1[0]
-                                                dy = propagationResult.1[1]
-                                                dh = propagationResult.1[2]
-                                            } else {
+                                                if (propagationResult.0) {
+                                                    dx = propagationResult.1[0]
+                                                    dy = propagationResult.1[1]
+                                                    dh = propagationResult.1[2]
+                                                    isNeedUvdPropagation = true
+                                                } else {
+                                                    isNeedUvdPropagation = false
+                                                }
+                                            }
+                                            
+                                            if (isNeedUvdPropagation) {
                                                 dx = currentTuResult.x - tuBuffer[idx][0]
                                                 dy = currentTuResult.y - tuBuffer[idx][1]
                                                 currentTuResult.absolute_heading = compensateHeading(heading: currentTuResult.absolute_heading)
@@ -4857,7 +4872,7 @@ public class ServiceManager: Observation {
             self.USER_TRAJECTORY_LENGTH = self.USER_TRAJECTORY_DIAGONAL
             self.kalmanR = 2 // 0.5
             self.INIT_INPUT_NUM = 3
-            self.VALUE_INPUT_NUM = 6 // 11
+            self.VALUE_INPUT_NUM = 10
             self.SQUARE_RANGE = self.SQUARE_RANGE_SMALL
             
             if (phase == 4) {
@@ -4932,7 +4947,7 @@ public class ServiceManager: Observation {
                 timeUpdatePosition = timeUpdateCopy
             }
         } else {
-            let isDrStraight: Bool = isDrBufferStraight(drBuffer: drBuffer)
+            let isDrStraight: Bool = isDrBufferStraight(drBuffer: drBuffer, condition: 20.0)
             if ((self.unitDrInfoIndex%4) == 0 && !isDrStraight) {
                 let drBufferForPathMatching = Array(drBuffer.suffix(DR_BUFFER_SIZE_FOR_STRAIGHT))
                 let pathTrajMatchingResult = pmCalculator.extendedPathTrajectoryMatching(building: timeUpdateOutput.building_name, level: levelName, x: timeUpdateCopy.x, y: timeUpdateCopy.y, heading: compensatedHeading, pastResult: self.jupiterResult, drBuffer: drBufferForPathMatching, HEADING_RANGE: HEADING_RANGE, pathType: 0, mode: self.runMode, range: 5)
@@ -4948,6 +4963,28 @@ public class ServiceManager: Observation {
                     displayOutput.trajectoryOg = [[0,0]]
                 }
             } else {
+                let isDrVeryStraight: Bool = isDrBufferStraight(drBuffer: drBuffer, condition: 10.0)
+                if (isDrVeryStraight) {
+                    var correctedTuCopy = (true, [timeUpdateCopy.x, timeUpdateCopy.y, timeUpdateCopy.heading, 1.0])
+                    let pathMatchingResult = pmCalculator.pathMatching(building: timeUpdateOutput.building_name, level: levelName, x: timeUpdateCopy.x, y: timeUpdateCopy.y, heading: compensatedHeading, isPast: false, HEADING_RANGE: HEADING_RANGE, isUseHeading: true, pathType: 0, range: SQUARE_RANGE)
+
+                    correctedTuCopy.0 = pathMatchingResult.isSuccess
+                    correctedTuCopy.1 = pathMatchingResult.xyhs
+                    correctedTuCopy.1[2] = compensateHeading(heading: correctedTuCopy.1[2])
+                    if (correctedTuCopy.0) {
+                        timeUpdateCopy.x = correctedTuCopy.1[0]
+                        timeUpdateCopy.y = correctedTuCopy.1[1]
+                        timeUpdateCopy.heading = correctedTuCopy.1[2]
+                        timeUpdatePosition = timeUpdateCopy
+                    } else {
+                        correctedTuCopy.0 = pathMatchingResult.0
+                        correctedTuCopy.1 = pathMatchingResult.1
+
+                        timeUpdateCopy.x = correctedTuCopy.1[0]
+                        timeUpdateCopy.y = correctedTuCopy.1[1]
+                        timeUpdatePosition = timeUpdateCopy
+                    }
+                }
                 displayOutput.trajectoryPm = [[0,0]]
                 displayOutput.trajectoryOg = [[0,0]]
             }
@@ -5166,95 +5203,103 @@ public class ServiceManager: Observation {
         
         if (isIndoor) {
             let diffTime = (currentTime - reportTime)*1e-3
-            switch (reportFlag) {
-            case -1:
-                validFlag = 1
-                validMessage = "Valid"
-            case 2:
-                // 1. 시간 체크
-                // 2. 3초 지났으면 BLE 꺼진거 체크
-                // 3. BLE 여전히 꺼져 있으며 pastReportTime 값 업데이트
-                // 4. 아니면 valid하다고 바꿈
-                if (diffTime > 3) {
-                    if (bleManager.bluetoothReady) {
-                        validFlag = 1
-                        validMessage = "Valid"
-                        self.pastReportFlag = -1
+            
+            if (NetworkCheck.shared.isConnectedToInternet()) {
+                switch (reportFlag) {
+                case -1:
+                    validFlag = 1
+                    validMessage = "Valid"
+                case 2:
+                    // 1. 시간 체크
+                    // 2. 3초 지났으면 BLE 꺼진거 체크
+                    // 3. BLE 여전히 꺼져 있으며 pastReportTime 값 업데이트
+                    // 4. 아니면 valid하다고 바꿈
+                    if (diffTime > 3) {
+                        if (bleManager.bluetoothReady) {
+                            validFlag = 1
+                            validMessage = "Valid"
+                            self.pastReportFlag = -1
+                        } else {
+                            validFlag = 3
+                            validMessage = "BLE is off"
+                            self.pastReportTime = currentTime
+                        }
                     } else {
                         validFlag = 3
                         validMessage = "BLE is off"
-                        self.pastReportTime = currentTime
                     }
-                } else {
+                case 3:
                     validFlag = 3
-                    validMessage = "BLE is off"
-                }
-            case 3:
-                validFlag = 3
-                validMessage = "Providing BLE only mode solution"
-            case 4:
-                // 1. 시간 체크
-                // 2. 3초 지났으면 Valid로 수정
-                if (diffTime > 3) {
-                    validFlag = 1
-                    validMessage = "Valid"
-                    self.pastReportFlag = -1
-                } else {
-                    validFlag = 2
-                    validMessage = "Recently start to provide jupiter mode solution"
-                }
-            case 5:
-                // 1. 시간 체크
-                // 2. 10초 지났으면 Valid로 수정
-                if (diffTime > 5) {
-                    if (self.networkCount > 1) {
+                    validMessage = "Providing BLE only mode solution"
+                case 4:
+                    // 1. 시간 체크
+                    // 2. 3초 지났으면 Valid로 수정
+                    if (diffTime > 3) {
+                        validFlag = 1
+                        validMessage = "Valid"
+                        self.pastReportFlag = -1
+                    } else {
+                        validFlag = 2
+                        validMessage = "Recently start to provide jupiter mode solution"
+                    }
+                case 5:
+                    // 1. 시간 체크
+                    // 2. 10초 지났으면 Valid로 수정
+                    if (diffTime > 5) {
+                        if (self.networkCount > 1) {
+                            validFlag = 3
+                            validMessage = "Newtwork status is bad"
+                        } else {
+                            validFlag = 1
+                            validMessage = "Valid"
+                            self.pastReportFlag = -1
+                        }
+                    } else {
                         validFlag = 3
                         validMessage = "Newtwork status is bad"
-                    } else {
-                        validFlag = 1
-                        validMessage = "Valid"
-                        self.pastReportFlag = -1
                     }
-                } else {
-                    validFlag = 3
-                    validMessage = "Newtwork status is bad"
-                }
-            case 6:
-                // 1. 시간 체크
-                // 2. 3초 지났으면 네트워크 끊긴거 체크
-                // 3. 네트워크 여전히 꺼져 있으며 pastReportTime 값 업데이트
-                // 4. 아니면 valid하다고 바꿈
-                if (diffTime > 3) {
-                    if (NetworkCheck.shared.isConnectedToInternet()) {
-                        validFlag = 1
-                        validMessage = "Valid"
-                        self.pastReportFlag = -1
+                case 6:
+                    // 1. 시간 체크
+                    // 2. 3초 지났으면 네트워크 끊긴거 체크
+                    // 3. 네트워크 여전히 꺼져 있으며 pastReportTime 값 업데이트
+                    // 4. 아니면 valid하다고 바꿈
+                    if (diffTime > 3) {
+                        if (NetworkCheck.shared.isConnectedToInternet()) {
+                            validFlag = 1
+                            validMessage = "Valid"
+                            self.pastReportFlag = -1
+                        } else {
+                            validFlag = 3
+                            validMessage = "Newtwork connection lost"
+                            self.pastReportTime = currentTime
+                        }
                     } else {
                         validFlag = 3
                         validMessage = "Newtwork connection lost"
-                        self.pastReportTime = currentTime
                     }
-                } else {
+                case 7:
                     validFlag = 3
-                    validMessage = "Newtwork connection lost"
-                }
-            case 7:
-                validFlag = 3
-                validMessage = "Solution in background is invalid"
-            case 8:
-                // 1. 시간 체크
-                // 2. 3초 지났으면 Valid로 수정
-                if (diffTime > 3) {
+                    validMessage = "Solution in background is invalid"
+                case 8:
+                    // 1. 시간 체크
+                    // 2. 3초 지났으면 Valid로 수정
+                    if (diffTime > 3) {
+                        validFlag = 1
+                        validMessage = "Valid"
+                        self.pastReportFlag = -1
+                    } else {
+                        validFlag = 2
+                        validMessage = "Recently in foreground"
+                    }
+                default:
                     validFlag = 1
                     validMessage = "Valid"
-                    self.pastReportFlag = -1
-                } else {
-                    validFlag = 2
-                    validMessage = "Recently in foreground"
                 }
-            default:
-                validFlag = 1
-                validMessage = "Valid"
+            } else {
+                validFlag = 3
+                validMessage = "Newtwork connection lost"
+                self.pastReportFlag = 6
+                self.pastReportTime = currentTime
             }
         } else {
             validFlag = 3

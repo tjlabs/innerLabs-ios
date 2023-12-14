@@ -22,6 +22,7 @@ public class UnitDRGenerator: NSObject {
     var drQueue = LinkedList<DistanceInfo>()
     var autoMode: Int = 0
     var lastModeChangedTime: Double = 0
+    var lastStepChangedTime: Double = 0
     var lastHighRfSccTime: Double = 0
     var isPdrMode: Bool = false
     
@@ -34,8 +35,11 @@ public class UnitDRGenerator: NSObject {
     public var isEnteranceLevel: Bool = false
     public var rflow: Double = 0
     public var rflowForVelocity: Double = 0
+    public var rflowForAutoMode: Double = 0
+    
     public var isSufficientRfdBuffer: Bool = false
     public var isSufficientRfdVelocityBuffer: Bool = false
+    public var isSufficientRfdAutoMode: Bool = false
     
     public func setMode(mode: String) {
         unitMode = mode
@@ -108,22 +112,29 @@ public class UnitDRGenerator: NSObject {
                 }
             }
             
-            var isNormalStep = pdrDistanceEstimator.normalStepCountFlag
-            if (currentTime - lastModeChangedTime >= 5*1000) {
+            let isNormalStep = pdrDistanceEstimator.normalStepCountFlag
+            if (currentTime - lastModeChangedTime >= 10*1000) {
                 if (!self.isPdrMode && isNormalStep) {
-                    // 현재 DR Mode인데 Normal Step 20회 검출 -> PDR로 전환
-                    self.isPdrMode = true
-                    self.lastModeChangedTime = currentTime
+                    // 현재 DR 모드
+                    if (isNormalStep) {
+                        self.isPdrMode = true
+                        self.lastModeChangedTime = currentTime
+                    }
                 } else {
-                    // 현재 PDR Mode
-                    if (self.rflow < RF_SC_THRESHOLD_PDR && self.isSufficientRfdBuffer) {
-                        // RF SCC가 낮은 경우 -> DR 모드로 전환
-                        self.isPdrMode = false
-                        self.lastModeChangedTime = currentTime
-                    } else if (currentTime - self.lastHighRfSccTime > 10*1000) {
-                        // RF SCC가 낮은 상황이 10초 이상 나오는 경우 -> DR 모드로 전환
-                        self.isPdrMode = false
-                        self.lastModeChangedTime = currentTime
+                    // 현재 PDR 모드
+                    let diffTime = currentTime - self.lastStepChangedTime
+//                    print(getLocalTimeString() + " , (Jupiter) AutoMode : isSufficientRfdAutoMode = \(self.isSufficientRfdAutoMode)")
+                    print(getLocalTimeString() + " , (Jupiter) AutoMode : rflowForAutoMode = \(self.rflowForAutoMode)")
+                    if (self.isSufficientRfdAutoMode && diffTime >= 10*1000) {
+                        if (self.rflowForAutoMode < 0.38) {
+                            self.isPdrMode = false
+                            self.lastModeChangedTime = currentTime
+                        }
+                    } else if (self.isSufficientRfdAutoMode) {
+                        if (self.rflowForAutoMode < 0.25) {
+                            self.isPdrMode = false
+                            self.lastModeChangedTime = currentTime
+                        }
                     }
                 }
                 
@@ -133,9 +144,35 @@ public class UnitDRGenerator: NSObject {
                 }
             }
             
+//            var isNormalStep = pdrDistanceEstimator.normalStepCountFlag
+//            if (currentTime - lastModeChangedTime >= 10*1000) {
+//                if (!self.isPdrMode && isNormalStep) {
+//                    // 현재 DR Mode인데 Normal Step 20회 검출 -> PDR로 전환
+//                    self.isPdrMode = true
+//                    self.lastModeChangedTime = currentTime
+//                } else {
+//                    // 현재 PDR Mode
+//                    if (self.rflow < RF_SC_THRESHOLD_PDR && self.isSufficientRfdBuffer) {
+//                        // RF SCC가 낮은 경우 -> DR 모드로 전환
+//                        self.isPdrMode = false
+//                        self.lastModeChangedTime = currentTime
+//                    } else if (currentTime - self.lastHighRfSccTime > 10*1000) {
+//                        // RF SCC가 낮은 상황이 10초 이상 나오는 경우 -> DR 모드로 전환
+//                        self.isPdrMode = false
+//                        self.lastModeChangedTime = currentTime
+//                    }
+//                }
+//                
+//                if (self.isEnteranceLevel) {
+//                    self.isPdrMode = false
+//                    self.lastModeChangedTime = currentTime
+//                }
+//            }
+            
             if (self.isPdrMode) {
                 // PDR 가능 영역
                 if (unitDistancePdr.isIndexChanged) {
+                    self.lastStepChangedTime = currentTime
                     unitIndexAuto += 1
                 }
                 unitDistanceAuto = unitDistancePdr
@@ -149,7 +186,6 @@ public class UnitDRGenerator: NSObject {
                 }
                 self.autoMode = 1
             }
-            // ------------------------------- Add ------------------------------- //
             
             var sensorAtt = sensorData.att
             if (sensorAtt[0].isNaN) {
@@ -167,10 +203,10 @@ public class UnitDRGenerator: NSObject {
             curAttitudePdr = Attitude(Roll: sensorAtt[0], Pitch: sensorAtt[1], Yaw: sensorAtt[2])
             curAttitudeDr = unitAttitudeEstimator.estimateAtt(time: currentTime, acc: sensorData.acc, gyro: sensorData.gyro, rotMatrix: sensorData.rotationMatrix)
             
-            let headingPdr = HF.radian2degree(radian: curAttitudePdr.Yaw)
+            let headingPdr = HF.radian2degree(radian: curAttitudeDr.Yaw)
             let headingDr = HF.radian2degree(radian: curAttitudeDr.Yaw)
             
-            let unitStatusPdr = unitStatusEstimator.estimateStatus(Attitude: curAttitudePdr, isIndexChanged: unitDistancePdr.isIndexChanged, unitMode: MODE_PDR)
+            let unitStatusPdr = unitStatusEstimator.estimateStatus(Attitude: curAttitudeDr, isIndexChanged: unitDistancePdr.isIndexChanged, unitMode: MODE_PDR)
             let unitStatusDr = unitStatusEstimator.estimateStatus(Attitude: curAttitudeDr, isIndexChanged: unitDistanceDr.isIndexChanged, unitMode: MODE_DR)
             
             if (self.autoMode == 0) {
@@ -221,12 +257,15 @@ public class UnitDRGenerator: NSObject {
         self.isEnteranceLevel = flag
     }
     
-    public func setRflow(rflow: Double, rflowForVelocity: Double, isSufficient: Bool, isSufficientForVelocity: Bool) {
+    public func setRflow(rflow: Double, rflowForVelocity: Double, rflowForAutoMode: Double, isSufficient: Bool, isSufficientForVelocity: Bool, isSufficientForAutoMode: Bool) {
         self.rflow = rflow
         self.rflowForVelocity = rflowForVelocity
+        self.rflowForAutoMode = rflowForAutoMode
+        
         self.isSufficientRfdBuffer = isSufficient
         self.isSufficientRfdVelocityBuffer = isSufficientForVelocity
+        self.isSufficientRfdAutoMode = isSufficientForAutoMode
         
-        self.drDistanceEstimator.setRflow(rflow: rflow, rflowForVelocity: rflowForVelocity, isSufficient: isSufficient, isSufficientForVelocity: isSufficientForVelocity)
+        self.drDistanceEstimator.setRflow(rflow: rflow, rflowForVelocity: rflowForVelocity, rflowForAutoMode: rflowForAutoMode, isSufficient: isSufficient, isSufficientForVelocity: isSufficientForVelocity, isSufficientForAutoMode: isSufficientForAutoMode)
     }
 }
