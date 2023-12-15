@@ -11,8 +11,8 @@ public class ServiceManager: Observation {
             if (result.x != 0 && result.y != 0 && result.building_name != "" && result.level_name != "") {
                 let validInfo = self.checkSolutionValidity(reportFlag: self.pastReportFlag, reportTime: self.pastReportTime, isIndoor: result.isIndoor)
                 result.validity = validInfo.0
-                result.message = validInfo.1
-                print(getLocalTimeString() + " , (Jupiter) Validity : flag = \(result.validity) // msg = \(result.message)")
+                result.validity_flag = validInfo.1
+                print(getLocalTimeString() + " , (Jupiter) Validity : isValid = \(result.validity) // flag = \(result.validity_flag) // msg = \(validInfo.2)")
                 
                 if (result.ble_only_position) {
                     result.absolute_heading = 0
@@ -1600,12 +1600,12 @@ public class ServiceManager: Observation {
                     self.reporting(input: BLE_OFF_FLAG)
                 }
             }
-        }
-        
-        let checkLastScannedTime = (getCurrentTimeInMillisecondsDouble() - bleManager.bleLastScannedTime)*1e-3
-        if (checkLastScannedTime >= 6) {
-            // 스캔이 동작안한지 6초 이상 지남
-            self.reporting(input: BLE_SCAN_STOP_FLAG)
+        } else {
+            let checkLastScannedTime = (getCurrentTimeInMillisecondsDouble() - bleManager.bleLastScannedTime)*1e-3
+            if (checkLastScannedTime >= 6) {
+                // 스캔이 동작안한지 6초 이상 지남
+                self.reporting(input: BLE_SCAN_STOP_FLAG)
+            }
         }
         
         bleManager.setValidTime(mode: self.runMode)
@@ -1659,9 +1659,8 @@ public class ServiceManager: Observation {
                 }
             case .failure(let error):
                 if (self.isIndoor && self.isGetFirstResponse) {
-                    self.reporting(input: BLE_ERROR_FLAG)
-                    
                     if (!self.isBleOff) {
+                        self.reporting(input: BLE_ERROR_FLAG)
                         let lastResult = self.resultToReturn
                         let isFailTrimBle = self.determineIsOutdoor(lastResult: lastResult, currentTime: getCurrentTimeInMillisecondsDouble(), inFailCondition: true)
                         if (isFailTrimBle) {
@@ -1998,7 +1997,43 @@ public class ServiceManager: Observation {
                         }
                         
                         self.currentEntranceIndex += 1
-                        if (self.indexAfterSimulate >= Int(Double(MINIMUN_INDEX_FOR_BIAS)*1.5)) {
+//                        if (self.indexAfterSimulate >= Int(Double(MINIMUN_INDEX_FOR_BIAS)*1.5)) {
+//                            let diffX = self.resultToReturn.x - self.outputResult.x
+//                            let diffY = self.resultToReturn.y - self.outputResult.y
+//                            var diffH = compensateHeading(heading: (self.resultToReturn.absolute_heading - self.outputResult.absolute_heading))
+//                            if (diffH >= 270) {
+//                                diffH = 360 - diffH
+//                            }
+//                            
+//                            let diffXy = sqrt(diffX*diffX + diffY*diffY)
+//                            let cLevel = removeLevelDirectionString(levelName: self.currentLevel)
+//                            if (diffXy <= 10 && diffH <= 30 && self.isActiveKf && (cLevel == self.resultToReturn.level_name)) {
+//                                print(getLocalTimeString() + " , (Jupiter) Entrance Simulator : Finish (Position Matched)")
+//                                self.isStartSimulate = false
+//                                self.isPhaseBreakInSimulate = false
+//                                self.isInNetworkBadEntrance = false
+//                                self.indexAfterSimulate = 0
+//                                self.currentEntrance = ""
+//                                self.currentEntranceLength = 0
+//                                self.currentEntranceIndex = 0
+//                            } else {
+//                                if (self.isActiveKf && (cLevel == self.resultToReturn.level_name)) {
+//                                    let isFind = self.findClosestSimulation(originalResult: self.outputResult, currentEntranceIndex: self.currentEntranceIndex)
+//                                    if (isFind) {
+//                                        print(getLocalTimeString() + " , (Jupiter) Entrance Simulator : Finish (Position Passed)")
+//                                        self.isStartSimulate = false
+//                                        self.isPhaseBreakInSimulate = false
+//                                        self.isInNetworkBadEntrance = false
+//                                        self.indexAfterSimulate = 0
+//                                        self.currentEntrance = ""
+//                                        self.currentEntranceLength = 0
+//                                        self.currentEntranceIndex = 0
+//                                    }
+//                                }
+//                            }
+//                        }
+                        
+                        if (self.resultToReturn.level_name != "B0") {
                             let diffX = self.resultToReturn.x - self.outputResult.x
                             let diffY = self.resultToReturn.y - self.outputResult.y
                             var diffH = compensateHeading(heading: (self.resultToReturn.absolute_heading - self.outputResult.absolute_heading))
@@ -2031,6 +2066,32 @@ public class ServiceManager: Observation {
                                         self.currentEntranceIndex = 0
                                     }
                                 }
+                            }
+                            
+                            if (self.isInNetworkBadEntrance && (self.currentEntranceIndex >= (self.currentEntranceLength/2))) {
+                                self.currentLevel = self.outputResult.level_name
+                                if (self.isActiveKf) {
+                                    self.timeUpdatePosition.x = self.outputResult.x
+                                    self.timeUpdatePosition.y = self.outputResult.y
+                                    self.timeUpdatePosition.heading = self.outputResult.absolute_heading
+                                    self.timeUpdateOutput.x = self.outputResult.x
+                                    self.timeUpdateOutput.y = self.outputResult.y
+                                    self.timeUpdateOutput.absolute_heading = self.outputResult.absolute_heading
+                                    self.measurementPosition.x = self.outputResult.x
+                                    self.measurementPosition.y = self.outputResult.y
+                                    self.measurementPosition.heading = self.outputResult.absolute_heading
+                                    self.measurementOutput.x = self.outputResult.x
+                                    self.measurementOutput.y = self.outputResult.y
+                                    self.measurementOutput.absolute_heading = self.outputResult.absolute_heading
+                                }
+                                
+                                print(getLocalTimeString() + " , (Jupiter) Entrance Simulator : Finish (End Simulating in Network Bad Entrance)")
+                                self.isStartSimulate = false
+                                self.isPhaseBreakInSimulate = false
+                                self.isInNetworkBadEntrance = false
+                                self.currentEntrance = ""
+                                self.currentEntranceLength = 0
+                                self.currentEntranceIndex = 0
                             }
                         }
                     } else {
@@ -3371,8 +3432,8 @@ public class ServiceManager: Observation {
             if (!returnedString.contains("timed out")) {
                 self.networkCount = 0
             }
-            if (statusCode == 200) {
-                var result = jsonToResult(json: returnedString)
+            if (statusCode == 200 && self.phase != 2) {
+                let result = jsonToResult(json: returnedString)
                 // Sc Compensation
                 if (self.isScRequested) {
                     let compensationCheckTime = abs(result.mobile_time - self.scRequestTime)
@@ -3405,7 +3466,7 @@ public class ServiceManager: Observation {
                     
                     displayOutput.indexRx = result.index
                     displayOutput.scc = result.scc
-                    displayOutput.phase = String(resultPhase)
+                    displayOutput.phase = String(resultPhase.0)
                     
                     if (result.mobile_time > self.preOutputMobileTime) {
                         self.pastSearchDirection = result.search_direction
@@ -3426,7 +3487,7 @@ public class ServiceManager: Observation {
                             }
                         }
                         resultCorrected.1[2] = compensateHeading(heading: resultCorrected.1[2])
-                        if (resultPhase == 2 && result.scc < 0.25) {
+                        if (resultPhase.0 == 2 && result.scc < 0.25) {
                             self.isNeedTrajInit = true
                             self.phase = 1
                             if (self.isStartSimulate) {
@@ -3435,7 +3496,7 @@ public class ServiceManager: Observation {
                             if (self.isActiveKf) {
                                 self.isPhaseBreak = true
                             }
-                        } else if (resultPhase == 2) {
+                        } else if (resultPhase.0 == 2) {
                             if (result.scc < SCC_FOR_PHASE4) {
                                 self.phase2BadCount += 1
                                 if (self.phase2BadCount > 5) {
@@ -3451,7 +3512,7 @@ public class ServiceManager: Observation {
                                 }
                             }
                         } else {
-                            if (resultPhase == 4) {
+                            if (resultPhase.0 == 4) {
                                 if (!self.isActiveKf) {
                                     // 최초 Phase 2-> 4 진입
                                     if (self.isIndoor) {
@@ -3602,7 +3663,7 @@ public class ServiceManager: Observation {
                                     self.isPhaseBreak = true
                                 }
                             } else {
-                                self.phase = resultPhase
+                                self.phase = resultPhase.0
                             }
                         }
                         self.serverResult[0] = result.x
@@ -3759,7 +3820,7 @@ public class ServiceManager: Observation {
                             }
                         }
                         
-                        if (resultPhase == 1) {
+                        if (resultPhase.0 == 1) {
                             self.isNeedTrajInit = true
                         }
                         
@@ -3787,7 +3848,7 @@ public class ServiceManager: Observation {
                         
                         if (!self.isActiveKf) {
                             // Add
-                            if (resultPhase == 4) {
+                            if (resultPhase.0 == 4) {
                                 if (self.isIndoor) {
                                     let outputBuilding = self.outputResult.building_name
                                     let outputLevel = self.outputResult.level_name
@@ -3806,7 +3867,7 @@ public class ServiceManager: Observation {
                                 }
                             }
                             
-                            if (resultPhase == 4) {
+                            if (resultPhase.0 == 4) {
                                 let propagationResult = propagateUsingUvd(drBuffer: self.unitDrBuffer, result: result)
                                 var propagationValues: [Double] = propagationResult.1
                                 if (propagationResult.0) {
@@ -3894,7 +3955,7 @@ public class ServiceManager: Observation {
                                     resultCopy.level_name = self.currentLevel
                                 }
                             }
-                            let finalResult = fromServerToResult(fromServer: resultCopy, velocity: displayOutput.velocity, resultPhase: resultPhase)
+                            let finalResult = fromServerToResult(fromServer: resultCopy, velocity: displayOutput.velocity, resultPhase: resultPhase.0)
                             
                             self.flagPast = false
                             self.outputResult = finalResult
@@ -3923,13 +3984,13 @@ public class ServiceManager: Observation {
                             }
                             let diffH = abs(tuHeading-muHeading)
                             
-                            if (resultPhase == 4) {
+                            if (resultPhase.0 == 4) {
                                 if (pathMatchingResult.isSuccess) {
                                     self.updateAllResult(result: propagatedResult, inputPhase: inputPhase, mode: self.runMode)
                                 } else {
                                     self.updateAllResult(result: resultCorrected.1, inputPhase: inputPhase, mode: self.runMode)
                                 }
-                            } else if (resultPhase == 3) {
+                            } else if (resultPhase.0 == 3) {
                                 if (pathMatchingResult.isSuccess) {
                                     self.updateAllResult(result: propagatedResult, inputPhase: inputPhase, mode: self.runMode)
                                 } else {
@@ -3964,7 +4025,7 @@ public class ServiceManager: Observation {
                                 timUpdateOutputCopy.mobile_time = result.mobile_time
                             }
                             
-                            let updatedResult = fromServerToResult(fromServer: timUpdateOutputCopy, velocity: displayOutput.velocity, resultPhase: resultPhase)
+                            let updatedResult = fromServerToResult(fromServer: timUpdateOutputCopy, velocity: displayOutput.velocity, resultPhase: resultPhase.0)
                             self.timeUpdateOutput = timUpdateOutputCopy
                             
                             self.flagPast = false
@@ -3988,7 +4049,7 @@ public class ServiceManager: Observation {
                                 self.resultToReturn = self.makeOutputResult(input: self.outputResult, isPast: self.flagPast, runMode: self.runMode, isVenusMode: self.isVenusMode)
                             }
                         } else{
-                            self.phase = resultPhase
+                            self.phase = resultPhase.0
                         }
                         self.indexPast = result.index
                         self.preOutputMobileTime = result.mobile_time
@@ -4097,7 +4158,7 @@ public class ServiceManager: Observation {
                 if (result.index > self.indexPast) {
                     let resultPhase = phaseController.controlJupiterPhase(serverResult: result, inputPhase: inputPhase, mode: self.runMode, isVenusMode: self.isVenusMode)
                     self.pastSearchDirection = result.search_direction
-                    if (self.isActiveKf && resultPhase == 4) {
+                    if (self.isActiveKf && resultPhase.0 == 4) {
                         if (!(result.x == 0 && result.y == 0) && !self.isDetermineSpot && self.phase != 2) {
                             if (self.isPhaseBreak) {
                                 self.kalmanR = 0.5
@@ -4208,7 +4269,7 @@ public class ServiceManager: Observation {
                                     }
                                             
                                     let muOutput = measurementUpdate(timeUpdatePosition: timeUpdatePosition, serverOutputHat: resultForMu, serverResult: result, originalResult: resultCorrected.1, isNeedHeadingCorrection: self.isNeedHeadingCorrection, mode: self.runMode)
-                                    var muResult = fromServerToResult(fromServer: muOutput, velocity: displayOutput.velocity, resultPhase: resultPhase)
+                                    var muResult = fromServerToResult(fromServer: muOutput, velocity: displayOutput.velocity, resultPhase: resultPhase.0)
                                     muResult.mobile_time = result.mobile_time
                                             
                                     let resultLevelName = removeLevelDirectionString(levelName: result.level_name)
@@ -5196,18 +5257,19 @@ public class ServiceManager: Observation {
         }
     }
     
-    func checkSolutionValidity(reportFlag: Int, reportTime: Double, isIndoor: Bool) -> (Int, String) {
+    func checkSolutionValidity(reportFlag: Int, reportTime: Double, isIndoor: Bool) -> (Bool, Int, String) {
+        var isValid: Bool = false
         var validFlag: Int = 0
         var validMessage: String = "Valid"
         let currentTime = getCurrentTimeInMillisecondsDouble()
         
         if (isIndoor) {
             let diffTime = (currentTime - reportTime)*1e-3
-            
             if (NetworkCheck.shared.isConnectedToInternet()) {
                 switch (reportFlag) {
                 case -1:
-                    validFlag = 1
+                    isValid = true
+                    validFlag = VALID_SOLUTION
                     validMessage = "Valid"
                 case 2:
                     // 1. 시간 체크
@@ -5216,30 +5278,32 @@ public class ServiceManager: Observation {
                     // 4. 아니면 valid하다고 바꿈
                     if (diffTime > 3) {
                         if (bleManager.bluetoothReady) {
-                            validFlag = 1
+                            isValid = true
+                            validFlag = VALID_SOLUTION
                             validMessage = "Valid"
                             self.pastReportFlag = -1
                         } else {
-                            validFlag = 3
+                            validFlag = INVALID_BLE
                             validMessage = "BLE is off"
                             self.pastReportTime = currentTime
                         }
                     } else {
-                        validFlag = 3
+                        validFlag = INVALID_BLE
                         validMessage = "BLE is off"
                     }
                 case 3:
-                    validFlag = 3
+                    validFlag = INVALID_VENUS
                     validMessage = "Providing BLE only mode solution"
                 case 4:
                     // 1. 시간 체크
                     // 2. 3초 지났으면 Valid로 수정
                     if (diffTime > 3) {
-                        validFlag = 1
+                        isValid = true
+                        validFlag = VALID_SOLUTION
                         validMessage = "Valid"
                         self.pastReportFlag = -1
                     } else {
-                        validFlag = 2
+                        validFlag = RECOVERING_SOLUTION
                         validMessage = "Recently start to provide jupiter mode solution"
                     }
                 case 5:
@@ -5247,15 +5311,16 @@ public class ServiceManager: Observation {
                     // 2. 10초 지났으면 Valid로 수정
                     if (diffTime > 5) {
                         if (self.networkCount > 1) {
-                            validFlag = 3
+                            validFlag = INVALID_NETWORK
                             validMessage = "Newtwork status is bad"
                         } else {
-                            validFlag = 1
+                            isValid = true
+                            validFlag = VALID_SOLUTION
                             validMessage = "Valid"
                             self.pastReportFlag = -1
                         }
                     } else {
-                        validFlag = 3
+                        validFlag = INVALID_NETWORK
                         validMessage = "Newtwork status is bad"
                     }
                 case 6:
@@ -5265,47 +5330,110 @@ public class ServiceManager: Observation {
                     // 4. 아니면 valid하다고 바꿈
                     if (diffTime > 3) {
                         if (NetworkCheck.shared.isConnectedToInternet()) {
-                            validFlag = 1
+                            isValid = true
+                            validFlag = VALID_SOLUTION
                             validMessage = "Valid"
                             self.pastReportFlag = -1
                         } else {
-                            validFlag = 3
+                            validFlag = INVALID_NETWORK
                             validMessage = "Newtwork connection lost"
                             self.pastReportTime = currentTime
                         }
                     } else {
-                        validFlag = 3
+                        validFlag = INVALID_NETWORK
                         validMessage = "Newtwork connection lost"
                     }
                 case 7:
-                    validFlag = 3
+                    validFlag = INVALID_STATE
                     validMessage = "Solution in background is invalid"
                 case 8:
                     // 1. 시간 체크
                     // 2. 3초 지났으면 Valid로 수정
-                    if (diffTime > 3) {
-                        validFlag = 1
-                        validMessage = "Valid"
-                        self.pastReportFlag = -1
+                    if (bleManager.bluetoothReady) {
+                        if (diffTime > 3) {
+                            isValid = true
+                            validFlag = VALID_SOLUTION
+                            validMessage = "Valid"
+                            self.pastReportFlag = -1
+                        } else {
+                            validFlag = RECOVERING_SOLUTION
+                            validMessage = "Recently in foreground"
+                        }
                     } else {
-                        validFlag = 2
-                        validMessage = "Recently in foreground"
+                        validFlag = INVALID_BLE
+                        validMessage = "BLE is off"
+                        self.pastReportFlag = 2
+                        self.pastReportTime = currentTime
+                    }
+                case 9:
+                    if (bleManager.bluetoothReady) {
+                        if (diffTime > 5) {
+                            isValid = true
+                            validFlag = VALID_SOLUTION
+                            validMessage = "Valid"
+                            self.pastReportFlag = -1
+                        } else {
+                            validFlag = RECOVERING_SOLUTION
+                            validMessage = "Recently BLE is on"
+                        }
+                    } else {
+                        validFlag = INVALID_BLE
+                        validMessage = "BLE is off"
+                        self.pastReportFlag = 2
+                        self.pastReportTime = currentTime
+                    }
+                case 11:
+                    // BLE_SCAN_STOP
+                    if (bleManager.bluetoothReady) {
+                        if (diffTime > 5) {
+                            isValid = true
+                            validFlag = VALID_SOLUTION
+                            validMessage = "Valid"
+                            self.pastReportFlag = -1
+                        } else {
+                            validFlag = INVALID_BLE
+                            validMessage = "BLE scanning has problem"
+                        }
+                    } else {
+                        validFlag = INVALID_BLE
+                        validMessage = "BLE is off"
+                        self.pastReportFlag = 2
+                        self.pastReportTime = currentTime
+                    }
+                case 12:
+                    // BLE_ERROR_FLAG
+                    if (bleManager.bluetoothReady) {
+                        if (diffTime > 5) {
+                            isValid = true
+                            validFlag = VALID_SOLUTION
+                            validMessage = "Valid"
+                            self.pastReportFlag = -1
+                        } else {
+                            validFlag = INVALID_BLE
+                            validMessage = "BLE trimming has problem"
+                        }
+                    } else {
+                        validFlag = INVALID_BLE
+                        validMessage = "BLE is off"
+                        self.pastReportFlag = 2
+                        self.pastReportTime = currentTime
                     }
                 default:
-                    validFlag = 1
+                    isValid = true
+                    validFlag = VALID_SOLUTION
                     validMessage = "Valid"
                 }
             } else {
-                validFlag = 3
+                validFlag = INVALID_NETWORK
                 validMessage = "Newtwork connection lost"
                 self.pastReportFlag = 6
                 self.pastReportTime = currentTime
             }
         } else {
-            validFlag = 3
+            validFlag = INVALID_OUTDOOR
             validMessage = "Solution in outdoor is invalid"
         }
         
-        return (validFlag, validMessage)
+        return (isValid, validFlag, validMessage)
     }
 }

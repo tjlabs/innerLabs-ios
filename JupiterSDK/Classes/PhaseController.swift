@@ -27,12 +27,13 @@ public class PhaseController {
         self.PHASE2_LENGTH_CONDITION_DR = self.PHASE3_LENGTH_CONDITION_DR - self.TRAJ_BIAS
     }
     
-    public func controlJupiterPhase(serverResult: FineLocationTrackingFromServer, inputPhase: Int, mode: String, isVenusMode: Bool) -> Int {
+    public func controlJupiterPhase(serverResult: FineLocationTrackingFromServer, inputPhase: Int, mode: String, isVenusMode: Bool) -> (Int, Bool) {
         var phase: Int = 0
+        var isPhaseBreak: Bool = false
         
         if (isVenusMode) {
             phase = 1
-            return phase
+            return (phase, isPhaseBreak)
         }
         
 //        print(getLocalTimeString() + " , (Jupiter) Phase Control : inputPhase = \(inputPhase)")
@@ -51,7 +52,11 @@ public class PhaseController {
             phase = 0
         }
         
-        return phase
+        if (inputPhase >= 1 && phase < 2) {
+            isPhaseBreak = true
+        }
+        
+        return (phase, isPhaseBreak)
     }
     
     public func phase1control(serverResult: FineLocationTrackingFromServer, mode: String) -> Int {

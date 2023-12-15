@@ -124,14 +124,14 @@ public class UnitDRGenerator: NSObject {
                     // 현재 PDR 모드
                     let diffTime = currentTime - self.lastStepChangedTime
 //                    print(getLocalTimeString() + " , (Jupiter) AutoMode : isSufficientRfdAutoMode = \(self.isSufficientRfdAutoMode)")
-                    print(getLocalTimeString() + " , (Jupiter) AutoMode : rflowForAutoMode = \(self.rflowForAutoMode)")
+                    print(getLocalTimeString() + " , (Jupiter) AutoMode : rflowForAutoMode = \(self.rflowForAutoMode) // diffTime = \(diffTime)")
                     if (self.isSufficientRfdAutoMode && diffTime >= 10*1000) {
-                        if (self.rflowForAutoMode < 0.38) {
+                        if (self.rflowForAutoMode < 0.1) {
                             self.isPdrMode = false
                             self.lastModeChangedTime = currentTime
                         }
                     } else if (self.isSufficientRfdAutoMode) {
-                        if (self.rflowForAutoMode < 0.25) {
+                        if (self.rflowForAutoMode < 0.065) {
                             self.isPdrMode = false
                             self.lastModeChangedTime = currentTime
                         }
