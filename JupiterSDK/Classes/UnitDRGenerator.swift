@@ -123,8 +123,6 @@ public class UnitDRGenerator: NSObject {
                 } else {
                     // 현재 PDR 모드
                     let diffTime = currentTime - self.lastStepChangedTime
-//                    print(getLocalTimeString() + " , (Jupiter) AutoMode : isSufficientRfdAutoMode = \(self.isSufficientRfdAutoMode)")
-                    print(getLocalTimeString() + " , (Jupiter) AutoMode : rflowForAutoMode = \(self.rflowForAutoMode) // diffTime = \(diffTime)")
                     if (self.isSufficientRfdAutoMode && diffTime >= 10*1000) {
                         if (self.rflowForAutoMode < 0.1) {
                             self.isPdrMode = false
@@ -206,7 +204,7 @@ public class UnitDRGenerator: NSObject {
             let headingPdr = HF.radian2degree(radian: curAttitudeDr.Yaw)
             let headingDr = HF.radian2degree(radian: curAttitudeDr.Yaw)
             
-            let unitStatusPdr = unitStatusEstimator.estimateStatus(Attitude: curAttitudeDr, isIndexChanged: unitDistancePdr.isIndexChanged, unitMode: MODE_PDR)
+            let unitStatusPdr = unitStatusEstimator.estimateStatus(Attitude: curAttitudePdr, isIndexChanged: unitDistancePdr.isIndexChanged, unitMode: MODE_PDR)
             let unitStatusDr = unitStatusEstimator.estimateStatus(Attitude: curAttitudeDr, isIndexChanged: unitDistanceDr.isIndexChanged, unitMode: MODE_DR)
             
             if (self.autoMode == 0) {

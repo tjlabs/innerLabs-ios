@@ -3,7 +3,7 @@ import CoreMotion
 import UIKit
 
 public class ServiceManager: Observation {
-    public static let sdkVersion: String = "3.3.6.1"
+    public static let sdkVersion: String = "3.4.0.0"
     
     func tracking(input: FineLocationTrackingResult, isPast: Bool) {
         for observer in observers {
@@ -12,7 +12,7 @@ public class ServiceManager: Observation {
                 let validInfo = self.checkSolutionValidity(reportFlag: self.pastReportFlag, reportTime: self.pastReportTime, isIndoor: result.isIndoor)
                 result.validity = validInfo.0
                 result.validity_flag = validInfo.1
-                print(getLocalTimeString() + " , (Jupiter) Validity : isValid = \(result.validity) // flag = \(result.validity_flag) // msg = \(validInfo.2)")
+//                print(getLocalTimeString() + " , (Jupiter) Validity : isValid = \(result.validity) // flag = \(result.validity_flag) // msg = \(validInfo.2)")
                 
                 if (result.ble_only_position) {
                     result.absolute_heading = 0
@@ -3776,7 +3776,11 @@ public class ServiceManager: Observation {
                     
                     if (result.mobile_time > self.preOutputMobileTime) {
                         let resultPhase = phaseController.controlJupiterPhase(serverResult: result, inputPhase: inputPhase, mode: self.runMode, isVenusMode: self.isVenusMode)
-                        
+                        self.isPhaseBreak = resultPhase.1
+                        if (resultPhase.1) {
+                            self.isNeedTrajInit = true
+                            self.phaseBreakResult = result
+                        }
 //                        displayOutput.indexRx = result.index
 //                        displayOutput.scc = result.scc
 //                        displayOutput.phase = String(self.phase)
@@ -3820,9 +3824,9 @@ public class ServiceManager: Observation {
                             }
                         }
                         
-                        if (resultPhase.0 == 1) {
-                            self.isNeedTrajInit = true
-                        }
+//                        if (resultPhase.0 == 1) {
+//                            self.isNeedTrajInit = true
+//                        }
                         
                         self.pastSearchDirection = result.search_direction
                         let resultHeading = compensateHeading(heading: result.absolute_heading)
@@ -3966,7 +3970,7 @@ public class ServiceManager: Observation {
                             }
                         } else {
                             // Kalman Filter가 동작 중이면서 위치 요청시 input의 phase 가 1~3 인 경우
-                            self.phaseBreakResult = result
+//                            self.phaseBreakResult = result
                             let propagationResult = propagateUsingUvd(drBuffer: self.unitDrBuffer, result: result)
                             let propagationValues: [Double] = propagationResult.1
                             var propagatedResult: [Double] = [resultCorrected.1[0]+propagationValues[0] , resultCorrected.1[1]+propagationValues[1], resultCorrected.1[2]+propagationValues[2]]
@@ -3996,9 +4000,10 @@ public class ServiceManager: Observation {
                                 } else {
                                     self.updateAllResult(result: resultCorrected.1, inputPhase: inputPhase, mode: self.runMode)
                                 }
-                            } else {
-                                self.isNeedTrajInit = true
                             }
+//                            else {
+//                                self.isNeedTrajInit = true
+//                            }
                             var timUpdateOutputCopy = self.timeUpdateOutput
                             
                             let resultLevelName = removeLevelDirectionString(levelName: result.level_name)
@@ -4048,7 +4053,7 @@ public class ServiceManager: Observation {
                             } else {
                                 self.resultToReturn = self.makeOutputResult(input: self.outputResult, isPast: self.flagPast, runMode: self.runMode, isVenusMode: self.isVenusMode)
                             }
-                        } else{
+                        } else {
                             self.phase = resultPhase.0
                         }
                         self.indexPast = result.index
@@ -4309,22 +4314,20 @@ public class ServiceManager: Observation {
                                 }
                             }
                         } else {
-                            self.phase = 1
                             self.isNeedTrajInit = true
+                            self.isPhaseBreak = true
+                            self.phase = 1
                         }
-                    } else if (self.isActiveKf) {
-                        self.SQUARE_RANGE = self.SQUARE_RANGE_LARGE
-                        self.kalmanR = 0.01
-                        self.headingKalmanR = 0.01
-                        self.isNeedTrajInit = true
-                        self.isPhaseBreak = true
-                        self.phase = 1
-                        
-                        self.phaseBreakResult = result
                     } else {
+                        if (self.isActiveKf) {
+                            self.SQUARE_RANGE = self.SQUARE_RANGE_LARGE
+                            self.kalmanR = 0.01
+                            self.headingKalmanR = 0.01
+                            self.phaseBreakResult = result
+                        }
                         self.isNeedTrajInit = true
-                        self.isPhaseBreak = true
-                        self.phase = 1
+                        self.isPhaseBreak = resultPhase.1
+                        self.phase = resultPhase.0
                     }
                     self.indexPast = result.index
                 }

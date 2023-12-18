@@ -238,9 +238,9 @@ public class RflowCorrelator {
                 let avgValue: Double = sqrt(sumDiffRssi/Double(validKeyCount))
                 if (avgValue != 0) {
                     let rflowScc = calcScc(value: avgValue)
-                    print(getLocalTimeString() + " , (Jupiter) Rflow : rflowScc = \(rflowScc) ")
+//                    print(getLocalTimeString() + " , (Jupiter) Rflow : rflowScc = \(rflowScc) ")
                     result = smoothRflowForAutoMode(rflow: rflowScc)
-                    print(getLocalTimeString() + " , (Jupiter) Rflow : smoothedRflowScc = \(result) ")
+//                    print(getLocalTimeString() + " , (Jupiter) Rflow : smoothedRflowScc = \(result) ")
                 }
             }
         }

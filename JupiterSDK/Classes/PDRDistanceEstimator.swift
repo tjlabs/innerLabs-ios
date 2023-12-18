@@ -73,23 +73,24 @@ public class PDRDistanceEstimator: NSObject {
                 finalUnitResult.index += 1
                 finalUnitResult.isIndexChanged = true
                 
-                finalUnitResult.length = stepLengthEstimator.estStepLength(accPeakQueue: accPeakQueue, accValleyQueue: accValleyQueue)
-                if (finalUnitResult.length > 0.7) {
-                    finalUnitResult.length = 0.7
-                } else if (finalUnitResult.length < 0.5) {
-                    finalUnitResult.length = 0.5
-                }
-                
                 let isIndexChangedTime = foundAccPV.timestamp
                 var diffTime: Double = (isIndexChangedTime - self.pastIndexChangedTime)*1e-3
                 if (diffTime > 1000) {
                     diffTime = 1000
                 }
                 self.pastIndexChangedTime = isIndexChangedTime
-                var tempVelocity: Double = (finalUnitResult.length/diffTime)
                 
+                
+                finalUnitResult.length = stepLengthEstimator.estStepLength(accPeakQueue: accPeakQueue, accValleyQueue: accValleyQueue)
                 updateStepLengthQueue(stepLengthWithTimeStamp: StepLengthWithTimestamp(timestamp: foundAccPV.timestamp, stepLength: finalUnitResult.length))
                 
+                if (finalUnitResult.length > 0.7) {
+                    finalUnitResult.length = 0.7
+                } else if (finalUnitResult.length < 0.5) {
+                    finalUnitResult.length = 0.5
+                }
+                
+
                 if (!self.autoMode) {
                     if (isLossStep && finalUnitResult.index > 3) {
                         finalUnitResult.length = 1.8
@@ -100,6 +101,7 @@ public class PDRDistanceEstimator: NSObject {
                     }
                 }
                 
+                var tempVelocity: Double = (finalUnitResult.length/diffTime)
                 if (tempVelocity > 1.45) {
                     tempVelocity = 1.45
                 }
