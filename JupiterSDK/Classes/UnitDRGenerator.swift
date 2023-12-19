@@ -25,6 +25,7 @@ public class UnitDRGenerator: NSObject {
     var lastStepChangedTime: Double = 0
     var lastHighRfSccTime: Double = 0
     var isPdrMode: Bool = false
+    var trackIsPdrMode: Bool = true
     
     var normalStepTime: Double = 0
     var unitIndexAuto = 0
@@ -102,7 +103,7 @@ public class UnitDRGenerator: NSObject {
             return UnitDRInfo(index: unitDistanceDr.index, length: unitDistanceDr.length, heading: heading, velocity: unitDistanceDr.velocity, lookingFlag: unitStatus, isIndexChanged: unitDistanceDr.isIndexChanged, autoMode: 0)
         case MODE_AUTO:
             pdrDistanceEstimator.isAutoMode(autoMode: true)
-            pdrDistanceEstimator.normalStepCountSet(normalStepCountSet: MODE_AUTO_NORMAL_STEP_COUNT_SET)
+//            pdrDistanceEstimator.normalStepCountSet(normalStepCountSet: MODE_AUTO_NORMAL_STEP_COUNT_SET)
             unitDistancePdr = pdrDistanceEstimator.estimateDistanceInfo(time: currentTime, sensorData: sensorData)
             unitDistanceDr = drDistanceEstimator.estimateDistanceInfo(time: currentTime, sensorData: sensorData)
             
@@ -141,6 +142,7 @@ public class UnitDRGenerator: NSObject {
                     self.lastModeChangedTime = currentTime
                 }
             }
+            
             
 //            var isNormalStep = pdrDistanceEstimator.normalStepCountFlag
 //            if (currentTime - lastModeChangedTime >= 10*1000) {
@@ -184,6 +186,17 @@ public class UnitDRGenerator: NSObject {
                 }
                 self.autoMode = 1
             }
+            
+            if (self.isPdrMode != self.trackIsPdrMode) {
+                if (self.autoMode == 0) {
+                    pdrDistanceEstimator.setModeDrToPdr(isModeDrToPdr: true)
+                    pdrDistanceEstimator.normalStepCountSet(normalStepCountSet: NORMAL_STEP_LOSS_CHECK_SIZE-1)
+                } else {
+                    pdrDistanceEstimator.setModeDrToPdr(isModeDrToPdr: false)
+                    pdrDistanceEstimator.normalStepCountSet(normalStepCountSet: MODE_AUTO_NORMAL_STEP_COUNT_SET)
+                }
+            }
+            self.trackIsPdrMode = self.isPdrMode
             
             var sensorAtt = sensorData.att
             if (sensorAtt[0].isNaN) {

@@ -3,7 +3,7 @@ import CoreMotion
 import UIKit
 
 public class ServiceManager: Observation {
-    public static let sdkVersion: String = "3.4.0.0"
+    public static let sdkVersion: String = "3.4.0.1"
     
     func tracking(input: FineLocationTrackingResult, isPast: Bool) {
         for observer in observers {
@@ -12,7 +12,6 @@ public class ServiceManager: Observation {
                 let validInfo = self.checkSolutionValidity(reportFlag: self.pastReportFlag, reportTime: self.pastReportTime, isIndoor: result.isIndoor)
                 result.validity = validInfo.0
                 result.validity_flag = validInfo.1
-//                print(getLocalTimeString() + " , (Jupiter) Validity : isValid = \(result.validity) // flag = \(result.validity_flag) // msg = \(validInfo.2)")
                 
                 if (result.ble_only_position) {
                     result.absolute_heading = 0
@@ -2068,7 +2067,7 @@ public class ServiceManager: Observation {
                                 }
                             }
                             
-                            if (self.isInNetworkBadEntrance && (self.currentEntranceIndex >= (self.currentEntranceLength/2))) {
+                            if (self.currentEntrance == "COEX_B0_1" && (self.currentEntranceIndex >= (self.currentEntranceLength*3/4))) {
                                 self.currentLevel = self.outputResult.level_name
                                 if (self.isActiveKf) {
                                     self.timeUpdatePosition.x = self.outputResult.x
@@ -2284,7 +2283,7 @@ public class ServiceManager: Observation {
             self.outputResult.phase = 2
         } else if (isUnknownTraj) {
             self.isUnknownTraj = false
-            let newTraj = getTrajectoryFromLast(from: self.userTrajectoryInfo, N: 45)
+            let newTraj = getTrajectoryFromLast(from: self.userTrajectoryInfo, N: 40)
             self.userTrajectoryInfo = newTraj
         } else {
             if (isMovePhase2To4) {
@@ -2626,7 +2625,7 @@ public class ServiceManager: Observation {
                                     resultRange = areaMinMax.map { Int($0) }
                                     
                                     hasMajorDirection = true
-                                    print(getLocalTimeString() + " , (Jupiter) minHeading is under 35 // diffHeading = \(minHeading)")
+//                                    print(getLocalTimeString() + " , (Jupiter) minHeading is under 35 // diffHeading = \(minHeading)")
                                     displayOutput.trajectoryStartCoord = [headInfo.userX, headInfo.userY]
                                     displayOutput.userTrajectory = trajectoryFromHead
                                     displayOutput.searchArea = searchArea
@@ -3432,7 +3431,7 @@ public class ServiceManager: Observation {
             if (!returnedString.contains("timed out")) {
                 self.networkCount = 0
             }
-            if (statusCode == 200 && self.phase != 2) {
+            if (statusCode == 200 && self.phase == 2) {
                 let result = jsonToResult(json: returnedString)
                 // Sc Compensation
                 if (self.isScRequested) {

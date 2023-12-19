@@ -100,7 +100,6 @@ public class PhaseController {
             phase = 1
             self.phase2count = 0
         }
-        
         return phase
     }
     
@@ -119,7 +118,6 @@ public class PhaseController {
             length_condition = self.PHASE3_LENGTH_CONDITION_DR
         }
         
-//        print(getLocalTimeString() + " , (Jupiter) Phase Control 3->4 : cumulative_length = \(cumulative_length) // length_condition = \(length_condition)")
         if (scc < 0.45) {
             phase = 1
             self.phase3count = 0

@@ -20,12 +20,13 @@ public class PDRDistanceEstimator: NSObject {
     public var accValleyQueue = LinkedList<TimestampDouble>()
     public var stepLengthQueue = LinkedList<StepLengthWithTimestamp>()
     
-    public var normalStepLossCheckQueue = LinkedList<Int>()
     public var normalStepCheckCount = -1
+    public var normalStepLossCheckQueue = LinkedList<Int>()
     
     public var normalStepCountSetting: Int = 2
     public var normalStepCountFlag: Bool = false
     public var autoMode: Bool = false
+    public var isModeDrToPdr: Bool = false
     
     var pastIndexChangedTime: Double = 0
     
@@ -64,7 +65,11 @@ public class PDRDistanceEstimator: NSObject {
             if (!self.autoMode) {
                 isLossStep = checkIsLossStep(normalStepCount: normalStepCheckCount)
             } else {
-                isLossStep = checkAutoModeIsLossStep(normalStepCount: normalStepCheckCount)
+                if (self.isModeDrToPdr) {
+                    isLossStep = checkIsLossStep(normalStepCount: normalStepCheckCount)
+                } else {
+                    isLossStep = checkAutoModeIsLossStep(normalStepCount: normalStepCheckCount)
+                }
             }
             
             normalStepCountFlag = PDF.isNormalStep(normalStepCount: normalStepCheckCount, normalStepCountSet: normalStepCountSetting)
@@ -92,12 +97,18 @@ public class PDRDistanceEstimator: NSObject {
                 
 
                 if (!self.autoMode) {
-                    if (isLossStep && finalUnitResult.index > 3) {
+                    if (isLossStep && finalUnitResult.index > NORMAL_STEP_LOSS_CHECK_SIZE) {
                         finalUnitResult.length = 1.8
                     }
                 } else {
-                    if (isLossStep && finalUnitResult.index > AUTO_MODE_NORMAL_STEP_LOSS_CHECK_SIZE) {
-                        finalUnitResult.length = 0.6*Double(AUTO_MODE_NORMAL_STEP_LOSS_CHECK_SIZE)
+                    if (finalUnitResult.index > AUTO_MODE_NORMAL_STEP_LOSS_CHECK_SIZE) {
+                        if (isLossStep) {
+                            if (self.isModeDrToPdr) {
+                                finalUnitResult.length = 1.8
+                            } else {
+                                finalUnitResult.length = 0.6*Double(AUTO_MODE_NORMAL_STEP_LOSS_CHECK_SIZE)
+                            }
+                        }
                     }
                 }
                 
@@ -157,5 +168,11 @@ public class PDRDistanceEstimator: NSObject {
         normalStepLossCheckQueue.append(normalStepCount)
         
         return PacingDetectFunctions().checkAutoModeLossStep(normalStepCountBuffer: normalStepLossCheckQueue)
+    }
+    
+    public func setModeDrToPdr(isModeDrToPdr: Bool) {
+        self.isModeDrToPdr = isModeDrToPdr
+        self.normalStepCheckCount = -1
+        self.normalStepLossCheckQueue = LinkedList<Int>()
     }
 }
