@@ -3,7 +3,7 @@ import CoreMotion
 import UIKit
 
 public class ServiceManager: Observation {
-    public static let sdkVersion: String = "3.4.0.2"
+    public static let sdkVersion: String = "3.4.0.3"
     
     func tracking(input: FineLocationTrackingResult, isPast: Bool) {
         for observer in observers {
@@ -1986,7 +1986,7 @@ public class ServiceManager: Observation {
                 } else {
                     self.timeUpdateResult[0] = self.outputResult.x
                     self.timeUpdateResult[1] = self.outputResult.y
-                    self.timeUpdateResult[3] = self.outputResult.absolute_heading
+                    self.timeUpdateResult[2] = self.outputResult.absolute_heading
                 }
                 makeTrajectoryInfo(unitDRInfo: self.unitDRInfo, uvdLength: curUnitDRLength, resultToReturn: self.resultToReturn, tuHeading: self.updateHeading, isPmSuccess: self.displayOutput.isPmSuccess, bleChannels: numChannels, mode: self.runMode)
                 
