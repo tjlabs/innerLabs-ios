@@ -12,11 +12,10 @@ public class ServiceManager: Observation {
                 let validInfo = self.checkSolutionValidity(reportFlag: self.pastReportFlag, reportTime: self.pastReportTime, isIndoor: result.isIndoor)
                 result.validity = validInfo.0
                 result.validity_flag = validInfo.1
-                
                 if (result.ble_only_position) {
                     result.absolute_heading = 0
                 }
-//                let magHeading = self.jupiterLocationManager.getMagHeading()
+                
                 self.jupiterResult = result
                 observer.update(result: result)
                 
