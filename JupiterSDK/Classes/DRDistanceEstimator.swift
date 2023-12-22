@@ -187,15 +187,15 @@ public class DRDistanceEstimator: NSObject {
         } else if velocityInputScale > VELOCITY_MAX {
             velocityInputScale = VELOCITY_MAX
         }
-        
         // RFlow Stop Detection
         if (self.isSufficientRfdBuffer && self.rflow >= RF_SC_THRESHOLD_DR) {
             velocityInputScale = 0
         }
         
         var velocityMps = (velocityInputScale/3.6)*turnScale
-        if (velocityInputScale >= 15 && self.rflowForVelocity > 0.65 && self.isSufficientRfdVelocityBuffer) {
-        }
+//        if (velocityInputScale >= 15 && self.rflowForVelocity > 0.65 && self.isSufficientRfdVelocityBuffer) {
+//            
+//        }
 
         finalUnitResult.isIndexChanged = false
         finalUnitResult.velocity = velocityMps

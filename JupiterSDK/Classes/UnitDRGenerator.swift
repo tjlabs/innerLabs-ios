@@ -143,32 +143,6 @@ public class UnitDRGenerator: NSObject {
                 }
             }
             
-            
-//            var isNormalStep = pdrDistanceEstimator.normalStepCountFlag
-//            if (currentTime - lastModeChangedTime >= 10*1000) {
-//                if (!self.isPdrMode && isNormalStep) {
-//                    // 현재 DR Mode인데 Normal Step 20회 검출 -> PDR로 전환
-//                    self.isPdrMode = true
-//                    self.lastModeChangedTime = currentTime
-//                } else {
-//                    // 현재 PDR Mode
-//                    if (self.rflow < RF_SC_THRESHOLD_PDR && self.isSufficientRfdBuffer) {
-//                        // RF SCC가 낮은 경우 -> DR 모드로 전환
-//                        self.isPdrMode = false
-//                        self.lastModeChangedTime = currentTime
-//                    } else if (currentTime - self.lastHighRfSccTime > 10*1000) {
-//                        // RF SCC가 낮은 상황이 10초 이상 나오는 경우 -> DR 모드로 전환
-//                        self.isPdrMode = false
-//                        self.lastModeChangedTime = currentTime
-//                    }
-//                }
-//                
-//                if (self.isEnteranceLevel) {
-//                    self.isPdrMode = false
-//                    self.lastModeChangedTime = currentTime
-//                }
-//            }
-            
             if (self.isPdrMode) {
                 // PDR 가능 영역
                 if (unitDistancePdr.isIndexChanged) {

@@ -2297,7 +2297,7 @@ public class ServiceManager: Observation {
             self.outputResult.phase = 2
         } else if (isUnknownTraj) {
             self.isUnknownTraj = false
-            let newTraj = getTrajectoryFromLast(from: self.userTrajectoryInfo, N: 40)
+            let newTraj = getTrajectoryFromLast(from: self.userTrajectoryInfo, N: 45)
             self.userTrajectoryInfo = newTraj
         } else {
             if (isMovePhase2To4) {
@@ -3354,7 +3354,9 @@ public class ServiceManager: Observation {
                             if (result.scc > 0.6) {
                                 let digit: Double = pow(10, 4)
                                 self.scCompensation = round((result.sc_compensation*digit)/digit)
-                                unitDRGenerator.setScVelocityScaleFactor(scaleFactor: self.scCompensation)
+                                if (!self.isStartSimulate) {
+                                    unitDRGenerator.setScVelocityScaleFactor(scaleFactor: self.scCompensation)
+                                }
                             }
                             self.scCompensationBadCount = 0
                         }
@@ -3668,7 +3670,9 @@ public class ServiceManager: Observation {
                                 if (result.scc > 0.6) {
                                     let digit: Double = pow(10, 4)
                                     self.scCompensation = round((result.sc_compensation*digit)/digit)
-                                    unitDRGenerator.setScVelocityScaleFactor(scaleFactor: self.scCompensation)
+                                    if (!self.isStartSimulate) {
+                                        unitDRGenerator.setScVelocityScaleFactor(scaleFactor: self.scCompensation)
+                                    }
                                 }
                                 self.scCompensationBadCount = 0
                             }
@@ -4057,7 +4061,9 @@ public class ServiceManager: Observation {
                             if (result.scc > 0.6) {
                                 let digit: Double = pow(10, 4)
                                 self.scCompensation = round((result.sc_compensation*digit)/digit)
-                                unitDRGenerator.setScVelocityScaleFactor(scaleFactor: self.scCompensation)
+                                if (!self.isStartSimulate) {
+                                    unitDRGenerator.setScVelocityScaleFactor(scaleFactor: self.scCompensation)
+                                }
                             }
                             self.scCompensationBadCount = 0
                         }
