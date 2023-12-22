@@ -666,7 +666,7 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
         if (self.isMonitor) {
             serviceManager.getRecentResult(id: self.idToMonitor, completion: { [self] statusCode, result in
                 if (statusCode == 200) {
-                    let recentResult: FineLocationTrackingFromServer = result
+                    let recentResult: RecentResultFromServer = jsonToRecent(json: result)
                     let resultCoordX = recentResult.x
                     let resultCoordY = recentResult.y
                     let resultHeading = recentResult.absolute_heading
@@ -684,6 +684,25 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
                         self.monitorToDisplay.isIndoor = true
                         self.monitorCoord(data: self.monitorToDisplay, flag: self.isShowRP)
                     }
+                    
+//                    let recentResult: FineLocationTrackingFromServer = result
+//                    let resultCoordX = recentResult.x
+//                    let resultCoordY = recentResult.y
+//                    let resultHeading = recentResult.absolute_heading
+//                    
+//                    let resultBuildingName = recentResult.building_name
+//                    let resultLevelName = recentResult.level_name
+//                    
+//                    if (resultCoordX != 0 && resultCoordY != 0) {
+//                        self.monitorToDisplay.x = resultCoordX
+//                        self.monitorToDisplay.y = resultCoordY
+//                        self.monitorToDisplay.heading = resultHeading
+//
+//                        self.monitorToDisplay.building = resultBuildingName
+//                        self.monitorToDisplay.level = resultLevelName
+//                        self.monitorToDisplay.isIndoor = true
+//                        self.monitorCoord(data: self.monitorToDisplay, flag: self.isShowRP)
+//                    }
                 } else {
                     print(getLocalTimeString() + " , (Monitor Result) : \(statusCode) , Error")
                 }
