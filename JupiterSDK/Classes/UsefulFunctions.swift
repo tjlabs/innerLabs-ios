@@ -373,6 +373,24 @@ public func getTrajectoryFromIndex(from userTrajectory: [TrajectoryInfo], index:
     return result
 }
 
+public func getValidTrajectory(userTrajectory: [TrajectoryInfo]) -> [TrajectoryInfo] {
+    var result = [TrajectoryInfo]()
+    
+    var validIndex: Int = 0
+    for i in 0..<userTrajectory.count{
+        if (userTrajectory[i].lookingFlag) {
+            validIndex = i
+            break
+        }
+    }
+    
+    for i in validIndex..<userTrajectory.count{
+        result.append(userTrajectory[i])
+    }
+
+    return result
+}
+
 public func getTrajectoryFromLast(from userTrajectory: [TrajectoryInfo], N: Int) -> [TrajectoryInfo] {
     let size = userTrajectory.count
     guard size >= N else {
@@ -520,7 +538,7 @@ public func getSearchCoordinates(areaMinMax: [Double], interval: Double) -> [[Do
     return coordinates
 }
 
-public func getSearchAreaMinMax(xyMinMax: [Double], heading: [Double], recentScc: Double, searchType: Int, lengthCondition: Double) -> [Double] {
+public func getSearchAreaMinMax(xyMinMax: [Double], heading: [Double], headCoord: [Double], searchType: Int, lengthCondition: Double, diagonalLengthRatio: Double) -> [Double] {
     var areaMinMax: [Double] = []
     
     var xMin = xyMinMax[0]
@@ -540,38 +558,48 @@ public func getSearchAreaMinMax(xyMinMax: [Double], heading: [Double], recentScc
     let endSin = sin(headingEnd*D2R)
     
     if (searchType == -1) {
-        let requestSteps: Double = 10
-        let unitLength: Double = 0.6
-        let search_margin = requestSteps*unitLength
+//        let requestSteps: Double = 10
+//        let unitLength: Double = 0.6
+//        let search_margin = requestSteps*unitLength
+        var search_margin = (12*diagonalLengthRatio)-2
+        if (search_margin <= 2) {
+            search_margin = 2
+        }
+        let oppsite_margin = search_margin*0.6
         
-        xMin -= search_margin
-        xMax += search_margin
-        yMin -= search_margin
-        yMax += search_margin
+        let centerCoord = [(xMax+xMin)/2, (yMax+yMin)/2]
+        let headToCenter = [headCoord[0]-centerCoord[0], headCoord[1]-centerCoord[1]]
         
-//        if (startCos > 0) {
-//            xMax += search_margin*startCos
-//        } else {
-//            xMin -= search_margin*startCos
-//        }
-//        
-//        if (startSin > 0) {
-//            yMax += search_margin*startCos
-//        } else {
-//            yMin -= search_margin*startCos
-//        }
-//        
-//        if (endCos > 0) {
-//            xMax += 0.5*search_margin*startCos
-//        } else {
-//            xMin += 0.5*search_margin*startCos
-//        }
-//
-//        if (endSin > 0) {
-//            yMax += 0.5*search_margin*startCos
-//        } else {
-//            yMin += 0.5*search_margin*startCos
-//        }
+        if (headToCenter[0] > 0 && headToCenter[1] > 0) {
+            // 1사분면
+            xMax += search_margin
+            yMax += search_margin
+            xMin -= oppsite_margin
+            yMin -= oppsite_margin
+        } else if (headToCenter[0] < 0 && headToCenter[1] > 0) {
+            // 2사분면
+            xMin -= search_margin
+            yMax += search_margin
+            xMax += oppsite_margin
+            yMin -= oppsite_margin
+        } else if (headToCenter[0] < 0 && headToCenter[1] < 0) {
+            // 3사분면
+            xMin -= search_margin
+            yMin -= search_margin
+            xMax += oppsite_margin
+            yMax += oppsite_margin
+        } else if (headToCenter[0] > 0 && headToCenter[1] < 0) {
+            // 4사분면
+            xMax += search_margin
+            yMin -= search_margin
+            xMin -= oppsite_margin
+            yMax += oppsite_margin
+        } else {
+            xMin -= search_margin
+            xMax += search_margin
+            yMin -= search_margin
+            yMax += search_margin
+        }
     } else {
         if (searchType == 3) {
             // Tail Straight

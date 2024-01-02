@@ -56,6 +56,7 @@ public class UnitDRGenerator: NSObject {
         
         var curAttitudeDr = Attitude(Roll: 0, Pitch: 0, Yaw: 0)
         var curAttitudePdr = Attitude(Roll: 0, Pitch: 0, Yaw: 0)
+        var curAttitudeAuto = Attitude(Roll: 0, Pitch: 0, Yaw: 0)
         
         var unitDistanceDr = UnitDistance()
         var unitDistancePdr = UnitDistance()
@@ -82,7 +83,7 @@ public class UnitDRGenerator: NSObject {
                 prePitch = sensorAtt[1]
             }
             
-            curAttitudePdr = Attitude(Roll: sensorAtt[0], Pitch: sensorAtt[1], Yaw: sensorAtt[2])
+            curAttitudePdr = unitAttitudeEstimator.estimateAtt(time: currentTime, acc: sensorData.acc, gyro: sensorData.gyro, rotMatrix: sensorData.rotationMatrix)
             
             let unitStatus = unitStatusEstimator.estimateStatus(Attitude: curAttitudePdr, isIndexChanged: unitDistancePdr.isIndexChanged, unitMode: unitMode)
             if (!unitStatus && unitMode == MODE_PDR) {
@@ -185,19 +186,19 @@ public class UnitDRGenerator: NSObject {
                 prePitch = sensorAtt[1]
             }
             
-            curAttitudePdr = Attitude(Roll: sensorAtt[0], Pitch: sensorAtt[1], Yaw: sensorAtt[2])
-            curAttitudeDr = unitAttitudeEstimator.estimateAtt(time: currentTime, acc: sensorData.acc, gyro: sensorData.gyro, rotMatrix: sensorData.rotationMatrix)
+//            curAttitudePdr = Attitude(Roll: sensorAtt[0], Pitch: sensorAtt[1], Yaw: sensorAtt[2])
+            curAttitudeAuto = unitAttitudeEstimator.estimateAtt(time: currentTime, acc: sensorData.acc, gyro: sensorData.gyro, rotMatrix: sensorData.rotationMatrix)
             
-            let headingPdr = HF.radian2degree(radian: curAttitudeDr.Yaw)
-            let headingDr = HF.radian2degree(radian: curAttitudeDr.Yaw)
+//            let headingPdr = HF.radian2degree(radian: curAttitudeDr.Yaw)
+            let headingAuto = HF.radian2degree(radian: curAttitudeAuto.Yaw)
             
-            let unitStatusPdr = unitStatusEstimator.estimateStatus(Attitude: curAttitudePdr, isIndexChanged: unitDistancePdr.isIndexChanged, unitMode: MODE_PDR)
+            let unitStatusPdr = unitStatusEstimator.estimateStatus(Attitude: curAttitudeAuto, isIndexChanged: unitDistancePdr.isIndexChanged, unitMode: MODE_PDR)
             let unitStatusDr = unitStatusEstimator.estimateStatus(Attitude: curAttitudeDr, isIndexChanged: unitDistanceDr.isIndexChanged, unitMode: MODE_DR)
             
             if (self.autoMode == 0) {
-                return UnitDRInfo(index: unitIndexAuto, length: unitDistanceAuto.length, heading: headingPdr, velocity: unitDistanceAuto.velocity, lookingFlag: unitStatusPdr, isIndexChanged: unitDistanceAuto.isIndexChanged, autoMode: self.autoMode)
+                return UnitDRInfo(index: unitIndexAuto, length: unitDistanceAuto.length, heading: headingAuto, velocity: unitDistanceAuto.velocity, lookingFlag: unitStatusPdr, isIndexChanged: unitDistanceAuto.isIndexChanged, autoMode: self.autoMode)
             } else {
-                return UnitDRInfo(index: unitIndexAuto, length: unitDistanceAuto.length, heading: headingDr, velocity: unitDistanceAuto.velocity, lookingFlag: unitStatusDr, isIndexChanged: unitDistanceAuto.isIndexChanged, autoMode: self.autoMode)
+                return UnitDRInfo(index: unitIndexAuto, length: unitDistanceAuto.length, heading: headingAuto, velocity: unitDistanceAuto.velocity, lookingFlag: unitStatusDr, isIndexChanged: unitDistanceAuto.isIndexChanged, autoMode: self.autoMode)
             }
         default:
             // (Default : DR Mode)
