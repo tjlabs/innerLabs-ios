@@ -34,6 +34,7 @@ public class DRDistanceEstimator: NSObject {
     public var preVelocitySmoothing: Double = 0
     
     public var velocityScaleFactor: Double = 1.0
+    public var entranceVelocityScaleFactor: Double = 1.0
     public var scVelocityScaleFactor: Double = 1.0
     
     public var distance: Double = 0
@@ -153,7 +154,6 @@ public class DRDistanceEstimator: NSObject {
         
         let velocityRaw = log10(magVarFeature+1)/log10(1.1)
         var velocity = velocityRaw
-//        print(getLocalTimeString() + " , (Jupiter) DRDistanceEstimator : velocityRaw = \(velocityRaw)")
         updateVelocityQueue(data: velocity)
 
         var velocitySmoothing: Double = 0
@@ -165,7 +165,6 @@ public class DRDistanceEstimator: NSObject {
             velocitySmoothing = CF.exponentialMovingAverage(preEMA: preVelocitySmoothing, curValue: velocity, windowSize: Int(SAMPLE_HZ))
         }
         preVelocitySmoothing = velocitySmoothing
-//        print(getLocalTimeString() + " , (Jupiter) DRDistanceEstimator : velocitySmoothing = \(velocitySmoothing)")
         var turnScale = exp(-navGyroZSmoothing/1.6)
         if (turnScale > 0.87) {
             turnScale = 1.0
@@ -179,7 +178,7 @@ public class DRDistanceEstimator: NSObject {
         }
         
         let rflowScale: Double = calRflowVelocityScale(rflowForVelocity: self.rflowForVelocity, isSufficientForVelocity: self.isSufficientRfdVelocityBuffer)
-        var velocityInputScale = velocityInput*self.velocityScaleFactor*self.scVelocityScaleFactor
+        var velocityInputScale = velocityInput*self.velocityScaleFactor*self.entranceVelocityScaleFactor*self.scVelocityScaleFactor
         if velocityInputScale < VELOCITY_MIN {
             velocityInputScale = 0
             if (self.isSufficientRfdBuffer && self.rflow < 0.5) {
@@ -188,13 +187,12 @@ public class DRDistanceEstimator: NSObject {
         } else if velocityInputScale > VELOCITY_MAX {
             velocityInputScale = VELOCITY_MAX
         }
-        
         // RFlow Stop Detection
         if (self.isSufficientRfdBuffer && self.rflow >= RF_SC_THRESHOLD_DR) {
             velocityInputScale = 0
         }
-        var velocityMps = (velocityInputScale/3.6)*turnScale
-
+        
+        let velocityMps = (velocityInputScale/3.6)*turnScale
         finalUnitResult.isIndexChanged = false
         finalUnitResult.velocity = velocityMps
         distance += (velocityMps*(1/SAMPLE_HZ))

@@ -104,6 +104,7 @@
 		B3DE961C2999F65500352F40 /* WardCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3DE961A2999F65500352F40 /* WardCollectionViewCell.swift */; };
 		B3DE961D2999F65500352F40 /* WardCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B3DE961B2999F65500352F40 /* WardCollectionViewCell.xib */; };
 		B3DE961F299A111B00352F40 /* FileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3DE961E299A111B00352F40 /* FileViewController.swift */; };
+		B3DEEDC22B3E818600A47623 /* ASJTM_1F.csv in Resources */ = {isa = PBXBuildFile; fileRef = B3DEEDC12B3E818600A47623 /* ASJTM_1F.csv */; };
 		B3E0A4F62887E51700B88E08 /* Environment.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3E0A4F52887E51700B88E08 /* Environment.swift */; };
 		B3E6C0F8292D6B1400D0AC13 /* ImageCacheManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3E6C0F7292D6B1400D0AC13 /* ImageCacheManager.swift */; };
 		B3F5C77E282A5408009BEDB9 /* Network.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3F5C77D282A5408009BEDB9 /* Network.swift */; };
@@ -237,6 +238,7 @@
 		B3DE961A2999F65500352F40 /* WardCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WardCollectionViewCell.swift; sourceTree = "<group>"; };
 		B3DE961B2999F65500352F40 /* WardCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = WardCollectionViewCell.xib; sourceTree = "<group>"; };
 		B3DE961E299A111B00352F40 /* FileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileViewController.swift; sourceTree = "<group>"; };
+		B3DEEDC12B3E818600A47623 /* ASJTM_1F.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ASJTM_1F.csv; sourceTree = "<group>"; };
 		B3E0A4F52887E51700B88E08 /* Environment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Environment.swift; sourceTree = "<group>"; };
 		B3E6C0F7292D6B1400D0AC13 /* ImageCacheManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageCacheManager.swift; sourceTree = "<group>"; };
 		B3F5C77D282A5408009BEDB9 /* Network.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Network.swift; sourceTree = "<group>"; };
@@ -342,6 +344,7 @@
 				B34111AF2AD6503300CFA422 /* L1_1F.csv */,
 				B34111B52AD6503400CFA422 /* L1_2F.csv */,
 				B34111B72AD6503400CFA422 /* L1_3F.csv */,
+				B3DEEDC12B3E818600A47623 /* ASJTM_1F.csv */,
 				B34111B32AD6503400CFA422 /* L3_2F.csv */,
 				B34111C32AD6694300CFA422 /* L3_1F.csv */,
 				B34111B42AD6503400CFA422 /* L3_3F.csv */,
@@ -668,6 +671,7 @@
 				B30638F72A36E58800C7FF89 /* COEX_B1.csv in Resources */,
 				B3D488F6289B8B4900A8154C /* GoogleService-Info.plist in Resources */,
 				B3FD74EC2869A38800CD4D74 /* Gallery_4F.csv in Resources */,
+				B3DEEDC22B3E818600A47623 /* ASJTM_1F.csv in Resources */,
 				B3DE961D2999F65500352F40 /* WardCollectionViewCell.xib in Resources */,
 				B30D4F89298A0BF000BFC124 /* morguard_6F.csv in Resources */,
 				B3B2963C29B9756F0010CC64 /* SecretConfig.xcconfig in Resources */,
@@ -1064,14 +1068,14 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = JupiterSDK_Example.entitlements;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_TEAM = G75UAV755N;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				INFOPLIST_FILE = JupiterSDK/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.lifestyle";
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 1.8.29;
+				MARKETING_VERSION = 1.8.32;
 				MODULE_NAME = ExampleApp;
 				PRODUCT_BUNDLE_IDENTIFIER = com.tjlabscorp.ios.innerLabs;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1086,7 +1090,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = JupiterSDK_ExampleRelease.entitlements;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_TEAM = G75UAV755N;
 				EXCLUDED_ARCHS = "";
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
@@ -1094,7 +1098,7 @@
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.lifestyle";
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 1.8.29;
+				MARKETING_VERSION = 1.8.32;
 				MODULE_NAME = ExampleApp;
 				PRODUCT_BUNDLE_IDENTIFIER = com.tjlabscorp.ios.innerLabs;
 				PRODUCT_NAME = "$(TARGET_NAME)";
