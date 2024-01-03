@@ -74,9 +74,7 @@ public class ParameterEstimator {
             
             let amplitude: Double = abs(avgMax - avgMin)
             
-            let digit: Double = pow(10, 4)
-            let normalizationScale: Double = round(((standardAmplitude/amplitude)*digit)/digit)
-            
+            let normalizationScale: Double = standardAmplitude/amplitude
             updateScaleQueue(data: normalizationScale)
             return (true, normalizationScale)
         }

@@ -321,7 +321,6 @@ public struct CoarseLocationEstimationResult: Codable {
 }
 
 
-
 // Fine Location Tracking
 struct FineLocationTracking: Encodable {
     var user_id: String
@@ -338,14 +337,6 @@ struct FineLocationTracking: Encodable {
     var tail_index: Int
 }
 
-public struct FineLocationTrackingListFromServer: Codable {
-    public var flt_outputs: [FineLocationTrackingFromServer]
-    
-    public init() {
-        self.flt_outputs = []
-    }
-}
-
 public struct FineLocationTrackingFromServer: Codable {
     public var mobile_time: Int
     public var building_name: String
@@ -354,12 +345,11 @@ public struct FineLocationTrackingFromServer: Codable {
     public var x: Double
     public var y: Double
     public var absolute_heading: Double
+    public var phase: Int
     public var calculated_time: Double
     public var index: Int
     public var sc_compensation: Double
     public var search_direction: Int
-    public var cumulative_length: Double
-    public var channel_condition: Bool
     
     public init() {
         self.mobile_time = 0
@@ -369,12 +359,11 @@ public struct FineLocationTrackingFromServer: Codable {
         self.x = 0
         self.y = 0
         self.absolute_heading = 0
+        self.phase = 0
         self.calculated_time = 0
         self.index = 0
         self.sc_compensation = 0
         self.search_direction = 0
-        self.cumulative_length = 0
-        self.channel_condition = false
     }
 }
 
@@ -393,8 +382,8 @@ public struct FineLocationTrackingResult: Codable {
     public var mode: String
     public var ble_only_position: Bool
     public var isIndoor: Bool
-    public var validity: Bool
-    public var validity_flag: Int
+//    public var validity: Bool
+//    public var message: String
     
     public init() {
         self.mobile_time = 0
@@ -411,8 +400,8 @@ public struct FineLocationTrackingResult: Codable {
         self.mode = ""
         self.ble_only_position = false
         self.isIndoor = false
-        self.validity = false
-        self.validity_flag = 0
+//        self.validity = true
+//        self.message = ""
     }
 }
 
@@ -647,12 +636,11 @@ public struct RecentResultFromServer: Codable {
     public var x: Double
     public var y: Double
     public var absolute_heading: Double
+    public var phase: Int
     public var calculated_time: Double
     public var index: Int
     public var rss_compensation: Int
     public var sc_compensation: Double
-    public var cumulative_length: Double
-    public var channel_condition: Bool
     
     public init() {
         self.mobile_time = 0
@@ -662,12 +650,11 @@ public struct RecentResultFromServer: Codable {
         self.x = 0
         self.y = 0
         self.absolute_heading = 0
+        self.phase = 0
         self.calculated_time = 0
         self.index = 0
         self.rss_compensation = 0
         self.sc_compensation = 0
-        self.cumulative_length = 0
-        self.channel_condition = false
     }
 }
 

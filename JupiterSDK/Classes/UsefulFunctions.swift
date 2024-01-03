@@ -34,7 +34,7 @@ public func containsArray(_ array2D: [[Double]], _ targetArray: [Double]) -> Boo
     return false
 }
 
-public func fromServerToResult(fromServer: FineLocationTrackingFromServer, velocity: Double, resultPhase: Int) -> FineLocationTrackingResult {
+public func fromServerToResult(fromServer: FineLocationTrackingFromServer, velocity: Double) -> FineLocationTrackingResult {
     var result = FineLocationTrackingResult()
     
     result.mobile_time = fromServer.mobile_time
@@ -43,8 +43,8 @@ public func fromServerToResult(fromServer: FineLocationTrackingFromServer, veloc
     result.scc = fromServer.scc
     result.x = fromServer.x
     result.y = fromServer.y
-    result.phase = resultPhase
     result.absolute_heading = fromServer.absolute_heading
+    result.phase = fromServer.phase
     result.calculated_time = fromServer.calculated_time
     result.index = fromServer.index
     result.velocity = velocity
@@ -326,29 +326,6 @@ public func isTrajectoryStraight(for array: [Double], size: Int, mode: String, c
     return 0
 }
 
-public func isTailTurning(for array: [Double], size: Int, mode: String, conditionPdr: Int, conditionDr: Int) -> Bool {
-    var CONDITON: Int = 10
-    if (mode == "pdr") {
-        CONDITON = conditionPdr
-    } else {
-        CONDITON = conditionDr
-    }
-    if (size < CONDITON) {
-        return false
-    }
-    
-    let straightAngle: Double = 1.5
-
-    // Tail Straight
-    let firstTenValues = Array(array[0..<CONDITON])
-    let circularStandardDeviationTail = circularStandardDeviation(for: firstTenValues)
-    if (circularStandardDeviationTail > straightAngle) {
-        return true
-    }
-    
-    return false
-}
-
 public func getTrajectoryFromIndex(from userTrajectory: [TrajectoryInfo], index: Int) -> [TrajectoryInfo] {
     var result: [TrajectoryInfo] = []
     
@@ -370,24 +347,6 @@ public func getTrajectoryFromIndex(from userTrajectory: [TrajectoryInfo], index:
         result.append(currentTrajectory[i])
     }
     
-    return result
-}
-
-public func getValidTrajectory(userTrajectory: [TrajectoryInfo]) -> [TrajectoryInfo] {
-    var result = [TrajectoryInfo]()
-    
-    var validIndex: Int = 0
-    for i in 0..<userTrajectory.count{
-        if (userTrajectory[i].lookingFlag) {
-            validIndex = i
-            break
-        }
-    }
-    
-    for i in validIndex..<userTrajectory.count{
-        result.append(userTrajectory[i])
-    }
-
     return result
 }
 
@@ -455,64 +414,6 @@ public func cutTrajectoryFromLast(from userTrajectory: [TrajectoryInfo], userLen
     }
 }
 
-public func minMaxValuesInRectangles(for matrix: [[Double]]) -> [(min: Double, max: Double)] {
-    guard let firstRow = matrix.first, !firstRow.isEmpty else {
-        return []
-    }
-
-    var result: [(min: Double, max: Double)] = []
-
-    for columnIndex in 0..<firstRow.count {
-        var columnValues = matrix.map { $0[columnIndex] }
-        guard let minValue = columnValues.min(), let maxValue = columnValues.max() else {
-            // Handle the case where the column is empty
-            continue
-        }
-        result.append((min: minValue, max: maxValue))
-    }
-
-    return result
-}
-
-
-public func rotatePoint(x: Double, y: Double, angleDegrees: Double) -> [Double] {
-    let angleRadians = angleDegrees
-    let xRotated = x * cos(angleRadians) - y * sin(angleRadians)
-    let yRotated = x * sin(angleRadians) + y * cos(angleRadians)
-    
-    return [xRotated, yRotated]
-}
-
-public func calculateMinMaxValues(rectangle: [[Double]], angleOfRotation: Double) -> [Int] {
-    var rotatedRectangles = [[Double]]()
-    
-    var minX = 0
-    var minY = 0
-    var maxX = 0
-    var maxY = 0
-    
-    for i in 0..<rectangle.count {
-        let coord_1: [Double] = rotatePoint(x: rectangle[i][0], y: rectangle[i][1], angleDegrees: angleOfRotation-5)
-        let coord_2: [Double] = rotatePoint(x: rectangle[i][0], y: rectangle[i][1], angleDegrees: 0)
-        let coord_3: [Double] = rotatePoint(x: rectangle[i][0], y: rectangle[i][1], angleDegrees: angleOfRotation+5)
-        
-        rotatedRectangles.append(coord_1)
-        rotatedRectangles.append(coord_2)
-        rotatedRectangles.append(coord_3)
-    }
-    
-    if (!rotatedRectangles.isEmpty) {
-        let minMaxValues = minMaxValuesInRectangles(for: rotatedRectangles)
-        for (index, values) in minMaxValues.enumerated() {
-            print("Column \(index + 1): Min = \(values.min), Max = \(values.max)")
-        }
-    } else {
-        
-    }
-    
-    return [minX, minY, maxX, maxY]
-}
-
 public func getSearchCoordinates(areaMinMax: [Double], interval: Double) -> [[Double]] {
     var coordinates: [[Double]] = []
     
@@ -538,7 +439,7 @@ public func getSearchCoordinates(areaMinMax: [Double], interval: Double) -> [[Do
     return coordinates
 }
 
-public func getSearchAreaMinMax(xyMinMax: [Double], heading: [Double], headCoord: [Double], searchType: Int, lengthCondition: Double, diagonalLengthRatio: Double) -> [Double] {
+public func getSearchAreaMinMax(xyMinMax: [Double], heading: [Double], recentScc: Double, searchType: Int, lengthCondition: Double) -> [Double] {
     var areaMinMax: [Double] = []
     
     var xMin = xyMinMax[0]
@@ -557,153 +458,108 @@ public func getSearchAreaMinMax(xyMinMax: [Double], heading: [Double], headCoord
     let endCos = cos(headingEnd*D2R)
     let endSin = sin(headingEnd*D2R)
     
-    if (searchType == -1) {
-//        let requestSteps: Double = 10
-//        let unitLength: Double = 0.6
-//        let search_margin = requestSteps*unitLength
-        var search_margin = (12*diagonalLengthRatio)-2
-        if (search_margin <= 2) {
-            search_margin = 2
-        }
-        let oppsite_margin = search_margin*0.6
-        
-        let centerCoord = [(xMax+xMin)/2, (yMax+yMin)/2]
-        let headToCenter = [headCoord[0]-centerCoord[0], headCoord[1]-centerCoord[1]]
-        
-        if (headToCenter[0] > 0 && headToCenter[1] > 0) {
-            // 1사분면
-            xMax += search_margin
-            yMax += search_margin
-            xMin -= oppsite_margin
-            yMin -= oppsite_margin
-        } else if (headToCenter[0] < 0 && headToCenter[1] > 0) {
-            // 2사분면
-            xMin -= search_margin
-            yMax += search_margin
-            xMax += oppsite_margin
-            yMin -= oppsite_margin
-        } else if (headToCenter[0] < 0 && headToCenter[1] < 0) {
-            // 3사분면
-            xMin -= search_margin
-            yMin -= search_margin
-            xMax += oppsite_margin
-            yMax += oppsite_margin
-        } else if (headToCenter[0] > 0 && headToCenter[1] < 0) {
-            // 4사분면
-            xMax += search_margin
-            yMin -= search_margin
-            xMin -= oppsite_margin
-            yMax += oppsite_margin
+    if (searchType == 3) {
+        // Tail Straight
+        if (startCos > 0) {
+            xMin = xMin - SEARCH_LENGTH*startCos
+            xMax = xMax + SEARCH_LENGTH*startCos
         } else {
-            xMin -= search_margin
-            xMax += search_margin
-            yMin -= search_margin
-            yMax += search_margin
+            xMin = xMin + SEARCH_LENGTH*startCos
+            xMax = xMax - SEARCH_LENGTH*startCos
+        }
+
+        if (startSin > 0) {
+            yMin = yMin - SEARCH_LENGTH*startSin
+            yMax = yMax + SEARCH_LENGTH*startSin
+        } else {
+            yMin = yMin + SEARCH_LENGTH*startSin
+            yMax = yMax - SEARCH_LENGTH*startSin
+        }
+
+        if (endCos > 0) {
+            xMin = xMin - 1.2*SEARCH_LENGTH*endCos
+            xMax = xMax + 1.2*SEARCH_LENGTH*endCos
+        } else {
+            xMin = xMin + 1.2*SEARCH_LENGTH*endCos
+            xMax = xMax - 1.2*SEARCH_LENGTH*endCos
+        }
+
+        if (endSin > 0) {
+            yMin = yMin - 1.2*SEARCH_LENGTH*endSin
+            yMax = yMax + 1.2*SEARCH_LENGTH*endSin
+        } else {
+            yMin = yMin + 1.2*SEARCH_LENGTH*endSin
+            yMax = yMax - 1.2*SEARCH_LENGTH*endSin
         }
     } else {
-        if (searchType == 3) {
-            // Tail Straight
-            if (startCos > 0) {
-                xMin = xMin - SEARCH_LENGTH*startCos
-                xMax = xMax + SEARCH_LENGTH*startCos
-            } else {
-                xMin = xMin + SEARCH_LENGTH*startCos
-                xMax = xMax - SEARCH_LENGTH*startCos
-            }
-
-            if (startSin > 0) {
-                yMin = yMin - SEARCH_LENGTH*startSin
-                yMax = yMax + SEARCH_LENGTH*startSin
-            } else {
-                yMin = yMin + SEARCH_LENGTH*startSin
-                yMax = yMax - SEARCH_LENGTH*startSin
-            }
-
-            if (endCos > 0) {
-                xMin = xMin - 1.2*SEARCH_LENGTH*endCos
-                xMax = xMax + 1.2*SEARCH_LENGTH*endCos
-            } else {
-                xMin = xMin + 1.2*SEARCH_LENGTH*endCos
-                xMax = xMax - 1.2*SEARCH_LENGTH*endCos
-            }
-
-            if (endSin > 0) {
-                yMin = yMin - 1.2*SEARCH_LENGTH*endSin
-                yMax = yMax + 1.2*SEARCH_LENGTH*endSin
-            } else {
-                yMin = yMin + 1.2*SEARCH_LENGTH*endSin
-                yMax = yMax - 1.2*SEARCH_LENGTH*endSin
-            }
+        // All & Head Straight
+        if (startCos > 0) {
+            xMin = xMin - 1.2*SEARCH_LENGTH*startCos
+            xMax = xMax + 1.2*SEARCH_LENGTH*startCos
         } else {
-            // All & Head Straight
-            if (startCos > 0) {
-                xMin = xMin - 1.2*SEARCH_LENGTH*startCos
-                xMax = xMax + 1.2*SEARCH_LENGTH*startCos
-            } else {
-                xMin = xMin + 1.2*SEARCH_LENGTH*startCos
-                xMax = xMax - 1.2*SEARCH_LENGTH*startCos
-            }
-
-            if (startSin > 0) {
-                yMin = yMin - 1.2*SEARCH_LENGTH*startSin
-                yMax = yMax + 1.2*SEARCH_LENGTH*startSin
-            } else {
-                yMin = yMin + 1.2*SEARCH_LENGTH*startSin
-                yMax = yMax - 1.2*SEARCH_LENGTH*startSin
-            }
-
-            if (endCos > 0) {
-                xMin = xMin - SEARCH_LENGTH*endCos
-                xMax = xMax + SEARCH_LENGTH*endCos
-            } else {
-                xMin = xMin + SEARCH_LENGTH*endCos
-                xMax = xMax - SEARCH_LENGTH*endCos
-            }
-
-            if (endSin > 0) {
-                yMin = yMin - SEARCH_LENGTH*endSin
-                yMax = yMax + SEARCH_LENGTH*endSin
-            } else {
-                yMin = yMin + SEARCH_LENGTH*endSin
-                yMax = yMax - SEARCH_LENGTH*endSin
-            }
-        }
-        
-        // 직선인 경우
-        if (abs(xMin - xMax) < 5.0) {
-            xMin = xMin - lengthCondition*0.05
-            xMax = xMax + lengthCondition*0.05
+            xMin = xMin + 1.2*SEARCH_LENGTH*startCos
+            xMax = xMax - 1.2*SEARCH_LENGTH*startCos
         }
 
-        if (abs(yMin - yMax) < 5.0) {
-            yMin = yMin - lengthCondition*0.05
-            yMax = yMax + lengthCondition*0.05
+        if (startSin > 0) {
+            yMin = yMin - 1.2*SEARCH_LENGTH*startSin
+            yMax = yMax + 1.2*SEARCH_LENGTH*startSin
+        } else {
+            yMin = yMin + 1.2*SEARCH_LENGTH*startSin
+            yMax = yMax - 1.2*SEARCH_LENGTH*startSin
         }
-        
-        // U-Turn인 경우
-        let diffHeading = compensateHeading(heading: abs(headingStart - headingEnd))
-        let diffX = abs(xMax - xMin)
-        let diffY = abs(yMax - yMin)
-        let diffXy = abs(diffX - diffY)*0.2
-        
-        if (diffHeading > 150) {
+
+        if (endCos > 0) {
+            xMin = xMin - SEARCH_LENGTH*endCos
+            xMax = xMax + SEARCH_LENGTH*endCos
+        } else {
+            xMin = xMin + SEARCH_LENGTH*endCos
+            xMax = xMax - SEARCH_LENGTH*endCos
+        }
+
+        if (endSin > 0) {
+            yMin = yMin - SEARCH_LENGTH*endSin
+            yMax = yMax + SEARCH_LENGTH*endSin
+        } else {
+            yMin = yMin + SEARCH_LENGTH*endSin
+            yMax = yMax - SEARCH_LENGTH*endSin
+        }
+    }
+    
+    // 직선인 경우
+    if (abs(xMin - xMax) < 5.0) {
+        xMin = xMin - lengthCondition*0.05
+        xMax = xMax + lengthCondition*0.05
+    }
+
+    if (abs(yMin - yMax) < 5.0) {
+        yMin = yMin - lengthCondition*0.05
+        yMax = yMax + lengthCondition*0.05
+    }
+    
+    // U-Turn인 경우
+    let diffHeading = compensateHeading(heading: abs(headingStart - headingEnd))
+    let diffX = abs(xMax - xMin)
+    let diffY = abs(yMax - yMin)
+    let diffXy = abs(diffX - diffY)*0.2
+    
+    if (diffHeading > 150) {
+        if (diffX < diffY) {
+            xMin = xMin - diffXy
+            xMax = xMax + diffXy
+        } else {
+            yMin = yMin - diffXy
+            yMax = yMax + diffXy
+        }
+    } else {
+        // Check ㄹ Trajectory
+        if (diffHeading < 30 && searchType != 1) {
             if (diffX < diffY) {
                 xMin = xMin - diffXy
                 xMax = xMax + diffXy
             } else {
                 yMin = yMin - diffXy
                 yMax = yMax + diffXy
-            }
-        } else {
-            // Check ㄹ Trajectory
-            if (diffHeading < 30 && searchType != 1) {
-                if (diffX < diffY) {
-                    xMin = xMin - diffXy
-                    xMax = xMax + diffXy
-                } else {
-                    yMin = yMin - diffXy
-                    yMax = yMax + diffXy
-                }
             }
         }
     }
@@ -769,36 +625,28 @@ public func convertToValidSearchRange(inputRange: [Int], pathPointMinMax: [Doubl
 }
 
 public func extractSectionWithLeastChange(inputArray: [Double]) -> [Double] {
-    var resultArray = [Double]()
     guard inputArray.count > 7 else {
         return []
     }
-    
-    var compensatedArray = [Double] (repeating: 0, count: inputArray.count)
-    for i in 0..<inputArray.count {
-        compensatedArray[i] = compensateHeading(heading: inputArray[i])
-    }
-    
     var bestSliceStartIndex = 0
     var bestSliceEndIndex = 0
 
     for startIndex in 0..<(inputArray.count-6) {
         for endIndex in (startIndex+7)..<inputArray.count {
-            let slice = Array(compensatedArray[startIndex...endIndex])
-            let circularStd = circularStandardDeviation(for: slice)
-            if circularStd < 5 && slice.count > bestSliceEndIndex - bestSliceStartIndex {
+            let slice = Array(inputArray[startIndex...endIndex])
+            guard let minSliceValue = slice.min(), let maxSliceValue = slice.max() else {
+                continue
+            }
+
+            let currentDifference = abs(maxSliceValue - minSliceValue)
+            if currentDifference < 5 && slice.count > bestSliceEndIndex - bestSliceStartIndex {
                 bestSliceStartIndex = startIndex
                 bestSliceEndIndex = endIndex
             }
         }
     }
-    
-    resultArray = Array(inputArray[bestSliceStartIndex...bestSliceEndIndex])
-    if resultArray.count > 7 {
-        return resultArray
-    } else {
-        return []
-    }
+
+    return Array(inputArray[bestSliceStartIndex...bestSliceEndIndex])
 }
 
 public func propagateUsingUvd(drBuffer: [UnitDRInfo], result: FineLocationTrackingFromServer) -> (Bool, [Double]) {
