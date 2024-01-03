@@ -182,6 +182,7 @@ public class ServiceManager: Observation {
     var phase2Range: [Int] = []
     var phase2Direction: [Int] = []
     var preSearchRange: [Int] = []
+    var serverResultBuffer: [FineLocationTrackingFromServer] = []
     var DR_BUFFER_SIZE: Int = 30
     var DR_BUFFER_SIZE_FOR_STRAIGHT: Int = 10
     var USER_TRAJECTORY_LENGTH_ORIGIN: Double = 60
@@ -621,6 +622,10 @@ public class ServiceManager: Observation {
                                                         if let responseData = data {
                                                             if let utf8Text = String(data: responseData, encoding: .utf8) {
                                                                 ( pmCalculator.PathType[key], pmCalculator.PathPoint[key], pmCalculator.PathMagScale[key], pmCalculator.PathHeading[key] ) = pmCalculator.parseRoad(data: utf8Text)
+                                                                phaseController.pmCalculator.PathType[key] = pmCalculator.PathType[key]
+                                                                phaseController.pmCalculator.PathPoint[key] = pmCalculator.PathPoint[key]
+                                                                phaseController.pmCalculator.PathMagScale[key] = pmCalculator.PathMagScale[key]
+                                                                phaseController.pmCalculator.PathHeading[key] = pmCalculator.PathHeading[key]
                                                                 self.isLoadEnd[key] = [true, true]
                                                             }
                                                         }
@@ -657,6 +662,7 @@ public class ServiceManager: Observation {
                                                         let key: String = "\(buildingGeo)_\(levelGeo)"
                                                         self.EntranceArea[key] = result.entrance_area
                                                         pmCalculator.EntranceMatchingArea[key] = result.entrance_matching_area
+                                                        phaseController.pmCalculator.EntranceMatchingArea[key] = pmCalculator.EntranceMatchingArea[key]
                                                         self.LevelChangeArea[key] = result.level_change_area
                                                         
                                                         countBuildingLevel += 1
@@ -1449,6 +1455,10 @@ public class ServiceManager: Observation {
                                         if let responseData = data {
                                             if let utf8Text = String(data: responseData, encoding: .utf8) {
                                                 ( pmCalculator.PathType[key], pmCalculator.PathPoint[key], pmCalculator.PathMagScale[key], pmCalculator.PathHeading[key] ) = pmCalculator.parseRoad(data: utf8Text)
+                                                phaseController.pmCalculator.PathType[key] = pmCalculator.PathType[key]
+                                                phaseController.pmCalculator.PathPoint[key] = pmCalculator.PathPoint[key]
+                                                phaseController.pmCalculator.PathMagScale[key] = pmCalculator.PathMagScale[key]
+                                                phaseController.pmCalculator.PathHeading[key] = pmCalculator.PathHeading[key]
                                                 self.LoadPathPoint[key] = true
                                                 let log: String = localTime + " , (Jupiter) Success : Load \(buildingName) \(levelName) Path-Point (when PP was empty)"
                                                 print(log)
@@ -1510,6 +1520,10 @@ public class ServiceManager: Observation {
                                         if let responseData = data {
                                             if let utf8Text = String(data: responseData, encoding: .utf8) {
                                                 ( pmCalculator.PathType[key], pmCalculator.PathPoint[key], pmCalculator.PathMagScale[key], pmCalculator.PathHeading[key] ) = pmCalculator.parseRoad(data: utf8Text)
+                                                phaseController.pmCalculator.PathType[key] = pmCalculator.PathType[key]
+                                                phaseController.pmCalculator.PathPoint[key] = pmCalculator.PathPoint[key]
+                                                phaseController.pmCalculator.PathMagScale[key] = pmCalculator.PathMagScale[key]
+                                                phaseController.pmCalculator.PathHeading[key] = pmCalculator.PathHeading[key]
                                                 self.LoadPathPoint[key] = true
                                                 let log: String = localTime + " , (Jupiter) Success : Load \(buildingName) \(levelName) Path-Point (when PP was empty)"
                                                 print(log)
@@ -2277,6 +2291,13 @@ public class ServiceManager: Observation {
         } else {
             let newTrajectoryInfo = checkAccumulatedLength(userTrajectory: self.userTrajectoryInfo, LENGTH_CONDITION: LENGTH_CONDITION)
             self.userTrajectoryInfo = newTrajectoryInfo
+        }
+    }
+    
+    func accumulateServerResultAndRemoveOldest(serverResult: FineLocationTrackingFromServer) {
+        self.serverResultBuffer.append(serverResult)
+        if (self.serverResultBuffer.count > 10) {
+            self.serverResultBuffer.remove(at: 0)
         }
     }
     
@@ -3313,7 +3334,9 @@ public class ServiceManager: Observation {
                 }
                 
                 if (result.x != 0 && result.y != 0) {
-                    let resultPhase = phaseController.controlJupiterPhase(serverResult: result, inputPhase: inputPhase, mode: self.runMode, isVenusMode: self.isVenusMode)
+                    self.accumulateServerResultAndRemoveOldest(serverResult: result)
+                    let resultPhase = phaseController.controlPhase(serverResultArray: self.serverResultBuffer, drBuffer: self.unitDrBuffer, UVD_INTERVAL: self.UVD_INPUT_NUM, TRAJ_LENGTH: self.USER_TRAJECTORY_LENGTH, inputPhase: inputPhase, mode: self.runMode, isVenusMode: self.isVenusMode)
+//                    let resultPhase = phaseController.controlJupiterPhase(serverResult: result, inputPhase: inputPhase, mode: self.runMode, isVenusMode: self.isVenusMode)
                     self.outputResult.phase = self.phase
                     
                     displayOutput.indexRx = result.index
@@ -3631,15 +3654,14 @@ public class ServiceManager: Observation {
                     }
                     
                     if (result.mobile_time > self.preOutputMobileTime) {
-                        let resultPhase = phaseController.controlJupiterPhase(serverResult: result, inputPhase: inputPhase, mode: self.runMode, isVenusMode: self.isVenusMode)
+                        self.accumulateServerResultAndRemoveOldest(serverResult: result)
+                        let resultPhase = phaseController.controlPhase(serverResultArray: self.serverResultBuffer, drBuffer: self.unitDrBuffer, UVD_INTERVAL: self.UVD_INPUT_NUM, TRAJ_LENGTH: self.USER_TRAJECTORY_LENGTH, inputPhase: inputPhase, mode: self.runMode, isVenusMode: self.isVenusMode)
+//                        let resultPhase = phaseController.controlJupiterPhase(serverResult: result, inputPhase: inputPhase, mode: self.runMode, isVenusMode: self.isVenusMode)
                         self.isPhaseBreak = resultPhase.1
                         if (resultPhase.1) {
                             self.isNeedTrajInit = true
                             self.phaseBreakResult = result
                         }
-//                        displayOutput.indexRx = result.index
-//                        displayOutput.scc = result.scc
-//                        displayOutput.phase = String(self.phase)
                         
                         let buildingName = result.building_name
                         let levelName = result.level_name
@@ -3825,7 +3847,6 @@ public class ServiceManager: Observation {
                             }
                         } else {
                             // Kalman Filter가 동작 중이면서 위치 요청시 input의 phase 가 1~3 인 경우
-//                            self.phaseBreakResult = result
                             let propagationResult = propagateUsingUvd(drBuffer: self.unitDrBuffer, result: result)
                             let propagationValues: [Double] = propagationResult.1
                             var propagatedResult: [Double] = [resultCorrected.1[0]+propagationValues[0] , resultCorrected.1[1]+propagationValues[1], resultCorrected.1[2]+propagationValues[2]]
@@ -3856,9 +3877,6 @@ public class ServiceManager: Observation {
                                     self.updateAllResult(result: resultCorrected.1, inputPhase: inputPhase, mode: self.runMode)
                                 }
                             }
-//                            else {
-//                                self.isNeedTrajInit = true
-//                            }
                             var timUpdateOutputCopy = self.timeUpdateOutput
                             
                             let resultLevelName = removeLevelDirectionString(levelName: result.level_name)
@@ -4020,7 +4038,9 @@ public class ServiceManager: Observation {
                 }
                 
                 if (result.index > self.indexPast) {
-                    let resultPhase = phaseController.controlJupiterPhase(serverResult: result, inputPhase: inputPhase, mode: self.runMode, isVenusMode: self.isVenusMode)
+                    self.accumulateServerResultAndRemoveOldest(serverResult: result)
+                    let resultPhase = phaseController.controlPhase(serverResultArray: self.serverResultBuffer, drBuffer: self.unitDrBuffer, UVD_INTERVAL: self.UVD_INPUT_NUM, TRAJ_LENGTH: self.USER_TRAJECTORY_LENGTH, inputPhase: inputPhase, mode: self.runMode, isVenusMode: self.isVenusMode)
+//                    let resultPhase = phaseController.controlJupiterPhase(serverResult: result, inputPhase: inputPhase, mode: self.runMode, isVenusMode: self.isVenusMode)
                     self.pastSearchDirection = result.search_direction
                     if (self.isActiveKf && resultPhase.0 == 4) {
                         if (!(result.x == 0 && result.y == 0) && !self.isDetermineSpot && self.phase != 2) {

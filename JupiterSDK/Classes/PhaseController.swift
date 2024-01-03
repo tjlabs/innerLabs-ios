@@ -14,6 +14,8 @@ public class PhaseController {
     var phase2count: Int = 0
     var phase3count: Int = 0
     
+    var pmCalculator = PathMatchingCalculator()
+    
     init() {
         self.PHASE2_LENGTH_CONDITION_PDR = self.PHASE3_LENGTH_CONDITION_PDR-self.TRAJ_BIAS
         self.PHASE2_LENGTH_CONDITION_DR = self.PHASE3_LENGTH_CONDITION_DR-self.TRAJ_BIAS
@@ -36,7 +38,6 @@ public class PhaseController {
             return (phase, isPhaseBreak)
         }
         
-//        print(getLocalTimeString() + " , (Jupiter) Phase Control : inputPhase = \(inputPhase)")
         switch (inputPhase) {
         case 0:
             phase = self.phase1control(serverResult: serverResult, mode: mode)
@@ -195,5 +196,111 @@ public class PhaseController {
         }
         
         return (isInterrupt, phase)
+    }
+    
+    public func controlPhase(serverResultArray: [FineLocationTrackingFromServer], drBuffer: [UnitDRInfo], UVD_INTERVAL: Int, TRAJ_LENGTH: Double, inputPhase: Int, mode: String, isVenusMode: Bool) -> (Int, Bool) {
+        var phase: Int = 0
+        var isPhaseBreak: Bool = false
+        
+        if (isVenusMode) {
+            phase = 1
+            return (phase, isPhaseBreak)
+        }
+        
+        let currentResult: FineLocationTrackingFromServer = serverResultArray[serverResultArray.count-1]
+        switch (inputPhase) {
+        case 0:
+            phase = self.phase1control(serverResult: currentResult, mode: mode)
+        case 1:
+            phase = self.phase1control(serverResult: currentResult, mode: mode)
+        case 2:
+            phase = self.checkScResultConnectionForPhase4(inputPhase: inputPhase, serverResultArray: serverResultArray, drBuffer: drBuffer, UVD_INTERVAL: UVD_INTERVAL, TRAJ_LENGTH: TRAJ_LENGTH)
+//            phase = self.phase2control(serverResult: serverResult, mode: mode)
+        case 3:
+            phase = self.checkScResultConnectionForPhase4(inputPhase: inputPhase, serverResultArray: serverResultArray, drBuffer: drBuffer, UVD_INTERVAL: UVD_INTERVAL, TRAJ_LENGTH: TRAJ_LENGTH)
+//            phase = self.phase3control(serverResult: serverResult, mode: mode)
+        case 4:
+            phase = self.phase4control(serverResult: currentResult, mode: mode)
+        default:
+            phase = 0
+        }
+        
+        if (inputPhase >= 1 && phase < 2) {
+            isPhaseBreak = true
+        }
+        
+        return (phase, isPhaseBreak)
+    }
+    
+    public func checkScResultConnectionForPhase4(inputPhase: Int, serverResultArray: [FineLocationTrackingFromServer], drBuffer: [UnitDRInfo], UVD_INTERVAL: Int, TRAJ_LENGTH: Double) -> Int {
+        var phase: Int = inputPhase
+        let sccCondition: Double = 0.55
+
+        if (serverResultArray.count < 2) {
+            return phase
+        } else {
+            let currentResult: FineLocationTrackingFromServer = serverResultArray[serverResultArray.count-1]
+            let previousResult: FineLocationTrackingFromServer = serverResultArray[serverResultArray.count-2]
+            if (currentResult.scc < sccCondition) {
+                return phase
+            } else if (previousResult.index == 0 || currentResult.index == 0) {
+                return phase
+            } else if (currentResult.cumulative_length < (TRAJ_LENGTH/2)) {
+                return phase
+            } else {
+                if (currentResult.index - previousResult.index) > UVD_INTERVAL*2 {
+                    return phase
+                } else {
+                    print(getLocalTimeString() + " , (Jupiter) Phase Control : previous index = \(previousResult.index) // current index = \(currentResult.index)")
+                    var drBufferStartIndex: Int = 0
+                    var drBufferEndIndex: Int = 0
+                    var headingCompensation: Double = 0
+                    print(getLocalTimeString() + " , (Jupiter) Phase Control : drBuffer = \(drBuffer)")
+                    for i in 0..<drBuffer.count {
+                        if drBuffer[i].index == previousResult.index {
+                            drBufferStartIndex = i
+                            headingCompensation = previousResult.absolute_heading -  drBuffer[i].heading
+                            print(getLocalTimeString() + " , (Jupiter) Phase Control : drBufferStartIndex = \(drBuffer[drBufferStartIndex].index)")
+                        }
+                        
+                        if drBuffer[i].index == currentResult.index {
+                            drBufferEndIndex = i
+                            print(getLocalTimeString() + " , (Jupiter) Phase Control : drBufferEndIndex = \(drBuffer[drBufferEndIndex].index)")
+                        }
+                    }
+                    var propagatedXyh: [Double] = [previousResult.x, previousResult.y, previousResult.absolute_heading]
+                    for i in drBufferStartIndex..<drBufferEndIndex {
+                        let length = drBuffer[i].length
+                        let heading = drBuffer[i].heading + headingCompensation
+                        let dx = length*cos(heading*D2R)
+                        let dy = length*sin(heading*D2R)
+                        
+                        propagatedXyh[0] += dx
+                        propagatedXyh[1] += dy
+                    }
+                    let dh = drBuffer[drBufferEndIndex].heading - drBuffer[drBufferStartIndex].heading
+                    propagatedXyh[2] += dh
+                    propagatedXyh[2] = compensateHeading(heading: propagatedXyh[2])
+                    
+                    let pathMatchingResult = pmCalculator.pathMatching(building: currentResult.building_name, level: currentResult.level_name, x: propagatedXyh[0], y: propagatedXyh[1], heading: propagatedXyh[2], isPast: false, HEADING_RANGE: HEADING_RANGE, isUseHeading: false, pathType: 0, range: 10)
+                    let diffX = abs(pathMatchingResult.xyhs[0] - currentResult.x)
+                    let diffY = abs(pathMatchingResult.xyhs[1] - currentResult.y)
+                    let currentResultHeading = compensateHeading(heading: currentResult.absolute_heading)
+                    var diffH = abs(pathMatchingResult.xyhs[2] - currentResultHeading)
+                    if (diffH > 270) {
+                        diffH = 360 - diffH
+                    }
+                    
+                    if (sqrt(diffX*diffX + diffY*diffY) < 2) && diffH < 10 {
+                        phase = 4
+                    }
+                    print(getLocalTimeString() + " , (Jupiter) Phase Control : propagatedXyh = \(propagatedXyh)")
+                    print(getLocalTimeString() + " , (Jupiter) Phase Control : correctedXyh = \(pathMatchingResult.xyhs)")
+                    print(getLocalTimeString() + " , (Jupiter) Phase Control : currentXyh = \([currentResult.x, currentResult.y, currentResultHeading])")
+                    print(getLocalTimeString() + " , (Jupiter) Phase Control : -----------------------------------------------------")
+                    return phase
+                }
+            }
+        }
     }
 }
