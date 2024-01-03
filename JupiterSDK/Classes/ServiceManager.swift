@@ -3,7 +3,7 @@ import CoreMotion
 import UIKit
 
 public class ServiceManager: Observation {
-    public static let sdkVersion: String = "3.4.0.4"
+    public static let sdkVersion: String = "3.4.0.5"
     
     func tracking(input: FineLocationTrackingResult, isPast: Bool) {
         for observer in observers {
@@ -942,25 +942,12 @@ public class ServiceManager: Observation {
     func getEntranceUrl(server: Int, key: String) -> String {
         var url = "https://storage.googleapis.com/\(IMAGE_URL)/ios/entrance/\(self.sectorIdOrigin)/\(key).csv"
         
-        switch (server) {
-        case 0:
+        if (server == 0) {
             url = "https://storage.googleapis.com/\(IMAGE_URL)/ios/entrance-test/\(self.sectorIdOrigin)/\(key).csv"
-        case 1:
+        } else if (server == 1) {
             url = "https://storage.googleapis.com/\(IMAGE_URL)/ios/entrance/\(self.sectorIdOrigin)/\(key).csv"
-        case 2:
-            url = "https://storage.googleapis.com/\(IMAGE_URL)/ios/entrance-2/\(self.sectorIdOrigin)/\(key).csv"
-        case 3:
-            url = "https://storage.googleapis.com/\(IMAGE_URL)/ios/entrance-3/\(self.sectorIdOrigin)/\(key).csv"
-        case 4:
-            url = "https://storage.googleapis.com/\(IMAGE_URL)/ios/entrance-4/\(self.sectorIdOrigin)/\(key).csv"
-        case 5:
-            url = "https://storage.googleapis.com/\(IMAGE_URL)/ios/entrance-5/\(self.sectorIdOrigin)/\(key).csv"
-        case 6:
-            url = "https://storage.googleapis.com/\(IMAGE_URL)/ios/entrance-6/\(self.sectorIdOrigin)/\(key).csv"
-        case 7:
-            url = "https://storage.googleapis.com/\(IMAGE_URL)/ios/entrance-7/\(self.sectorIdOrigin)/\(key).csv"
-        default:
-            url = "https://storage.googleapis.com/\(IMAGE_URL)/ios/entrance/\(self.sectorIdOrigin)/\(key).csv"
+        } else {
+            url = "https://storage.googleapis.com/\(IMAGE_URL)/ios/entrance-\(server)/\(self.sectorIdOrigin)/\(key).csv"
         }
         
         return url
@@ -2450,9 +2437,6 @@ public class ServiceManager: Observation {
                         self.userTrajectory.userY = resultToReturn.y
                         self.userTrajectory.userHeading = resultToReturn.absolute_heading
                     }
-//                    self.userTrajectory.userX = resultToReturn.x
-//                    self.userTrajectory.userY = resultToReturn.y
-//                    self.userTrajectory.userHeading = resultToReturn.absolute_heading
                     self.userTrajectory.userTuHeading = tuHeading
                     self.userTrajectory.userPmSuccess = isPmSuccess
                     
@@ -2884,7 +2868,6 @@ public class ServiceManager: Observation {
                         serverPhase2Range[1] = serverPhase2Range[1] - Int(diffLength/4)
                         serverPhase2Range[2] = serverPhase2Range[2] + Int(diffLength/4)
                         serverPhase2Range[3] = serverPhase2Range[3] + Int(diffLength/4)
-                        
                         searchRange = serverPhase2Range
                     }
                     
@@ -3095,7 +3078,6 @@ public class ServiceManager: Observation {
                         searchType = isStraight
                     } else if (isStraight == 3) {
                         // Tail Straight
-                        let recentScc: Double = headInfo.scc
                         var xyFromTail: [Double] = [tailInfo.userX, tailInfo.userY]
 
                         let headingCorrectionFromServer: Double = tailInfo.userHeading - uvHeading[0]
@@ -3162,7 +3144,6 @@ public class ServiceManager: Observation {
                         }
                     } else {
                         // Turn
-                        let recentScc: Double = headInfo.scc
                         var xyFromHead: [Double] = [headInfo.userX, headInfo.userY]
                         
                         let headingCorrectionFromServer: Double = headInfo.userHeading - uvHeading[uvHeading.count-1]
