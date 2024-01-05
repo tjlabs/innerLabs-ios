@@ -59,7 +59,7 @@ public class ServiceManager: Observation {
     
     
     // 1 ~ 5 : Release  //  0 : Test
-    var serverType: Int = 0
+    var serverType: Int = 7
     var region: String = "Korea"
     var regionName: String = "Korea"
     
@@ -2119,7 +2119,7 @@ public class ServiceManager: Observation {
                             
                             // Stack UVD Send Fail Data
                             if (self.isNeedRemoveIndexSendFailArray) {
-                                print(getLocalTimeString() + " , (Jupiter) Valid Index : sendFailUvdIndexes (Before) = \(self.sendFailUvdIndexes)")
+//                                print(getLocalTimeString() + " , (Jupiter) Valid Index : sendFailUvdIndexes (Before) = \(self.sendFailUvdIndexes)")
                                 var updatedArray = [Int]()
                                 for i in 0..<self.sendFailUvdIndexes.count {
                                     if self.sendFailUvdIndexes[i] > self.validIndex {
@@ -2128,13 +2128,13 @@ public class ServiceManager: Observation {
                                 }
                                 self.sendFailUvdIndexes = updatedArray
                                 self.isNeedRemoveIndexSendFailArray = false
-                                print(getLocalTimeString() + " , (Jupiter) Valid Index : sendFailUvdIndexes (After) = \(self.sendFailUvdIndexes)")
+//                                print(getLocalTimeString() + " , (Jupiter) Valid Index : sendFailUvdIndexes (After) = \(self.sendFailUvdIndexes)")
                             }
                             
                             for i in 0..<inputUvd.count {
                                 self.sendFailUvdIndexes.append(inputUvd[i].index)
                             }
-                            print(getLocalTimeString() + " , (Jupiter) Valid Index : sendFailUvdIndexes (New) = \(self.sendFailUvdIndexes)")
+//                            print(getLocalTimeString() + " , (Jupiter) Valid Index : sendFailUvdIndexes (New) = \(self.sendFailUvdIndexes)")
                         }
                     })
                     inputUserVelocity = [UserVelocity(user_id: user_id, mobile_time: 0, index: 0, length: 0, heading: 0, looking: true)]
@@ -2148,14 +2148,14 @@ public class ServiceManager: Observation {
                     let accumulatedDiagonal = calculateAccumulatedDiagonal(userTrajectory: phase4Trajectory)
                     if (!self.isBackground) {
                         if (self.isMovePhase2To4) {
-                            let searchInfo = makeSearchAreaAndDirection(userTrajectory: phase4Trajectory, pastUserTrajectory: self.pastUserTrajectoryInfo, pastSearchDirection: self.pastSearchDirection, length: USER_TRAJECTORY_LENGTH, diagonal: accumulatedDiagonal, mode: self.runMode, phase: self.phase, isKf: self.isActiveKf, isPhaseBreak: self.isPhaseBreak)
+                            let searchInfo = makeSearchAreaAndDirection(userTrajectory: phase4Trajectory, serverResultBuffer: self.serverResultBuffer, pastUserTrajectory: self.pastUserTrajectoryInfo, pastSearchDirection: self.pastSearchDirection, length: USER_TRAJECTORY_LENGTH, diagonal: accumulatedDiagonal, mode: self.runMode, phase: self.phase, isKf: self.isActiveKf, isPhaseBreak: self.isPhaseBreak)
                             if (searchInfo.3 != 0) {
                                 processPhase4(currentTime: currentTime, localTime: localTime, userTrajectory: phase4Trajectory, searchInfo: searchInfo)
                             } else {
                                 self.isUnknownTraj = true
                             }
                         } else {
-                            let searchInfo = makeSearchAreaAndDirection(userTrajectory: phase4Trajectory, pastUserTrajectory: self.pastUserTrajectoryInfo, pastSearchDirection: self.pastSearchDirection, length: accumulatedLength, diagonal: accumulatedDiagonal, mode: self.runMode, phase: self.phase, isKf: self.isActiveKf, isPhaseBreak: self.isPhaseBreak)
+                            let searchInfo = makeSearchAreaAndDirection(userTrajectory: phase4Trajectory, serverResultBuffer: self.serverResultBuffer, pastUserTrajectory: self.pastUserTrajectoryInfo, pastSearchDirection: self.pastSearchDirection, length: accumulatedLength, diagonal: accumulatedDiagonal, mode: self.runMode, phase: self.phase, isKf: self.isActiveKf, isPhaseBreak: self.isPhaseBreak)
                             if (searchInfo.3 != 0) {
                                 processPhase4(currentTime: currentTime, localTime: localTime, userTrajectory: phase4Trajectory, searchInfo: searchInfo)
                             } else {
@@ -2169,7 +2169,7 @@ public class ServiceManager: Observation {
                     if (self.phase == 2) {
                         let phase2Trajectory = self.userTrajectoryInfo
                         let accumulatedLength = calculateAccumulatedLength(userTrajectory: phase2Trajectory)
-                        var searchInfo = makeSearchAreaAndDirection(userTrajectory: phase2Trajectory, pastUserTrajectory: self.pastUserTrajectoryInfo, pastSearchDirection: self.pastSearchDirection, length: accumulatedLength, diagonal: accumulatedLength, mode: self.runMode, phase: self.phase, isKf: self.isActiveKf, isPhaseBreak: self.isPhaseBreak)
+                        var searchInfo = makeSearchAreaAndDirection(userTrajectory: phase2Trajectory, serverResultBuffer: self.serverResultBuffer, pastUserTrajectory: self.pastUserTrajectoryInfo, pastSearchDirection: self.pastSearchDirection, length: accumulatedLength, diagonal: accumulatedLength, mode: self.runMode, phase: self.phase, isKf: self.isActiveKf, isPhaseBreak: self.isPhaseBreak)
                         
                         if (self.isStartSimulate) {
                             if (accumulatedLength >= 40) {
@@ -2194,7 +2194,7 @@ public class ServiceManager: Observation {
                         // Phase 1 ~ 3
                         let phase3Trajectory = self.userTrajectoryInfo
                         let accumulatedLength = calculateAccumulatedLength(userTrajectory: phase3Trajectory)
-                        let searchInfo = makeSearchAreaAndDirection(userTrajectory: phase3Trajectory, pastUserTrajectory: self.pastUserTrajectoryInfo, pastSearchDirection: self.pastSearchDirection, length: accumulatedLength, diagonal: accumulatedLength, mode: self.runMode, phase: self.phase, isKf: self.isActiveKf, isPhaseBreak: self.isPhaseBreak)
+                        let searchInfo = makeSearchAreaAndDirection(userTrajectory: phase3Trajectory, serverResultBuffer: self.serverResultBuffer, pastUserTrajectory: self.pastUserTrajectoryInfo, pastSearchDirection: self.pastSearchDirection, length: accumulatedLength, diagonal: accumulatedLength, mode: self.runMode, phase: self.phase, isKf: self.isActiveKf, isPhaseBreak: self.isPhaseBreak)
                         
                         if (!self.isStartSimulate) {
                             if (self.isActiveKf) {
@@ -2218,14 +2218,14 @@ public class ServiceManager: Observation {
                 self.timeRequest = 0
                 let phase3Trajectory = self.userTrajectoryInfo
                 let accumulatedLength = calculateAccumulatedLength(userTrajectory: phase3Trajectory)
-                let searchInfo = makeSearchAreaAndDirection(userTrajectory: phase3Trajectory, pastUserTrajectory: self.pastUserTrajectoryInfo, pastSearchDirection: self.pastSearchDirection, length: accumulatedLength, diagonal: accumulatedLength, mode: self.runMode, phase: 1, isKf: self.isActiveKf, isPhaseBreak: self.isPhaseBreak)
+                let searchInfo = makeSearchAreaAndDirection(userTrajectory: phase3Trajectory, serverResultBuffer: self.serverResultBuffer, pastUserTrajectory: self.pastUserTrajectoryInfo, pastSearchDirection: self.pastSearchDirection, length: accumulatedLength, diagonal: accumulatedLength, mode: self.runMode, phase: 1, isKf: self.isActiveKf, isPhaseBreak: self.isPhaseBreak)
                 processPhase3(currentTime: currentTime, localTime: localTime, userTrajectory: phase3Trajectory, searchInfo: searchInfo)
             } else {
                 if (!self.isGetFirstResponse && self.timeRequest >= 2) {
                     self.timeRequest = 0
                     let phase3Trajectory = self.userTrajectoryInfo
                     let accumulatedLength = calculateAccumulatedLength(userTrajectory: phase3Trajectory)
-                    let searchInfo = makeSearchAreaAndDirection(userTrajectory: phase3Trajectory, pastUserTrajectory: self.pastUserTrajectoryInfo, pastSearchDirection: self.pastSearchDirection, length: accumulatedLength, diagonal: accumulatedLength, mode: self.runMode, phase: self.phase, isKf: self.isActiveKf, isPhaseBreak: self.isPhaseBreak)
+                    let searchInfo = makeSearchAreaAndDirection(userTrajectory: phase3Trajectory, serverResultBuffer: self.serverResultBuffer, pastUserTrajectory: self.pastUserTrajectoryInfo, pastSearchDirection: self.pastSearchDirection, length: accumulatedLength, diagonal: accumulatedLength, mode: self.runMode, phase: self.phase, isKf: self.isActiveKf, isPhaseBreak: self.isPhaseBreak)
                     processPhase3(currentTime: currentTime, localTime: localTime, userTrajectory: phase3Trajectory, searchInfo: searchInfo)
                 }
             }
@@ -2290,26 +2290,28 @@ public class ServiceManager: Observation {
             if accumulatedLength > LENGTH_CONDITION {
                 self.userTrajectoryInfo.removeFirst()
             }
+        }
+        
+        if (!self.userTrajectoryInfo.isEmpty) {
             let isTailIndexSendFail = checkIsTailIndexSendFail(userTrajectory: self.userTrajectoryInfo, sendFailUvdIndexes: self.sendFailUvdIndexes)
             if (isTailIndexSendFail) {
-                let vallidTrajectoryInfoResult = getValidTrajectory(userTrajectory: self.userTrajectoryInfo, sendFailUvdIndexes: self.sendFailUvdIndexes, mode: self.runMode)
-                if (!vallidTrajectoryInfoResult.0.isEmpty) {
-                    let trajLength = calculateAccumulatedLength(userTrajectory: vallidTrajectoryInfoResult.0)
+                let validTrajectoryInfoResult = getValidTrajectory(userTrajectory: self.userTrajectoryInfo, sendFailUvdIndexes: self.sendFailUvdIndexes, mode: self.runMode)
+                if (!validTrajectoryInfoResult.0.isEmpty) {
+                    let trajLength = calculateAccumulatedLength(userTrajectory: validTrajectoryInfoResult.0)
                     if (trajLength > 10) {
-                        self.userTrajectoryInfo = vallidTrajectoryInfoResult.0
-                        self.validIndex = vallidTrajectoryInfoResult.1
+                        self.userTrajectoryInfo = validTrajectoryInfoResult.0
+                        self.validIndex = validTrajectoryInfoResult.1
                         self.isNeedRemoveIndexSendFailArray = true
-                        print(getLocalTimeString() + " , (Jupiter) Valid Index : validIndex = \(self.validIndex)")
-                        print(getLocalTimeString() + " , (Jupiter) Valid Index : My Trajectory (After) = \(self.userTrajectoryInfo[0].index) ~ \(self.userTrajectoryInfo[self.userTrajectoryInfo.count-1].index)")
-                        print(getLocalTimeString() + " , (Jupiter) Valid Index : ----------------------------------------------------------")
                     } else {
                         // Phase 깨줘야한다
+                        self.phase = 1
                         self.isPhaseBreak = true
                         self.isNeedTrajInit = true
                         self.phaseBreakResult = self.serverResultBuffer[self.serverResultBuffer.count-1]
                     }
                 } else {
                     // Phase 깨줘야한다
+                    self.phase = 1
                     self.isPhaseBreak = true
                     self.isNeedTrajInit = true
                     self.phaseBreakResult = self.serverResultBuffer[self.serverResultBuffer.count-1]
@@ -2322,50 +2324,54 @@ public class ServiceManager: Observation {
         let updatedTrajectoryInfoWithLength = checkAccumulatedLength(userTrajectory: self.userTrajectoryInfo, LENGTH_CONDITION: LENGTH_CONDITION)
         let isTailIndexSendFail = checkIsTailIndexSendFail(userTrajectory: updatedTrajectoryInfoWithLength, sendFailUvdIndexes: self.sendFailUvdIndexes)
         if (isTailIndexSendFail) {
-            print(getLocalTimeString() + " , (Jupiter) Valid Index : My Trajectory (Before) = \(updatedTrajectoryInfoWithLength[0].index) ~ \(updatedTrajectoryInfoWithLength[updatedTrajectoryInfoWithLength.count-1].index)")
-            let vallidTrajectoryInfoResult = getValidTrajectory(userTrajectory: updatedTrajectoryInfoWithLength, sendFailUvdIndexes: self.sendFailUvdIndexes, mode: self.runMode)
-            if (!vallidTrajectoryInfoResult.0.isEmpty) {
-                let trajLength = calculateAccumulatedLength(userTrajectory: vallidTrajectoryInfoResult.0)
+//            print(getLocalTimeString() + " , (Jupiter) Valid Index : My Trajectory (Before) = \(updatedTrajectoryInfoWithLength[0].index) ~ \(updatedTrajectoryInfoWithLength[updatedTrajectoryInfoWithLength.count-1].index)")
+            let validTrajectoryInfoResult = getValidTrajectory(userTrajectory: updatedTrajectoryInfoWithLength, sendFailUvdIndexes: self.sendFailUvdIndexes, mode: self.runMode)
+            if (!validTrajectoryInfoResult.0.isEmpty) {
+                let trajLength = calculateAccumulatedLength(userTrajectory: validTrajectoryInfoResult.0)
                 if (trajLength > 5) {
-                    self.userTrajectoryInfo = vallidTrajectoryInfoResult.0
-                    self.validIndex = vallidTrajectoryInfoResult.1
+                    self.userTrajectoryInfo = validTrajectoryInfoResult.0
+                    self.validIndex = validTrajectoryInfoResult.1
                     self.isNeedRemoveIndexSendFailArray = true
-                    print(getLocalTimeString() + " , (Jupiter) Valid Index : validIndex = \(self.validIndex)")
-                    print(getLocalTimeString() + " , (Jupiter) Valid Index : My Trajectory (After) = \(self.userTrajectoryInfo[0].index) ~ \(self.userTrajectoryInfo[self.userTrajectoryInfo.count-1].index)")
-                    print(getLocalTimeString() + " , (Jupiter) Valid Index : ----------------------------------------------------------")
+//                    print(getLocalTimeString() + " , (Jupiter) Valid Index : validIndex = \(self.validIndex)")
+//                    print(getLocalTimeString() + " , (Jupiter) Valid Index : My Trajectory (After) = \(self.userTrajectoryInfo[0].index) ~ \(self.userTrajectoryInfo[self.userTrajectoryInfo.count-1].index)")
+//                    print(getLocalTimeString() + " , (Jupiter) Valid Index : ----------------------------------------------------------")
                 } else {
                     // Phase 깨줘야한다
+                    self.phase = 1
                     self.isPhaseBreak = true
                     self.isNeedTrajInit = true
                     self.phaseBreakResult = self.serverResultBuffer[self.serverResultBuffer.count-1]
                 }
             } else {
                 // Phase 깨줘야한다
+                self.phase = 1
                 self.isPhaseBreak = true
                 self.isNeedTrajInit = true
                 self.phaseBreakResult = self.serverResultBuffer[self.serverResultBuffer.count-1]
             }
         } else {
             if (!updatedTrajectoryInfoWithLength[0].lookingFlag) {
-                print(getLocalTimeString() + " , (Jupiter) Valid Index : My Trajectory (Before) = \(updatedTrajectoryInfoWithLength[0].index) ~ \(updatedTrajectoryInfoWithLength[updatedTrajectoryInfoWithLength.count-1].index) // Not Looking")
-                let vallidTrajectoryInfoResult = getValidTrajectory(userTrajectory: updatedTrajectoryInfoWithLength, sendFailUvdIndexes: self.sendFailUvdIndexes, mode: self.runMode)
-                if (!vallidTrajectoryInfoResult.0.isEmpty) {
-                    let trajLength = calculateAccumulatedLength(userTrajectory: vallidTrajectoryInfoResult.0)
+//                print(getLocalTimeString() + " , (Jupiter) Valid Index : My Trajectory (Before) = \(updatedTrajectoryInfoWithLength[0].index) ~ \(updatedTrajectoryInfoWithLength[updatedTrajectoryInfoWithLength.count-1].index) // Not Looking")
+                let validTrajectoryInfoResult = getValidTrajectory(userTrajectory: updatedTrajectoryInfoWithLength, sendFailUvdIndexes: self.sendFailUvdIndexes, mode: self.runMode)
+                if (!validTrajectoryInfoResult.0.isEmpty) {
+                    let trajLength = calculateAccumulatedLength(userTrajectory: validTrajectoryInfoResult.0)
                     if (trajLength > 5) {
-                        self.userTrajectoryInfo = vallidTrajectoryInfoResult.0
-                        self.validIndex = vallidTrajectoryInfoResult.1
+                        self.userTrajectoryInfo = validTrajectoryInfoResult.0
+                        self.validIndex = validTrajectoryInfoResult.1
                         self.isNeedRemoveIndexSendFailArray = true
-                        print(getLocalTimeString() + " , (Jupiter) Valid Index : validIndex = \(self.validIndex) // Not Looking")
-                        print(getLocalTimeString() + " , (Jupiter) Valid Index : My Trajectory (After) = \(self.userTrajectoryInfo[0].index) ~ \(self.userTrajectoryInfo[self.userTrajectoryInfo.count-1].index)")
-                        print(getLocalTimeString() + " , (Jupiter) Valid Index : ----------------------------------------------------------  // Not Looking")
+//                        print(getLocalTimeString() + " , (Jupiter) Valid Index : validIndex = \(self.validIndex) // Not Looking")
+//                        print(getLocalTimeString() + " , (Jupiter) Valid Index : My Trajectory (After) = \(self.userTrajectoryInfo[0].index) ~ \(self.userTrajectoryInfo[self.userTrajectoryInfo.count-1].index)")
+//                        print(getLocalTimeString() + " , (Jupiter) Valid Index : ----------------------------------------------------------  // Not Looking")
                     } else {
                         // Phase 깨줘야한다
+                        self.phase = 1
                         self.isPhaseBreak = true
                         self.isNeedTrajInit = true
                         self.phaseBreakResult = self.serverResultBuffer[self.serverResultBuffer.count-1]
                     }
                 } else {
                     // Phase 깨줘야한다
+                    self.phase = 1
                     self.isPhaseBreak = true
                     self.isNeedTrajInit = true
                     self.phaseBreakResult = self.serverResultBuffer[self.serverResultBuffer.count-1]
@@ -2550,17 +2556,17 @@ public class ServiceManager: Observation {
         }
     }
     
-    func makeSearchAreaAndDirection(userTrajectory: [TrajectoryInfo], pastUserTrajectory: [TrajectoryInfo], pastSearchDirection: Int, length: Double, diagonal: Double, mode: String, phase: Int, isKf: Bool, isPhaseBreak: Bool) -> ([Int], [Int], Int, Int) {
+    func makeSearchAreaAndDirection(userTrajectory: [TrajectoryInfo], serverResultBuffer: [FineLocationTrackingFromServer], pastUserTrajectory: [TrajectoryInfo], pastSearchDirection: Int, length: Double, diagonal: Double, mode: String, phase: Int, isKf: Bool, isPhaseBreak: Bool) -> ([Int], [Int], Int, Int) {
         var resultRange: [Int] = []
         var resultDirection: [Int] = [0, 90, 180, 270]
         var tailIndex = 1
         var searchType = 0
         
         var CONDITION: Double = USER_TRAJECTORY_LENGTH
-        var accumulatedValue: Double = length
+        let accumulatedValue: Double = length
         let diagonal_length_ratio = diagonal/length
         if (mode == "pdr") {
-            CONDITION = USER_TRAJECTORY_DIAGONAL
+            CONDITION = USER_TRAJECTORY_DIAGONAL*0.6
             if (!userTrajectory.isEmpty) {
                 var uvHeading = [Double]()
                 var uvRawHeading = [Double]()
@@ -2638,6 +2644,14 @@ public class ServiceManager: Observation {
                     let headInfo = userTrajectory[userTrajectory.count-1]
                     let headInfoHeading = compensateHeading(heading: headInfo.userHeading)
                     
+                    let recentServerResult: FineLocationTrackingFromServer = serverResultBuffer[serverResultBuffer.count-1]
+                    let propagatedResult = propagateUsingUvd(drBuffer: self.unitDrBuffer, result: recentServerResult)
+                    var xyFromHead: [Double] = [headInfo.userX, headInfo.userY]
+                    if (propagatedResult.0) {
+                        xyFromHead = [recentServerResult.x + propagatedResult.1[0], recentServerResult.y + propagatedResult.1[1]]
+                    }
+                    let headCoord: [Double] = xyFromHead
+                    
                     var hasMajorDirection: Bool = false
                     if (accumulatedValue < 10) {
                         hasMajorDirection = false
@@ -2677,7 +2691,7 @@ public class ServiceManager: Observation {
                                         headingFromTail[i] = compensateHeading(heading: uvHeading[i] + headingCorrectionForTail)
                                         headingFromHead[i] = compensateHeading(heading: headingFromTail[i] - 180)
                                     }
-                                    var xyFromHead: [Double] = [headInfo.userX, headInfo.userY]
+//                                    var xyFromHead: [Double] = [headInfo.userX, headInfo.userY]
                                     
                                     var trajectoryFromHead = [[Double]]()
                                     trajectoryFromHead.append(xyFromHead)
@@ -2693,11 +2707,11 @@ public class ServiceManager: Observation {
                                     let headingStart = compensateHeading(heading: headingFromHead[headingFromHead.count-1]-180)
                                     let headingEnd = compensateHeading(heading: headingFromHead[0]-180)
                                     
-                                    let areaMinMax: [Double] = getSearchAreaMinMax(xyMinMax: xyMinMax, heading: [headingStart, headingEnd], headCoord: [headInfo.userX, headInfo.userY], searchType: -1, lengthCondition: USER_TRAJECTORY_DIAGONAL, diagonalLengthRatio: diagonal_length_ratio)
+                                    let areaMinMax: [Double] = getSearchAreaMinMax(xyMinMax: xyMinMax, heading: [headingStart, headingEnd], headCoord: headCoord, searchType: -1, lengthCondition: USER_TRAJECTORY_DIAGONAL, diagonalLengthRatio: diagonal_length_ratio)
                                     let searchArea = getSearchCoordinates(areaMinMax: areaMinMax, interval: 1.0)
                                     resultRange = areaMinMax.map { Int($0) }
                                     hasMajorDirection = true
-                                    displayOutput.trajectoryStartCoord = [headInfo.userX, headInfo.userY]
+                                    displayOutput.trajectoryStartCoord = headCoord
                                     displayOutput.userTrajectory = trajectoryFromHead
                                     displayOutput.searchArea = searchArea
                                     displayOutput.searchType = 4
@@ -2725,7 +2739,7 @@ public class ServiceManager: Observation {
                         let isStraight = isTrajectoryStraight(for: uvHeading, size: uvHeading.count, mode: mode, conditionPdr: NUM_STRAIGHT_INDEX_PDR, conditionDr: NUM_STRAIGHT_INDEX_DR)
                         let closestIndex = findClosestValueIndex(to: tailIndex, in: pastTrajIndex)
                         if let headingIndex = closestIndex {
-                            resultDirection = [pastTrajHeading[headingIndex]-5, pastTrajHeading[headingIndex], pastTrajHeading[headingIndex]+5]
+                            resultDirection = [pastTrajHeading[headingIndex], pastTrajHeading[headingIndex]-5, pastTrajHeading[headingIndex]+5]
                             for i in 0..<resultDirection.count {
                                 resultDirection[i] = Int(compensateHeading(heading: Double(resultDirection[i])))
                             }
@@ -2738,7 +2752,7 @@ public class ServiceManager: Observation {
                                 headingFromHead[i] = compensateHeading(heading: headingFromTail[i] - 180)
                             }
                             
-                            var xyFromHead: [Double] = [headInfo.userX, headInfo.userY]
+//                            var xyFromHead: [Double] = [headInfo.userX, headInfo.userY]
                             
                             var trajectoryFromHead = [[Double]]()
                             trajectoryFromHead.append(xyFromHead)
@@ -2754,19 +2768,18 @@ public class ServiceManager: Observation {
                             let headingStart = compensateHeading(heading: headingFromHead[headingFromHead.count-1]-180)
                             let headingEnd = compensateHeading(heading: headingFromHead[0]-180)
                             
-                            let areaMinMax: [Double] = getSearchAreaMinMax(xyMinMax: xyMinMax, heading: [headingStart, headingEnd], headCoord: [headInfo.userX, headInfo.userY], searchType: isStraight, lengthCondition: USER_TRAJECTORY_DIAGONAL, diagonalLengthRatio: diagonal_length_ratio)
+                            let areaMinMax: [Double] = getSearchAreaMinMax(xyMinMax: xyMinMax, heading: [headingStart, headingEnd], headCoord: headCoord, searchType: isStraight, lengthCondition: USER_TRAJECTORY_DIAGONAL, diagonalLengthRatio: diagonal_length_ratio)
                             let searchArea = getSearchCoordinates(areaMinMax: areaMinMax, interval: 1.0)
                             resultRange = areaMinMax.map { Int($0) }
                             
-                            displayOutput.trajectoryStartCoord = [headInfo.userX, headInfo.userY]
+                            displayOutput.trajectoryStartCoord = headCoord
                             displayOutput.userTrajectory = trajectoryFromHead
                             displayOutput.searchArea = searchArea
                             displayOutput.searchType = 6
                             searchType = 6
                         } else {
-                            resultDirection = [pastDirection-5, pastDirection, pastDirection+5]
-
-                            var xyFromHead: [Double] = [headInfo.userX, headInfo.userY]
+                            resultDirection = [pastDirection+5, pastDirection-5, pastDirection]
+//                            var xyFromHead: [Double] = [headInfo.userX, headInfo.userY]
                             
                             var headingCorrectionForHead: Double = 0
                             let headingCorrectionFromServer: Double = headInfo.userHeading - uvHeading[uvHeading.count-1]
@@ -2795,11 +2808,11 @@ public class ServiceManager: Observation {
                             let headingStart = compensateHeading(heading: headingFromHead[headingFromHead.count-1]-180)
                             let headingEnd = compensateHeading(heading: headingFromHead[0]-180)
                             
-                            let areaMinMax: [Double] = getSearchAreaMinMax(xyMinMax: xyMinMax, heading: [headingStart, headingEnd], headCoord: [headInfo.userX, headInfo.userY], searchType: isStraight, lengthCondition: USER_TRAJECTORY_DIAGONAL, diagonalLengthRatio: diagonal_length_ratio)
+                            let areaMinMax: [Double] = getSearchAreaMinMax(xyMinMax: xyMinMax, heading: [headingStart, headingEnd], headCoord: headCoord, searchType: isStraight, lengthCondition: USER_TRAJECTORY_DIAGONAL, diagonalLengthRatio: diagonal_length_ratio)
                             let searchArea = getSearchCoordinates(areaMinMax: areaMinMax, interval: 1.0)
                             resultRange = areaMinMax.map { Int($0) }
                             
-                            displayOutput.trajectoryStartCoord = [headInfo.userX, headInfo.userY]
+                            displayOutput.trajectoryStartCoord = headCoord
                             displayOutput.userTrajectory = trajectoryFromHead
                             displayOutput.searchArea = searchArea
                             displayOutput.searchType = 7
@@ -3413,7 +3426,6 @@ public class ServiceManager: Observation {
                 }
                 
                 if (result.x != 0 && result.y != 0) {
-                    self.accumulateServerResultAndRemoveOldest(serverResult: result)
 //                    let resultPhase = phaseController.controlPhase(serverResultArray: self.serverResultBuffer, drBuffer: self.unitDrBuffer, UVD_INTERVAL: self.UVD_INPUT_NUM, TRAJ_LENGTH: self.USER_TRAJECTORY_LENGTH, inputPhase: inputPhase, mode: self.runMode, isVenusMode: self.isVenusMode)
                     let resultPhase = phaseController.controlJupiterPhase(serverResult: result, inputPhase: inputPhase, mode: self.runMode, isVenusMode: self.isVenusMode)
                     self.outputResult.phase = self.phase
@@ -3423,6 +3435,7 @@ public class ServiceManager: Observation {
                     displayOutput.phase = String(resultPhase.0)
                     
                     if (result.mobile_time > self.preOutputMobileTime) {
+                        self.accumulateServerResultAndRemoveOldest(serverResult: result)
                         self.pastUserTrajectoryInfo = inputTraj
                         self.pastSearchDirection = result.search_direction
                         let resultHeading = compensateHeading(heading: result.absolute_heading)

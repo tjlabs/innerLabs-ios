@@ -405,7 +405,7 @@ public func checkIsTailIndexSendFail(userTrajectory: [TrajectoryInfo], sendFailU
 public func getValidTrajectory(userTrajectory: [TrajectoryInfo], sendFailUvdIndexes: [Int], mode: String) -> ([TrajectoryInfo], Int) {
     var result = [TrajectoryInfo]()
     
-    print(getLocalTimeString() + " , (Jupiter) Valid Index : Tail Index (Before) = \(userTrajectory[0].index)")
+//    print(getLocalTimeString() + " , (Jupiter) Valid Index : Tail Index (Before) = \(userTrajectory[0].index)")
     
     var isFindValidIndex: Bool = false
     var validIndex: Int = 0
@@ -431,7 +431,7 @@ public func getValidTrajectory(userTrajectory: [TrajectoryInfo], sendFailUvdInde
         }
     }
     
-    print(getLocalTimeString() + " , (Jupiter) Valid Index : Tail Index (After) = \(result[0].index)")
+//    print(getLocalTimeString() + " , (Jupiter) Valid Index : Tail Index (After) = \(result[0].index)")
 
     return (result, validUvdIndex)
 }
@@ -545,10 +545,13 @@ public func getSearchAreaMinMax(xyMinMax: [Double], heading: [Double], headCoord
     let endSin = sin(headingEnd*D2R)
     
     if (searchType == -1) {
-        var search_margin = (12*diagonalLengthRatio)-2
-        if (search_margin <= 2) {
+        var search_margin = 2*exp(4.3 * (diagonalLengthRatio-0.44))
+        if (search_margin < 2) {
             search_margin = 2
+        } else if (search_margin > 10) {
+            search_margin = 10
         }
+
         let oppsite_margin = search_margin*0.6
         
         let centerCoord = [(xMax+xMin)/2, (yMax+yMin)/2]
