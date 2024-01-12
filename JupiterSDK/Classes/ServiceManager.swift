@@ -59,7 +59,7 @@ public class ServiceManager: Observation {
     
     
     // 1 ~ 5 : Release  //  0 : Test
-    var serverType: Int = 0
+    var serverType: Int = 7
     var region: String = "Korea"
     var regionName: String = "Korea"
     
