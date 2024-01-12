@@ -525,7 +525,7 @@ public func getSearchCoordinates(areaMinMax: [Double], interval: Double) -> [[Do
     return coordinates
 }
 
-public func getSearchAreaMinMax(xyMinMax: [Double], heading: [Double], headCoord: [Double], searchType: Int, lengthCondition: Double, diagonalLengthRatio: Double) -> [Double] {
+public func getSearchAreaMinMax(xyMinMax: [Double], heading: [Double], headCoord: [Double], serverCoord: [Double], searchType: Int, lengthCondition: Double, diagonalLengthRatio: Double) -> [Double] {
     var areaMinMax: [Double] = []
     
     var xMin = xyMinMax[0]
@@ -546,6 +546,7 @@ public func getSearchAreaMinMax(xyMinMax: [Double], heading: [Double], headCoord
     
     if (searchType == -1) {
         var search_margin = 2*exp(4.3 * (diagonalLengthRatio-0.44))
+//        var search_margin = 2*exp(3.4 * (diagonalLengthRatio-0.44))
         if (search_margin < 2) {
             search_margin = 2
         } else if (search_margin > 10) {
@@ -555,7 +556,8 @@ public func getSearchAreaMinMax(xyMinMax: [Double], heading: [Double], headCoord
         let oppsite_margin = search_margin*0.6
         
         let centerCoord = [(xMax+xMin)/2, (yMax+yMin)/2]
-        let headToCenter = [headCoord[0]-centerCoord[0], headCoord[1]-centerCoord[1]]
+//        let headToCenter = [headCoord[0]-centerCoord[0], headCoord[1]-centerCoord[1]]
+        let headToCenter = [headCoord[0]-serverCoord[0], headCoord[1]-serverCoord[1]]
         
         if (headToCenter[0] > 0 && headToCenter[1] > 0) {
             // 1사분면
@@ -581,6 +583,64 @@ public func getSearchAreaMinMax(xyMinMax: [Double], heading: [Double], headCoord
             yMin -= search_margin
             xMin -= oppsite_margin
             yMax += oppsite_margin
+        } else {
+            xMin -= search_margin
+            xMax += search_margin
+            yMin -= search_margin
+            yMax += search_margin
+        }
+        
+        if (diagonalLengthRatio < 0.6) {
+            let areaXrange = xMax - xMin
+            let areaYrange = yMax - yMin
+            let default_margin: Double = 2
+            if (areaXrange > areaYrange) {
+                var expandRatio = areaXrange/areaYrange
+                if (expandRatio > 1.5) {
+                    expandRatio = 1.5
+                }
+                xMin -= default_margin*expandRatio
+                xMax += default_margin*expandRatio
+                yMin -= default_margin
+                yMax += default_margin
+            } else if (areaXrange < areaYrange) {
+                var expandRatio = areaYrange/areaXrange
+                if (expandRatio > 1.5) {
+                    expandRatio = 1.5
+                }
+                xMin -= default_margin
+                xMax += default_margin
+                yMin -= default_margin*expandRatio
+                yMax += default_margin*expandRatio
+            } else {
+                xMin -= default_margin
+                xMax += default_margin
+                yMin -= default_margin
+                yMax += default_margin
+            }
+        }
+    } else if (searchType == -2) {
+        let areaXrange = xMax - xMin
+        let areaYrange = yMax - yMin
+        let search_margin: Double = 4
+        if (areaXrange > areaYrange) {
+            var expandRatio = areaXrange/areaYrange
+            if (expandRatio > 1.5) {
+                expandRatio = 1.5
+            }
+            xMin -= search_margin*expandRatio
+            xMax += search_margin*expandRatio
+            yMin -= search_margin
+            yMax += search_margin
+        } else if (areaXrange < areaYrange) {
+            var expandRatio = areaYrange/areaXrange
+            if (expandRatio > 1.5) {
+                expandRatio = 1.5
+            }
+            xMin -= search_margin
+            xMax += search_margin
+            yMin -= search_margin*expandRatio
+            yMax += search_margin*expandRatio
         } else {
             xMin -= search_margin
             xMax += search_margin

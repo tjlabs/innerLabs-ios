@@ -63,6 +63,7 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
     override init() {
         super.init()
         self.centralManager = CBCentralManager(delegate: self, queue: nil, options: nil)
+        self.bleLastScannedTime = getCurrentTimeInMillisecondsDouble()
     }
     
     var isBluetoothPermissionGranted: Bool {

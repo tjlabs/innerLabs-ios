@@ -26,7 +26,6 @@
 		B30EED7C28936CB5009A3EDA /* TipsTownViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B30EED7B28936CB5009A3EDA /* TipsTownViewController.swift */; };
 		B30EED872893B64C009A3EDA /* CollectViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B30EED862893B64C009A3EDA /* CollectViewController.swift */; };
 		B31EC7D92876C03A00799659 /* ServiceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B31EC7D82876C03A00799659 /* ServiceViewController.swift */; };
-		B32F8AC92A568B36006C900B /* PG_1F.csv in Resources */ = {isa = PBXBuildFile; fileRef = B32F8AC82A568B36006C900B /* PG_1F.csv */; };
 		B340EE3328093FB20096E404 /* CardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B340EE3228093FB20096E404 /* CardViewController.swift */; };
 		B34111B92AD6503400CFA422 /* L1_1F.csv in Resources */ = {isa = PBXBuildFile; fileRef = B34111AF2AD6503300CFA422 /* L1_1F.csv */; };
 		B34111BA2AD6503400CFA422 /* L3_4F.csv in Resources */ = {isa = PBXBuildFile; fileRef = B34111B02AD6503300CFA422 /* L3_4F.csv */; };
@@ -84,6 +83,7 @@
 		B3BD69B027E9A78000A32A7A /* SectorContainerTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B3BD69AE27E9A78000A32A7A /* SectorContainerTableViewCell.xib */; };
 		B3BD69B427E9A8AD00A32A7A /* LevelCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3BD69B227E9A8AD00A32A7A /* LevelCollectionViewCell.swift */; };
 		B3BD69B527E9A8AD00A32A7A /* LevelCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B3BD69B327E9A8AD00A32A7A /* LevelCollectionViewCell.xib */; };
+		B3BEBF582B4BEDB800624875 /* PG_1F.csv in Resources */ = {isa = PBXBuildFile; fileRef = B3BEBF572B4BEDB800624875 /* PG_1F.csv */; };
 		B3C09C64280E941B00E6F55F /* ShowCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3C09C63280E941B00E6F55F /* ShowCardViewController.swift */; };
 		B3C6F99E289CCF78003FB402 /* NSObjectExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3C6F99D289CCF78003FB402 /* NSObjectExtension.swift */; };
 		B3C6F9A0289CCF92003FB402 /* UIImageExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3C6F99F289CCF92003FB402 /* UIImageExtension.swift */; };
@@ -157,7 +157,6 @@
 		B30EED7B28936CB5009A3EDA /* TipsTownViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TipsTownViewController.swift; sourceTree = "<group>"; };
 		B30EED862893B64C009A3EDA /* CollectViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectViewController.swift; sourceTree = "<group>"; };
 		B31EC7D82876C03A00799659 /* ServiceViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceViewController.swift; sourceTree = "<group>"; };
-		B32F8AC82A568B36006C900B /* PG_1F.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = PG_1F.csv; sourceTree = "<group>"; };
 		B340EE3228093FB20096E404 /* CardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardViewController.swift; sourceTree = "<group>"; };
 		B34111AF2AD6503300CFA422 /* L1_1F.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = L1_1F.csv; sourceTree = "<group>"; };
 		B34111B02AD6503300CFA422 /* L3_4F.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = L3_4F.csv; sourceTree = "<group>"; };
@@ -218,6 +217,7 @@
 		B3BD69AE27E9A78000A32A7A /* SectorContainerTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SectorContainerTableViewCell.xib; sourceTree = "<group>"; };
 		B3BD69B227E9A8AD00A32A7A /* LevelCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LevelCollectionViewCell.swift; sourceTree = "<group>"; };
 		B3BD69B327E9A8AD00A32A7A /* LevelCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = LevelCollectionViewCell.xib; sourceTree = "<group>"; };
+		B3BEBF572B4BEDB800624875 /* PG_1F.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = PG_1F.csv; sourceTree = "<group>"; };
 		B3C09C63280E941B00E6F55F /* ShowCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowCardViewController.swift; sourceTree = "<group>"; };
 		B3C6F99D289CCF78003FB402 /* NSObjectExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSObjectExtension.swift; sourceTree = "<group>"; };
 		B3C6F99F289CCF92003FB402 /* UIImageExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIImageExtension.swift; sourceTree = "<group>"; };
@@ -328,6 +328,7 @@
 				B3985D48299A1F1E008E7F78 /* FileCollectionViewCell.swift */,
 				B3985D49299A1F1E008E7F78 /* FileCollectionViewCell.xib */,
 				B3E0A4F52887E51700B88E08 /* Environment.swift */,
+				B3BEBF572B4BEDB800624875 /* PG_1F.csv */,
 				607FACD91AFB9204008FA782 /* Main.storyboard */,
 				B35272B1281F8DC300321CC6 /* SplashScreen.storyboard */,
 				607FACDE1AFB9204008FA782 /* LaunchScreen.xib */,
@@ -339,7 +340,6 @@
 				B3AE49DC2AAAD8C70035E8F0 /* Dabeeo_8F.csv */,
 				B364B35428BCD8C5001A8950 /* LUPIUM_3F.csv */,
 				B30638F12A36E58800C7FF89 /* COEX_B0.csv */,
-				B32F8AC82A568B36006C900B /* PG_1F.csv */,
 				B30638FA2A36E82100C7FF89 /* S3_7F.csv */,
 				B34111AF2AD6503300CFA422 /* L1_1F.csv */,
 				B34111B52AD6503400CFA422 /* L1_2F.csv */,
@@ -632,6 +632,7 @@
 				B360D89128090D6A0084FB22 /* NotoSansKR-Black.otf in Resources */,
 				B30638F92A36E58800C7FF89 /* COEX_B2.csv in Resources */,
 				B364B35728BCD8C5001A8950 /* LUPIUM_7F.csv in Resources */,
+				B3BEBF582B4BEDB800624875 /* PG_1F.csv in Resources */,
 				B34111BF2AD6503400CFA422 /* L1_2F.csv in Resources */,
 				B364B35628BCD8C5001A8950 /* LUPIUM_5F.csv in Resources */,
 				607FACDB1AFB9204008FA782 /* Main.storyboard in Resources */,
@@ -648,7 +649,6 @@
 				B3AE49DD2AAAD8C70035E8F0 /* Dabeeo_8F.csv in Resources */,
 				B3FD74ED2869A38800CD4D74 /* Gallery_3F.csv in Resources */,
 				B34111BB2AD6503400CFA422 /* L3_5F.csv in Resources */,
-				B32F8AC92A568B36006C900B /* PG_1F.csv in Resources */,
 				B30638F82A36E58800C7FF89 /* COEX_B3.csv in Resources */,
 				B34111BD2AD6503400CFA422 /* L3_2F.csv in Resources */,
 				B3BD699A27E9A4BE00A32A7A /* Colors.xcassets in Resources */,
@@ -1068,14 +1068,14 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = JupiterSDK_Example.entitlements;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = G75UAV755N;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				INFOPLIST_FILE = JupiterSDK/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.lifestyle";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 1.8.35;
+				MARKETING_VERSION = 1.8.38;
 				MODULE_NAME = ExampleApp;
 				PRODUCT_BUNDLE_IDENTIFIER = com.tjlabscorp.ios.innerLabs;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1090,7 +1090,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = JupiterSDK_ExampleRelease.entitlements;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = G75UAV755N;
 				EXCLUDED_ARCHS = "";
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
@@ -1098,7 +1098,7 @@
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.lifestyle";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 1.8.35;
+				MARKETING_VERSION = 1.8.38;
 				MODULE_NAME = ExampleApp;
 				PRODUCT_BUNDLE_IDENTIFIER = com.tjlabscorp.ios.innerLabs;
 				PRODUCT_NAME = "$(TARGET_NAME)";

@@ -3,7 +3,7 @@ import CoreMotion
 import UIKit
 
 public class ServiceManager: Observation {
-    public static let sdkVersion: String = "3.4.0.6"
+    public static let sdkVersion: String = "3.4.0.9"
     
     func tracking(input: FineLocationTrackingResult, isPast: Bool) {
         for observer in observers {
@@ -59,7 +59,7 @@ public class ServiceManager: Observation {
     
     
     // 1 ~ 5 : Release  //  0 : Test
-    var serverType: Int = 7
+    var serverType: Int = 0
     var region: String = "Korea"
     var regionName: String = "Korea"
     
@@ -232,7 +232,7 @@ public class ServiceManager: Observation {
     
     var sccBadCount: Int = 0
     var scCompensationArray: [Double] = [0.8, 1.0, 1.2]
-    var scCompensationArrayPdr: [Double] = [0.9, 1.0, 1.1]
+    var scCompensationArrayPdr: [Double] = [0.9, 1.0, 1.2]
     var scCompensation: Double = 1.0
     var scCompensationBadCount: Int = 0
     var scVelocityScale: Double = 1.0
@@ -1844,7 +1844,7 @@ public class ServiceManager: Observation {
                 if (autoMode == 0) {
                     self.runMode = "pdr"
                     self.sector_id = self.sectorIdOrigin - 1
-                    self.kalmanR = 0.5
+                    self.kalmanR = 10
                 } else {
                     self.runMode = "dr"
                     self.sector_id = self.sectorIdOrigin
@@ -2566,7 +2566,7 @@ public class ServiceManager: Observation {
         let accumulatedValue: Double = length
         let diagonal_length_ratio = diagonal/length
         if (mode == "pdr") {
-            CONDITION = USER_TRAJECTORY_DIAGONAL*0.6
+            CONDITION = USER_TRAJECTORY_DIAGONAL*0.8
             if (!userTrajectory.isEmpty) {
                 var uvHeading = [Double]()
                 var uvRawHeading = [Double]()
@@ -2647,10 +2647,13 @@ public class ServiceManager: Observation {
                     let recentServerResult: FineLocationTrackingFromServer = serverResultBuffer[serverResultBuffer.count-1]
                     let propagatedResult = propagateUsingUvd(drBuffer: self.unitDrBuffer, result: recentServerResult)
                     var xyFromHead: [Double] = [headInfo.userX, headInfo.userY]
+                    var xyForArea: [Double] = [headInfo.userX, headInfo.userY]
                     if (propagatedResult.0) {
                         xyFromHead = [recentServerResult.x + propagatedResult.1[0], recentServerResult.y + propagatedResult.1[1]]
+                        xyForArea = [recentServerResult.x + propagatedResult.1[0], recentServerResult.y + propagatedResult.1[1]]
                     }
                     let headCoord: [Double] = xyFromHead
+                    let serverCoord: [Double] = [recentServerResult.x, recentServerResult.y]
                     
                     var hasMajorDirection: Bool = false
                     if (accumulatedValue < 10) {
@@ -2695,11 +2698,17 @@ public class ServiceManager: Observation {
                                     
                                     var trajectoryFromHead = [[Double]]()
                                     trajectoryFromHead.append(xyFromHead)
+                                    var trajectoryForArea = [[Double]]()
+                                    trajectoryForArea.append(xyForArea)
                                     for i in (1..<userTrajectory.count).reversed() {
                                         let headAngle = headingFromHead[i]
                                         xyFromHead[0] = xyFromHead[0] + userTrajectory[i].length*cos(headAngle*D2R)
                                         xyFromHead[1] = xyFromHead[1] + userTrajectory[i].length*sin(headAngle*D2R)
                                         trajectoryFromHead.append(xyFromHead)
+                                        
+                                        xyForArea[0] = xyForArea[0] + userTrajectory[i].length*1.2*cos(headAngle*D2R)
+                                        xyForArea[1] = xyForArea[1] + userTrajectory[i].length*1.2*sin(headAngle*D2R)
+                                        trajectoryForArea.append(xyForArea)
                                     }
                                     
                                     let xyMinMax: [Double] = getMinMaxValues(for: trajectoryFromHead)
@@ -2707,7 +2716,7 @@ public class ServiceManager: Observation {
                                     let headingStart = compensateHeading(heading: headingFromHead[headingFromHead.count-1]-180)
                                     let headingEnd = compensateHeading(heading: headingFromHead[0]-180)
                                     
-                                    let areaMinMax: [Double] = getSearchAreaMinMax(xyMinMax: xyMinMax, heading: [headingStart, headingEnd], headCoord: headCoord, searchType: -1, lengthCondition: USER_TRAJECTORY_DIAGONAL, diagonalLengthRatio: diagonal_length_ratio)
+                                    let areaMinMax: [Double] = getSearchAreaMinMax(xyMinMax: xyMinMax, heading: [headingStart, headingEnd], headCoord: headCoord, serverCoord: serverCoord, searchType: -1, lengthCondition: USER_TRAJECTORY_DIAGONAL, diagonalLengthRatio: diagonal_length_ratio)
                                     let searchArea = getSearchCoordinates(areaMinMax: areaMinMax, interval: 1.0)
                                     resultRange = areaMinMax.map { Int($0) }
                                     hasMajorDirection = true
@@ -2752,8 +2761,6 @@ public class ServiceManager: Observation {
                                 headingFromHead[i] = compensateHeading(heading: headingFromTail[i] - 180)
                             }
                             
-//                            var xyFromHead: [Double] = [headInfo.userX, headInfo.userY]
-                            
                             var trajectoryFromHead = [[Double]]()
                             trajectoryFromHead.append(xyFromHead)
                             for i in (1..<userTrajectory.count).reversed() {
@@ -2768,7 +2775,7 @@ public class ServiceManager: Observation {
                             let headingStart = compensateHeading(heading: headingFromHead[headingFromHead.count-1]-180)
                             let headingEnd = compensateHeading(heading: headingFromHead[0]-180)
                             
-                            let areaMinMax: [Double] = getSearchAreaMinMax(xyMinMax: xyMinMax, heading: [headingStart, headingEnd], headCoord: headCoord, searchType: isStraight, lengthCondition: USER_TRAJECTORY_DIAGONAL, diagonalLengthRatio: diagonal_length_ratio)
+                            let areaMinMax: [Double] = getSearchAreaMinMax(xyMinMax: xyMinMax, heading: [headingStart, headingEnd], headCoord: headCoord, serverCoord: serverCoord, searchType: -2, lengthCondition: USER_TRAJECTORY_DIAGONAL, diagonalLengthRatio: diagonal_length_ratio)
                             let searchArea = getSearchCoordinates(areaMinMax: areaMinMax, interval: 1.0)
                             resultRange = areaMinMax.map { Int($0) }
                             
@@ -2779,7 +2786,6 @@ public class ServiceManager: Observation {
                             searchType = 6
                         } else {
                             resultDirection = [pastDirection+5, pastDirection-5, pastDirection]
-//                            var xyFromHead: [Double] = [headInfo.userX, headInfo.userY]
                             
                             var headingCorrectionForHead: Double = 0
                             let headingCorrectionFromServer: Double = headInfo.userHeading - uvHeading[uvHeading.count-1]
@@ -2808,7 +2814,7 @@ public class ServiceManager: Observation {
                             let headingStart = compensateHeading(heading: headingFromHead[headingFromHead.count-1]-180)
                             let headingEnd = compensateHeading(heading: headingFromHead[0]-180)
                             
-                            let areaMinMax: [Double] = getSearchAreaMinMax(xyMinMax: xyMinMax, heading: [headingStart, headingEnd], headCoord: headCoord, searchType: isStraight, lengthCondition: USER_TRAJECTORY_DIAGONAL, diagonalLengthRatio: diagonal_length_ratio)
+                            let areaMinMax: [Double] = getSearchAreaMinMax(xyMinMax: xyMinMax, heading: [headingStart, headingEnd], headCoord: headCoord, serverCoord: serverCoord, searchType: -2, lengthCondition: USER_TRAJECTORY_DIAGONAL, diagonalLengthRatio: diagonal_length_ratio)
                             let searchArea = getSearchCoordinates(areaMinMax: areaMinMax, interval: 1.0)
                             resultRange = areaMinMax.map { Int($0) }
                             
@@ -3119,7 +3125,7 @@ public class ServiceManager: Observation {
                         let headingStart = compensateHeading(heading: headingFromHead[headingFromHead.count-1]-180)
                         let headingEnd = compensateHeading(heading: headingFromHead[0]-180)
                         
-                        let areaMinMax: [Double] = getSearchAreaMinMax(xyMinMax: xyMinMax, heading: [headingStart, headingEnd], headCoord: [headInfo.userX, headInfo.userY], searchType: isStraight, lengthCondition: USER_TRAJECTORY_LENGTH, diagonalLengthRatio: diagonal_length_ratio)
+                        let areaMinMax: [Double] = getSearchAreaMinMax(xyMinMax: xyMinMax, heading: [headingStart, headingEnd], headCoord: [headInfo.userX, headInfo.userY], serverCoord: [0, 0], searchType: isStraight, lengthCondition: USER_TRAJECTORY_LENGTH, diagonalLengthRatio: diagonal_length_ratio)
                         let searchArea = getSearchCoordinates(areaMinMax: areaMinMax, interval: 1.0)
                         
                         let searchHeadings: [Double] = [compensateHeading(heading: headingEnd)]
@@ -3160,7 +3166,7 @@ public class ServiceManager: Observation {
                         let headingEnd = compensateHeading(heading: headingFromHead[0]-180)
                         let diffHeading = abs(90 - abs(headingStart - headingEnd))
                         
-                        let areaMinMax: [Double] = getSearchAreaMinMax(xyMinMax: xyMinMax, heading: [headingStart, headingEnd], headCoord: [headInfo.userX, headInfo.userY], searchType: isStraight, lengthCondition: USER_TRAJECTORY_LENGTH, diagonalLengthRatio: diagonal_length_ratio)
+                        let areaMinMax: [Double] = getSearchAreaMinMax(xyMinMax: xyMinMax, heading: [headingStart, headingEnd], headCoord: [headInfo.userX, headInfo.userY], serverCoord: [0, 0], searchType: isStraight, lengthCondition: USER_TRAJECTORY_LENGTH, diagonalLengthRatio: diagonal_length_ratio)
                         let searchArea = getSearchCoordinates(areaMinMax: areaMinMax, interval: 1.0)
                         var searchHeadings: [Double] = []
                         
@@ -3214,7 +3220,7 @@ public class ServiceManager: Observation {
                         let headingEnd = compensateHeading(heading: headingFromTail[0])
                         let diffHeading = abs(90 - abs(headingStart - headingEnd))
 
-                        let areaMinMax: [Double] = getSearchAreaMinMax(xyMinMax: xyMinMax, heading: [headingStart, headingEnd], headCoord: [headInfo.userX, headInfo.userY], searchType: isStraight, lengthCondition: USER_TRAJECTORY_LENGTH, diagonalLengthRatio: diagonal_length_ratio)
+                        let areaMinMax: [Double] = getSearchAreaMinMax(xyMinMax: xyMinMax, heading: [headingStart, headingEnd], headCoord: [headInfo.userX, headInfo.userY], serverCoord: [0, 0], searchType: isStraight, lengthCondition: USER_TRAJECTORY_LENGTH, diagonalLengthRatio: diagonal_length_ratio)
                         let searchArea = getSearchCoordinates(areaMinMax: areaMinMax, interval: 1.0)
                         var searchHeadings: [Double] = []
                         
@@ -3279,7 +3285,7 @@ public class ServiceManager: Observation {
                         let headingStart = compensateHeading(heading: headingFromHead[headingFromHead.count-1]-180)
                         let headingEnd = compensateHeading(heading: headingFromHead[0]-180)
                         
-                        let areaMinMax: [Double] = getSearchAreaMinMax(xyMinMax: xyMinMax, heading: [headingStart, headingEnd], headCoord: [headInfo.userX, headInfo.userY], searchType: isStraight, lengthCondition: USER_TRAJECTORY_LENGTH, diagonalLengthRatio: diagonal_length_ratio)
+                        let areaMinMax: [Double] = getSearchAreaMinMax(xyMinMax: xyMinMax, heading: [headingStart, headingEnd], headCoord: [headInfo.userX, headInfo.userY], serverCoord: [0, 0], searchType: isStraight, lengthCondition: USER_TRAJECTORY_LENGTH, diagonalLengthRatio: diagonal_length_ratio)
                         let searchArea = getSearchCoordinates(areaMinMax: areaMinMax, interval: 1.0)
                         let searchHeadings: [Double] = [compensateHeading(heading: headingEnd)]
                         
@@ -3465,20 +3471,32 @@ public class ServiceManager: Observation {
                                 self.isPhaseBreak = true
                             }
                         } else if (resultPhase.0 == 2) {
-                            if (result.scc < SCC_FOR_PHASE4) {
-                                self.phase2BadCount += 1
-                                if (self.phase2BadCount > 5) {
-                                    self.isNeedTrajInit = true
-                                    self.phase = 1
-                                    if (self.isStartSimulate) {
-                                        self.isPhaseBreakInSimulate = true
-                                    }
-                                    if (self.isActiveKf) {
-                                        self.isPhaseBreak = true
-                                    }
-                                    self.phase2BadCount = 0
+                            self.phase2BadCount += 1
+                            if (self.phase2BadCount > 6) {
+                                self.isNeedTrajInit = true
+                                self.phase = 1
+                                if (self.isStartSimulate) {
+                                    self.isPhaseBreakInSimulate = true
                                 }
+                                if (self.isActiveKf) {
+                                    self.isPhaseBreak = true
+                                }
+                                self.phase2BadCount = 0
                             }
+//                            if (result.scc < SCC_FOR_PHASE4) {
+//                                self.phase2BadCount += 1
+//                                if (self.phase2BadCount > 5) {
+//                                    self.isNeedTrajInit = true
+//                                    self.phase = 1
+//                                    if (self.isStartSimulate) {
+//                                        self.isPhaseBreakInSimulate = true
+//                                    }
+//                                    if (self.isActiveKf) {
+//                                        self.isPhaseBreak = true
+//                                    }
+//                                    self.phase2BadCount = 0
+//                                }
+//                            }
                         } else {
                             if (resultPhase.0 == 4) {
                                 if (!self.isActiveKf) {
@@ -3713,6 +3731,8 @@ public class ServiceManager: Observation {
             input.normalization_scale = 1.01
         }
         NetworkManager.shared.postFLT(url: FLT_URL, input: input, userTraj: userTrajectory, trajType: searchInfo.3, completion: { [self] statusCode, returnedString, inputPhase, inputTraj, inputTrajType in
+            print(statusCode)
+            print(returnedString)
             if (!returnedString.contains("timed out")) {
                 self.networkCount = 0
             }
@@ -4954,8 +4974,12 @@ public class ServiceManager: Observation {
     func timeUpdate(length: Double, diffHeading: Double, mobileTime: Int, isNeedHeadingCorrection: Bool, drBuffer: [UnitDRInfo], runMode: String) -> FineLocationTrackingFromServer {
         updateHeading = timeUpdatePosition.heading + diffHeading
         
-        let dx = length*cos(updateHeading*D2R)*self.scCompensation
-        let dy = length*sin(updateHeading*D2R)*self.scCompensation
+        var tuScale = 1.0
+//        if (runMode == "pdr") {
+//            tuScale = self.scCompensation
+//        }
+        let dx = length*cos(updateHeading*D2R)*tuScale
+        let dy = length*sin(updateHeading*D2R)*tuScale
         
         timeUpdatePosition.x = timeUpdatePosition.x + dx
         timeUpdatePosition.y = timeUpdatePosition.y + dy
