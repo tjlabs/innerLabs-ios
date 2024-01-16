@@ -260,32 +260,36 @@ public class PhaseController {
             } else if (previousResult.index == 0 || currentResult.index == 0) {
                 return phase
             } else if (currentResult.cumulative_length < (TRAJ_LENGTH/2)) {
+//                print(getLocalTimeString() + " , (Jupiter) Phase Control : cumulative_length = \(currentResult.cumulative_length) // THRES = \(TRAJ_LENGTH/2)")
                 return phase
             } else {
+//                print(getLocalTimeString() + " , (Jupiter) Phase Control : channel_1 = \(previousResult.channel_condition) // channel_2 = \(currentResult.channel_condition)")
                 if (inputPhase != 2) {
                     isPoolChannel = !currentResult.channel_condition && !previousResult.channel_condition
                 }
+//                print(getLocalTimeString() + " , (Jupiter) Phase Control : isPoolChannel = \(isPoolChannel)")
                 if (isPoolChannel) {
                     return phase
                 } else {
+//                    print(getLocalTimeString() + " , (Jupiter) Phase Control : diff index = \(currentResult.index - previousResult.index) // indexCondition = \(indexCondition)")
                     if (currentResult.index - previousResult.index) > indexCondition {
                         return phase
                     } else {
-                        print(getLocalTimeString() + " , (Jupiter) Phase Control : previous index = \(previousResult.index) // current index = \(currentResult.index)")
+//                        print(getLocalTimeString() + " , (Jupiter) Phase Control : previous index = \(previousResult.index) // current index = \(currentResult.index)")
                         var drBufferStartIndex: Int = 0
                         var drBufferEndIndex: Int = 0
                         var headingCompensation: Double = 0
-                        print(getLocalTimeString() + " , (Jupiter) Phase Control : drBuffer = \(drBuffer)")
+//                        print(getLocalTimeString() + " , (Jupiter) Phase Control : drBuffer = \(drBuffer)")
                         for i in 0..<drBuffer.count {
                             if drBuffer[i].index == previousResult.index {
                                 drBufferStartIndex = i
                                 headingCompensation = previousResult.absolute_heading -  drBuffer[i].heading
-                                print(getLocalTimeString() + " , (Jupiter) Phase Control : drBufferStartIndex = \(drBuffer[drBufferStartIndex].index)")
+//                                print(getLocalTimeString() + " , (Jupiter) Phase Control : drBufferStartIndex = \(drBuffer[drBufferStartIndex].index)")
                             }
                             
                             if drBuffer[i].index == currentResult.index {
                                 drBufferEndIndex = i
-                                print(getLocalTimeString() + " , (Jupiter) Phase Control : drBufferEndIndex = \(drBuffer[drBufferEndIndex].index)")
+//                                print(getLocalTimeString() + " , (Jupiter) Phase Control : drBufferEndIndex = \(drBuffer[drBufferEndIndex].index)")
                             }
                         }
                         let previousPmResult = pmCalculator.pathMatching(building: previousResult.building_name, level: previousResult.level_name, x: previousResult.x, y: previousResult.y, heading: previousResult.absolute_heading, isPast: false, HEADING_RANGE: HEADING_RANGE, isUseHeading: false, pathType: pathType, range: 10)
@@ -314,16 +318,16 @@ public class PhaseController {
                             diffH = 360 - diffH
                         }
                         
-                        print(getLocalTimeString() + " , (Jupiter) Phase Control : propagatedXyh = \(propagatedXyh)")
-                        print(getLocalTimeString() + " , (Jupiter) Phase Control : correctedXyh = \(pathMatchingResult.xyhs)")
-                        print(getLocalTimeString() + " , (Jupiter) Phase Control : currentXyh = \([currentResult.x, currentResult.y, currentResultHeading])")
+//                        print(getLocalTimeString() + " , (Jupiter) Phase Control : propagatedXyh = \(propagatedXyh)")
+//                        print(getLocalTimeString() + " , (Jupiter) Phase Control : correctedXyh = \(pathMatchingResult.xyhs)")
+//                        print(getLocalTimeString() + " , (Jupiter) Phase Control : currentXyh = \([currentResult.x, currentResult.y, currentResultHeading])")
                         
                         let rendezvousDistance = sqrt(diffX*diffX + diffY*diffY)
                         if (rendezvousDistance <= distanceCondition) && diffH <= headingCondition {
-                            print(getLocalTimeString() + " , (Jupiter) Phase Control : Rendezvous Distance = \(rendezvousDistance) // Rendezvous Heading = \(diffH)")
+//                            print(getLocalTimeString() + " , (Jupiter) Phase Control : Rendezvous Distance = \(rendezvousDistance) // Rendezvous Heading = \(diffH)")
                             phase = 4
                         }
-                        print(getLocalTimeString() + " , (Jupiter) Phase Control : -----------------------------------------------------")
+//                        print(getLocalTimeString() + " , (Jupiter) Phase Control : -----------------------------------------------------")
                         return phase
                     }
                 }

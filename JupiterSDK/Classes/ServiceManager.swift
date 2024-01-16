@@ -3,7 +3,7 @@ import CoreMotion
 import UIKit
 
 public class ServiceManager: Observation {
-    public static let sdkVersion: String = "3.4.0.10"
+    public static let sdkVersion: String = "3.4.0.14"
     
     func tracking(input: FineLocationTrackingResult, isPast: Bool) {
         for observer in observers {
@@ -3452,8 +3452,8 @@ public class ServiceManager: Observation {
                 }
                 
                 if (result.x != 0 && result.y != 0) {
-//                    let resultPhase = phaseController.controlPhase(serverResultArray: self.serverResultBuffer, drBuffer: self.unitDrBuffer, UVD_INTERVAL: self.UVD_INPUT_NUM, TRAJ_LENGTH: self.USER_TRAJECTORY_LENGTH, inputPhase: inputPhase, mode: self.runMode, isVenusMode: self.isVenusMode)
-                    let resultPhase = phaseController.controlJupiterPhase(serverResult: result, inputPhase: inputPhase, mode: self.runMode, isVenusMode: self.isVenusMode)
+                    let resultPhase = phaseController.controlPhase(serverResultArray: self.serverResultBuffer, drBuffer: self.unitDrBuffer, UVD_INTERVAL: self.UVD_INPUT_NUM, TRAJ_LENGTH: self.USER_TRAJECTORY_LENGTH, inputPhase: inputPhase, mode: self.runMode, isVenusMode: self.isVenusMode)
+//                    let resultPhase = phaseController.controlJupiterPhase(serverResult: result, inputPhase: inputPhase, mode: self.runMode, isVenusMode: self.isVenusMode)
                     self.outputResult.phase = self.phase
                     
                     displayOutput.indexRx = result.index
@@ -3787,8 +3787,8 @@ public class ServiceManager: Observation {
                     
                     if (result.mobile_time > self.preOutputMobileTime) {
                         self.accumulateServerResultAndRemoveOldest(serverResult: result)
-//                        let resultPhase = phaseController.controlPhase(serverResultArray: self.serverResultBuffer, drBuffer: self.unitDrBuffer, UVD_INTERVAL: self.UVD_INPUT_NUM, TRAJ_LENGTH: self.USER_TRAJECTORY_LENGTH, inputPhase: inputPhase, mode: self.runMode, isVenusMode: self.isVenusMode)
-                        let resultPhase = phaseController.controlJupiterPhase(serverResult: result, inputPhase: inputPhase, mode: self.runMode, isVenusMode: self.isVenusMode)
+                        let resultPhase = phaseController.controlPhase(serverResultArray: self.serverResultBuffer, drBuffer: self.unitDrBuffer, UVD_INTERVAL: self.UVD_INPUT_NUM, TRAJ_LENGTH: self.USER_TRAJECTORY_LENGTH, inputPhase: inputPhase, mode: self.runMode, isVenusMode: self.isVenusMode)
+//                        let resultPhase = phaseController.controlJupiterPhase(serverResult: result, inputPhase: inputPhase, mode: self.runMode, isVenusMode: self.isVenusMode)
                         self.isPhaseBreak = resultPhase.1
                         if (resultPhase.1) {
                             self.isNeedTrajInit = true
@@ -4175,8 +4175,8 @@ public class ServiceManager: Observation {
                 
                 if (result.index > self.indexPast) {
                     self.accumulateServerResultAndRemoveOldest(serverResult: result)
-//                    let resultPhase = phaseController.controlPhase(serverResultArray: self.serverResultBuffer, drBuffer: self.unitDrBuffer, UVD_INTERVAL: self.UVD_INPUT_NUM, TRAJ_LENGTH: self.USER_TRAJECTORY_LENGTH, inputPhase: inputPhase, mode: self.runMode, isVenusMode: self.isVenusMode)
-                    let resultPhase = phaseController.controlJupiterPhase(serverResult: result, inputPhase: inputPhase, mode: self.runMode, isVenusMode: self.isVenusMode)
+                    let resultPhase = phaseController.controlPhase(serverResultArray: self.serverResultBuffer, drBuffer: self.unitDrBuffer, UVD_INTERVAL: self.UVD_INPUT_NUM, TRAJ_LENGTH: self.USER_TRAJECTORY_LENGTH, inputPhase: inputPhase, mode: self.runMode, isVenusMode: self.isVenusMode)
+//                    let resultPhase = phaseController.controlJupiterPhase(serverResult: result, inputPhase: inputPhase, mode: self.runMode, isVenusMode: self.isVenusMode)
                     self.pastUserTrajectoryInfo = inputTraj
                     self.pastSearchDirection = result.search_direction
                     if (self.isActiveKf && resultPhase.0 == 4) {
@@ -4347,8 +4347,8 @@ public class ServiceManager: Observation {
                         }
                         self.isNeedTrajInit = true
                         self.isPhaseBreak = resultPhase.1
-                        self.phase = resultPhase.0
                     }
+                    self.phase = resultPhase.0
                     self.indexPast = result.index
                 }
                 self.preOutputMobileTime = result.mobile_time
@@ -5020,6 +5020,7 @@ public class ServiceManager: Observation {
                 self.INDEX_THRESHOLD = UVD_INPUT_NUM+1
             }
         }
+        self.requestIndex = self.UVD_INPUT_NUM
     }
     
     // Kalman Filter
