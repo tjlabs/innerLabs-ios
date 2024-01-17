@@ -3,7 +3,7 @@ import CoreMotion
 import UIKit
 
 public class ServiceManager: Observation {
-    public static let sdkVersion: String = "3.4.0.14"
+    public static let sdkVersion: String = "3.4.0.15"
     
     func tracking(input: FineLocationTrackingResult, isPast: Bool) {
         for observer in observers {
@@ -1723,7 +1723,9 @@ public class ServiceManager: Observation {
             let isSufficientRfdBuffer = rflowCorrelator.accumulateRfdBuffer(bleData: self.bleAvg)
             let isSufficientRfdVelocityBuffer = rflowCorrelator.accumulateRfdVelocityBuffer(bleData: self.bleAvg)
             let isSufficientRfdAutoMode = rflowCorrelator.accumulateRfdAutoModeBuffer(bleData: self.bleAvg)
-            unitDRGenerator.setRflow(rflow: rflowCorrelator.getRflow(), rflowForVelocity: rflowCorrelator.getRflowForVelocityScale(), rflowForAutoMode: rflowCorrelator.getRflowForAutoMode(), isSufficient: isSufficientRfdBuffer, isSufficientForVelocity: isSufficientRfdVelocityBuffer, isSufficientForAutoMode: isSufficientRfdAutoMode)
+            if(!self.isStartSimulate) {
+                unitDRGenerator.setRflow(rflow: rflowCorrelator.getRflow(), rflowForVelocity: rflowCorrelator.getRflowForVelocityScale(), rflowForAutoMode: rflowCorrelator.getRflowForAutoMode(), isSufficient: isSufficientRfdBuffer, isSufficientForVelocity: isSufficientRfdVelocityBuffer, isSufficientForAutoMode: isSufficientRfdAutoMode)
+            }
             
             if (!self.bleAvg.isEmpty) {
                 self.timeBleOff = 0
@@ -2009,42 +2011,6 @@ public class ServiceManager: Observation {
                             self.currentEntranceIndex = 0
                         } else {
                             if (self.resultToReturn.level_name != "B0") {
-//                                let diffX = self.resultToReturn.x - self.outputResult.x
-//                                let diffY = self.resultToReturn.y - self.outputResult.y
-//                                var diffH = compensateHeading(heading: (self.resultToReturn.absolute_heading - self.outputResult.absolute_heading))
-//                                if (diffH >= 270) {
-//                                    diffH = 360 - diffH
-//                                }
-//                                
-//                                let diffXy = sqrt(diffX*diffX + diffY*diffY)
-//                                let cLevel = removeLevelDirectionString(levelName: self.currentLevel)
-//                                if (diffXy <= 10 && diffH <= 30 && self.isActiveKf && (cLevel == self.resultToReturn.level_name)) {
-//                                    print(getLocalTimeString() + " , (Jupiter) Entrance Simulator : Finish (Position Matched)")
-//                                    self.isStartSimulate = false
-//                                    self.isPhaseBreakInSimulate = false
-//                                    self.detectNetworkBadEntrance = false
-//                                    self.isInNetworkBadEntrance = false
-//                                    self.indexAfterSimulate = 0
-//                                    self.currentEntrance = ""
-//                                    self.currentEntranceLength = 0
-//                                    self.currentEntranceIndex = 0
-//                                } else {
-//                                    if (self.isActiveKf && (cLevel == self.resultToReturn.level_name)) {
-//                                        let isFind = self.findClosestSimulation(originalResult: self.outputResult, currentEntranceIndex: self.currentEntranceIndex)
-//                                        if (isFind) {
-//                                            print(getLocalTimeString() + " , (Jupiter) Entrance Simulator : Finish (Position Passed)")
-//                                            self.isStartSimulate = false
-//                                            self.isPhaseBreakInSimulate = false
-//                                            self.detectNetworkBadEntrance = false
-//                                            self.isInNetworkBadEntrance = false
-//                                            self.indexAfterSimulate = 0
-//                                            self.currentEntrance = ""
-//                                            self.currentEntranceLength = 0
-//                                            self.currentEntranceIndex = 0
-//                                        }
-//                                    }
-//                                }
-                                
                                 let cLevel = removeLevelDirectionString(levelName: self.currentLevel)
                                 if (self.isActiveKf && (cLevel == self.resultToReturn.level_name)) {
                                     let isFind = self.findMatchedSimulation(originalResult: self.outputResult)
@@ -2060,12 +2026,11 @@ public class ServiceManager: Observation {
                                         self.currentEntranceIndex = 0
                                     }
                                 }
-                                
-                                if (self.isInNetworkBadEntrance && !self.isPhaseBreakInSimulate && (self.currentEntranceIndex >= (self.currentEntranceLength*2/3))) {
-                                    self.currentLevel = self.resultToReturn.level_name
-                                    self.isPhaseBreakInSimulate = true
-                                    print(getLocalTimeString() + " , (Jupiter) Entrance Simulator : Phase Break in Network Bad Entrance")
-                                }
+//                                if (self.isInNetworkBadEntrance && !self.isPhaseBreakInSimulate && (self.currentEntranceIndex >= (self.currentEntranceLength*2/3))) {
+//                                    self.currentLevel = self.resultToReturn.level_name
+//                                    self.isPhaseBreakInSimulate = true
+//                                    print(getLocalTimeString() + " , (Jupiter) Entrance Simulator : Phase Break in Network Bad Entrance")
+//                                }
                             }
                         }
                     } else {
@@ -2085,10 +2050,6 @@ public class ServiceManager: Observation {
                                 self.measurementOutput.y = self.outputResult.y
                                 self.measurementOutput.absolute_heading = self.outputResult.absolute_heading
                             }
-                            self.outputResult.x = self.outputResult.x
-                            self.outputResult.y = self.outputResult.y
-                            self.outputResult.absolute_heading = self.outputResult.absolute_heading
-                            
                             print(getLocalTimeString() + " , (Jupiter) Entrance Simulator : Finish (End Simulating in PhaseBreak)")
                         } else {
                             if (self.isActiveKf) {
