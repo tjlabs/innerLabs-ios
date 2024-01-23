@@ -545,8 +545,8 @@ public func getSearchAreaMinMax(xyMinMax: [Double], heading: [Double], headCoord
     let endSin = sin(headingEnd*D2R)
     
     if (searchType == -1) {
-        var search_margin = 2*exp(4.3 * (diagonalLengthRatio-0.44))
-//        var search_margin = 2*exp(3.4 * (diagonalLengthRatio-0.44))
+//        var search_margin = 2*exp(4.3 * (diagonalLengthRatio-0.44))
+        var search_margin = 2*exp(3.4 * (diagonalLengthRatio-0.44))
         if (search_margin < 2) {
             search_margin = 2
         } else if (search_margin > 10) {
@@ -593,7 +593,7 @@ public func getSearchAreaMinMax(xyMinMax: [Double], heading: [Double], headCoord
         if (diagonalLengthRatio < 0.6) {
             let areaXrange = xMax - xMin
             let areaYrange = yMax - yMin
-            let default_margin: Double = 2
+            let default_margin: Double = 4
             if (areaXrange > areaYrange) {
                 var expandRatio = areaXrange/areaYrange
                 if (expandRatio > 1.5) {
@@ -601,15 +601,15 @@ public func getSearchAreaMinMax(xyMinMax: [Double], heading: [Double], headCoord
                 }
                 xMin -= default_margin*expandRatio
                 xMax += default_margin*expandRatio
-                yMin -= default_margin
-                yMax += default_margin
+//                yMin -= default_margin
+//                yMax += default_margin
             } else if (areaXrange < areaYrange) {
                 var expandRatio = areaYrange/areaXrange
                 if (expandRatio > 1.5) {
                     expandRatio = 1.5
                 }
-                xMin -= default_margin
-                xMax += default_margin
+//                xMin -= default_margin
+//                xMax += default_margin
                 yMin -= default_margin*expandRatio
                 yMax += default_margin*expandRatio
             } else {

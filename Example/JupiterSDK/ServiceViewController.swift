@@ -73,8 +73,43 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
             self.observerTime = result.mobile_time
             let building = result.building_name
             let level = result.level_name
-            let x = result.x
-            let y = result.y
+            var x = result.x
+            var y = result.y
+            
+            var isResultTurning = false
+            self.resultPosBuffer.append([x, y, result.absolute_heading])
+            if (self.resultPosBuffer.count > 10) {
+                self.resultPosBuffer.remove(at: 0)
+            }
+            let resultPhase: Int = result.phase
+            if resultPhase == 4 {
+                let preX = self.resultPosBuffer[self.resultPosBuffer.count-2][0]
+                let preY = self.resultPosBuffer[self.resultPosBuffer.count-2][1]
+                let preH = self.resultPosBuffer[0][2]
+                
+                let diffPos = sqrt((x - preX)*(x - preX) + (y - preY)*(y - preY))
+                var diffHeading = result.absolute_heading - preH
+                if 270 <= diffHeading &&  diffHeading < 360 {
+                    diffHeading = 360 - diffHeading
+                }
+                if diffPos >= 5 && diffHeading >= 50 {
+                    isResultTurning = true
+                }
+            }
+            
+            if resultPhase == 4 && !isResultTurning {
+                self.averagePosBuffer.append([x, y])
+                if (self.averagePosBuffer.count > 15) {
+                    self.averagePosBuffer.remove(at: 0)
+                }
+                let avgResult = self.movingAverage(data: self.averagePosBuffer)
+                x = avgResult[0]
+                y = avgResult[1]
+            } else {
+                self.averagePosBuffer = [[Double]]()
+            }
+            
+            
             if (result.ble_only_position) {
                 self.isBleOnlyMode = true
             } else {
@@ -183,6 +218,9 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
     var isMonitor: Bool = false
     var isBleOnlyMode: Bool = false
     var isPathMatchingSuccess: Bool = true
+    
+    var resultPosBuffer = [[Double]]()
+    var averagePosBuffer = [[Double]]()
     
     var trajectoryOg: [[Double]] = [[0, 0]]
     // Level Collection View
@@ -356,6 +394,23 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
         let convertNowStr = dateFormatter.string(from: nowDate)
         
         return convertNowStr
+    }
+    
+    func movingAverage(data: [[Double]]) -> [Double] {
+        var result: [Double] = data[0]
+        
+        var sumX: Double = 0
+        var sumY: Double = 0
+        for i in 0..<data.count {
+            sumX += data[i][0]
+            sumY += data[i][1]
+        }
+        
+        let avgX = sumX/Double(data.count)
+        let avgY = sumY/Double(data.count)
+        result = [avgX, avgY]
+        
+        return result
     }
     
     func displayLevelInfo(infoLevel: [String]) {
@@ -1185,18 +1240,18 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
         let yMin = yAxisValue.min()!
         let yMax = yAxisValue.max()!
         
-//        print("\(currentBuilding) \(currentLevel) MinMax : \(xMin) , \(xMax), \(yMin), \(yMax)")
-//        print("\(currentBuilding) \(currentLevel) Limits : \(limits[0]) , \(limits[1]), \(limits[2]), \(limits[3])")
+        print("\(currentBuilding) \(currentLevel) MinMax : \(xMin) , \(xMax), \(yMin), \(yMax)")
+        print("\(currentBuilding) \(currentLevel) Limits : \(limits[0]) , \(limits[1]), \(limits[2]), \(limits[3])")
         
-//        scatterChart.xAxis.axisMinimum = -28
-//        scatterChart.xAxis.axisMaximum = 312
-//        scatterChart.leftAxis.axisMinimum = -9
-//        scatterChart.leftAxis.axisMaximum = 510
+//        scatterChart.xAxis.axisMinimum = -7
+//        scatterChart.xAxis.axisMaximum = 58
+//        scatterChart.leftAxis.axisMinimum = 10
+//        scatterChart.leftAxis.axisMaximum = 79.5
         
 //        scatterChart.xAxis.axisMinimum = -8.7
-//        scatterChart.xAxis.axisMaximum = 39.5
-//        scatterChart.leftAxis.axisMinimum = -8.7
-//        scatterChart.leftAxis.axisMaximum = 66.0
+//        scatterChart.xAxis.axisMaximum = 38.7
+//        scatterChart.leftAxis.axisMinimum = -9.2
+//        scatterChart.leftAxis.axisMaximum = 66
         
         // Configure Chart
         if ( limits[0] == 0 && limits[1] == 0 && limits[2] == 0 && limits[3] == 0 ) {

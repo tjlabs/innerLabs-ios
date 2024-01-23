@@ -126,28 +126,27 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
                         $0.0.contains(bleName)
                     }
                     
-                    var bleScaned = self.bleDictionary
-                    let rssiValue = RSSI.doubleValue
+                    var bleScanned = self.bleDictionary
                     
-                    if (bleScaned.contains(where: condition)) {
-                        let data = bleScaned.filter(condition)
+                    let rssiValue = RSSI.doubleValue
+                    if (bleScanned.contains(where: condition)) {
+                        let data = bleScanned.filter(condition)
                         var value:[[Double]] = data[bleName]!
                         
                         let dataToAdd: [Double] = [rssiValue, bleTime]
                         value.append(dataToAdd)
                         
-                        bleScaned.updateValue(value, forKey: bleName)
+                        bleScanned.updateValue(value, forKey: bleName)
                     } else {
-                        bleScaned.updateValue([[rssiValue, bleTime]], forKey: bleName)
+                        bleScanned.updateValue([[rssiValue, bleTime]], forKey: bleName)
                     }
-                    let trimmedResult = trimBleData(bleInput: bleScaned, nowTime: bleTime, validTime: validTime)
+                    let trimmedResult = trimBleData(bleInput: bleScanned, nowTime: bleTime, validTime: validTime)
                     switch trimmedResult {
                     case .success(let trimmedData):
                         self.bleDictionary = trimmedData
                     case .failure(let error):
                         print(getLocalTimeString() + " , (Jupiter) Error : BleManager \(error)")
                     }
-                    
                     
                     NotificationCenter.default.post(name: .scanInfo, object: nil, userInfo: userInfo)
                 }

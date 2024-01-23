@@ -216,7 +216,11 @@ public class PhaseController {
         case 2:
             phase = self.checkScResultConnectionForPhase4(inputPhase: inputPhase, serverResultArray: serverResultArray, drBuffer: drBuffer, UVD_INTERVAL: UVD_INTERVAL, TRAJ_LENGTH: TRAJ_LENGTH, mode: mode)
         case 3:
-            phase = self.checkScResultConnectionForPhase4(inputPhase: inputPhase, serverResultArray: serverResultArray, drBuffer: drBuffer, UVD_INTERVAL: UVD_INTERVAL, TRAJ_LENGTH: TRAJ_LENGTH, mode: mode)
+            if (currentResult.scc < 0.45) {
+                phase = 1
+            } else {
+                phase = self.checkScResultConnectionForPhase4(inputPhase: inputPhase, serverResultArray: serverResultArray, drBuffer: drBuffer, UVD_INTERVAL: UVD_INTERVAL, TRAJ_LENGTH: TRAJ_LENGTH, mode: mode)
+            }
         case 4:
             phase = self.phase4control(serverResult: currentResult, mode: mode)
         default:
@@ -273,6 +277,8 @@ public class PhaseController {
                 } else {
 //                    print(getLocalTimeString() + " , (Jupiter) Phase Control : diff index = \(currentResult.index - previousResult.index) // indexCondition = \(indexCondition)")
                     if (currentResult.index - previousResult.index) > indexCondition {
+                        return phase
+                    } else if (currentResult.index <= previousResult.index) {
                         return phase
                     } else {
 //                        print(getLocalTimeString() + " , (Jupiter) Phase Control : previous index = \(previousResult.index) // current index = \(currentResult.index)")

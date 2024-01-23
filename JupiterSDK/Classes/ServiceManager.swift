@@ -3,7 +3,7 @@ import CoreMotion
 import UIKit
 
 public class ServiceManager: Observation {
-    public static let sdkVersion: String = "3.4.0.15"
+    public static let sdkVersion: String = "3.4.0.16"
     
     func tracking(input: FineLocationTrackingResult, isPast: Bool) {
         for observer in observers {
@@ -217,6 +217,7 @@ public class ServiceManager: Observation {
     var buildingLevelChangedTime: Int = 0
     var travelingOsrDistance: Double = 0
     var isDetermineSpot: Bool = false
+    var spotCutIndex: Int = 15
     var accumulatedLengthWhenPhase2: Double = 0
     
     var isGetFirstResponse: Bool = false
@@ -1628,7 +1629,6 @@ public class ServiceManager: Observation {
                             for i in 0..<self.EntranceNumbers {
                                 if (!self.isStartSimulate) {
                                     let entranceResult = self.findEntrance(result: result, entrance: i)
-                                    print(getLocalTimeString() + " , (Jupiter) Entrance Simulator : findEntrance = \(entranceResult)")
                                     if (entranceResult.0 != 0) {
                                         let entranceKey: String = "\(entranceResult.0)"
                                         if let velocityScale: Double = self.EntranceScales[entranceKey] {
@@ -1636,7 +1636,6 @@ public class ServiceManager: Observation {
                                         } else {
                                             self.entranceVelocityScale = 1.0
                                         }
-                                        print(getLocalTimeString() + " , (Jupiter) Entrance Simulator : number = \(entranceResult.0)")
                                         self.currentEntrance = "\(result.building_name)_\(result.level_name)_\(entranceResult.0)"
                                         if (self.networkBadEntrance.contains(self.currentEntrance)) {
                                             self.isInNetworkBadEntrance = true
@@ -1667,8 +1666,6 @@ public class ServiceManager: Observation {
 //            self.bleAvg = ["TJ-00CB-000003E7-0000":-76.0] // Plan Group
 //            self.bleAvg = ["TJ-00CB-00000464-0000":-76.0] // ASJTM
             
-//            self.bleAvg = ["TJ-00CB-0000029C-0000": -95.2, "TJ-00CB-0000035A-0000": -77.5, "TJ-00CB-000003F5-0000": -96.0, "TJ-00CB-00000349-0000": -86.7, "TJ-00CB-000003A5-0000": -92.9, "TJ-00CB-00000348-0000": -90.25, "TJ-00CB-0000023B-0000": -93.0, "TJ-00CB-00000297-0000": -90.96, "TJ-00CB-00000354-0000": -93.67, "TJ-00CB-000002BA-0000": -97.0, "TJ-00CB-00000298-0000": -88.95, "TJ-00CB-00000299-0000": -94.08, "TJ-00CB-000002BB-0000": -88.0]
-            
             paramEstimator.refreshWardMinRssi(bleData: self.bleAvg)
             paramEstimator.refreshWardMaxRssi(bleData: self.bleAvg)
             let maxRssi = paramEstimator.getMaxRssi()
@@ -1695,8 +1692,6 @@ public class ServiceManager: Observation {
                                 let smoothedScale: Double = paramEstimator.smoothNormalizationScale(scale: self.preNormalizationScale)
                                 self.normalizationScale = smoothedScale
                             }
-//                            let deviceMin: Double = paramEstimator.getDeviceMinRss()
-//                            self.deviceMinRss = deviceMin
                         }
                     }
                 } else {
@@ -2235,7 +2230,7 @@ public class ServiceManager: Observation {
     func accumulateLengthAndRemoveOldest(isDetermineSpot: Bool, isUnknownTraj: Bool, isMovePhase2To4: Bool, LENGTH_CONDITION: Double) {
         if (isDetermineSpot) {
             self.isDetermineSpot = false
-            let newTraj = getTrajectoryFromLast(from: self.userTrajectoryInfo, N: 15)
+            let newTraj = getTrajectoryFromLast(from: self.userTrajectoryInfo, N: self.spotCutIndex)
             self.userTrajectoryInfo = newTraj
             self.accumulatedLengthWhenPhase2 = calculateAccumulatedLength(userTrajectory: self.userTrajectoryInfo)
             self.phase2ReqCount = 0
@@ -2286,14 +2281,14 @@ public class ServiceManager: Observation {
                     } else {
                         // Phase 깨줘야한다
                         self.phase = 1
-                        self.isPhaseBreak = true
+//                        self.isPhaseBreak = true
                         self.isNeedTrajInit = true
                         self.phaseBreakResult = self.serverResultBuffer[self.serverResultBuffer.count-1]
                     }
                 } else {
                     // Phase 깨줘야한다
                     self.phase = 1
-                    self.isPhaseBreak = true
+//                    self.isPhaseBreak = true
                     self.isNeedTrajInit = true
                     self.phaseBreakResult = self.serverResultBuffer[self.serverResultBuffer.count-1]
                 }
@@ -2319,14 +2314,14 @@ public class ServiceManager: Observation {
                 } else {
                     // Phase 깨줘야한다
                     self.phase = 1
-                    self.isPhaseBreak = true
+//                    self.isPhaseBreak = true
                     self.isNeedTrajInit = true
                     self.phaseBreakResult = self.serverResultBuffer[self.serverResultBuffer.count-1]
                 }
             } else {
                 // Phase 깨줘야한다
                 self.phase = 1
-                self.isPhaseBreak = true
+//                self.isPhaseBreak = true
                 self.isNeedTrajInit = true
                 self.phaseBreakResult = self.serverResultBuffer[self.serverResultBuffer.count-1]
             }
@@ -2403,7 +2398,6 @@ public class ServiceManager: Observation {
                         } else {
                             self.userTrajectoryInfo = [TrajectoryInfo]()
                         }
-                        
                         self.isNeedTrajInit = false
                     } else if (!self.isGetFirstResponse && (self.timeForInit < TIME_INIT_THRESHOLD)) {
                         self.userTrajectoryInfo = [TrajectoryInfo]()
@@ -3776,7 +3770,6 @@ public class ServiceManager: Observation {
                                     self.isIndoor = true
                                     self.reporting(input: INDOOR_FLAG)
                                 } else {
-                                    // Add
                                     for i in 0..<self.EntranceNumbers {
                                         if (!self.isStartSimulate) {
                                             let entranceResult = self.findEntrance(result: result, entrance: i)
@@ -3959,7 +3952,6 @@ public class ServiceManager: Observation {
                             } else if (muHeading >= 270 && (tuHeading >= 0 && tuHeading < 90)) {
                                 tuHeading = tuHeading + 360
                             }
-                            let diffH = abs(tuHeading-muHeading)
                             
                             if (resultPhase.0 == 4) {
                                 if (pathMatchingResult.isSuccess) {
@@ -4452,6 +4444,7 @@ public class ServiceManager: Observation {
                     self.buildingLevelChangedTime = currentTime
                     
                     self.isDetermineSpot = true
+                    self.spotCutIndex = self.determineSpotCutIndex(entranceString: self.currentEntrance)
                     self.isNeedRemovePhase2To4Trajectroy = true
                     
                     if (self.isStartSimulate) {
@@ -4491,6 +4484,7 @@ public class ServiceManager: Observation {
                         self.buildingLevelChangedTime = currentTime
                         
                         self.isDetermineSpot = true
+                        self.spotCutIndex = self.determineSpotCutIndex(entranceString: self.currentEntrance)
                         self.isNeedRemovePhase2To4Trajectroy = true
                         
                         if (self.isStartSimulate) {
@@ -4857,6 +4851,14 @@ public class ServiceManager: Observation {
         }
         
         return isFindMatchedSimulation
+    }
+    
+    private func determineSpotCutIndex(entranceString: String) -> Int {
+        var cutIndex: Int = 15
+        if (entranceString == "COEX_B0_3" || entranceString == "COEX_B0_4") {
+            cutIndex = 1
+        }
+        return cutIndex
     }
     
     private func updateAllResult(result: [Double], inputPhase: Int, mode: String) {

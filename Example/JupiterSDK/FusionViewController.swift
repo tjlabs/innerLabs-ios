@@ -61,8 +61,41 @@ class FusionViewController: UIViewController, Observer {
             let building = result.building_name
             let level = result.level_name
             
-            let x = result.x
-            let y = result.y
+            var x = result.x
+            var y = result.y
+            
+            var isResultTurning = false
+            self.resultPosBuffer.append([x, y, result.absolute_heading])
+            if (self.resultPosBuffer.count > 10) {
+                self.resultPosBuffer.remove(at: 0)
+            }
+            let resultPhase: Int = result.phase
+            if resultPhase == 4 {
+                let preX = self.resultPosBuffer[self.resultPosBuffer.count-2][0]
+                let preY = self.resultPosBuffer[self.resultPosBuffer.count-2][1]
+                let preH = self.resultPosBuffer[0][2]
+                
+                let diffPos = sqrt((x - preX)*(x - preX) + (y - preY)*(y - preY))
+                var diffHeading = result.absolute_heading - preH
+                if 270 <= diffHeading &&  diffHeading < 360 {
+                    diffHeading = 360 - diffHeading
+                }
+                if diffPos >= 5 && diffHeading >= 50 {
+                    isResultTurning = true
+                }
+            }
+            
+            if resultPhase == 4 && !isResultTurning {
+                self.averagePosBuffer.append([x, y])
+                if (self.averagePosBuffer.count > 15) {
+                    self.averagePosBuffer.remove(at: 0)
+                }
+                let avgResult = self.movingAverage(data: self.averagePosBuffer)
+                x = avgResult[0]
+                y = avgResult[1]
+            } else {
+                self.averagePosBuffer = [[Double]]()
+            }
             
             if (result.ble_only_position) {
                 self.isBleOnlyMode = true
@@ -181,6 +214,9 @@ class FusionViewController: UIViewController, Observer {
     var isBleOnlyMode: Bool = false
     var isPathMatchingSuccess: Bool = true
     var isReportPpExist: Bool = false
+
+    var resultPosBuffer = [[Double]]()
+    var averagePosBuffer = [[Double]]()
     
     // Neptune
     @IBOutlet weak var spotContentsView: UIView!
@@ -306,6 +342,23 @@ class FusionViewController: UIViewController, Observer {
         let convertNowStr = dateFormatter.string(from: nowDate)
         
         return convertNowStr
+    }
+    
+    func movingAverage(data: [[Double]]) -> [Double] {
+        var result: [Double] = data[0]
+        
+        var sumX: Double = 0
+        var sumY: Double = 0
+        for i in 0..<data.count {
+            sumX += data[i][0]
+            sumY += data[i][1]
+        }
+        
+        let avgX = sumX/Double(data.count)
+        let avgY = sumY/Double(data.count)
+        result = [avgX, avgY]
+        
+        return result
     }
     
     func displayLevelInfo(infoLevel: [String]) {
