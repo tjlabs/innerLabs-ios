@@ -29,7 +29,6 @@
 		B340EE3328093FB20096E404 /* CardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B340EE3228093FB20096E404 /* CardViewController.swift */; };
 		B34111B92AD6503400CFA422 /* L1_1F.csv in Resources */ = {isa = PBXBuildFile; fileRef = B34111AF2AD6503300CFA422 /* L1_1F.csv */; };
 		B34111BA2AD6503400CFA422 /* L3_4F.csv in Resources */ = {isa = PBXBuildFile; fileRef = B34111B02AD6503300CFA422 /* L3_4F.csv */; };
-		B34111BB2AD6503400CFA422 /* L3_5F.csv in Resources */ = {isa = PBXBuildFile; fileRef = B34111B12AD6503400CFA422 /* L3_5F.csv */; };
 		B34111BD2AD6503400CFA422 /* L3_2F.csv in Resources */ = {isa = PBXBuildFile; fileRef = B34111B32AD6503400CFA422 /* L3_2F.csv */; };
 		B34111BE2AD6503400CFA422 /* L3_3F.csv in Resources */ = {isa = PBXBuildFile; fileRef = B34111B42AD6503400CFA422 /* L3_3F.csv */; };
 		B34111BF2AD6503400CFA422 /* L1_2F.csv in Resources */ = {isa = PBXBuildFile; fileRef = B34111B52AD6503400CFA422 /* L1_2F.csv */; };
@@ -61,6 +60,7 @@
 		B3967481299CC5EF00C6DC4D /* PopUpWithButtonViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3967480299CC5EF00C6DC4D /* PopUpWithButtonViewController.swift */; };
 		B3985D4A299A1F1E008E7F78 /* FileCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3985D48299A1F1E008E7F78 /* FileCollectionViewCell.swift */; };
 		B3985D4B299A1F1E008E7F78 /* FileCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B3985D49299A1F1E008E7F78 /* FileCollectionViewCell.xib */; };
+		B3A641AD2B621BF400845B32 /* L3_5F.csv in Resources */ = {isa = PBXBuildFile; fileRef = B3A641AC2B621BF400845B32 /* L3_5F.csv */; };
 		B3AA004928313C97007CD284 /* UILabelExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3AA004828313C97007CD284 /* UILabelExtension.swift */; };
 		B3AA004B28313CDF007CD284 /* UITextFieldExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3AA004A28313CDF007CD284 /* UITextFieldExtension.swift */; };
 		B3AA004D28313CEA007CD284 /* UITextViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3AA004C28313CEA007CD284 /* UITextViewExtension.swift */; };
@@ -160,7 +160,6 @@
 		B340EE3228093FB20096E404 /* CardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardViewController.swift; sourceTree = "<group>"; };
 		B34111AF2AD6503300CFA422 /* L1_1F.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = L1_1F.csv; sourceTree = "<group>"; };
 		B34111B02AD6503300CFA422 /* L3_4F.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = L3_4F.csv; sourceTree = "<group>"; };
-		B34111B12AD6503400CFA422 /* L3_5F.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = L3_5F.csv; sourceTree = "<group>"; };
 		B34111B32AD6503400CFA422 /* L3_2F.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = L3_2F.csv; sourceTree = "<group>"; };
 		B34111B42AD6503400CFA422 /* L3_3F.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = L3_3F.csv; sourceTree = "<group>"; };
 		B34111B52AD6503400CFA422 /* L1_2F.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = L1_2F.csv; sourceTree = "<group>"; };
@@ -193,6 +192,7 @@
 		B3967480299CC5EF00C6DC4D /* PopUpWithButtonViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopUpWithButtonViewController.swift; sourceTree = "<group>"; };
 		B3985D48299A1F1E008E7F78 /* FileCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileCollectionViewCell.swift; sourceTree = "<group>"; };
 		B3985D49299A1F1E008E7F78 /* FileCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = FileCollectionViewCell.xib; sourceTree = "<group>"; };
+		B3A641AC2B621BF400845B32 /* L3_5F.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = L3_5F.csv; sourceTree = "<group>"; };
 		B3AA004828313C97007CD284 /* UILabelExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UILabelExtension.swift; sourceTree = "<group>"; };
 		B3AA004A28313CDF007CD284 /* UITextFieldExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITextFieldExtension.swift; sourceTree = "<group>"; };
 		B3AA004C28313CEA007CD284 /* UITextViewExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITextViewExtension.swift; sourceTree = "<group>"; };
@@ -348,8 +348,8 @@
 				B34111B32AD6503400CFA422 /* L3_2F.csv */,
 				B34111C32AD6694300CFA422 /* L3_1F.csv */,
 				B34111B42AD6503400CFA422 /* L3_3F.csv */,
+				B3A641AC2B621BF400845B32 /* L3_5F.csv */,
 				B34111B02AD6503300CFA422 /* L3_4F.csv */,
-				B34111B12AD6503400CFA422 /* L3_5F.csv */,
 				B34111B82AD6503400CFA422 /* L3_6F.csv */,
 				B34111B62AD6503400CFA422 /* L8_B1.csv */,
 				B30638F22A36E58800C7FF89 /* COEX_B1.csv */,
@@ -648,7 +648,6 @@
 				B369287E28C5BCAC005FD4A9 /* LUPIUM_B1.csv in Resources */,
 				B3AE49DD2AAAD8C70035E8F0 /* Dabeeo_8F.csv in Resources */,
 				B3FD74ED2869A38800CD4D74 /* Gallery_3F.csv in Resources */,
-				B34111BB2AD6503400CFA422 /* L3_5F.csv in Resources */,
 				B30638F82A36E58800C7FF89 /* COEX_B3.csv in Resources */,
 				B34111BD2AD6503400CFA422 /* L3_2F.csv in Resources */,
 				B3BD699A27E9A4BE00A32A7A /* Colors.xcassets in Resources */,
@@ -675,6 +674,7 @@
 				B3DE961D2999F65500352F40 /* WardCollectionViewCell.xib in Resources */,
 				B30D4F89298A0BF000BFC124 /* morguard_6F.csv in Resources */,
 				B3B2963C29B9756F0010CC64 /* SecretConfig.xcconfig in Resources */,
+				B3A641AD2B621BF400845B32 /* L3_5F.csv in Resources */,
 				B3844E8F28099EE3007A5215 /* CardCollectionViewCell.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1068,14 +1068,14 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = JupiterSDK_Example.entitlements;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_TEAM = G75UAV755N;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				INFOPLIST_FILE = JupiterSDK/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.lifestyle";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 1.8.40;
+				MARKETING_VERSION = 1.8.41;
 				MODULE_NAME = ExampleApp;
 				PRODUCT_BUNDLE_IDENTIFIER = com.tjlabscorp.ios.innerLabs;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1090,7 +1090,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = JupiterSDK_ExampleRelease.entitlements;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_TEAM = G75UAV755N;
 				EXCLUDED_ARCHS = "";
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
@@ -1098,7 +1098,7 @@
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.lifestyle";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 1.8.40;
+				MARKETING_VERSION = 1.8.41;
 				MODULE_NAME = ExampleApp;
 				PRODUCT_BUNDLE_IDENTIFIER = com.tjlabscorp.ios.innerLabs;
 				PRODUCT_NAME = "$(TARGET_NAME)";

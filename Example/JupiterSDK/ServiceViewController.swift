@@ -76,38 +76,38 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
             var x = result.x
             var y = result.y
             
-            var isResultTurning = false
-            self.resultPosBuffer.append([x, y, result.absolute_heading])
-            if (self.resultPosBuffer.count > 10) {
-                self.resultPosBuffer.remove(at: 0)
-            }
-            let resultPhase: Int = result.phase
-            if resultPhase == 4 {
-                let preX = self.resultPosBuffer[self.resultPosBuffer.count-2][0]
-                let preY = self.resultPosBuffer[self.resultPosBuffer.count-2][1]
-                let preH = self.resultPosBuffer[0][2]
-                
-                let diffPos = sqrt((x - preX)*(x - preX) + (y - preY)*(y - preY))
-                var diffHeading = result.absolute_heading - preH
-                if 270 <= diffHeading &&  diffHeading < 360 {
-                    diffHeading = 360 - diffHeading
-                }
-                if diffPos >= 5 && diffHeading >= 50 {
-                    isResultTurning = true
-                }
-            }
-            
-            if resultPhase == 4 && !isResultTurning {
-                self.averagePosBuffer.append([x, y])
-                if (self.averagePosBuffer.count > 15) {
-                    self.averagePosBuffer.remove(at: 0)
-                }
-                let avgResult = self.movingAverage(data: self.averagePosBuffer)
-                x = avgResult[0]
-                y = avgResult[1]
-            } else {
-                self.averagePosBuffer = [[Double]]()
-            }
+//            var isResultTurning = false
+//            self.resultPosBuffer.append([x, y, result.absolute_heading])
+//            if (self.resultPosBuffer.count > 10) {
+//                self.resultPosBuffer.remove(at: 0)
+//            }
+//            let resultPhase: Int = result.phase
+//            if resultPhase == 4 {
+//                let preX = self.resultPosBuffer[self.resultPosBuffer.count-2][0]
+//                let preY = self.resultPosBuffer[self.resultPosBuffer.count-2][1]
+//                let preH = self.resultPosBuffer[0][2]
+//                
+//                let diffPos = sqrt((x - preX)*(x - preX) + (y - preY)*(y - preY))
+//                var diffHeading = result.absolute_heading - preH
+//                if 270 <= diffHeading &&  diffHeading < 360 {
+//                    diffHeading = 360 - diffHeading
+//                }
+//                if diffPos >= 5 && diffHeading >= 50 {
+//                    isResultTurning = true
+//                }
+//            }
+//            
+//            if resultPhase == 4 && !isResultTurning {
+//                self.averagePosBuffer.append([x, y])
+//                if (self.averagePosBuffer.count > 15) {
+//                    self.averagePosBuffer.remove(at: 0)
+//                }
+//                let avgResult = self.movingAverage(data: self.averagePosBuffer)
+//                x = avgResult[0]
+//                y = avgResult[1]
+//            } else {
+//                self.averagePosBuffer = [[Double]]()
+//            }
             
             
             if (result.ble_only_position) {
@@ -1243,10 +1243,10 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
         print("\(currentBuilding) \(currentLevel) MinMax : \(xMin) , \(xMax), \(yMin), \(yMax)")
         print("\(currentBuilding) \(currentLevel) Limits : \(limits[0]) , \(limits[1]), \(limits[2]), \(limits[3])")
         
-//        scatterChart.xAxis.axisMinimum = -7
-//        scatterChart.xAxis.axisMaximum = 58
-//        scatterChart.leftAxis.axisMinimum = 10
-//        scatterChart.leftAxis.axisMaximum = 79.5
+//        scatterChart.xAxis.axisMinimum = -5.8
+//        scatterChart.xAxis.axisMaximum = 56.8
+//        scatterChart.leftAxis.axisMinimum = -2.8
+//        scatterChart.leftAxis.axisMaximum = 66.6
         
 //        scatterChart.xAxis.axisMinimum = -8.7
 //        scatterChart.xAxis.axisMaximum = 38.7

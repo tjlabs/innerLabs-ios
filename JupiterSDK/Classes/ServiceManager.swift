@@ -3,7 +3,7 @@ import CoreMotion
 import UIKit
 
 public class ServiceManager: Observation {
-    public static let sdkVersion: String = "3.4.0.16"
+    public static let sdkVersion: String = "3.4.1."
     
     func tracking(input: FineLocationTrackingResult, isPast: Bool) {
         for observer in observers {
@@ -1919,7 +1919,7 @@ public class ServiceManager: Observation {
                 }
                 
                 // Check Entrance Level
-                let isEntrance = self.checkInEntranceLevel(result: self.jupiterResult, isGetFirstResponse: self.isGetFirstResponse)
+                let isEntrance = self.checkInEntranceLevel(result: self.jupiterResult, isGetFirstResponse: self.isGetFirstResponse, isStartSimulate: self.isStartSimulate)
                 unitDRGenerator.setIsEntranceLevel(flag: isEntrance)
                 
                 if (self.isGetFirstResponse) {
@@ -2008,24 +2008,42 @@ public class ServiceManager: Observation {
                             if (self.resultToReturn.level_name != "B0") {
                                 let cLevel = removeLevelDirectionString(levelName: self.currentLevel)
                                 if (self.isActiveKf && (cLevel == self.resultToReturn.level_name)) {
-                                    let isFind = self.findMatchedSimulation(originalResult: self.outputResult)
-                                    if (isFind) {
-                                        print(getLocalTimeString() + " , (Jupiter) Entrance Simulator : Finish (Enter Phase4)")
-                                        self.isStartSimulate = false
-                                        self.isPhaseBreakInSimulate = false
-                                        self.detectNetworkBadEntrance = false
-                                        self.isInNetworkBadEntrance = false
-                                        self.indexAfterSimulate = 0
-                                        self.currentEntrance = ""
-                                        self.currentEntranceLength = 0
-                                        self.currentEntranceIndex = 0
-                                    }
+//                                    let isFind = self.findMatchedSimulation(originalResult: self.outputResult)
+//                                    if (isFind) {
+//                                        print(getLocalTimeString() + " , (Jupiter) Entrance Simulator : Finish (Enter Phase4)")
+//                                        self.isStartSimulate = false
+//                                        self.isPhaseBreakInSimulate = false
+//                                        self.detectNetworkBadEntrance = false
+//                                        self.isInNetworkBadEntrance = false
+//                                        self.indexAfterSimulate = 0
+//                                        self.currentEntrance = ""
+//                                        self.currentEntranceLength = 0
+//                                        self.currentEntranceIndex = 0
+//                                    }
+                                    
+                                    self.timeUpdatePosition.x = self.outputResult.x
+                                    self.timeUpdatePosition.y = self.outputResult.y
+                                    self.timeUpdatePosition.heading = self.outputResult.absolute_heading
+                                    self.timeUpdateOutput.x = self.outputResult.x
+                                    self.timeUpdateOutput.y = self.outputResult.y
+                                    self.timeUpdateOutput.absolute_heading = self.outputResult.absolute_heading
+                                    self.measurementPosition.x = self.outputResult.x
+                                    self.measurementPosition.y = self.outputResult.y
+                                    self.measurementPosition.heading = self.outputResult.absolute_heading
+                                    self.measurementOutput.x = self.outputResult.x
+                                    self.measurementOutput.y = self.outputResult.y
+                                    self.measurementOutput.absolute_heading = self.outputResult.absolute_heading
+                                    
+                                    print(getLocalTimeString() + " , (Jupiter) Entrance Simulator : Finish (Enter Phase4)")
+                                    self.isStartSimulate = false
+                                    self.isPhaseBreakInSimulate = false
+                                    self.detectNetworkBadEntrance = false
+                                    self.isInNetworkBadEntrance = false
+                                    self.indexAfterSimulate = 0
+                                    self.currentEntrance = ""
+                                    self.currentEntranceLength = 0
+                                    self.currentEntranceIndex = 0
                                 }
-//                                if (self.isInNetworkBadEntrance && !self.isPhaseBreakInSimulate && (self.currentEntranceIndex >= (self.currentEntranceLength*2/3))) {
-//                                    self.currentLevel = self.resultToReturn.level_name
-//                                    self.isPhaseBreakInSimulate = true
-//                                    print(getLocalTimeString() + " , (Jupiter) Entrance Simulator : Phase Break in Network Bad Entrance")
-//                                }
                             }
                         }
                     } else {
@@ -2048,22 +2066,35 @@ public class ServiceManager: Observation {
                             print(getLocalTimeString() + " , (Jupiter) Entrance Simulator : Finish (End Simulating in PhaseBreak)")
                         } else {
                             if (self.isActiveKf) {
-                                self.timeUpdatePosition.x = self.resultToReturn.x
-                                self.timeUpdatePosition.y = self.resultToReturn.y
-                                self.timeUpdatePosition.heading = self.resultToReturn.absolute_heading
-                                self.timeUpdateOutput.x = self.resultToReturn.x
-                                self.timeUpdateOutput.y = self.resultToReturn.y
-                                self.timeUpdateOutput.absolute_heading = self.resultToReturn.absolute_heading
-                                self.measurementPosition.x = self.resultToReturn.x
-                                self.measurementPosition.y = self.resultToReturn.y
-                                self.measurementPosition.heading = self.resultToReturn.absolute_heading
-                                self.measurementOutput.x = self.resultToReturn.x
-                                self.measurementOutput.y = self.resultToReturn.y
-                                self.measurementOutput.absolute_heading = self.resultToReturn.absolute_heading
+//                                self.timeUpdatePosition.x = self.resultToReturn.x
+//                                self.timeUpdatePosition.y = self.resultToReturn.y
+//                                self.timeUpdatePosition.heading = self.resultToReturn.absolute_heading
+//                                self.timeUpdateOutput.x = self.resultToReturn.x
+//                                self.timeUpdateOutput.y = self.resultToReturn.y
+//                                self.timeUpdateOutput.absolute_heading = self.resultToReturn.absolute_heading
+//                                self.measurementPosition.x = self.resultToReturn.x
+//                                self.measurementPosition.y = self.resultToReturn.y
+//                                self.measurementPosition.heading = self.resultToReturn.absolute_heading
+//                                self.measurementOutput.x = self.resultToReturn.x
+//                                self.measurementOutput.y = self.resultToReturn.y
+//                                self.measurementOutput.absolute_heading = self.resultToReturn.absolute_heading
+                                
+                                self.timeUpdatePosition.x = self.outputResult.x
+                                self.timeUpdatePosition.y = self.outputResult.y
+                                self.timeUpdatePosition.heading = self.outputResult.absolute_heading
+                                self.timeUpdateOutput.x = self.outputResult.x
+                                self.timeUpdateOutput.y = self.outputResult.y
+                                self.timeUpdateOutput.absolute_heading = self.outputResult.absolute_heading
+                                self.measurementPosition.x = self.outputResult.x
+                                self.measurementPosition.y = self.outputResult.y
+                                self.measurementPosition.heading = self.outputResult.absolute_heading
+                                self.measurementOutput.x = self.outputResult.x
+                                self.measurementOutput.y = self.outputResult.y
+                                self.measurementOutput.absolute_heading = self.outputResult.absolute_heading
                             }
-                            self.outputResult.x = self.resultToReturn.x
-                            self.outputResult.y = self.resultToReturn.y
-                            self.outputResult.absolute_heading = self.resultToReturn.absolute_heading
+//                            self.outputResult.x = self.resultToReturn.x
+//                            self.outputResult.y = self.resultToReturn.y
+//                            self.outputResult.absolute_heading = self.resultToReturn.absolute_heading
                             print(getLocalTimeString() + " , (Jupiter) Entrance Simulator : Finish (End Simulating)")
                         }
                         self.isStartSimulate = false
@@ -2150,7 +2181,7 @@ public class ServiceManager: Observation {
                         if (self.isStartSimulate) {
                             if (accumulatedLength >= 40) {
                                 self.phase2ReqCount += 1
-                                if (self.phase2ReqCount > 3) {
+                                if (self.phase2ReqCount > 2) {
                                     let expandRange: Int = Int((accumulatedLength - 40)/2)
                                     searchInfo.0 = [searchInfo.0[0]-expandRange, searchInfo.0[1]-expandRange, searchInfo.0[2]+expandRange, searchInfo.0[3]+expandRange]
                                 }
@@ -2159,7 +2190,7 @@ public class ServiceManager: Observation {
                         } else {
                             if (accumulatedLength >= 40) {
                                 self.phase2ReqCount += 1
-                                if (self.phase2ReqCount > 3) {
+                                if (self.phase2ReqCount > 2) {
                                     let expandRange: Int = Int((accumulatedLength - 40)/2)
                                     searchInfo.0 = [searchInfo.0[0]-expandRange, searchInfo.0[1]-expandRange, searchInfo.0[2]+expandRange, searchInfo.0[3]+expandRange]
                                 }
@@ -2341,14 +2372,14 @@ public class ServiceManager: Observation {
                     } else {
                         // Phase 깨줘야한다
                         self.phase = 1
-                        self.isPhaseBreak = true
+//                        self.isPhaseBreak = true
                         self.isNeedTrajInit = true
                         self.phaseBreakResult = self.serverResultBuffer[self.serverResultBuffer.count-1]
                     }
                 } else {
                     // Phase 깨줘야한다
                     self.phase = 1
-                    self.isPhaseBreak = true
+//                    self.isPhaseBreak = true
                     self.isNeedTrajInit = true
                     self.phaseBreakResult = self.serverResultBuffer[self.serverResultBuffer.count-1]
                 }
@@ -3448,7 +3479,7 @@ public class ServiceManager: Observation {
                             }
                         } else if (resultPhase.0 == 2) {
                             self.phase2BadCount += 1
-                            if (self.phase2BadCount > 6) {
+                            if (self.phase2BadCount > 7) {
                                 self.isNeedTrajInit = true
                                 self.phase = 1
                                 if (self.isStartSimulate) {
@@ -3459,20 +3490,6 @@ public class ServiceManager: Observation {
                                 }
                                 self.phase2BadCount = 0
                             }
-//                            if (result.scc < SCC_FOR_PHASE4) {
-//                                self.phase2BadCount += 1
-//                                if (self.phase2BadCount > 5) {
-//                                    self.isNeedTrajInit = true
-//                                    self.phase = 1
-//                                    if (self.isStartSimulate) {
-//                                        self.isPhaseBreakInSimulate = true
-//                                    }
-//                                    if (self.isActiveKf) {
-//                                        self.isPhaseBreak = true
-//                                    }
-//                                    self.phase2BadCount = 0
-//                                }
-//                            }
                         } else {
                             if (resultPhase.0 == 4) {
                                 if (!self.isActiveKf) {
@@ -3744,10 +3761,11 @@ public class ServiceManager: Observation {
                         self.accumulateServerResultAndRemoveOldest(serverResult: result)
                         let resultPhase = phaseController.controlPhase(serverResultArray: self.serverResultBuffer, drBuffer: self.unitDrBuffer, UVD_INTERVAL: self.UVD_INPUT_NUM, TRAJ_LENGTH: self.USER_TRAJECTORY_LENGTH, inputPhase: inputPhase, mode: self.runMode, isVenusMode: self.isVenusMode)
 //                        let resultPhase = phaseController.controlJupiterPhase(serverResult: result, inputPhase: inputPhase, mode: self.runMode, isVenusMode: self.isVenusMode)
-                        self.isPhaseBreak = resultPhase.1
+//                        self.isPhaseBreak = resultPhase.1
+                        self.phaseBreakResult = result
                         if (resultPhase.1) {
                             self.isNeedTrajInit = true
-                            self.phaseBreakResult = result
+//                            self.phaseBreakResult = result
                         }
                         
                         let buildingName = result.building_name
@@ -4314,7 +4332,6 @@ public class ServiceManager: Observation {
     
     @objc func osrTimerUpdate() {
         let currentTime = getCurrentTimeInMilliseconds()
-        
         var isRunOsr: Bool = true
         if (self.isGetFirstResponse && !self.isInNetworkBadEntrance) {
             if (self.runMode != "pdr") {
@@ -4516,8 +4533,12 @@ public class ServiceManager: Observation {
         }
     }
     
-    func checkInEntranceLevel(result: FineLocationTrackingResult, isGetFirstResponse: Bool) -> Bool {
+    func checkInEntranceLevel(result: FineLocationTrackingResult, isGetFirstResponse: Bool, isStartSimulate: Bool) -> Bool {
         if (!isGetFirstResponse) {
+            return true
+        }
+        
+        if (isStartSimulate) {
             return true
         }
         
