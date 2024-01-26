@@ -3,7 +3,7 @@ import CoreMotion
 import UIKit
 
 public class ServiceManager: Observation {
-    public static let sdkVersion: String = "3.4.1."
+    public static let sdkVersion: String = "3.4.1"
     
     func tracking(input: FineLocationTrackingResult, isPast: Bool) {
         for observer in observers {
@@ -58,7 +58,7 @@ public class ServiceManager: Observation {
     var inputMobileResult: [MobileResult] = [MobileResult(user_id: "", mobile_time: 0, sector_id: 0, building_name: "", level_name: "", scc: 0, x: 0, y: 0, absolute_heading: 0, phase: 0, calculated_time: 0, index: 0, velocity: 0, ble_only_position: false, normalization_scale: 0, device_min_rss: 0, sc_compensation: 0, is_indoor: false)]
     
     
-    // 1 ~ 5 : Release  //  0 : Test
+    // 1 ~ 7 : Release  //  0 : Test
     var serverType: Int = 7
     var region: String = "Korea"
     var regionName: String = "Korea"
@@ -2313,14 +2313,16 @@ public class ServiceManager: Observation {
                         // Phase 깨줘야한다
                         self.phase = 1
 //                        self.isPhaseBreak = true
-                        self.isNeedTrajInit = true
+//                        self.isNeedTrajInit = true
+                        self.userTrajectoryInfo = [TrajectoryInfo]()
                         self.phaseBreakResult = self.serverResultBuffer[self.serverResultBuffer.count-1]
                     }
                 } else {
                     // Phase 깨줘야한다
                     self.phase = 1
 //                    self.isPhaseBreak = true
-                    self.isNeedTrajInit = true
+//                    self.isNeedTrajInit = true
+                    self.userTrajectoryInfo = [TrajectoryInfo]()
                     self.phaseBreakResult = self.serverResultBuffer[self.serverResultBuffer.count-1]
                 }
             }
@@ -2346,14 +2348,16 @@ public class ServiceManager: Observation {
                     // Phase 깨줘야한다
                     self.phase = 1
 //                    self.isPhaseBreak = true
-                    self.isNeedTrajInit = true
+//                    self.isNeedTrajInit = true
+                    self.userTrajectoryInfo = [TrajectoryInfo]()
                     self.phaseBreakResult = self.serverResultBuffer[self.serverResultBuffer.count-1]
                 }
             } else {
                 // Phase 깨줘야한다
                 self.phase = 1
 //                self.isPhaseBreak = true
-                self.isNeedTrajInit = true
+//                self.isNeedTrajInit = true
+                self.userTrajectoryInfo = [TrajectoryInfo]()
                 self.phaseBreakResult = self.serverResultBuffer[self.serverResultBuffer.count-1]
             }
         } else {
@@ -2373,14 +2377,16 @@ public class ServiceManager: Observation {
                         // Phase 깨줘야한다
                         self.phase = 1
 //                        self.isPhaseBreak = true
-                        self.isNeedTrajInit = true
+//                        self.isNeedTrajInit = true
+                        self.userTrajectoryInfo = [TrajectoryInfo]()
                         self.phaseBreakResult = self.serverResultBuffer[self.serverResultBuffer.count-1]
                     }
                 } else {
                     // Phase 깨줘야한다
                     self.phase = 1
 //                    self.isPhaseBreak = true
-                    self.isNeedTrajInit = true
+//                    self.isNeedTrajInit = true
+                    self.userTrajectoryInfo = [TrajectoryInfo]()
                     self.phaseBreakResult = self.serverResultBuffer[self.serverResultBuffer.count-1]
                 }
             } else {
