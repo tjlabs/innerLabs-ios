@@ -2008,19 +2008,6 @@ public class ServiceManager: Observation {
                             if (self.resultToReturn.level_name != "B0") {
                                 let cLevel = removeLevelDirectionString(levelName: self.currentLevel)
                                 if (self.isActiveKf && (cLevel == self.resultToReturn.level_name)) {
-//                                    let isFind = self.findMatchedSimulation(originalResult: self.outputResult)
-//                                    if (isFind) {
-//                                        print(getLocalTimeString() + " , (Jupiter) Entrance Simulator : Finish (Enter Phase4)")
-//                                        self.isStartSimulate = false
-//                                        self.isPhaseBreakInSimulate = false
-//                                        self.detectNetworkBadEntrance = false
-//                                        self.isInNetworkBadEntrance = false
-//                                        self.indexAfterSimulate = 0
-//                                        self.currentEntrance = ""
-//                                        self.currentEntranceLength = 0
-//                                        self.currentEntranceIndex = 0
-//                                    }
-                                    
                                     self.timeUpdatePosition.x = self.outputResult.x
                                     self.timeUpdatePosition.y = self.outputResult.y
                                     self.timeUpdatePosition.heading = self.outputResult.absolute_heading
@@ -2066,19 +2053,6 @@ public class ServiceManager: Observation {
                             print(getLocalTimeString() + " , (Jupiter) Entrance Simulator : Finish (End Simulating in PhaseBreak)")
                         } else {
                             if (self.isActiveKf) {
-//                                self.timeUpdatePosition.x = self.resultToReturn.x
-//                                self.timeUpdatePosition.y = self.resultToReturn.y
-//                                self.timeUpdatePosition.heading = self.resultToReturn.absolute_heading
-//                                self.timeUpdateOutput.x = self.resultToReturn.x
-//                                self.timeUpdateOutput.y = self.resultToReturn.y
-//                                self.timeUpdateOutput.absolute_heading = self.resultToReturn.absolute_heading
-//                                self.measurementPosition.x = self.resultToReturn.x
-//                                self.measurementPosition.y = self.resultToReturn.y
-//                                self.measurementPosition.heading = self.resultToReturn.absolute_heading
-//                                self.measurementOutput.x = self.resultToReturn.x
-//                                self.measurementOutput.y = self.resultToReturn.y
-//                                self.measurementOutput.absolute_heading = self.resultToReturn.absolute_heading
-                                
                                 self.timeUpdatePosition.x = self.outputResult.x
                                 self.timeUpdatePosition.y = self.outputResult.y
                                 self.timeUpdatePosition.heading = self.outputResult.absolute_heading
@@ -2092,9 +2066,6 @@ public class ServiceManager: Observation {
                                 self.measurementOutput.y = self.outputResult.y
                                 self.measurementOutput.absolute_heading = self.outputResult.absolute_heading
                             }
-//                            self.outputResult.x = self.resultToReturn.x
-//                            self.outputResult.y = self.resultToReturn.y
-//                            self.outputResult.absolute_heading = self.resultToReturn.absolute_heading
                             print(getLocalTimeString() + " , (Jupiter) Entrance Simulator : Finish (End Simulating)")
                         }
                         self.isStartSimulate = false
@@ -2312,16 +2283,12 @@ public class ServiceManager: Observation {
                     } else {
                         // Phase 깨줘야한다
                         self.phase = 1
-//                        self.isPhaseBreak = true
-//                        self.isNeedTrajInit = true
                         self.userTrajectoryInfo = [TrajectoryInfo]()
                         self.phaseBreakResult = self.serverResultBuffer[self.serverResultBuffer.count-1]
                     }
                 } else {
                     // Phase 깨줘야한다
                     self.phase = 1
-//                    self.isPhaseBreak = true
-//                    self.isNeedTrajInit = true
                     self.userTrajectoryInfo = [TrajectoryInfo]()
                     self.phaseBreakResult = self.serverResultBuffer[self.serverResultBuffer.count-1]
                 }
@@ -2333,7 +2300,6 @@ public class ServiceManager: Observation {
         let updatedTrajectoryInfoWithLength = checkAccumulatedLength(userTrajectory: self.userTrajectoryInfo, LENGTH_CONDITION: LENGTH_CONDITION)
         let isTailIndexSendFail = checkIsTailIndexSendFail(userTrajectory: updatedTrajectoryInfoWithLength, sendFailUvdIndexes: self.sendFailUvdIndexes)
         if (isTailIndexSendFail) {
-//            print(getLocalTimeString() + " , (Jupiter) Valid Index : My Trajectory (Before) = \(updatedTrajectoryInfoWithLength[0].index) ~ \(updatedTrajectoryInfoWithLength[updatedTrajectoryInfoWithLength.count-1].index)")
             let validTrajectoryInfoResult = getValidTrajectory(userTrajectory: updatedTrajectoryInfoWithLength, sendFailUvdIndexes: self.sendFailUvdIndexes, mode: self.runMode)
             if (!validTrajectoryInfoResult.0.isEmpty) {
                 let trajLength = calculateAccumulatedLength(userTrajectory: validTrajectoryInfoResult.0)
@@ -2341,28 +2307,20 @@ public class ServiceManager: Observation {
                     self.userTrajectoryInfo = validTrajectoryInfoResult.0
                     self.validIndex = validTrajectoryInfoResult.1
                     self.isNeedRemoveIndexSendFailArray = true
-//                    print(getLocalTimeString() + " , (Jupiter) Valid Index : validIndex = \(self.validIndex)")
-//                    print(getLocalTimeString() + " , (Jupiter) Valid Index : My Trajectory (After) = \(self.userTrajectoryInfo[0].index) ~ \(self.userTrajectoryInfo[self.userTrajectoryInfo.count-1].index)")
-//                    print(getLocalTimeString() + " , (Jupiter) Valid Index : ----------------------------------------------------------")
                 } else {
                     // Phase 깨줘야한다
                     self.phase = 1
-//                    self.isPhaseBreak = true
-//                    self.isNeedTrajInit = true
                     self.userTrajectoryInfo = [TrajectoryInfo]()
                     self.phaseBreakResult = self.serverResultBuffer[self.serverResultBuffer.count-1]
                 }
             } else {
                 // Phase 깨줘야한다
                 self.phase = 1
-//                self.isPhaseBreak = true
-//                self.isNeedTrajInit = true
                 self.userTrajectoryInfo = [TrajectoryInfo]()
                 self.phaseBreakResult = self.serverResultBuffer[self.serverResultBuffer.count-1]
             }
         } else {
             if (!updatedTrajectoryInfoWithLength[0].lookingFlag) {
-//                print(getLocalTimeString() + " , (Jupiter) Valid Index : My Trajectory (Before) = \(updatedTrajectoryInfoWithLength[0].index) ~ \(updatedTrajectoryInfoWithLength[updatedTrajectoryInfoWithLength.count-1].index) // Not Looking")
                 let validTrajectoryInfoResult = getValidTrajectory(userTrajectory: updatedTrajectoryInfoWithLength, sendFailUvdIndexes: self.sendFailUvdIndexes, mode: self.runMode)
                 if (!validTrajectoryInfoResult.0.isEmpty) {
                     let trajLength = calculateAccumulatedLength(userTrajectory: validTrajectoryInfoResult.0)
@@ -2370,22 +2328,15 @@ public class ServiceManager: Observation {
                         self.userTrajectoryInfo = validTrajectoryInfoResult.0
                         self.validIndex = validTrajectoryInfoResult.1
                         self.isNeedRemoveIndexSendFailArray = true
-//                        print(getLocalTimeString() + " , (Jupiter) Valid Index : validIndex = \(self.validIndex) // Not Looking")
-//                        print(getLocalTimeString() + " , (Jupiter) Valid Index : My Trajectory (After) = \(self.userTrajectoryInfo[0].index) ~ \(self.userTrajectoryInfo[self.userTrajectoryInfo.count-1].index)")
-//                        print(getLocalTimeString() + " , (Jupiter) Valid Index : ----------------------------------------------------------  // Not Looking")
                     } else {
                         // Phase 깨줘야한다
                         self.phase = 1
-//                        self.isPhaseBreak = true
-//                        self.isNeedTrajInit = true
                         self.userTrajectoryInfo = [TrajectoryInfo]()
                         self.phaseBreakResult = self.serverResultBuffer[self.serverResultBuffer.count-1]
                     }
                 } else {
                     // Phase 깨줘야한다
                     self.phase = 1
-//                    self.isPhaseBreak = true
-//                    self.isNeedTrajInit = true
                     self.userTrajectoryInfo = [TrajectoryInfo]()
                     self.phaseBreakResult = self.serverResultBuffer[self.serverResultBuffer.count-1]
                 }
@@ -5075,8 +5026,6 @@ public class ServiceManager: Observation {
                     timeUpdatePosition.y = timeUpdatePosition.y*0.5 + pathTrajMatchingResult.xyd[1]*0.5
                     displayOutput.trajectoryPm = pathTrajMatchingResult.minTrajectory
                     displayOutput.trajectoryOg = pathTrajMatchingResult.minTrajectoryOriginal
-//                    let ratio: Double = self.calTrajectoryRatio(trajPm: pathTrajMatchingResult.minTrajectory, trajOg: pathTrajMatchingResult.minTrajectoryOriginal)
-//                    self.scCompensationArray = [ratio]
                 } else {
                     displayOutput.trajectoryPm = [[0,0]]
                     displayOutput.trajectoryOg = [[0,0]]
