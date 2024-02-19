@@ -1089,7 +1089,6 @@ public class ServiceManager: Observation {
         self.detectNetworkBadEntrance = false
         self.isInNetworkBadEntrance = false
         self.isScaleConverged = false
-//        self.isBackground = false
     }
     
     func notificationCenterAddObserver() {
@@ -1618,6 +1617,7 @@ public class ServiceManager: Observation {
                             self.isGetFirstResponse = true
                             self.isIndoor = true
                             self.reporting(input: INDOOR_FLAG)
+                            unitDRGenerator.setIsIndoor(isIndoor: self.isIndoor)
                             
                             let result = findResult.1
                             
@@ -1773,6 +1773,7 @@ public class ServiceManager: Observation {
                                 self.currentLevel = "B0"
                                 self.isIndoor = false
                                 self.reporting(input: OUTDOOR_FLAG)
+                                unitDRGenerator.setIsIndoor(isIndoor: self.isIndoor)
                             }
                         }
                     }
@@ -1992,6 +1993,7 @@ public class ServiceManager: Observation {
                         if (self.currentEntranceIndex == 0) {
                             self.isIndoor = true
                             self.reporting(input: INDOOR_FLAG)
+                            unitDRGenerator.setIsIndoor(isIndoor: self.isIndoor)
                         }
                         self.currentEntranceIndex += 1
                         if (self.isVenusMode) {
@@ -3744,6 +3746,7 @@ public class ServiceManager: Observation {
                                     self.isGetFirstResponse = true
                                     self.isIndoor = true
                                     self.reporting(input: INDOOR_FLAG)
+                                    unitDRGenerator.setIsIndoor(isIndoor: self.isIndoor)
                                 } else {
                                     for i in 0..<self.EntranceNumbers {
                                         if (!self.isStartSimulate) {

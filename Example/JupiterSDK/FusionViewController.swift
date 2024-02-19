@@ -64,6 +64,7 @@ class FusionViewController: UIViewController, Observer {
             var x = result.x
             var y = result.y
             
+            let WINDOW_SIZE = 10
             var isResultTurning = false
             self.resultPosBuffer.append([x, y, result.absolute_heading])
             if (self.resultPosBuffer.count > 10) {
@@ -87,7 +88,7 @@ class FusionViewController: UIViewController, Observer {
             
             if resultPhase == 4 && !isResultTurning {
                 self.averagePosBuffer.append([x, y])
-                if (self.averagePosBuffer.count > 15) {
+                if (self.averagePosBuffer.count > WINDOW_SIZE) {
                     self.averagePosBuffer.remove(at: 0)
                 }
                 let avgResult = self.movingAverage(data: self.averagePosBuffer)

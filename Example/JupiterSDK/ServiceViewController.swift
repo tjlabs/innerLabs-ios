@@ -76,7 +76,7 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
             var x = result.x
             var y = result.y
             
-//            let WINDOW_SIZE = 15
+//            let WINDOW_SIZE = 10
 //            var isResultTurning = false
 //            self.resultPosBuffer.append([x, y, result.absolute_heading])
 //            if (self.resultPosBuffer.count > 10) {
@@ -153,6 +153,7 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
     @IBOutlet weak var infoLabel: UILabel!
     
     var currentRegion: String = ""
+    var noImageText: String = ""
     var showInfoText: String = ""
     var closeInfoText: String = ""
     
@@ -293,16 +294,20 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
     func setTextByRegion(region: String) {
         switch (region) {
         case "Korea":
+            self.noImageText = "해당 층 이미지가 없습니다."
             self.showInfoText = "정보 보기"
             self.closeInfoText = "정보 닫기"
         case "Canada":
+            self.noImageText = "There is no image of floor"
             self.showInfoText = "Show"
             self.closeInfoText = "Close"
         default:
+            self.noImageText = "There is no image of floor"
             self.showInfoText = "Show"
             self.closeInfoText = "Close"
         }
         
+        self.noImageLabel.text = self.noImageText
         self.infoLabel.text = self.showInfoText
     }
     

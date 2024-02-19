@@ -25,6 +25,7 @@ public class UnitDRGenerator: NSObject {
     var lastStepChangedTime: Double = 0
     var lastHighRfSccTime: Double = 0
     var isPdrMode: Bool = false
+    var isIndoor: Bool = false
     var trackIsPdrMode: Bool = true
     
     var normalStepTime: Double = 0
@@ -253,5 +254,10 @@ public class UnitDRGenerator: NSObject {
         self.isSufficientRfdAutoMode = isSufficientForAutoMode
         
         self.drDistanceEstimator.setRflow(rflow: rflow, rflowForVelocity: rflowForVelocity, rflowForAutoMode: rflowForAutoMode, isSufficient: isSufficient, isSufficientForVelocity: isSufficientForVelocity, isSufficientForAutoMode: isSufficientForAutoMode)
+    }
+    
+    public func setIsIndoor(isIndoor: Bool) {
+        self.isIndoor = isIndoor
+        self.drDistanceEstimator.setIsIndoor(isIndoor: isIndoor)
     }
 }

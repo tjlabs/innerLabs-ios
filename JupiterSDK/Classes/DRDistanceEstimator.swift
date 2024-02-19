@@ -53,6 +53,8 @@ public class DRDistanceEstimator: NSObject {
     public var isSufficientRfdVelocityBuffer: Bool = false
     public var isSufficientRfdAutoModeBuffer: Bool = false
     
+    public var isIndoor: Bool = false
+    
     public func argmax(array: [Float]) -> Int {
         let output1 = array[0]
         let output2 = array[1]
@@ -188,7 +190,7 @@ public class DRDistanceEstimator: NSObject {
             velocityInputScale = VELOCITY_MAX
         }
         // RFlow Stop Detection
-        if (self.isSufficientRfdBuffer && self.rflow >= RF_SC_THRESHOLD_DR) {
+        if (self.isSufficientRfdBuffer && self.rflow >= RF_SC_THRESHOLD_DR && self.isIndoor) {
             velocityInputScale = 0
         }
         
@@ -289,5 +291,9 @@ public class DRDistanceEstimator: NSObject {
         }
         
         return scale
+    }
+    
+    public func setIsIndoor(isIndoor: Bool) {
+        self.isIndoor = isIndoor
     }
 }
