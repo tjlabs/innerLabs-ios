@@ -256,8 +256,8 @@ public class UnitDRGenerator: NSObject {
         self.drDistanceEstimator.setRflow(rflow: rflow, rflowForVelocity: rflowForVelocity, rflowForAutoMode: rflowForAutoMode, isSufficient: isSufficient, isSufficientForVelocity: isSufficientForVelocity, isSufficientForAutoMode: isSufficientForAutoMode)
     }
     
-    public func setIsIndoor(isIndoor: Bool) {
-        self.isIndoor = isIndoor
-        self.drDistanceEstimator.setIsIndoor(isIndoor: isIndoor)
+    public func setIsStartSimulate(isStartSimulate: Bool) {
+        self.isIndoor = isStartSimulate
+        self.drDistanceEstimator.setIsStartSimulate(isStartSimulate: isStartSimulate)
     }
 }
