@@ -25,7 +25,6 @@ public class UnitDRGenerator: NSObject {
     var lastStepChangedTime: Double = 0
     var lastHighRfSccTime: Double = 0
     var isPdrMode: Bool = false
-    var isIndoor: Bool = false
     var trackIsPdrMode: Bool = true
     
     var normalStepTime: Double = 0
@@ -35,6 +34,7 @@ public class UnitDRGenerator: NSObject {
     var prePitch: Double = 0
     
     public var isEnteranceLevel: Bool = false
+    public var isStartSimulate: Bool = false
     public var rflow: Double = 0
     public var rflowForVelocity: Double = 0
     public var rflowForAutoMode: Double = 0
@@ -140,6 +140,11 @@ public class UnitDRGenerator: NSObject {
                 }
                 
                 if (self.isEnteranceLevel) {
+                    self.isPdrMode = false
+                    self.lastModeChangedTime = currentTime
+                }
+                
+                if (self.isStartSimulate) {
                     self.isPdrMode = false
                     self.lastModeChangedTime = currentTime
                 }
@@ -257,7 +262,7 @@ public class UnitDRGenerator: NSObject {
     }
     
     public func setIsStartSimulate(isStartSimulate: Bool) {
-        self.isIndoor = isStartSimulate
+        self.isStartSimulate = isStartSimulate
         self.drDistanceEstimator.setIsStartSimulate(isStartSimulate: isStartSimulate)
     }
 }
