@@ -132,6 +132,9 @@ class CustomSwitchButton: UIButton {
         let switchColor: (UIColor, UIColor) = (#colorLiteral(red: 0.5291011186, green: 0.7673488115, blue: 1, alpha: 1), #colorLiteral(red: 0.2705247761, green: 0.3820963617, blue: 1, alpha: 1))
         
         switch(colorName) {
+        case "red":
+            let color: (UIColor, UIColor) = (#colorLiteral(red: 0.9411764741, green: 0.4980392158, blue: 0.3529411852, alpha: 1), #colorLiteral(red: 1, green: 0.1491314173, blue: 0, alpha: 1))
+            self.onColor = color
         case "orange":
             let color: (UIColor, UIColor) = (#colorLiteral(red: 0.9568627477, green: 0.6588235497, blue: 0.5450980663, alpha: 1), #colorLiteral(red: 0.9372549057, green: 0.3490196168, blue: 0.1921568662, alpha: 1))
             self.onColor = color

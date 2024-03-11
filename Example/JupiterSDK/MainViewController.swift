@@ -35,7 +35,7 @@ class MainViewController: UIViewController, UITextFieldDelegate {
     @IBOutlet weak var dropText: UITextField!
     @IBOutlet weak var dropButton: UIButton!
     
-    var regions: [String] = ["Korea", "Canada"]
+    var regions: [String] = ["Korea", "Canada", "US(East)"]
     var currentRegion: String = "Korea"
     var defaultMeasage: String = ""
     

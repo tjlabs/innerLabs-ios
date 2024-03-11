@@ -3,7 +3,7 @@ import CoreMotion
 import UIKit
 
 public class ServiceManager: Observation {
-    public static let sdkVersion: String = "3.4.2"
+    public static let sdkVersion: String = "3.4.2.1"
     
     func tracking(input: FineLocationTrackingResult, isPast: Bool) {
         for observer in observers {
@@ -100,6 +100,7 @@ public class ServiceManager: Observation {
     public var isLoadEnd = [String: [Bool]]()
     var isBackground: Bool = false
     var isForeground: Bool = false
+    var timeBecomeForeground: Double = 0
     
     // ----- Sensor & BLE ----- //
     public var collectData = CollectData()
@@ -224,7 +225,7 @@ public class ServiceManager: Observation {
     var indexAfterResponse: Int = 0
     
     var isPossibleNormalize: Bool = false
-    var deviceMinRss: Double = -100.0
+    var deviceMinRss: Double = -99.0
     var standardMinRss: Double = -99.0
     var standradMaxRss: Double = -58.0
     var normalizationScale: Double = 1.0
@@ -996,8 +997,17 @@ public class ServiceManager: Observation {
         }
     }
     
-    public func runBackgroundMode() {
+    public func setBackgroundMode(flag: Bool) {
+        if (flag) {
+            self.runBackgroundMode()
+        } else {
+            self.runForegroundMode()
+        }
+    }
+    
+    func runBackgroundMode() {
         self.isBackground = true
+        self.unitDRGenerator.setIsBackground(isBackground: true)
         self.bleManager.stopScan()
         self.stopTimer()
             
@@ -1030,7 +1040,7 @@ public class ServiceManager: Observation {
         self.reporting(input: BACKGROUND_FLAG)
     }
     
-    public func runForegroundMode() {
+    func runForegroundMode() {
         if let existingTaskIdentifier = self.backgroundTaskIdentifier {
             UIApplication.shared.endBackgroundTask(existingTaskIdentifier)
             self.backgroundTaskIdentifier = .invalid
@@ -1042,11 +1052,12 @@ public class ServiceManager: Observation {
         self.backgroundUvTimer = nil
             
         self.bleManager.startScan(option: .Foreground)
-            
         self.startTimer()
             
         self.isBackground = false
+        self.unitDRGenerator.setIsBackground(isBackground: false)
         self.isForeground = true
+        self.timeBecomeForeground = getCurrentTimeInMillisecondsDouble()
         self.reporting(input: FOREGROUND_FLAG)
     }
     
@@ -1651,8 +1662,9 @@ public class ServiceManager: Observation {
                     }
                 }
             case .failure(let error):
-                if (self.isIndoor && self.isGetFirstResponse) {
-                    if (!self.isBleOff) {
+                if (self.isIndoor && self.isGetFirstResponse && !self.isBackground) {
+                    let diffTime = (getCurrentTimeInMillisecondsDouble() - self.timeBecomeForeground)*1e-3
+                    if (!self.isBleOff && diffTime > 5) {
                         self.reporting(input: BLE_ERROR_FLAG)
                         let lastResult = self.resultToReturn
                         let isFailTrimBle = self.determineIsOutdoor(lastResult: lastResult, currentTime: getCurrentTimeInMillisecondsDouble(), inFailCondition: true)
@@ -1667,13 +1679,14 @@ public class ServiceManager: Observation {
 //            self.bleAvg = ["TJ-00CB-00000242-0000":-76.0] // S3 7F
 //            self.bleAvg = ["TJ-00CB-000003E7-0000":-76.0] // Plan Group
 //            self.bleAvg = ["TJ-00CB-00000464-0000":-76.0] // ASJTM
+//            self.bleAvg = ["TJ-00CB-0000033B-0000":-62.0] // DS 3F
             
             paramEstimator.refreshWardMinRssi(bleData: self.bleAvg)
             paramEstimator.refreshWardMaxRssi(bleData: self.bleAvg)
             let maxRssi = paramEstimator.getMaxRssi()
             let minRssi = paramEstimator.getMinRssi()
             let diffMinMaxRssi = abs(maxRssi - minRssi)
-            if (minRssi <= -90) {
+            if (minRssi < -95) {
                 let deviceMin: Double = paramEstimator.getDeviceMinRss()
                 self.deviceMinRss = deviceMin
             }
@@ -1716,12 +1729,15 @@ public class ServiceManager: Observation {
                     }
                 }
             }
-            paramEstimator.refreshAllEntranceWardRssi(allEntranceWards: self.allEntranceWards, bleData: self.bleAvg)
-            let isSufficientRfdBuffer = rflowCorrelator.accumulateRfdBuffer(bleData: self.bleAvg)
-            let isSufficientRfdVelocityBuffer = rflowCorrelator.accumulateRfdVelocityBuffer(bleData: self.bleAvg)
-            let isSufficientRfdAutoMode = rflowCorrelator.accumulateRfdAutoModeBuffer(bleData: self.bleAvg)
-            if(!self.isStartSimulate) {
-                unitDRGenerator.setRflow(rflow: rflowCorrelator.getRflow(), rflowForVelocity: rflowCorrelator.getRflowForVelocityScale(), rflowForAutoMode: rflowCorrelator.getRflowForAutoMode(), isSufficient: isSufficientRfdBuffer, isSufficientForVelocity: isSufficientRfdVelocityBuffer, isSufficientForAutoMode: isSufficientRfdAutoMode)
+            
+            if (!self.isBackground) {
+                paramEstimator.refreshAllEntranceWardRssi(allEntranceWards: self.allEntranceWards, bleData: self.bleAvg)
+                let isSufficientRfdBuffer = rflowCorrelator.accumulateRfdBuffer(bleData: self.bleAvg)
+                let isSufficientRfdVelocityBuffer = rflowCorrelator.accumulateRfdVelocityBuffer(bleData: self.bleAvg)
+                let isSufficientRfdAutoMode = rflowCorrelator.accumulateRfdAutoModeBuffer(bleData: self.bleAvg)
+                if(!self.isStartSimulate) {
+                    unitDRGenerator.setRflow(rflow: rflowCorrelator.getRflow(), rflowForVelocity: rflowCorrelator.getRflowForVelocityScale(), rflowForAutoMode: rflowCorrelator.getRflowForAutoMode(), isSufficient: isSufficientRfdBuffer, isSufficientForVelocity: isSufficientRfdVelocityBuffer, isSufficientForAutoMode: isSufficientRfdAutoMode)
+                }
             }
             
             if (!self.bleAvg.isEmpty) {
@@ -1744,7 +1760,8 @@ public class ServiceManager: Observation {
                             if (statusCode != 200) {
                                 let localTime = getLocalTimeString()
                                 let log: String = localTime + " , (Jupiter) Record Error : RFD \(statusCode) // " + returnedString
-                                if (self.isIndoor && self.isGetFirstResponse) {
+                                
+                                if (self.isIndoor && self.isGetFirstResponse && !self.isBackground) {
                                     print(log)
                                     self.reporting(input: RFD_FLAG)
                                 }
@@ -1753,7 +1770,7 @@ public class ServiceManager: Observation {
                         inputReceivedForce = [ReceivedForce(user_id: "", mobile_time: 0, ble: [:], pressure: 0)]
                     }
                 }
-            } else {
+            } else if (!self.isBackground) {
                 // Add
                 let lastBleDiscoveredTime: Double = bleManager.bleDiscoveredTime
                 let cTime = getCurrentTimeInMillisecondsDouble()
@@ -2531,6 +2548,10 @@ public class ServiceManager: Observation {
         var searchType = 0
         
         var CONDITION: Double = USER_TRAJECTORY_LENGTH
+        var conditionForMajorHeadingUse: Double = 10
+        if (USER_TRAJECTORY_LENGTH <= 20) {
+            conditionForMajorHeadingUse = (USER_TRAJECTORY_LENGTH-5)/2
+        }
         let accumulatedValue: Double = length
         let diagonal_length_ratio = diagonal/length
         if (mode == "pdr") {
@@ -2560,7 +2581,7 @@ public class ServiceManager: Observation {
                     
                     var searchHeadings: [Double] = []
                     var hasMajorDirection: Bool = false
-                    if (accumulatedValue > 10) {
+                    if (accumulatedValue > conditionForMajorHeadingUse) {
                         let ppHeadings = pmCalculator.getPathMatchingHeadings(building: userBuilding, level: userLevel, x: userX, y: userY, heading: userH, RANGE: RANGE, mode: mode)
                         let headingLeastChangeSection = extractSectionWithLeastChange(inputArray: uvRawHeading)
                         if (headingLeastChangeSection.isEmpty) {
@@ -3686,6 +3707,7 @@ public class ServiceManager: Observation {
             input.normalization_scale = 1.01
         }
         NetworkManager.shared.postFLT(url: FLT_URL, input: input, userTraj: userTrajectory, trajType: searchInfo.3, completion: { [self] statusCode, returnedString, inputPhase, inputTraj, inputTrajType in
+//            print("Code = \(statusCode) // Result = \(returnedString)")
             if (!returnedString.contains("timed out")) {
                 self.networkCount = 0
             }

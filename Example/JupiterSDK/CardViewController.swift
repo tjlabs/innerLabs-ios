@@ -539,6 +539,25 @@ extension CardViewController: UICollectionViewDataSource, UICollectionViewDelega
                 serviceVC.page = currentPage
                 self.navigationController?.pushViewController(serviceVC, animated: true)
             }
+        case "US(East)":
+            if (sector_id == 0) {
+                guard let guideVC = self.storyboard?.instantiateViewController(withIdentifier: "GuideViewController") as? GuideViewController else { return }
+                guideVC.page = currentPage
+                self.navigationController?.pushViewController(guideVC, animated: true)
+            } else if (sector_id == 1) {
+                guard let collectVC = self.storyboard?.instantiateViewController(withIdentifier: "CollectViewController") as? CollectViewController else { return }
+                collectVC.cardData = cardItemData[mod]
+                collectVC.userId = uuid
+                collectVC.page = currentPage
+                self.navigationController?.pushViewController(collectVC, animated: true)
+            } else {
+                guard let serviceVC = self.storyboard?.instantiateViewController(withIdentifier: "ServiceViewController") as? ServiceViewController else { return }
+                serviceVC.cardData = cardItemData[mod]
+                serviceVC.region = region
+                serviceVC.uuid = uuid
+                serviceVC.page = currentPage
+                self.navigationController?.pushViewController(serviceVC, animated: true)
+            }
         default:
             if (sector_id == 0) {
                 guard let guideVC = self.storyboard?.instantiateViewController(withIdentifier: "GuideViewController") as? GuideViewController else { return }

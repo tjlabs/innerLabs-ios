@@ -1254,10 +1254,10 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
 //        scatterChart.leftAxis.axisMinimum = -2.8
 //        scatterChart.leftAxis.axisMaximum = 66.6
         
-//        scatterChart.xAxis.axisMinimum = -8.7
-//        scatterChart.xAxis.axisMaximum = 38.7
-//        scatterChart.leftAxis.axisMinimum = -9.2
-//        scatterChart.leftAxis.axisMaximum = 66
+//        scatterChart.xAxis.axisMinimum = 2.1
+//        scatterChart.xAxis.axisMaximum = 31
+//        scatterChart.leftAxis.axisMinimum = -17.8
+//        scatterChart.leftAxis.axisMaximum = 32.5
         
         // Configure Chart
         if ( limits[0] == 0 && limits[1] == 0 && limits[2] == 0 && limits[3] == 0 ) {
@@ -1420,11 +1420,11 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
     
     func notificationCenterAddObserver() {
         self.backgroundObserver = NotificationCenter.default.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: .main) { _ in
-            self.serviceManager.runBackgroundMode()
+            self.serviceManager.setBackgroundMode(flag: true)
         }
         
         self.foregroundObserver = NotificationCenter.default.addObserver(forName: UIApplication.didBecomeActiveNotification, object: nil, queue: .main) { _ in
-            self.serviceManager.runForegroundMode()
+            self.serviceManager.setBackgroundMode(flag: false)
         }
     }
     

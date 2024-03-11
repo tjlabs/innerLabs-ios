@@ -50,6 +50,7 @@
 		B364B35628BCD8C5001A8950 /* LUPIUM_5F.csv in Resources */ = {isa = PBXBuildFile; fileRef = B364B35228BCD8C5001A8950 /* LUPIUM_5F.csv */; };
 		B364B35728BCD8C5001A8950 /* LUPIUM_7F.csv in Resources */ = {isa = PBXBuildFile; fileRef = B364B35328BCD8C5001A8950 /* LUPIUM_7F.csv */; };
 		B364B35828BCD8C5001A8950 /* LUPIUM_3F.csv in Resources */ = {isa = PBXBuildFile; fileRef = B364B35428BCD8C5001A8950 /* LUPIUM_3F.csv */; };
+		B36880CB2B95AE4F00A10A1E /* DS_3F.csv in Resources */ = {isa = PBXBuildFile; fileRef = B36880CA2B95AE4F00A10A1E /* DS_3F.csv */; };
 		B368814D2A6FA584005CD436 /* UsefulFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B368814C2A6FA584005CD436 /* UsefulFunctions.swift */; };
 		B369287E28C5BCAC005FD4A9 /* LUPIUM_B1.csv in Resources */ = {isa = PBXBuildFile; fileRef = B369287D28C5BCAC005FD4A9 /* LUPIUM_B1.csv */; };
 		B3844E8E28099EE3007A5215 /* CardCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3844E8C28099EE3007A5215 /* CardCollectionViewCell.swift */; };
@@ -182,6 +183,7 @@
 		B364B35228BCD8C5001A8950 /* LUPIUM_5F.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LUPIUM_5F.csv; sourceTree = "<group>"; };
 		B364B35328BCD8C5001A8950 /* LUPIUM_7F.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LUPIUM_7F.csv; sourceTree = "<group>"; };
 		B364B35428BCD8C5001A8950 /* LUPIUM_3F.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LUPIUM_3F.csv; sourceTree = "<group>"; };
+		B36880CA2B95AE4F00A10A1E /* DS_3F.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = DS_3F.csv; sourceTree = "<group>"; };
 		B368814C2A6FA584005CD436 /* UsefulFunctions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsefulFunctions.swift; sourceTree = "<group>"; };
 		B369287D28C5BCAC005FD4A9 /* LUPIUM_B1.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LUPIUM_B1.csv; sourceTree = "<group>"; };
 		B3844E8C28099EE3007A5215 /* CardCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardCollectionViewCell.swift; sourceTree = "<group>"; };
@@ -351,6 +353,7 @@
 				B3A641AC2B621BF400845B32 /* L3_5F.csv */,
 				B34111B02AD6503300CFA422 /* L3_4F.csv */,
 				B34111B82AD6503400CFA422 /* L3_6F.csv */,
+				B36880CA2B95AE4F00A10A1E /* DS_3F.csv */,
 				B34111B62AD6503400CFA422 /* L8_B1.csv */,
 				B30638F22A36E58800C7FF89 /* COEX_B1.csv */,
 				B30638F42A36E58800C7FF89 /* COEX_B2.csv */,
@@ -636,6 +639,7 @@
 				B34111BF2AD6503400CFA422 /* L1_2F.csv in Resources */,
 				B364B35628BCD8C5001A8950 /* LUPIUM_5F.csv in Resources */,
 				607FACDB1AFB9204008FA782 /* Main.storyboard in Resources */,
+				B36880CB2B95AE4F00A10A1E /* DS_3F.csv in Resources */,
 				B360D88E28090D6A0084FB22 /* NotoSansKR-Bold.otf in Resources */,
 				B3D194DD282E2726004E6F9A /* JupiterGuideTableViewCell.xib in Resources */,
 				B3D194E3282E2B2B004E6F9A /* LocationTableViewCell.xib in Resources */,

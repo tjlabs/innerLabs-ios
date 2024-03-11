@@ -1223,11 +1223,11 @@ class FusionViewController: UIViewController, Observer {
     
     func notificationCenterAddObserver() {
         self.backgroundObserver = NotificationCenter.default.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: .main) { _ in
-            self.serviceManager.runBackgroundMode()
+            self.serviceManager.setBackgroundMode(flag: true)
         }
         
         self.foregroundObserver = NotificationCenter.default.addObserver(forName: UIApplication.didBecomeActiveNotification, object: nil, queue: .main) { _ in
-            self.serviceManager.runForegroundMode()
+            self.serviceManager.setBackgroundMode(flag: false)
         }
     }
     
