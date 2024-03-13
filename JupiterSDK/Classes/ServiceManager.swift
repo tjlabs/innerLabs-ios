@@ -997,6 +997,25 @@ public class ServiceManager: Observation {
         }
     }
     
+    public func forceStopService() {
+        self.notificationCenterRemoveObserver()
+        self.stopTimer()
+        self.stopBLE()
+        
+        if (self.service == "FLT" || self.service == "FLT+") {
+            unitDRInfo = UnitDRInfo()
+            userTrajectory = TrajectoryInfo()
+            paramEstimator.saveNormalizationScale(scale: self.normalizationScale, sector_id: self.sector_id)
+            self.postParam(sector_id: self.sector_id, normailzationScale: self.normalizationScale)
+        }
+        
+        self.initVariables()
+        self.isStartFlag = false
+        self.isStartComplete = false
+        displayOutput.phase = String(0)
+        self.isMapMatching = false
+    }
+    
     public func setBackgroundMode(flag: Bool) {
         if (flag) {
             self.runBackgroundMode()

@@ -19,9 +19,6 @@ class FusionViewController: UIViewController, Observer {
         switch(flag) {
         case 0:
             print(localTime + " , (JupiterVC) Report : Stop!! Out of the Service Area")
-            DispatchQueue.main.async { [self] in
-//                self.switchButton.isOn = false
-            }
         case 1:
             print(localTime + " , (JupiterVC) Report : Start!! Enter the Service Area")
         case 2:
@@ -103,9 +100,9 @@ class FusionViewController: UIViewController, Observer {
             } else {
                 self.isBleOnlyMode = false
             }
-//            self.isPathMatchingSuccess = self.serviceManager.displayOutput.isPmSuccess
-//            let log: String = localTime + " , (FusionVC) : dt = \(dt) // time = \(result.mobile_time) // befor = \(self.observerTime) // x = \(result.x) // y = \(result.y) // h = \(result.absolute_heading) // phase = \(result.phase) // Venus = \(result.ble_only_position)"
-//            print(log)
+            //            self.isPathMatchingSuccess = self.serviceManager.displayOutput.isPmSuccess
+            //            let log: String = localTime + " , (FusionVC) : dt = \(dt) // time = \(result.mobile_time) // befor = \(self.observerTime) // x = \(result.x) // y = \(result.y) // h = \(result.absolute_heading) // phase = \(result.phase) // Venus = \(result.ble_only_position)"
+            //            print(log)
             
             if (self.buildings.contains(building)) {
                 if let levelList: [String] = self.levels[building] {
@@ -215,7 +212,7 @@ class FusionViewController: UIViewController, Observer {
     var isBleOnlyMode: Bool = false
     var isPathMatchingSuccess: Bool = true
     var isReportPpExist: Bool = false
-
+    
     var resultPosBuffer = [[Double]]()
     var averagePosBuffer = [[Double]]()
     
@@ -234,6 +231,7 @@ class FusionViewController: UIViewController, Observer {
     
     private var foregroundObserver: Any!
     private var backgroundObserver: Any!
+    private var terminateObserver: Any!
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(false)
@@ -280,9 +278,35 @@ class FusionViewController: UIViewController, Observer {
     }
     
     func goToBack() {
-        serviceManager.stopService()
+        self.forceStop()
+        self.coordToDisplay = CoordToDisplay()
+        self.resultToDisplay = ResultToDisplay()
+        self.currentBuilding = ""
+        self.currentLevel = ""
+        self.pastBuilding = ""
+        self.pastLevel = ""
+        self.displayLevelImage(building: currentBuilding, level: currentLevel, flag: isShowRP)
+        self.notificationCenterRemoveObserver()
+        
+        self.stopTimer()
+        
+        //        serviceManager.stopService()
         self.delegate?.sendPage(data: page)
         self.navigationController?.popViewController(animated: true)
+    }
+    
+    @objc func goToBackServiceFail() {
+        self.forceStop()
+        self.delegate?.sendPage(data: self.page)
+        DispatchQueue.main.async {
+            self.navigationController?.popViewController(animated: true)
+        }
+    }
+    
+    @objc func forceStop() {
+        serviceManager.forceStopService()
+        serviceManager.removeObserver(self)
+        self.notificationCenterRemoveObserver()
     }
     
     func setCardData(cardData: CardItemData) {
@@ -446,7 +470,7 @@ class FusionViewController: UIViewController, Observer {
     
     private func initDropDown() {
         dropView.layer.cornerRadius = 6
-//        dropView.borderColor = .blue1
+        //        dropView.borderColor = .blue1
         dropView.borderColor = .darkgrey4
         
         DropDown.appearance().textColor = UIColor.black // 아이템 텍스트 색상
@@ -600,7 +624,7 @@ class FusionViewController: UIViewController, Observer {
     }
     
     @objc func timerUpdate() {
-        let timeStamp: Double = getCurrentTimeInMilliseconds()
+        let timeStamp: Double = getCurrentTimeInMillisecondsDouble()
         
         // Map
         self.updateCoord(data: self.coordToDisplay, flag: self.isShowRP)
@@ -641,7 +665,7 @@ class FusionViewController: UIViewController, Observer {
                     if let isLoadEnd = self.serviceManager.isLoadEnd[key] {
                         if (isLoadEnd[0] && !isLoadEnd[1]) {
                             self.isReportPpExist = true
-
+                            
                             self.serviceManager.stopService()
                             self.noImageLabel.text = "Cannot load the Path-Pixel"
                             self.noImageLabel.isHidden = false
@@ -651,6 +675,13 @@ class FusionViewController: UIViewController, Observer {
                 }
             }
         }
+    }
+    
+    private func makeUniqueId(uuid: String) -> String {
+        let currentTime: Int = getCurrentTimeInMilliseconds()
+        let unique_id: String = "\(uuid)_\(currentTime)"
+        
+        return unique_id
     }
     
     func jsonToScale(json: String) -> ScaleResponse {
@@ -1004,11 +1035,7 @@ class FusionViewController: UIViewController, Observer {
         dropText.text = currentBuilding
     }
     
-    func getCurrentTimeInMilliseconds() -> Double
-    {
-        return Double(Date().timeIntervalSince1970 * 1000)
-    }
-    
+
     func hideDropDown(flag: Bool) {
         if (flag) {
             // Hide
@@ -1229,20 +1256,16 @@ class FusionViewController: UIViewController, Observer {
         self.foregroundObserver = NotificationCenter.default.addObserver(forName: UIApplication.didBecomeActiveNotification, object: nil, queue: .main) { _ in
             self.serviceManager.setBackgroundMode(flag: false)
         }
+        
+        self.terminateObserver = NotificationCenter.default.addObserver(forName: UIApplication.willTerminateNotification, object: nil, queue: .main) { _ in
+            self.forceStop()
+        }
     }
     
     func notificationCenterRemoveObserver() {
         NotificationCenter.default.removeObserver(self.backgroundObserver)
         NotificationCenter.default.removeObserver(self.foregroundObserver)
-    }
-    
-    @objc func goToBackServiceFail() {
-        serviceManager.removeObserver(self)
-//        self.notificationCenterRemoveObserver()
-        self.delegate?.sendPage(data: self.page)
-        DispatchQueue.main.async {
-            self.navigationController?.popViewController(animated: true)
-        }
+        NotificationCenter.default.removeObserver(self.terminateObserver)
     }
 }
 
@@ -1328,11 +1351,18 @@ extension FusionViewController: CustomSwitchButtonDelegate {
                 serviceManager = ServiceManager()
                 serviceManager.changeRegion(regionName: self.region)
                 
+                var inputMode: String = "auto"
+                if (self.sector_id == 6 && self.region != "Canada") {
+                    inputMode = "auto"
+                } else {
+                    inputMode = cardData!.mode
+                }
+                let uniqueId = self.makeUniqueId(uuid: uuid)
                 serviceManager.startService(id: uuid, sector_id: cardData!.sector_id, service: serviceName, mode: cardData!.mode, completion: { isStart, message in
                     if (isStart) {
                         serviceManager.addObserver(self)
                         print("(FusionVC) Success : \(message)")
-//                        self.notificationCenterAddObserver()
+                        self.notificationCenterAddObserver()
                         self.startTimer()
                     } else {
                         print("(FusionVC) Fail : \(message)")
@@ -1352,7 +1382,7 @@ extension FusionViewController: CustomSwitchButtonDelegate {
                     self.pastBuilding = ""
                     self.pastLevel = ""
                     self.displayLevelImage(building: currentBuilding, level: currentLevel, flag: isShowRP)
-//                    self.notificationCenterRemoveObserver()
+                    self.notificationCenterRemoveObserver()
                     print("(FusionVC) Success : \(isStop.1)")
                     serviceManager.removeObserver(self)
                     self.stopTimer()

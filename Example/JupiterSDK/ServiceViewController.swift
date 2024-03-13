@@ -29,9 +29,6 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
         switch(flag) {
         case 0:
             print(localTime + " , (JupiterVC) Report : Stop!! Out of the Service Area")
-            DispatchQueue.main.async { [self] in
-//                self.switchButton.isOn = false
-            }
         case 1:
             print(localTime + " , (JupiterVC) Report : Start!! Enter the Service Area")
         case 2:
@@ -173,6 +170,7 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
     
     private var foregroundObserver: Any!
     private var backgroundObserver: Any!
+    private var terminateObserver: Any!
     
     var pastTime: Double = 0
     var elapsedTime: Double = 0
@@ -314,11 +312,44 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
     @IBAction func tapBackButton(_ sender: UIButton) {
         serviceManager.removeObserver(self)
         self.notificationCenterRemoveObserver()
+        goToBack()
+//        serviceManager.removeObserver(self)
+//        self.notificationCenterRemoveObserver()
+//        self.delegate?.sendPage(data: page)
+//        serviceManager.stopService()
+//        self.navigationController?.popViewController(animated: true)
+    }
+    
+    func goToBack() {
+        self.forceStop()
+        
+        self.coordToDisplay = CoordToDisplay()
+        self.resultToDisplay = ResultToDisplay()
+        self.currentBuilding = ""
+        self.currentLevel = ""
+        self.pastBuilding = ""
+        self.pastLevel = ""
+        self.displayLevelImage(building: currentBuilding, level: currentLevel, flag: isShowRP)
+        self.notificationCenterRemoveObserver()
+        self.stopTimer()
+        
         self.delegate?.sendPage(data: page)
-        serviceManager.stopService()
         self.navigationController?.popViewController(animated: true)
     }
     
+    @objc func goToBackServiceFail() {
+        self.forceStop()
+        self.delegate?.sendPage(data: self.page)
+        DispatchQueue.main.async {
+            self.navigationController?.popViewController(animated: true)
+        }
+    }
+    
+    @objc func forceStop() {
+        serviceManager.forceStopService()
+        serviceManager.removeObserver(self)
+        self.notificationCenterRemoveObserver()
+    }
     
     @IBAction func tapShowButton(_ sender: UIButton) {
         UIView.animate(withDuration: 0.5, delay: 0.01, options: .curveLinear, animations: {
@@ -715,7 +746,7 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
     }
     
     @objc func timerUpdate() {
-        let timeStamp = getCurrentTimeInMilliseconds()
+        let timeStamp = getCurrentTimeInMillisecondsDouble()
         let dt = timeStamp - pastTime
         pastTime = timeStamp
         
@@ -817,6 +848,12 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
         }
     }
     
+    private func makeUniqueId(uuid: String) -> String {
+        let currentTime: Int = getCurrentTimeInMilliseconds()
+        let unique_id: String = "\(uuid)_\(currentTime)"
+        
+        return unique_id
+    }
     
     func jsonToScale(json: String) -> ScaleResponse {
         let result = ScaleResponse(image_scale: "")
@@ -1405,10 +1442,6 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
         dropText.text = currentBuilding
     }
     
-    func getCurrentTimeInMilliseconds() -> Double
-    {
-        return Double(Date().timeIntervalSince1970 * 1000)
-    }
     
     func removeLevelDirectionString(levelName: String) -> String {
         var levelToReturn: String = levelName
@@ -1426,11 +1459,16 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
         self.foregroundObserver = NotificationCenter.default.addObserver(forName: UIApplication.didBecomeActiveNotification, object: nil, queue: .main) { _ in
             self.serviceManager.setBackgroundMode(flag: false)
         }
+        
+        self.terminateObserver = NotificationCenter.default.addObserver(forName: UIApplication.willTerminateNotification, object: nil, queue: .main) { _ in
+            self.forceStop()
+        }
     }
     
     func notificationCenterRemoveObserver() {
         NotificationCenter.default.removeObserver(self.backgroundObserver)
         NotificationCenter.default.removeObserver(self.foregroundObserver)
+        NotificationCenter.default.removeObserver(self.terminateObserver)
     }
     
     func hideDropDown(flag: Bool) {
@@ -1456,15 +1494,6 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
             }})
             
             switchButtonOffset.constant = 10
-        }
-    }
-    
-    @objc func goToBackServiceFail() {
-        serviceManager.removeObserver(self)
-        self.notificationCenterRemoveObserver()
-        self.delegate?.sendPage(data: self.page)
-        DispatchQueue.main.async {
-            self.navigationController?.popViewController(animated: true)
         }
     }
     
@@ -1657,7 +1686,7 @@ extension ServiceViewController: CustomSwitchButtonDelegate {
                 } else {
                     inputMode = cardData!.mode
                 }
-                
+                let uniqueId = self.makeUniqueId(uuid: uuid)
                 serviceManager.startService(id: uuid, sector_id: cardData!.sector_id, service: "FLT", mode: inputMode, completion: { isStart, message in
                     if (isStart) {
                         serviceManager.addObserver(self)
