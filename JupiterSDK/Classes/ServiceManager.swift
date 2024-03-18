@@ -1705,11 +1705,11 @@ public class ServiceManager: Observation {
             let maxRssi = paramEstimator.getMaxRssi()
             let minRssi = paramEstimator.getMinRssi()
             let diffMinMaxRssi = abs(maxRssi - minRssi)
-            if (minRssi < -95) {
+            if (minRssi <= -97) {
                 let deviceMin: Double = paramEstimator.getDeviceMinRss()
                 self.deviceMinRss = deviceMin
             }
-            if (self.isGetFirstResponse && self.isIndoor && (self.unitDrInfoIndex%5 == 0) && diffMinMaxRssi >= 20) {
+            if (self.isGetFirstResponse && self.isIndoor && (self.unitDrInfoIndex%4 == 0) && diffMinMaxRssi >= 25 && minRssi <= -97) {
                 if (self.isScaleLoaded) {
                     if (self.currentLevel != "B0") {
                         let normalizationScale = paramEstimator.calNormalizationScale(standardMin: self.standardMinRss, standardMax: self.standradMaxRss)
@@ -1914,7 +1914,7 @@ public class ServiceManager: Observation {
                 } else {
                     self.isNotLookingCount = 0
                 }
-                if (self.isNotLookingCount > 2) {
+                if (self.isNotLookingCount > 5) {
                     // Looking True -> False
                     self.lookingState = false
                 }

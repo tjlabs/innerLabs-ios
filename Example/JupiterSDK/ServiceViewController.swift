@@ -1687,7 +1687,7 @@ extension ServiceViewController: CustomSwitchButtonDelegate {
                     inputMode = cardData!.mode
                 }
                 let uniqueId = self.makeUniqueId(uuid: uuid)
-                serviceManager.startService(id: uuid, sector_id: cardData!.sector_id, service: "FLT", mode: inputMode, completion: { isStart, message in
+                serviceManager.startService(id: uniqueId, sector_id: cardData!.sector_id, service: "FLT", mode: inputMode, completion: { isStart, message in
                     if (isStart) {
                         serviceManager.addObserver(self)
                         print("(ServiceVC) Success : \(message)")

@@ -1358,7 +1358,7 @@ extension FusionViewController: CustomSwitchButtonDelegate {
                     inputMode = cardData!.mode
                 }
                 let uniqueId = self.makeUniqueId(uuid: uuid)
-                serviceManager.startService(id: uuid, sector_id: cardData!.sector_id, service: serviceName, mode: cardData!.mode, completion: { isStart, message in
+                serviceManager.startService(id: uniqueId, sector_id: cardData!.sector_id, service: serviceName, mode: cardData!.mode, completion: { isStart, message in
                     if (isStart) {
                         serviceManager.addObserver(self)
                         print("(FusionVC) Success : \(message)")
