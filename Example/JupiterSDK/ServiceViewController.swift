@@ -1291,10 +1291,15 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
 //        scatterChart.leftAxis.axisMinimum = -2.8
 //        scatterChart.leftAxis.axisMaximum = 66.6
         
-//        scatterChart.xAxis.axisMinimum = 2.1
-//        scatterChart.xAxis.axisMaximum = 31
-//        scatterChart.leftAxis.axisMinimum = -17.8
-//        scatterChart.leftAxis.axisMaximum = 32.5
+//        scatterChart.xAxis.axisMinimum = -4
+//        scatterChart.xAxis.axisMaximum = 36
+//        scatterChart.leftAxis.axisMinimum = -4
+//        scatterChart.leftAxis.axisMaximum = 78
+        
+//        scatterChart.xAxis.axisMinimum = -4
+//        scatterChart.xAxis.axisMaximum = 36
+//        scatterChart.leftAxis.axisMinimum = -4.65
+//        scatterChart.leftAxis.axisMaximum = 79
         
         // Configure Chart
         if ( limits[0] == 0 && limits[1] == 0 && limits[2] == 0 && limits[3] == 0 ) {
