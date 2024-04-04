@@ -227,37 +227,37 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
         }
     }
     
-    func trimBleData(bleInput: Dictionary<String, [[Double]]>?, nowTime: Double, validTime: Double) -> Result<Dictionary<String, [[Double]]>, Error> {
-        guard let bleInput = bleInput else {
-                return .failure(TrimBleDataError.invalidInput)
-            }
-            
-            var trimmedData = [String: [[Double]]]()
-            
-            for (bleID, bleData) in bleInput {
-                let newValue = bleData.filter { data in
-                    let rssi = data[0]
-                    let time = data[1]
-                    
-                    return (nowTime - time <= validTime) && (rssi >= -100)
-                }
-                
-                if !newValue.isEmpty {
-                    trimmedData[bleID] = newValue
-                }
-            }
-            
-            if trimmedData.isEmpty {
-                return .failure(TrimBleDataError.noValidData)
-            } else {
-                return .success(trimmedData)
-            }
-    }
-
-    enum TrimBleDataError: Error {
-        case invalidInput
-        case noValidData
-    }
+//    func trimBleData(bleInput: Dictionary<String, [[Double]]>?, nowTime: Double, validTime: Double) -> Result<Dictionary<String, [[Double]]>, Error> {
+//        guard let bleInput = bleInput else {
+//                return .failure(TrimBleDataError.invalidInput)
+//            }
+//            
+//            var trimmedData = [String: [[Double]]]()
+//            
+//            for (bleID, bleData) in bleInput {
+//                let newValue = bleData.filter { data in
+//                    let rssi = data[0]
+//                    let time = data[1]
+//                    
+//                    return (nowTime - time <= validTime) && (rssi >= -100)
+//                }
+//                
+//                if !newValue.isEmpty {
+//                    trimmedData[bleID] = newValue
+//                }
+//            }
+//            
+//            if trimmedData.isEmpty {
+//                return .failure(TrimBleDataError.noValidData)
+//            } else {
+//                return .success(trimmedData)
+//            }
+//    }
+//
+//    enum TrimBleDataError: Error {
+//        case invalidInput
+//        case noValidData
+//    }
     
     func isConnected() -> Bool {
         return connected
