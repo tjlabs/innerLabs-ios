@@ -4,6 +4,11 @@ import UIKit
 
 public class ServiceManager: Observation {
     public static let sdkVersion: String = "3.4.3"
+    var isSimulationMode: Bool = true
+    var simulationBleData = [[String: Double]]()
+    var simulationSensorData = [SensorData]()
+    var bleLineCount: Int = 0
+    var sensorLineCount: Int = 0
     
     func tracking(input: FineLocationTrackingResult, isPast: Bool) {
         for observer in observers {
@@ -732,6 +737,7 @@ public class ServiceManager: Observation {
                                                                                                 let log: String = localTime + " , (Jupiter) Success : Service Initalization"
                                                                                                 message = log
                                                                                                 self.reporting(input: START_FLAG)
+                                                                                                self.initSimulationMode()
                                                                                                 completion(true, message)
                                                                                             } else {
                                                                                                 // Success Load without OS
@@ -879,6 +885,16 @@ public class ServiceManager: Observation {
                     }
                 }
             }
+        }
+    }
+    
+    private func initSimulationMode() {
+        JupiterFileManager.shared.createFiles(time: getCurrentTimeInMilliseconds())
+        
+        if (isSimulationMode) {
+            let result = JupiterFileManager.shared.loadFilesForSimulation()
+            simulationBleData = result.0
+            simulationSensorData = result.1
         }
     }
     
@@ -1627,34 +1643,241 @@ public class ServiceManager: Observation {
     }
     
     @objc func receivedForceTimerUpdate() {
+        handleRfd()
+//        let localTime: String = getLocalTimeString()
+//        if (!bleManager.bluetoothReady) {
+//            self.timeBleOff += RFD_INTERVAL
+//            if (self.timeBleOff >= BLE_OFF_THRESHOLD) {
+//                if (!self.isBleOff) {
+//                    self.isBleOff = true
+//                    self.timeBleOff = 0
+//                    self.reporting(input: BLE_OFF_FLAG)
+//                }
+//            }
+//        } else {
+//            let checkLastScannedTime = (getCurrentTimeInMillisecondsDouble() - bleManager.bleLastScannedTime)*1e-3
+//            if (checkLastScannedTime >= 6) {
+//                // 스캔이 동작안한지 6초 이상 지남
+//                self.reporting(input: BLE_SCAN_STOP_FLAG)
+//            }
+//        }
+//        
+//        bleManager.setValidTime(mode: self.runMode)
+//        self.setValidTime(mode: self.runMode)
+//        let validTime = self.BLE_VALID_TIME
+//        let currentTime = getCurrentTimeInMilliseconds() - (Int(validTime)/2)
+//        let bleDictionary: [String: [[Double]]]? = bleManager.bleDictionary
+//        if let bleData = bleDictionary {
+//            let trimmedResult = trimBleData(bleInput: bleData, nowTime: getCurrentTimeInMillisecondsDouble(), validTime: validTime)
+//            switch trimmedResult {
+//            case .success(let trimmedData):
+//                self.bleAvg = avgBleData(bleDictionary: trimmedData)
+//                let scannedResult = getLastScannedEntranceOuterWardTime(bleAvg: self.bleAvg, entranceOuterWards: self.EntranceOuterWards)
+//                if (scannedResult.0) {
+//                    self.lastScannedEntranceOuterWardTime = scannedResult.1
+//                }
+//                
+//                if (!self.isGetFirstResponse) {
+//                    let findResult = findNetworkBadEntrance(bleAvg: self.bleAvg)
+//                    self.detectNetworkBadEntrance = findResult.0
+//                    
+//                    if (!self.isIndoor && (self.timeForInit >= TIME_INIT_THRESHOLD)) {
+//                        if (self.detectNetworkBadEntrance) {
+//                            self.isGetFirstResponse = true
+//                            self.isIndoor = true
+//                            self.reporting(input: INDOOR_FLAG)
+//                            
+//                            let result = findResult.1
+//                            
+//                            self.outputResult.phase = 3
+//                            self.outputResult.building_name = result.building_name
+//                            self.outputResult.level_name = result.level_name
+//                            self.outputResult.isIndoor = self.isIndoor
+//                            
+//                            for i in 0..<self.EntranceNumbers {
+//                                if (!self.isStartSimulate) {
+//                                    let entranceResult = self.findEntrance(result: result, entrance: i)
+//                                    if (entranceResult.0 != 0) {
+//                                        let entranceKey: String = "\(entranceResult.0)"
+//                                        if let velocityScale: Double = self.EntranceScales[entranceKey] {
+//                                            self.entranceVelocityScale = velocityScale
+//                                        } else {
+//                                            self.entranceVelocityScale = 1.0
+//                                        }
+//                                        self.currentEntrance = "\(result.building_name)_\(result.level_name)_\(entranceResult.0)"
+//                                        if (self.networkBadEntrance.contains(self.currentEntrance)) {
+//                                            self.isInNetworkBadEntrance = true
+//                                        }
+//                                        self.currentEntranceLength = entranceResult.1
+//                                        self.isStartSimulate = true
+//                                        unitDRGenerator.setIsStartSimulate(isStartSimulate: self.isStartSimulate)
+//                                    }
+//                                }
+//                            }
+//                        }
+//                    }
+//                }
+//            case .failure(let error):
+//                if (self.isIndoor && self.isGetFirstResponse && !self.isBackground) {
+//                    let diffTime = (getCurrentTimeInMillisecondsDouble() - self.timeBecomeForeground)*1e-3
+//                    if (!self.isBleOff && diffTime > 5) {
+//                        self.reporting(input: BLE_ERROR_FLAG)
+//                        let lastResult = self.resultToReturn
+//                        let isFailTrimBle = self.determineIsOutdoor(lastResult: lastResult, currentTime: getCurrentTimeInMillisecondsDouble(), inFailCondition: true)
+//                        if (isFailTrimBle) {
+//                            self.bleAvg = [String: Double]()
+//                        }
+//                    }
+//                }
+//            }
+////            self.bleAvg = ["TJ-00CB-0000038C-0000":-76.0] // COEX B2 <-> B3
+////            self.bleAvg = ["TJ-00CB-0000030D-0000":-76.0] // COEX B2
+////            self.bleAvg = ["TJ-00CB-00000242-0000":-76.0] // S3 7F
+////            self.bleAvg = ["TJ-00CB-000003E7-0000":-76.0] // Plan Group
+////            self.bleAvg = ["TJ-00CB-00000464-0000":-76.0] // ASJTM
+////            self.bleAvg = ["TJ-00CB-0000033B-0000":-62.0] // DS 3F
+//            
+//            paramEstimator.refreshWardMinRssi(bleData: self.bleAvg)
+//            paramEstimator.refreshWardMaxRssi(bleData: self.bleAvg)
+//            let maxRssi = paramEstimator.getMaxRssi()
+//            let minRssi = paramEstimator.getMinRssi()
+//            let diffMinMaxRssi = abs(maxRssi - minRssi)
+//            if (minRssi <= -97) {
+//                let deviceMin: Double = paramEstimator.getDeviceMinRss()
+//                self.deviceMinRss = deviceMin
+//            }
+//            if (self.isGetFirstResponse && self.isIndoor && (self.unitDrInfoIndex%4 == 0) && diffMinMaxRssi >= 25 && minRssi <= -97) {
+//                if (self.isScaleLoaded) {
+//                    if (self.currentLevel != "B0") {
+//                        let normalizationScale = paramEstimator.calNormalizationScale(standardMin: self.standardMinRss, standardMax: self.standradMaxRss)
+//                        if (!self.isScaleConverged) {
+//                            if (normalizationScale.0) {
+//                                let smoothedScale: Double = paramEstimator.smoothNormalizationScale(scale: normalizationScale.1)
+//                                self.normalizationScale = smoothedScale
+//                                let diffScale = abs(smoothedScale - self.preNormalizationScale)
+//                                if (diffScale < 1e-3 && self.indexAfterResponse >= 700 && (smoothedScale != self.preNormalizationScale)) {
+//                                    self.isScaleConverged = true
+//                                }
+//                                self.preNormalizationScale = smoothedScale
+//                            } else {
+//                                let smoothedScale: Double = paramEstimator.smoothNormalizationScale(scale: self.preNormalizationScale)
+//                                self.normalizationScale = smoothedScale
+//                            }
+//                        }
+//                    }
+//                } else {
+//                    if (!self.isScaleConverged) {
+//                        let normalizationScale = paramEstimator.calNormalizationScale(standardMin: self.standardMinRss, standardMax: self.standradMaxRss)
+//                        if (normalizationScale.0) {
+//                            let smoothedScale: Double = paramEstimator.smoothNormalizationScale(scale: normalizationScale.1)
+//                            self.normalizationScale = smoothedScale
+//                            let diffScale = abs(smoothedScale - self.preNormalizationScale)
+//                            if (diffScale < 1e-3 && self.indexAfterResponse >= 700 && (smoothedScale != self.preNormalizationScale)) {
+//                                self.isScaleConverged = true
+//                            }
+//                            self.preNormalizationScale = smoothedScale
+//                        } else {
+//                            let smoothedScale: Double = paramEstimator.smoothNormalizationScale(scale: self.preNormalizationScale)
+//                            self.normalizationScale = smoothedScale
+//                        }
+//                    }
+//                }
+//            }
+//            
+//            if (!self.isBackground) {
+//                paramEstimator.refreshAllEntranceWardRssi(allEntranceWards: self.allEntranceWards, bleData: self.bleAvg)
+//                let isSufficientRfdBuffer = rflowCorrelator.accumulateRfdBuffer(bleData: self.bleAvg)
+//                let isSufficientRfdVelocityBuffer = rflowCorrelator.accumulateRfdVelocityBuffer(bleData: self.bleAvg)
+//                let isSufficientRfdAutoMode = rflowCorrelator.accumulateRfdAutoModeBuffer(bleData: self.bleAvg)
+//                if(!self.isStartSimulate) {
+//                    unitDRGenerator.setRflow(rflow: rflowCorrelator.getRflow(), rflowForVelocity: rflowCorrelator.getRflowForVelocityScale(), rflowForAutoMode: rflowCorrelator.getRflowForAutoMode(), isSufficient: isSufficientRfdBuffer, isSufficientForVelocity: isSufficientRfdVelocityBuffer, isSufficientForAutoMode: isSufficientRfdAutoMode)
+//                }
+//            }
+//            
+//            if (!self.bleAvg.isEmpty) {
+//                self.timeBleOff = 0
+//                self.timeActiveRF = 0
+//                self.timeSleepRF = 0
+//                
+//                self.isActiveRF = true
+//                self.isBleOff = false
+//                self.isActiveService = true
+//                
+//                self.wakeUpFromSleepMode()
+//                if (self.isActiveService) {
+//                    let data = ReceivedForce(user_id: self.user_id, mobile_time: currentTime, ble: self.bleAvg, pressure: self.sensorManager.pressure)
+//                    
+//                    inputReceivedForce.append(data)
+//                    if ((inputReceivedForce.count-1) >= RFD_INPUT_NUM) {
+//                        inputReceivedForce.remove(at: 0)
+//                        NetworkManager.shared.postReceivedForce(url: RF_URL, input: inputReceivedForce, completion: { [self] statusCode, returnedString, inputRfd in
+//                            if (statusCode != 200) {
+//                                let localTime = getLocalTimeString()
+//                                let log: String = localTime + " , (Jupiter) Record Error : RFD \(statusCode) // " + returnedString
+//                                
+//                                if (self.isIndoor && self.isGetFirstResponse && !self.isBackground) {
+//                                    print(log)
+//                                    self.reporting(input: RFD_FLAG)
+//                                }
+//                            }
+//                        })
+//                        inputReceivedForce = [ReceivedForce(user_id: "", mobile_time: 0, ble: [:], pressure: 0)]
+//                    }
+//                }
+//            } else if (!self.isBackground) {
+//                // Add
+//                let lastBleDiscoveredTime: Double = bleManager.bleDiscoveredTime
+//                let cTime = getCurrentTimeInMillisecondsDouble()
+//                if (cTime - lastBleDiscoveredTime > BLE_VALID_TIME && lastBleDiscoveredTime != 0) {
+//                    self.timeActiveRF += RFD_INTERVAL
+//                } else {
+//                    self.timeActiveRF = 0
+//                }
+//                
+//                if (self.timeActiveRF >= SLEEP_THRESHOLD_RF) {
+//                    self.isActiveRF = false
+//                    // Here
+//                    if (self.isIndoor && self.isGetFirstResponse) {
+//                        if (!self.isBleOff) {
+//                            let lastResult = self.resultToReturn
+//                            let isOutdoor = self.determineIsOutdoor(lastResult: lastResult, currentTime: cTime, inFailCondition: false)
+//                            if (isOutdoor) {
+//                                self.initVariables()
+//                                self.currentLevel = "B0"
+//                                self.isIndoor = false
+//                                self.reporting(input: OUTDOOR_FLAG)
+//                            }
+//                        }
+//                    }
+//                }
+//                
+//                self.timeSleepRF += RFD_INTERVAL
+//                if (self.timeSleepRF >= SLEEP_THRESHOLD) {
+//                    self.isActiveService = false
+//                    self.timeSleepRF = 0
+//                    self.enterSleepMode()
+//                }
+//            }
+//        } else {
+//            let log: String = localTime + " , (Jupiter) Warnings : Fail to get recent ble"
+//            print(log)
+//        }
+//        
+//        if (!self.isIndoor) {
+//            self.timeForInit += RFD_INTERVAL
+//        }
+    }
+    
+    private func handleRfd() {
         let localTime: String = getLocalTimeString()
-        if (!bleManager.bluetoothReady) {
-            self.timeBleOff += RFD_INTERVAL
-            if (self.timeBleOff >= BLE_OFF_THRESHOLD) {
-                if (!self.isBleOff) {
-                    self.isBleOff = true
-                    self.timeBleOff = 0
-                    self.reporting(input: BLE_OFF_FLAG)
-                }
-            }
-        } else {
-            let checkLastScannedTime = (getCurrentTimeInMillisecondsDouble() - bleManager.bleLastScannedTime)*1e-3
-            if (checkLastScannedTime >= 6) {
-                // 스캔이 동작안한지 6초 이상 지남
-                self.reporting(input: BLE_SCAN_STOP_FLAG)
-            }
-        }
-        
-        bleManager.setValidTime(mode: self.runMode)
-        self.setValidTime(mode: self.runMode)
-        let validTime = self.BLE_VALID_TIME
-        let currentTime = getCurrentTimeInMilliseconds() - (Int(validTime)/2)
-        let bleDictionary: [String: [[Double]]]? = bleManager.bleDictionary
-        if let bleData = bleDictionary {
-            let trimmedResult = trimBleData(bleInput: bleData, nowTime: getCurrentTimeInMillisecondsDouble(), validTime: validTime)
-            switch trimmedResult {
-            case .success(let trimmedData):
-                self.bleAvg = avgBleData(bleDictionary: trimmedData)
+        if (isSimulationMode) {
+            bleManager.setValidTime(mode: self.runMode)
+            self.setValidTime(mode: self.runMode)
+            let validTime = self.BLE_VALID_TIME
+            let currentTime = getCurrentTimeInMilliseconds() - (Int(validTime)/2)
+            if (bleLineCount < simulationBleData.count-1) {
+                let bleData = simulationBleData[bleLineCount]
+                self.bleAvg = bleData
                 let scannedResult = getLastScannedEntranceOuterWardTime(bleAvg: self.bleAvg, entranceOuterWards: self.EntranceOuterWards)
                 if (scannedResult.0) {
                     self.lastScannedEntranceOuterWardTime = scannedResult.1
@@ -1700,40 +1923,38 @@ public class ServiceManager: Observation {
                         }
                     }
                 }
-            case .failure(let error):
-                if (self.isIndoor && self.isGetFirstResponse && !self.isBackground) {
-                    let diffTime = (getCurrentTimeInMillisecondsDouble() - self.timeBecomeForeground)*1e-3
-                    if (!self.isBleOff && diffTime > 5) {
-                        self.reporting(input: BLE_ERROR_FLAG)
-                        let lastResult = self.resultToReturn
-                        let isFailTrimBle = self.determineIsOutdoor(lastResult: lastResult, currentTime: getCurrentTimeInMillisecondsDouble(), inFailCondition: true)
-                        if (isFailTrimBle) {
-                            self.bleAvg = [String: Double]()
-                        }
-                    }
+                
+                paramEstimator.refreshWardMinRssi(bleData: self.bleAvg)
+                paramEstimator.refreshWardMaxRssi(bleData: self.bleAvg)
+                let maxRssi = paramEstimator.getMaxRssi()
+                let minRssi = paramEstimator.getMinRssi()
+                let diffMinMaxRssi = abs(maxRssi - minRssi)
+                if (minRssi <= -97) {
+                    let deviceMin: Double = paramEstimator.getDeviceMinRss()
+                    self.deviceMinRss = deviceMin
                 }
-            }
-//            self.bleAvg = ["TJ-00CB-0000038C-0000":-76.0] // COEX B2 <-> B3
-//            self.bleAvg = ["TJ-00CB-0000030D-0000":-76.0] // COEX B2
-//            self.bleAvg = ["TJ-00CB-00000242-0000":-76.0] // S3 7F
-//            self.bleAvg = ["TJ-00CB-000003E7-0000":-76.0] // Plan Group
-//            self.bleAvg = ["TJ-00CB-00000464-0000":-76.0] // ASJTM
-//            self.bleAvg = ["TJ-00CB-0000033B-0000":-62.0] // DS 3F
-            
-            paramEstimator.refreshWardMinRssi(bleData: self.bleAvg)
-            paramEstimator.refreshWardMaxRssi(bleData: self.bleAvg)
-            let maxRssi = paramEstimator.getMaxRssi()
-            let minRssi = paramEstimator.getMinRssi()
-            let diffMinMaxRssi = abs(maxRssi - minRssi)
-            if (minRssi <= -97) {
-                let deviceMin: Double = paramEstimator.getDeviceMinRss()
-                self.deviceMinRss = deviceMin
-            }
-            if (self.isGetFirstResponse && self.isIndoor && (self.unitDrInfoIndex%4 == 0) && diffMinMaxRssi >= 25 && minRssi <= -97) {
-                if (self.isScaleLoaded) {
-                    if (self.currentLevel != "B0") {
-                        let normalizationScale = paramEstimator.calNormalizationScale(standardMin: self.standardMinRss, standardMax: self.standradMaxRss)
+                if (self.isGetFirstResponse && self.isIndoor && (self.unitDrInfoIndex%4 == 0) && diffMinMaxRssi >= 25 && minRssi <= -97) {
+                    if (self.isScaleLoaded) {
+                        if (self.currentLevel != "B0") {
+                            let normalizationScale = paramEstimator.calNormalizationScale(standardMin: self.standardMinRss, standardMax: self.standradMaxRss)
+                            if (!self.isScaleConverged) {
+                                if (normalizationScale.0) {
+                                    let smoothedScale: Double = paramEstimator.smoothNormalizationScale(scale: normalizationScale.1)
+                                    self.normalizationScale = smoothedScale
+                                    let diffScale = abs(smoothedScale - self.preNormalizationScale)
+                                    if (diffScale < 1e-3 && self.indexAfterResponse >= 700 && (smoothedScale != self.preNormalizationScale)) {
+                                        self.isScaleConverged = true
+                                    }
+                                    self.preNormalizationScale = smoothedScale
+                                } else {
+                                    let smoothedScale: Double = paramEstimator.smoothNormalizationScale(scale: self.preNormalizationScale)
+                                    self.normalizationScale = smoothedScale
+                                }
+                            }
+                        }
+                    } else {
                         if (!self.isScaleConverged) {
+                            let normalizationScale = paramEstimator.calNormalizationScale(standardMin: self.standardMinRss, standardMax: self.standradMaxRss)
                             if (normalizationScale.0) {
                                 let smoothedScale: Double = paramEstimator.smoothNormalizationScale(scale: normalizationScale.1)
                                 self.normalizationScale = smoothedScale
@@ -1748,108 +1969,307 @@ public class ServiceManager: Observation {
                             }
                         }
                     }
-                } else {
-                    if (!self.isScaleConverged) {
-                        let normalizationScale = paramEstimator.calNormalizationScale(standardMin: self.standardMinRss, standardMax: self.standradMaxRss)
-                        if (normalizationScale.0) {
-                            let smoothedScale: Double = paramEstimator.smoothNormalizationScale(scale: normalizationScale.1)
-                            self.normalizationScale = smoothedScale
-                            let diffScale = abs(smoothedScale - self.preNormalizationScale)
-                            if (diffScale < 1e-3 && self.indexAfterResponse >= 700 && (smoothedScale != self.preNormalizationScale)) {
-                                self.isScaleConverged = true
-                            }
-                            self.preNormalizationScale = smoothedScale
-                        } else {
-                            let smoothedScale: Double = paramEstimator.smoothNormalizationScale(scale: self.preNormalizationScale)
-                            self.normalizationScale = smoothedScale
-                        }
-//                        let deviceMin: Double = paramEstimator.getDeviceMinRss()
-//                        self.deviceMinRss = deviceMin
+                }
+                
+                if (!self.isBackground) {
+                    paramEstimator.refreshAllEntranceWardRssi(allEntranceWards: self.allEntranceWards, bleData: self.bleAvg)
+                    let isSufficientRfdBuffer = rflowCorrelator.accumulateRfdBuffer(bleData: self.bleAvg)
+                    let isSufficientRfdVelocityBuffer = rflowCorrelator.accumulateRfdVelocityBuffer(bleData: self.bleAvg)
+                    let isSufficientRfdAutoMode = rflowCorrelator.accumulateRfdAutoModeBuffer(bleData: self.bleAvg)
+                    if(!self.isStartSimulate) {
+                        unitDRGenerator.setRflow(rflow: rflowCorrelator.getRflow(), rflowForVelocity: rflowCorrelator.getRflowForVelocityScale(), rflowForAutoMode: rflowCorrelator.getRflowForAutoMode(), isSufficient: isSufficientRfdBuffer, isSufficientForVelocity: isSufficientRfdVelocityBuffer, isSufficientForAutoMode: isSufficientRfdAutoMode)
                     }
                 }
-            }
-            
-            if (!self.isBackground) {
-                paramEstimator.refreshAllEntranceWardRssi(allEntranceWards: self.allEntranceWards, bleData: self.bleAvg)
-                let isSufficientRfdBuffer = rflowCorrelator.accumulateRfdBuffer(bleData: self.bleAvg)
-                let isSufficientRfdVelocityBuffer = rflowCorrelator.accumulateRfdVelocityBuffer(bleData: self.bleAvg)
-                let isSufficientRfdAutoMode = rflowCorrelator.accumulateRfdAutoModeBuffer(bleData: self.bleAvg)
-                if(!self.isStartSimulate) {
-                    unitDRGenerator.setRflow(rflow: rflowCorrelator.getRflow(), rflowForVelocity: rflowCorrelator.getRflowForVelocityScale(), rflowForAutoMode: rflowCorrelator.getRflowForAutoMode(), isSufficient: isSufficientRfdBuffer, isSufficientForVelocity: isSufficientRfdVelocityBuffer, isSufficientForAutoMode: isSufficientRfdAutoMode)
-                }
-            }
-            
-            if (!self.bleAvg.isEmpty) {
-                self.timeBleOff = 0
-                self.timeActiveRF = 0
-                self.timeSleepRF = 0
                 
-                self.isActiveRF = true
-                self.isBleOff = false
-                self.isActiveService = true
-                
-                self.wakeUpFromSleepMode()
-                if (self.isActiveService) {
-                    let data = ReceivedForce(user_id: self.user_id, mobile_time: currentTime, ble: self.bleAvg, pressure: self.sensorManager.pressure)
+                if (!self.bleAvg.isEmpty) {
+                    self.timeBleOff = 0
+                    self.timeActiveRF = 0
+                    self.timeSleepRF = 0
                     
-                    inputReceivedForce.append(data)
-                    if ((inputReceivedForce.count-1) >= RFD_INPUT_NUM) {
-                        inputReceivedForce.remove(at: 0)
-                        NetworkManager.shared.postReceivedForce(url: RF_URL, input: inputReceivedForce, completion: { [self] statusCode, returnedString, inputRfd in
-                            if (statusCode != 200) {
-                                let localTime = getLocalTimeString()
-                                let log: String = localTime + " , (Jupiter) Record Error : RFD \(statusCode) // " + returnedString
-                                
-                                if (self.isIndoor && self.isGetFirstResponse && !self.isBackground) {
-                                    print(log)
-                                    self.reporting(input: RFD_FLAG)
+                    self.isActiveRF = true
+                    self.isBleOff = false
+                    self.isActiveService = true
+                    
+                    self.wakeUpFromSleepMode()
+                    if (self.isActiveService) {
+                        let data = ReceivedForce(user_id: self.user_id, mobile_time: currentTime, ble: self.bleAvg, pressure: self.sensorManager.pressure)
+                        
+                        inputReceivedForce.append(data)
+                        if ((inputReceivedForce.count-1) >= RFD_INPUT_NUM) {
+                            inputReceivedForce.remove(at: 0)
+                            NetworkManager.shared.postReceivedForce(url: RF_URL, input: inputReceivedForce, completion: { [self] statusCode, returnedString, inputRfd in
+                                if (statusCode != 200) {
+                                    let localTime = getLocalTimeString()
+                                    let log: String = localTime + " , (Jupiter) Record Error : RFD \(statusCode) // " + returnedString
+                                    
+                                    if (self.isIndoor && self.isGetFirstResponse && !self.isBackground) {
+                                        print(log)
+                                        self.reporting(input: RFD_FLAG)
+                                    }
+                                }
+                            })
+                            inputReceivedForce = [ReceivedForce(user_id: "", mobile_time: 0, ble: [:], pressure: 0)]
+                        }
+                    }
+                } else if (!self.isBackground) {
+                    // Add
+                    let lastBleDiscoveredTime: Double = bleManager.bleDiscoveredTime
+                    let cTime = getCurrentTimeInMillisecondsDouble()
+                    if (cTime - lastBleDiscoveredTime > BLE_VALID_TIME && lastBleDiscoveredTime != 0) {
+                        self.timeActiveRF += RFD_INTERVAL
+                    } else {
+                        self.timeActiveRF = 0
+                    }
+                    
+                    if (self.timeActiveRF >= SLEEP_THRESHOLD_RF) {
+                        self.isActiveRF = false
+                        // Here
+                        if (self.isIndoor && self.isGetFirstResponse) {
+                            if (!self.isBleOff) {
+                                let lastResult = self.resultToReturn
+                                let isOutdoor = self.determineIsOutdoor(lastResult: lastResult, currentTime: cTime, inFailCondition: false)
+                                if (isOutdoor) {
+                                    self.initVariables()
+                                    self.currentLevel = "B0"
+                                    self.isIndoor = false
+                                    self.reporting(input: OUTDOOR_FLAG)
                                 }
                             }
-                        })
-                        inputReceivedForce = [ReceivedForce(user_id: "", mobile_time: 0, ble: [:], pressure: 0)]
+                        }
+                    }
+                    
+                    self.timeSleepRF += RFD_INTERVAL
+                    if (self.timeSleepRF >= SLEEP_THRESHOLD) {
+                        self.isActiveService = false
+                        self.timeSleepRF = 0
+                        self.enterSleepMode()
                     }
                 }
-            } else if (!self.isBackground) {
-                // Add
-                let lastBleDiscoveredTime: Double = bleManager.bleDiscoveredTime
-                let cTime = getCurrentTimeInMillisecondsDouble()
-                if (cTime - lastBleDiscoveredTime > BLE_VALID_TIME && lastBleDiscoveredTime != 0) {
-                    self.timeActiveRF += RFD_INTERVAL
-                } else {
-                    self.timeActiveRF = 0
-                }
                 
-                if (self.timeActiveRF >= SLEEP_THRESHOLD_RF) {
-                    self.isActiveRF = false
-                    // Here
-                    if (self.isIndoor && self.isGetFirstResponse) {
-                        if (!self.isBleOff) {
+                bleLineCount += 1
+            }
+        } else {
+            if (!bleManager.bluetoothReady) {
+                self.timeBleOff += RFD_INTERVAL
+                if (self.timeBleOff >= BLE_OFF_THRESHOLD) {
+                    if (!self.isBleOff) {
+                        self.isBleOff = true
+                        self.timeBleOff = 0
+                        self.reporting(input: BLE_OFF_FLAG)
+                    }
+                }
+            } else {
+                let checkLastScannedTime = (getCurrentTimeInMillisecondsDouble() - bleManager.bleLastScannedTime)*1e-3
+                if (checkLastScannedTime >= 6) {
+                    // 스캔이 동작안한지 6초 이상 지남
+                    self.reporting(input: BLE_SCAN_STOP_FLAG)
+                }
+            }
+            
+            bleManager.setValidTime(mode: self.runMode)
+            self.setValidTime(mode: self.runMode)
+            let validTime = self.BLE_VALID_TIME
+            let currentTime = getCurrentTimeInMilliseconds() - (Int(validTime)/2)
+            let bleDictionary: [String: [[Double]]]? = bleManager.bleDictionary
+            if let bleData = bleDictionary {
+                let trimmedResult = trimBleData(bleInput: bleData, nowTime: getCurrentTimeInMillisecondsDouble(), validTime: validTime)
+                switch trimmedResult {
+                case .success(let trimmedData):
+                    self.bleAvg = avgBleData(bleDictionary: trimmedData)
+                    let scannedResult = getLastScannedEntranceOuterWardTime(bleAvg: self.bleAvg, entranceOuterWards: self.EntranceOuterWards)
+                    if (scannedResult.0) {
+                        self.lastScannedEntranceOuterWardTime = scannedResult.1
+                    }
+                    
+                    if (!self.isGetFirstResponse) {
+                        let findResult = findNetworkBadEntrance(bleAvg: self.bleAvg)
+                        self.detectNetworkBadEntrance = findResult.0
+                        
+                        if (!self.isIndoor && (self.timeForInit >= TIME_INIT_THRESHOLD)) {
+                            if (self.detectNetworkBadEntrance) {
+                                self.isGetFirstResponse = true
+                                self.isIndoor = true
+                                self.reporting(input: INDOOR_FLAG)
+                                
+                                let result = findResult.1
+                                
+                                self.outputResult.phase = 3
+                                self.outputResult.building_name = result.building_name
+                                self.outputResult.level_name = result.level_name
+                                self.outputResult.isIndoor = self.isIndoor
+                                
+                                for i in 0..<self.EntranceNumbers {
+                                    if (!self.isStartSimulate) {
+                                        let entranceResult = self.findEntrance(result: result, entrance: i)
+                                        if (entranceResult.0 != 0) {
+                                            let entranceKey: String = "\(entranceResult.0)"
+                                            if let velocityScale: Double = self.EntranceScales[entranceKey] {
+                                                self.entranceVelocityScale = velocityScale
+                                            } else {
+                                                self.entranceVelocityScale = 1.0
+                                            }
+                                            self.currentEntrance = "\(result.building_name)_\(result.level_name)_\(entranceResult.0)"
+                                            if (self.networkBadEntrance.contains(self.currentEntrance)) {
+                                                self.isInNetworkBadEntrance = true
+                                            }
+                                            self.currentEntranceLength = entranceResult.1
+                                            self.isStartSimulate = true
+                                            unitDRGenerator.setIsStartSimulate(isStartSimulate: self.isStartSimulate)
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                case .failure(let error):
+                    if (self.isIndoor && self.isGetFirstResponse && !self.isBackground) {
+                        let diffTime = (getCurrentTimeInMillisecondsDouble() - self.timeBecomeForeground)*1e-3
+                        if (!self.isBleOff && diffTime > 5) {
+                            self.reporting(input: BLE_ERROR_FLAG)
                             let lastResult = self.resultToReturn
-                            let isOutdoor = self.determineIsOutdoor(lastResult: lastResult, currentTime: cTime, inFailCondition: false)
-                            if (isOutdoor) {
-                                self.initVariables()
-                                self.currentLevel = "B0"
-                                self.isIndoor = false
-                                self.reporting(input: OUTDOOR_FLAG)
+                            let isFailTrimBle = self.determineIsOutdoor(lastResult: lastResult, currentTime: getCurrentTimeInMillisecondsDouble(), inFailCondition: true)
+                            if (isFailTrimBle) {
+                                self.bleAvg = [String: Double]()
+                            }
+                        }
+                    }
+                }
+    //            self.bleAvg = ["TJ-00CB-0000038C-0000":-76.0] // COEX B2 <-> B3
+    //            self.bleAvg = ["TJ-00CB-0000030D-0000":-76.0] // COEX B2
+    //            self.bleAvg = ["TJ-00CB-00000242-0000":-76.0] // S3 7F
+    //            self.bleAvg = ["TJ-00CB-000003E7-0000":-76.0] // Plan Group
+    //            self.bleAvg = ["TJ-00CB-00000464-0000":-76.0] // ASJTM
+    //            self.bleAvg = ["TJ-00CB-0000033B-0000":-62.0] // DS 3F
+                
+                paramEstimator.refreshWardMinRssi(bleData: self.bleAvg)
+                paramEstimator.refreshWardMaxRssi(bleData: self.bleAvg)
+                let maxRssi = paramEstimator.getMaxRssi()
+                let minRssi = paramEstimator.getMinRssi()
+                let diffMinMaxRssi = abs(maxRssi - minRssi)
+                if (minRssi <= -97) {
+                    let deviceMin: Double = paramEstimator.getDeviceMinRss()
+                    self.deviceMinRss = deviceMin
+                }
+                if (self.isGetFirstResponse && self.isIndoor && (self.unitDrInfoIndex%4 == 0) && diffMinMaxRssi >= 25 && minRssi <= -97) {
+                    if (self.isScaleLoaded) {
+                        if (self.currentLevel != "B0") {
+                            let normalizationScale = paramEstimator.calNormalizationScale(standardMin: self.standardMinRss, standardMax: self.standradMaxRss)
+                            if (!self.isScaleConverged) {
+                                if (normalizationScale.0) {
+                                    let smoothedScale: Double = paramEstimator.smoothNormalizationScale(scale: normalizationScale.1)
+                                    self.normalizationScale = smoothedScale
+                                    let diffScale = abs(smoothedScale - self.preNormalizationScale)
+                                    if (diffScale < 1e-3 && self.indexAfterResponse >= 700 && (smoothedScale != self.preNormalizationScale)) {
+                                        self.isScaleConverged = true
+                                    }
+                                    self.preNormalizationScale = smoothedScale
+                                } else {
+                                    let smoothedScale: Double = paramEstimator.smoothNormalizationScale(scale: self.preNormalizationScale)
+                                    self.normalizationScale = smoothedScale
+                                }
+                            }
+                        }
+                    } else {
+                        if (!self.isScaleConverged) {
+                            let normalizationScale = paramEstimator.calNormalizationScale(standardMin: self.standardMinRss, standardMax: self.standradMaxRss)
+                            if (normalizationScale.0) {
+                                let smoothedScale: Double = paramEstimator.smoothNormalizationScale(scale: normalizationScale.1)
+                                self.normalizationScale = smoothedScale
+                                let diffScale = abs(smoothedScale - self.preNormalizationScale)
+                                if (diffScale < 1e-3 && self.indexAfterResponse >= 700 && (smoothedScale != self.preNormalizationScale)) {
+                                    self.isScaleConverged = true
+                                }
+                                self.preNormalizationScale = smoothedScale
+                            } else {
+                                let smoothedScale: Double = paramEstimator.smoothNormalizationScale(scale: self.preNormalizationScale)
+                                self.normalizationScale = smoothedScale
                             }
                         }
                     }
                 }
                 
-                self.timeSleepRF += RFD_INTERVAL
-                if (self.timeSleepRF >= SLEEP_THRESHOLD) {
-                    self.isActiveService = false
-                    self.timeSleepRF = 0
-                    self.enterSleepMode()
+                if (!self.isBackground) {
+                    paramEstimator.refreshAllEntranceWardRssi(allEntranceWards: self.allEntranceWards, bleData: self.bleAvg)
+                    let isSufficientRfdBuffer = rflowCorrelator.accumulateRfdBuffer(bleData: self.bleAvg)
+                    let isSufficientRfdVelocityBuffer = rflowCorrelator.accumulateRfdVelocityBuffer(bleData: self.bleAvg)
+                    let isSufficientRfdAutoMode = rflowCorrelator.accumulateRfdAutoModeBuffer(bleData: self.bleAvg)
+                    if(!self.isStartSimulate) {
+                        unitDRGenerator.setRflow(rflow: rflowCorrelator.getRflow(), rflowForVelocity: rflowCorrelator.getRflowForVelocityScale(), rflowForAutoMode: rflowCorrelator.getRflowForAutoMode(), isSufficient: isSufficientRfdBuffer, isSufficientForVelocity: isSufficientRfdVelocityBuffer, isSufficientForAutoMode: isSufficientRfdAutoMode)
+                    }
                 }
+                
+                if (!self.bleAvg.isEmpty) {
+                    self.timeBleOff = 0
+                    self.timeActiveRF = 0
+                    self.timeSleepRF = 0
+                    
+                    self.isActiveRF = true
+                    self.isBleOff = false
+                    self.isActiveService = true
+                    
+                    self.wakeUpFromSleepMode()
+                    if (self.isActiveService) {
+                        let data = ReceivedForce(user_id: self.user_id, mobile_time: currentTime, ble: self.bleAvg, pressure: self.sensorManager.pressure)
+                        
+                        inputReceivedForce.append(data)
+                        if ((inputReceivedForce.count-1) >= RFD_INPUT_NUM) {
+                            inputReceivedForce.remove(at: 0)
+                            NetworkManager.shared.postReceivedForce(url: RF_URL, input: inputReceivedForce, completion: { [self] statusCode, returnedString, inputRfd in
+                                if (statusCode != 200) {
+                                    let localTime = getLocalTimeString()
+                                    let log: String = localTime + " , (Jupiter) Record Error : RFD \(statusCode) // " + returnedString
+                                    
+                                    if (self.isIndoor && self.isGetFirstResponse && !self.isBackground) {
+                                        print(log)
+                                        self.reporting(input: RFD_FLAG)
+                                    }
+                                }
+                            })
+                            inputReceivedForce = [ReceivedForce(user_id: "", mobile_time: 0, ble: [:], pressure: 0)]
+                        }
+                    }
+                } else if (!self.isBackground) {
+                    // Add
+                    let lastBleDiscoveredTime: Double = bleManager.bleDiscoveredTime
+                    let cTime = getCurrentTimeInMillisecondsDouble()
+                    if (cTime - lastBleDiscoveredTime > BLE_VALID_TIME && lastBleDiscoveredTime != 0) {
+                        self.timeActiveRF += RFD_INTERVAL
+                    } else {
+                        self.timeActiveRF = 0
+                    }
+                    
+                    if (self.timeActiveRF >= SLEEP_THRESHOLD_RF) {
+                        self.isActiveRF = false
+                        // Here
+                        if (self.isIndoor && self.isGetFirstResponse) {
+                            if (!self.isBleOff) {
+                                let lastResult = self.resultToReturn
+                                let isOutdoor = self.determineIsOutdoor(lastResult: lastResult, currentTime: cTime, inFailCondition: false)
+                                if (isOutdoor) {
+                                    self.initVariables()
+                                    self.currentLevel = "B0"
+                                    self.isIndoor = false
+                                    self.reporting(input: OUTDOOR_FLAG)
+                                }
+                            }
+                        }
+                    }
+                    
+                    self.timeSleepRF += RFD_INTERVAL
+                    if (self.timeSleepRF >= SLEEP_THRESHOLD) {
+                        self.isActiveService = false
+                        self.timeSleepRF = 0
+                        self.enterSleepMode()
+                    }
+                }
+            } else {
+                let log: String = localTime + " , (Jupiter) Warnings : Fail to get recent ble"
+                print(log)
             }
-        } else {
-            let log: String = localTime + " , (Jupiter) Warnings : Fail to get recent ble"
-            print(log)
-        }
-        
-        if (!self.isIndoor) {
-            self.timeForInit += RFD_INTERVAL
+            
+            if (!self.isIndoor) {
+                self.timeForInit += RFD_INTERVAL
+            }
         }
     }
     
@@ -1860,8 +2280,24 @@ public class ServiceManager: Observation {
         // UV Control
         setModeParam(mode: self.runMode, phase: self.phase)
         
-        if (self.service == "FLT" || self.service == "FLT+") {
-            unitDRInfo = unitDRGenerator.generateDRInfo(sensorData: sensorManager.sensorData)
+//        if (self.service == "FLT" || self.service == "FLT+") {
+//            unitDRInfo = unitDRGenerator.generateDRInfo(sensorData: sensorManager.sensorData)
+//        }
+        
+        var sensorData = SensorData()
+        sensorData.time = Double(currentTime)
+
+        if (service.contains("FLT")) {
+            if (isSimulationMode) {
+                if (sensorLineCount < simulationSensorData.count-1) {
+                    sensorData = simulationSensorData[sensorLineCount]
+                    sensorLineCount += 1
+                }
+            } else {
+                sensorData = sensorManager.sensorData
+            }
+            unitDRInfo = unitDRGenerator.generateDRInfo(sensorData: sensorData)
+            JupiterFileManager.shared.writeSensorData(data: sensorData)
         }
         
         var backgroundScale: Double = 1.0
