@@ -147,6 +147,18 @@ public func decodeMobileDebug(json: String) -> MobileDebugResult {
     return result
 }
 
+public func decodeAvailablity(json: String) -> JupiterServiceAvailableDevice {
+    let result = JupiterServiceAvailableDevice.init()
+    let decoder = JSONDecoder()
+    let jsonString = json
+
+    if let data = jsonString.data(using: .utf8), let decoded = try? decoder.decode(JupiterServiceAvailableDevice.self, from: data) {
+        return decoded
+    }
+
+    return result
+}
+
 public func CLDtoSD(json: String) -> String {
     let decoder = JSONDecoder()
     let jsonString = json

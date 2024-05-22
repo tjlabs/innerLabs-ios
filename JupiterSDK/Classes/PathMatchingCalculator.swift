@@ -361,7 +361,7 @@ public class PathMatchingCalculator {
                             }
                         }
                     }
-                    
+                     
                     if (!minDistanceCoord.isEmpty) {
                         if (minDistanceCoord[2] <= 15 && minDistanceCoord[3] <= 3) {
                             isSuccess = true

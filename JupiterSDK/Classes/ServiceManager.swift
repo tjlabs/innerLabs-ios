@@ -73,6 +73,7 @@ public class ServiceManager: Observation {
     var currentMode: String = ""
     
     var deviceModel: String = "Unknown"
+    var deviceIdentifier: String = "Unknown"
     var os: String = "Unknown"
     var osVersion: Int = 0
     
@@ -369,6 +370,7 @@ public class ServiceManager: Observation {
         dateFormatter.locale = Locale(identifier:"ko_KR")
         let nowDate = Date()
         
+        deviceIdentifier = UIDevice.modelIdentifier
         deviceModel = UIDevice.modelName
         os = UIDevice.current.systemVersion
         let arr = os.components(separatedBy: ".")
@@ -475,8 +477,26 @@ public class ServiceManager: Observation {
         self.timeForInit = time + 1
     }
     
+    public func isServiceAvailableDevice(completion: @escaping (Int, Bool) -> Void) {
+        NetworkManager.shared.getWhiteList(url: WHITE_LIST_URL, completion: { statusCode, returnedString in
+            if (statusCode == 200) {
+                let result = decodeAvailablity(json: returnedString)
+                if result.device_list.contains(self.deviceIdentifier) {
+                    completion(200, true)
+                } else {
+                    completion(200, false)
+                }
+            } else {
+                completion(statusCode, false)
+            }
+        })
+    }
+    
     public func startService(id: String, sector_id: Int, service: String, mode: String, completion: @escaping (Bool, String) -> Void) {
         let localTime = getLocalTimeString()
+        isServiceAvailableDevice(completion: {statusCode, isAvailable in
+            print("isAvailable : \(statusCode) // \(isAvailable)")
+        })
         print(localTime + " , (Jupiter) Information : Try startService")
         let log: String = localTime + " , (Jupiter) Success : Service Initalization"
         var message: String = log
@@ -1845,7 +1865,7 @@ public class ServiceManager: Observation {
         }
         
         var backgroundScale: Double = 1.0
-        if (self.isBackground) {
+        if (self.isBackground && self.runMode == "dr") {
             let diffTime = currentTime - self.pastUvdTime
             backgroundScale = Double(diffTime)/(1000/SAMPLE_HZ)
         }
@@ -2753,7 +2773,7 @@ public class ServiceManager: Observation {
                             pastTrajHeading.append(Int(round(pastTraj[i].heading)) + pastDirectionCompensation)
                         }
                         
-                        let isStraight = isTrajectoryStraight(for: uvHeading, size: uvHeading.count, mode: mode, conditionPdr: NUM_STRAIGHT_INDEX_PDR, conditionDr: NUM_STRAIGHT_INDEX_DR)
+//                        let isStraight = isTrajectoryStraight(for: uvHeading, size: uvHeading.count, mode: mode, conditionPdr: NUM_STRAIGHT_INDEX_PDR, conditionDr: NUM_STRAIGHT_INDEX_DR)
                         let closestIndex = findClosestValueIndex(to: tailIndex, in: pastTrajIndex)
                         if let headingIndex = closestIndex {
                             resultDirection = [pastTrajHeading[headingIndex], pastTrajHeading[headingIndex]-5, pastTrajHeading[headingIndex]+5]

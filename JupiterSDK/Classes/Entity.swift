@@ -529,6 +529,15 @@ public struct JupiterGeoResult: Codable {
     }
 }
 
+// Service Available Device
+public struct JupiterServiceAvailableDevice: Codable {
+    public var device_list: [String]
+    
+    public init() {
+        self.device_list = []
+    }
+}
+
 // Bias
 public struct JupiterParamGet: Encodable {
     var device_model: String
