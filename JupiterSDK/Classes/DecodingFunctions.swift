@@ -159,6 +159,21 @@ public func decodeAvailablity(json: String) -> JupiterServiceAvailableDevice {
     return result
 }
 
+public func decodeBlackListDevices(from jsonString: String) -> JupiterBlackListDevices? {
+    let jsonData = jsonString.data(using: .utf8)!
+    
+    let decoder = JSONDecoder()
+    decoder.dateDecodingStrategy = .iso8601
+    
+    do {
+        let blackListDevices = try decoder.decode(JupiterBlackListDevices.self, from: jsonData)
+        return blackListDevices
+    } catch {
+        print("Error decoding JSON: \(error)")
+        return nil
+    }
+}
+
 public func CLDtoSD(json: String) -> String {
     let decoder = JSONDecoder()
     let jsonString = json

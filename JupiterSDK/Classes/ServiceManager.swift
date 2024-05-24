@@ -4,7 +4,7 @@ import UIKit
 
 public class ServiceManager: Observation {
     public static let sdkVersion: String = "3.4.3"
-    var isSimulationMode: Bool = true
+    var isSimulationMode: Bool = false
     var simulationBleData = [[String: Double]]()
     var simulationSensorData = [SensorData]()
     var bleLineCount: Int = 0
@@ -48,7 +48,7 @@ public class ServiceManager: Observation {
     }
     
     func reporting(input: Int) {
-        if (input != -2) {
+        if (input != -1 || input != -2) {
             self.pastReportTime = getCurrentTimeInMillisecondsDouble()
             self.pastReportFlag = input
         }
@@ -483,13 +483,22 @@ public class ServiceManager: Observation {
     }
     
     public func isServiceAvailableDevice(completion: @escaping (Int, Bool) -> Void) {
-        NetworkManager.shared.getWhiteList(url: WHITE_LIST_URL, completion: { statusCode, returnedString in
+        NetworkManager.shared.getBlackList(url: BLACK_LIST_URL, completion: { statusCode, returnedString in
             if (statusCode == 200) {
-                let result = decodeAvailablity(json: returnedString)
-                if result.device_list.contains(self.deviceIdentifier) {
-                    completion(200, true)
+                if let blackListDevices = decodeBlackListDevices(from: returnedString) {
+                    print(getLocalTimeString() + " , (Jupiter) BlackList : iOS Devices = \(blackListDevices.iOS.apple)")
+                    print(getLocalTimeString() + " , (Jupiter) BlackList : Updated Time = \(blackListDevices.updatedTime)")
+                    
+                    let iosBlackList: [String] = blackListDevices.iOS.apple
+                    for device in iosBlackList {
+                        if (device.contains(self.deviceIdentifier)) {
+                            self.reporting(input: BLACK_LIST_FLAG)
+                            completion(500, false)
+                        }
+                    }
+                    completion(statusCode, true)
                 } else {
-                    completion(200, false)
+                    completion(500, false)
                 }
             } else {
                 completion(statusCode, false)
@@ -499,9 +508,6 @@ public class ServiceManager: Observation {
     
     public func startService(id: String, sector_id: Int, service: String, mode: String, completion: @escaping (Bool, String) -> Void) {
         let localTime = getLocalTimeString()
-        isServiceAvailableDevice(completion: {statusCode, isAvailable in
-            print("isAvailable : \(statusCode) // \(isAvailable)")
-        })
         print(localTime + " , (Jupiter) Information : Try startService")
         let log: String = localTime + " , (Jupiter) Success : Service Initalization"
         var message: String = log
@@ -2280,10 +2286,6 @@ public class ServiceManager: Observation {
         // UV Control
         setModeParam(mode: self.runMode, phase: self.phase)
         
-//        if (self.service == "FLT" || self.service == "FLT+") {
-//            unitDRInfo = unitDRGenerator.generateDRInfo(sensorData: sensorManager.sensorData)
-//        }
-        
         var sensorData = SensorData()
         sensorData.time = Double(currentTime)
 
@@ -2297,7 +2299,7 @@ public class ServiceManager: Observation {
                 sensorData = sensorManager.sensorData
             }
             unitDRInfo = unitDRGenerator.generateDRInfo(sensorData: sensorData)
-            JupiterFileManager.shared.writeSensorData(data: sensorData)
+//            JupiterFileManager.shared.writeSensorData(data: sensorData)
         }
         
         var backgroundScale: Double = 1.0

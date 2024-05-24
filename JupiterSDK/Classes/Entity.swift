@@ -538,6 +538,25 @@ public struct JupiterServiceAvailableDevice: Codable {
     }
 }
 
+public struct JupiterBlackListDevices: Codable {
+    let android: [String: [String]]
+    let iOS: IOSSupport
+    let updatedTime: String
+    
+    enum CodingKeys: String, CodingKey {
+        case android = "Android"
+        case iOS = "iOS"
+        case updatedTime = "updated_time"
+    }
+}
+
+public struct IOSSupport: Codable {
+    let apple: [String]
+    enum CodingKeys: String, CodingKey {
+        case apple = "Apple"
+    }
+}
+
 // Bias
 public struct JupiterParamGet: Encodable {
     var device_model: String

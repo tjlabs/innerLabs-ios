@@ -33,6 +33,7 @@ var OSA_URL = BASE_URL + "OSA"
 var OSR_URL = BASE_URL + "OSR"
 var MOCK_URL = BASE_URL + "MRS"
 let WHITE_LIST_URL = "https://ap-northeast-2.client.olympus.tjlabs.dev/white/iOS"
+let BLACK_LIST_URL = "https://ap-northeast-2.client.olympus.tjlabs.dev/black"
 
 // ---------- Network ----------  //
 
