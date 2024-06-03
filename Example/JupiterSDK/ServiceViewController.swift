@@ -322,7 +322,6 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
     
     func goToBack() {
         self.forceStop()
-        
         self.coordToDisplay = CoordToDisplay()
         self.resultToDisplay = ResultToDisplay()
         self.currentBuilding = ""
@@ -1711,6 +1710,8 @@ extension ServiceViewController: CustomSwitchButtonDelegate {
                 
                 let isStop = serviceManager.stopService()
                 if (isStop.0) {
+                    self.serviceManager.saveSimulationFile()
+                    
                     self.coordToDisplay = CoordToDisplay()
                     self.monitorToDisplay = CoordToDisplay()
                     self.resultToDisplay = ResultToDisplay()

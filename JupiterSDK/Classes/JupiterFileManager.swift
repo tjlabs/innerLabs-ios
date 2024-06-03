@@ -42,7 +42,7 @@ public class JupiterFileManager {
             sensorFileUrl = exportDir.appendingPathComponent(sensorFileName)
             bleFileUrl = exportDir.appendingPathComponent(bleFileName)
         } else {
-            print(getLocalTimeString() + " , (OlympusFileManager) : Error creating export directory")
+            print(getLocalTimeString() + " , (JupiterFileManager) : Error creating export directory")
         }
     }
     
@@ -117,8 +117,10 @@ public class JupiterFileManager {
         if let exportDir: URL = self.createExportDirectory() {
 //            let bleFileName = "ble_check2.csv"
 //            let sensorFileName = "sensor_check2.csv"
-            let bleFileName = "ble_ds04.csv"
-            let sensorFileName = "sensor_ds04.csv"
+//            let bleFileName = "ble_ds04.csv"
+//            let sensorFileName = "sensor_ds04.csv"
+            let bleFileName = "ble_coex02.csv"
+            let sensorFileName = "sensor_coex02.csv"
             
             let bleSimulationUrl = exportDir.appendingPathComponent(bleFileName)
             do {

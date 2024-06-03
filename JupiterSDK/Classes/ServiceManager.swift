@@ -3,7 +3,7 @@ import CoreMotion
 import UIKit
 
 public class ServiceManager: Observation {
-    public static let sdkVersion: String = "3.4.3"
+    public static let sdkVersion: String = "3.4.3.1"
     var isSimulationMode: Bool = false
     var simulationBleData = [[String: Double]]()
     var simulationSensorData = [SensorData]()
@@ -482,31 +482,92 @@ public class ServiceManager: Observation {
         self.timeForInit = time + 1
     }
     
-    public func isServiceAvailableDevice(completion: @escaping (Int, Bool) -> Void) {
-        NetworkManager.shared.getBlackList(url: BLACK_LIST_URL, completion: { statusCode, returnedString in
-            if (statusCode == 200) {
-                if let blackListDevices = decodeBlackListDevices(from: returnedString) {
-                    print(getLocalTimeString() + " , (Jupiter) BlackList : iOS Devices = \(blackListDevices.iOS.apple)")
-                    print(getLocalTimeString() + " , (Jupiter) BlackList : Updated Time = \(blackListDevices.updatedTime)")
+    public func checkServiceAvailableDevice(completion: @escaping (Int, Bool, Bool) -> Void) {
+        NetworkManager.shared.getBlackList(url: BLACK_LIST_URL) { [self] statusCode, returnedString in
+            var isBlacklistUpdated = false
+            var isServiceAvailable = false
+            var blacklistUpdatedTime = ""
+            var requestFailed = false
+
+            let loadedBlacklistInfo = loadBlacklistInfo()
+            if statusCode == 200, let blackListDevices = decodeBlackListDevices(from: returnedString) {
+                // Successful communication
+                let updatedTime = blackListDevices.updatedTime
+                blacklistUpdatedTime = updatedTime
+
+                isBlacklistUpdated = loadedBlacklistInfo.1.isEmpty || loadedBlacklistInfo.1 != updatedTime
+
+                if isBlacklistUpdated {
+                    print(getLocalTimeString() + " , (Jupiter) Blacklist: iOS Devices = \(blackListDevices.iOS.apple)")
+                    print(getLocalTimeString() + " , (Jupiter) Blacklist: Updated Time = \(blackListDevices.updatedTime)")
                     
-                    let iosBlackList: [String] = blackListDevices.iOS.apple
-                    for device in iosBlackList {
-                        if (device.contains(self.deviceIdentifier)) {
-                            self.reporting(input: BLACK_LIST_FLAG)
-                            completion(500, false)
-                        }
-                    }
-                    completion(statusCode, true)
+                    isServiceAvailable = !blackListDevices.iOS.apple.contains { $0.contains(deviceIdentifier) }
                 } else {
-                    completion(500, false)
+                    isServiceAvailable = loadedBlacklistInfo.0
                 }
             } else {
-                completion(statusCode, false)
+                // Communication failed
+                requestFailed = true
             }
-        })
+
+            if requestFailed {
+                // Check cache if available
+                if !loadedBlacklistInfo.1.isEmpty {
+                    isServiceAvailable = loadedBlacklistInfo.0
+                    blacklistUpdatedTime = loadedBlacklistInfo.1
+                }
+            }
+
+            if !isServiceAvailable {
+                self.reporting(input: BLACK_LIST_FLAG)
+            }
+
+            saveBlacklistInfo(isServiceAvailable: isServiceAvailable, updatedTime: blacklistUpdatedTime)
+            completion(statusCode, isBlacklistUpdated, isServiceAvailable)
+        }
+    }
+    
+    private func loadBlacklistInfo() -> (Bool, String) {
+        var isServiceAvailable: Bool = false
+        var updatedTime: String = ""
+        
+        let keyIsServiceAvailable: String = "JupiterIsServiceAvailable"
+        if let loadedIsServiceAvailable: Bool = UserDefaults.standard.object(forKey: keyIsServiceAvailable) as? Bool {
+            isServiceAvailable = loadedIsServiceAvailable
+        }
+        
+        let keyUpdatedTime: String = "JupiterBlacklistUpdatedTime"
+        if let loadedUpdatedTime: String = UserDefaults.standard.object(forKey: keyUpdatedTime) as? String {
+            updatedTime = loadedUpdatedTime
+        }
+        
+        return (isServiceAvailable, updatedTime)
+    }
+    
+    private func saveBlacklistInfo(isServiceAvailable: Bool, updatedTime: String) {
+        print(getLocalTimeString() + " , (Jupiter) Save Blacklist Info : \(isServiceAvailable) , \(updatedTime)")
+        
+        do {
+            let key: String = "JupiterIsServiceAvailable"
+            UserDefaults.standard.set(isServiceAvailable, forKey: key)
+        }
+        
+        do {
+            let key: String = "JupiterBlacklistUpdatedTime"
+            UserDefaults.standard.set(updatedTime, forKey: key)
+        }
+    }
+    
+    public func saveSimulationFile() -> Bool {
+        JupiterFileManager.shared.saveFilesForSimulation()
+        return true
     }
     
     public func startService(id: String, sector_id: Int, service: String, mode: String, completion: @escaping (Bool, String) -> Void) {
+        let checkAvailable = checkServiceAvailableDevice(completion: { statusCode, isUpdated, isAvailable in
+            print(getLocalTimeString() + " , (Jupiter) Information : isServiceAvailableDevice = \(statusCode) , \(isUpdated) , \(isAvailable)")
+        })
+        
         let localTime = getLocalTimeString()
         print(localTime + " , (Jupiter) Information : Try startService")
         let log: String = localTime + " , (Jupiter) Success : Service Initalization"
@@ -766,6 +827,7 @@ public class ServiceManager: Observation {
                                                                                                     let log: String = localTime + " , (Jupiter) Success : Service Initalization"
                                                                                                     message = log
                                                                                                     self.reporting(input: START_FLAG)
+                                                                                                    self.initSimulationMode()
                                                                                                     completion(true, message)
                                                                                                 } else {
                                                                                                     self.isScaleLoaded = false
@@ -776,6 +838,7 @@ public class ServiceManager: Observation {
                                                                                                     let log: String = localTime + " , (Jupiter) Success : Service Initalization"
                                                                                                     message = log
                                                                                                     self.reporting(input: START_FLAG)
+                                                                                                    self.initSimulationMode()
                                                                                                     completion(true, message)
                                                                                                 }
                                                                                             }
@@ -807,6 +870,7 @@ public class ServiceManager: Observation {
                                                                                     let log: String = localTime + " , (Jupiter) Success : Service Initalization"
                                                                                     message = log
                                                                                     self.reporting(input: START_FLAG)
+                                                                                    self.initSimulationMode()
                                                                                     completion(true, message)
                                                                                 }
                                                                             } else {
@@ -2273,6 +2337,8 @@ public class ServiceManager: Observation {
                 print(log)
             }
             
+            JupiterFileManager.shared.writeBleData(time: currentTime, data: bleAvg)
+            
             if (!self.isIndoor) {
                 self.timeForInit += RFD_INTERVAL
             }
@@ -2299,7 +2365,7 @@ public class ServiceManager: Observation {
                 sensorData = sensorManager.sensorData
             }
             unitDRInfo = unitDRGenerator.generateDRInfo(sensorData: sensorData)
-//            JupiterFileManager.shared.writeSensorData(data: sensorData)
+            JupiterFileManager.shared.writeSensorData(data: sensorData)
         }
         
         var backgroundScale: Double = 1.0
@@ -4177,203 +4243,306 @@ public class ServiceManager: Observation {
             levelArray = self.makeLevelChangeArray(buildingName: self.currentBuilding, levelName: self.currentLevel, buildingLevel: self.buildingsAndLevels)
         }
         
-        self.phase2BadCount = 0
-        var input = FineLocationTracking(user_id: self.user_id, mobile_time: currentTime, sector_id: self.sector_id, building_name: self.currentBuilding, level_name_list: levelArray, phase: self.phase, search_range: searchInfo.0, search_direction_list: searchInfo.1, normalization_scale: self.normalizationScale, device_min_rss: Int(self.deviceMinRss), sc_compensation_list: requestScArray, tail_index: searchInfo.2)
-        self.networkCount += 1
-        if (self.regionName != "Korea" && self.deviceModel == "iPhone SE (2nd generation)") {
-            input.normalization_scale = 1.01
-        }
-        NetworkManager.shared.postFLT(url: FLT_URL, input: input, userTraj: userTrajectory, trajType: searchInfo.3, completion: { [self] statusCode, returnedString, inputPhase, inputTraj, inputTrajType in
-//            print("Code = \(statusCode) // Result = \(returnedString)")
-            if (!returnedString.contains("timed out")) {
-                self.networkCount = 0
+        if (abs(getCurrentTimeInMillisecondsDouble() - bleManager.bleDiscoveredTime) < 1000*10) || isSimulationMode {
+            self.phase2BadCount = 0
+            var input = FineLocationTracking(user_id: self.user_id, mobile_time: currentTime, sector_id: self.sector_id, building_name: self.currentBuilding, level_name_list: levelArray, phase: self.phase, search_range: searchInfo.0, search_direction_list: searchInfo.1, normalization_scale: self.normalizationScale, device_min_rss: Int(self.deviceMinRss), sc_compensation_list: requestScArray, tail_index: searchInfo.2)
+            self.networkCount += 1
+            if (self.regionName != "Korea" && self.deviceModel == "iPhone SE (2nd generation)") {
+                input.normalization_scale = 1.01
             }
-            if (statusCode == 200) {
-                let result = jsonToResult(json: returnedString)
-                if (result.x != 0 && result.y != 0) {
-                    if (self.isScRequested) {
-                        let compensationCheckTime = abs(result.mobile_time - self.scRequestTime)
-                        if (compensationCheckTime < 100) {
-                            if (result.scc < 0.55) {
-                                self.scCompensationBadCount += 1
-                            } else {
-                                if (result.scc > 0.6) {
-                                    let digit: Double = pow(10, 4)
-                                    self.scCompensation = round((result.sc_compensation*digit)/digit)
-                                    if (!self.isStartSimulate) {
-//                                        unitDRGenerator.setScVelocityScaleFactor(scaleFactor: self.scCompensation)
+            NetworkManager.shared.postFLT(url: FLT_URL, input: input, userTraj: userTrajectory, trajType: searchInfo.3, completion: { [self] statusCode, returnedString, inputPhase, inputTraj, inputTrajType in
+                if (!returnedString.contains("timed out")) {
+                    self.networkCount = 0
+                }
+                if (statusCode == 200) {
+                    let result = jsonToResult(json: returnedString)
+                    if (result.x != 0 && result.y != 0) {
+                        if (self.isScRequested) {
+                            let compensationCheckTime = abs(result.mobile_time - self.scRequestTime)
+                            if (compensationCheckTime < 100) {
+                                if (result.scc < 0.55) {
+                                    self.scCompensationBadCount += 1
+                                } else {
+                                    if (result.scc > 0.6) {
+                                        let digit: Double = pow(10, 4)
+                                        self.scCompensation = round((result.sc_compensation*digit)/digit)
+                                        if (!self.isStartSimulate) {
+    //                                        unitDRGenerator.setScVelocityScaleFactor(scaleFactor: self.scCompensation)
+                                        }
                                     }
+                                    self.scCompensationBadCount = 0
                                 }
-                                self.scCompensationBadCount = 0
-                            }
-                            
-                            if (self.scCompensationBadCount > 1) {
-                                self.scCompensationBadCount = 0
-                                let resultEstScCompensation = estimateScCompensation(sccResult: result.scc, scResult: result.sc_compensation, scArray: self.scCompensationArray)
-                                self.scCompensationArray = resultEstScCompensation
+                                
+                                if (self.scCompensationBadCount > 1) {
+                                    self.scCompensationBadCount = 0
+                                    let resultEstScCompensation = estimateScCompensation(sccResult: result.scc, scResult: result.sc_compensation, scArray: self.scCompensationArray)
+                                    self.scCompensationArray = resultEstScCompensation
+                                    self.isScRequested = false
+                                }
+                            } else if (compensationCheckTime > 3000) {
                                 self.isScRequested = false
                             }
-                        } else if (compensationCheckTime > 3000) {
-                            self.isScRequested = false
-                        }
-                    }
-                    
-                    if (result.mobile_time > self.preOutputMobileTime) {
-                        self.accumulateServerResultAndRemoveOldest(serverResult: result)
-                        let resultPhase = phaseController.controlPhase(serverResultArray: self.serverResultBuffer, drBuffer: self.unitDrBuffer, UVD_INTERVAL: self.UVD_INPUT_NUM, TRAJ_LENGTH: self.USER_TRAJECTORY_LENGTH, inputPhase: inputPhase, mode: self.runMode, isVenusMode: self.isVenusMode)
-//                        let resultPhase = phaseController.controlJupiterPhase(serverResult: result, inputPhase: inputPhase, mode: self.runMode, isVenusMode: self.isVenusMode)
-//                        self.isPhaseBreak = resultPhase.1
-                        self.phaseBreakResult = result
-                        if (resultPhase.1) {
-                            self.isNeedTrajInit = true
-//                            self.phaseBreakResult = result
                         }
                         
-                        let buildingName = result.building_name
-                        let levelName = result.level_name
-                        if (levelName == "B0") {
-                            for i in 0..<self.EntranceNumbers {
-                                let number = i+1
-                                let entranceKey = "\(buildingName)_\(levelName)_\(number)"
-                                if let loadedData = self.EntranceInfo[entranceKey] {
-                                } else {
-                                    self.loadEntranceFromUrl(key: entranceKey)
+                        if (result.mobile_time > self.preOutputMobileTime) {
+                            self.accumulateServerResultAndRemoveOldest(serverResult: result)
+                            let resultPhase = phaseController.controlPhase(serverResultArray: self.serverResultBuffer, drBuffer: self.unitDrBuffer, UVD_INTERVAL: self.UVD_INPUT_NUM, TRAJ_LENGTH: self.USER_TRAJECTORY_LENGTH, inputPhase: inputPhase, mode: self.runMode, isVenusMode: self.isVenusMode)
+    //                        let resultPhase = phaseController.controlJupiterPhase(serverResult: result, inputPhase: inputPhase, mode: self.runMode, isVenusMode: self.isVenusMode)
+    //                        self.isPhaseBreak = resultPhase.1
+                            self.phaseBreakResult = result
+                            if (resultPhase.1) {
+                                self.isNeedTrajInit = true
+    //                            self.phaseBreakResult = result
+                            }
+                            
+                            let buildingName = result.building_name
+                            let levelName = result.level_name
+                            if (levelName == "B0") {
+                                for i in 0..<self.EntranceNumbers {
+                                    let number = i+1
+                                    let entranceKey = "\(buildingName)_\(levelName)_\(number)"
+                                    if let loadedData = self.EntranceInfo[entranceKey] {
+                                    } else {
+                                        self.loadEntranceFromUrl(key: entranceKey)
+                                    }
                                 }
                             }
-                        }
-                        
-                        if (!self.isGetFirstResponse) {
-                            if (!self.isIndoor && (self.timeForInit >= TIME_INIT_THRESHOLD)) {
-                                if (levelName != "B0") {
-                                    self.isGetFirstResponse = true
-                                    self.isIndoor = true
-                                    self.reporting(input: INDOOR_FLAG)
-                                } else {
-                                    for i in 0..<self.EntranceNumbers {
-                                        if (!self.isStartSimulate) {
-                                            let entranceResult = self.findEntrance(result: result, entrance: i)
-                                            if (entranceResult.0 != 0) {
-                                                let entranceKey: String = "\(entranceResult.0)"
-                                                if let velocityScale: Double = self.EntranceScales[entranceKey] {
-                                                    self.entranceVelocityScale = velocityScale
-                                                } else {
-                                                    self.entranceVelocityScale = 1.0
+                            
+                            if (!self.isGetFirstResponse) {
+                                if (!self.isIndoor && (self.timeForInit >= TIME_INIT_THRESHOLD)) {
+                                    if (levelName != "B0") {
+                                        self.isGetFirstResponse = true
+                                        self.isIndoor = true
+                                        self.reporting(input: INDOOR_FLAG)
+                                    } else {
+                                        for i in 0..<self.EntranceNumbers {
+                                            if (!self.isStartSimulate) {
+                                                let entranceResult = self.findEntrance(result: result, entrance: i)
+                                                if (entranceResult.0 != 0) {
+                                                    let entranceKey: String = "\(entranceResult.0)"
+                                                    if let velocityScale: Double = self.EntranceScales[entranceKey] {
+                                                        self.entranceVelocityScale = velocityScale
+                                                    } else {
+                                                        self.entranceVelocityScale = 1.0
+                                                    }
+                                                    self.currentEntrance = "\(result.building_name)_\(result.level_name)_\(entranceResult.0)"
+                                                    if (self.networkBadEntrance.contains(self.currentEntrance)) {
+                                                        self.isInNetworkBadEntrance = true
+                                                    }
+                                                    self.currentEntranceLength = entranceResult.1
+                                                    self.isGetFirstResponse = true
+                                                    self.isStartSimulate = true
+                                                    unitDRGenerator.setIsStartSimulate(isStartSimulate: self.isStartSimulate)
                                                 }
-                                                self.currentEntrance = "\(result.building_name)_\(result.level_name)_\(entranceResult.0)"
-                                                if (self.networkBadEntrance.contains(self.currentEntrance)) {
-                                                    self.isInNetworkBadEntrance = true
-                                                }
-                                                self.currentEntranceLength = entranceResult.1
-                                                self.isGetFirstResponse = true
-                                                self.isStartSimulate = true
-                                                unitDRGenerator.setIsStartSimulate(isStartSimulate: self.isStartSimulate)
                                             }
                                         }
                                     }
                                 }
                             }
-                        }
-                        
-                        self.pastUserTrajectoryInfo = inputTraj
-                        self.pastSearchDirection = result.search_direction
-                        let resultHeading = compensateHeading(heading: result.absolute_heading)
-                        var resultCorrected = (true, [result.x, result.y, resultHeading, 1.0])
-                        if (self.runMode == "pdr") {
-                            let pathMatchingResult = pmCalculator.pathMatching(building: result.building_name, level: result.level_name, x: result.x, y: result.y, heading: result.absolute_heading, isPast: false, HEADING_RANGE: HEADING_RANGE, isUseHeading: false, pathType: 0, range: SQUARE_RANGE)
-                            resultCorrected.0 = pathMatchingResult.isSuccess
-                            resultCorrected.1 = pathMatchingResult.xyhs
-                        } else {
-                            let pathMatchingResult = pmCalculator.pathMatching(building: result.building_name, level: result.level_name, x: result.x, y: result.y, heading: result.absolute_heading, isPast: false, HEADING_RANGE: HEADING_RANGE, isUseHeading: true, pathType: 1, range: SQUARE_RANGE)
-                            resultCorrected.0 = pathMatchingResult.isSuccess
-                            resultCorrected.1 = pathMatchingResult.xyhs
                             
-                            let isResultStraight = isResultHeadingStraight(drBuffer: self.unitDrBuffer, result: result)
-                            if (!isResultStraight) {
-                                resultCorrected.1[2] = result.absolute_heading
-                            }
-                        }
-                        resultCorrected.1[2] = compensateHeading(heading: resultCorrected.1[2])
-                        self.serverResult[0] = resultCorrected.1[0]
-                        self.serverResult[1] = resultCorrected.1[1]
-                        self.serverResult[2] = resultCorrected.1[2]
-                        
-                        if (!self.isActiveKf) {
-                            // Add
-                            if (resultPhase.0 == 4) {
-                                if (self.isIndoor) {
-                                    let outputBuilding = self.outputResult.building_name
-                                    let outputLevel = self.outputResult.level_name
-                                    
-                                    self.timeUpdateOutput.building_name = outputBuilding
-                                    self.timeUpdateOutput.level_name = outputLevel
-                                    
-                                    self.measurementOutput.building_name = outputBuilding
-                                    self.measurementOutput.level_name = outputLevel
-                                    
-                                    if (!self.isVenusMode) {
-                                        self.isActiveKf = true
-                                        self.timeUpdateFlag = true
-                                        self.isStartKf = true
-                                    }
+                            self.pastUserTrajectoryInfo = inputTraj
+                            self.pastSearchDirection = result.search_direction
+                            let resultHeading = compensateHeading(heading: result.absolute_heading)
+                            var resultCorrected = (true, [result.x, result.y, resultHeading, 1.0])
+                            if (self.runMode == "pdr") {
+                                let pathMatchingResult = pmCalculator.pathMatching(building: result.building_name, level: result.level_name, x: result.x, y: result.y, heading: result.absolute_heading, isPast: false, HEADING_RANGE: HEADING_RANGE, isUseHeading: false, pathType: 0, range: SQUARE_RANGE)
+                                resultCorrected.0 = pathMatchingResult.isSuccess
+                                resultCorrected.1 = pathMatchingResult.xyhs
+                            } else {
+                                let pathMatchingResult = pmCalculator.pathMatching(building: result.building_name, level: result.level_name, x: result.x, y: result.y, heading: result.absolute_heading, isPast: false, HEADING_RANGE: HEADING_RANGE, isUseHeading: true, pathType: 1, range: SQUARE_RANGE)
+                                resultCorrected.0 = pathMatchingResult.isSuccess
+                                resultCorrected.1 = pathMatchingResult.xyhs
+                                
+                                let isResultStraight = isResultHeadingStraight(drBuffer: self.unitDrBuffer, result: result)
+                                if (!isResultStraight) {
+                                    resultCorrected.1[2] = result.absolute_heading
                                 }
                             }
+                            resultCorrected.1[2] = compensateHeading(heading: resultCorrected.1[2])
+                            self.serverResult[0] = resultCorrected.1[0]
+                            self.serverResult[1] = resultCorrected.1[1]
+                            self.serverResult[2] = resultCorrected.1[2]
                             
-                            if (resultPhase.0 == 4) {
-                                let propagationResult = propagateUsingUvd(drBuffer: self.unitDrBuffer, result: result)
-                                var propagationValues: [Double] = propagationResult.1
-                                if (propagationResult.0) {
-                                    var propagatedResult: [Double] = [resultCorrected.1[0]+propagationValues[0] , resultCorrected.1[1]+propagationValues[1], resultCorrected.1[2]+propagationValues[2]]
-                                    if (self.runMode == "pdr") {
-                                        let pathMatchingResult = pmCalculator.pathMatching(building: result.building_name, level: result.level_name, x: propagatedResult[0], y: propagatedResult[1], heading: propagatedResult[2], isPast: false, HEADING_RANGE: HEADING_RANGE, isUseHeading: true, pathType: 0, range: SQUARE_RANGE)
-                                        propagatedResult = pathMatchingResult.xyhs
+                            if (!self.isActiveKf) {
+                                // Add
+                                if (resultPhase.0 == 4) {
+                                    if (self.isIndoor) {
+                                        let outputBuilding = self.outputResult.building_name
+                                        let outputLevel = self.outputResult.level_name
+                                        
+                                        self.timeUpdateOutput.building_name = outputBuilding
+                                        self.timeUpdateOutput.level_name = outputLevel
+                                        
+                                        self.measurementOutput.building_name = outputBuilding
+                                        self.measurementOutput.level_name = outputLevel
+                                        
+                                        if (!self.isVenusMode) {
+                                            self.isActiveKf = true
+                                            self.timeUpdateFlag = true
+                                            self.isStartKf = true
+                                        }
+                                    }
+                                }
+                                
+                                if (resultPhase.0 == 4) {
+                                    let propagationResult = propagateUsingUvd(drBuffer: self.unitDrBuffer, result: result)
+                                    var propagationValues: [Double] = propagationResult.1
+                                    if (propagationResult.0) {
+                                        var propagatedResult: [Double] = [resultCorrected.1[0]+propagationValues[0] , resultCorrected.1[1]+propagationValues[1], resultCorrected.1[2]+propagationValues[2]]
+                                        if (self.runMode == "pdr") {
+                                            let pathMatchingResult = pmCalculator.pathMatching(building: result.building_name, level: result.level_name, x: propagatedResult[0], y: propagatedResult[1], heading: propagatedResult[2], isPast: false, HEADING_RANGE: HEADING_RANGE, isUseHeading: true, pathType: 0, range: SQUARE_RANGE)
+                                            propagatedResult = pathMatchingResult.xyhs
+                                        } else {
+                                            let pathMatchingResult = pmCalculator.pathMatching(building: result.building_name, level: result.level_name, x: propagatedResult[0], y: propagatedResult[1], heading: propagatedResult[2], isPast: false, HEADING_RANGE: HEADING_RANGE, isUseHeading: true, pathType: 1, range: SQUARE_RANGE)
+                                            propagatedResult = pathMatchingResult.xyhs
+                                        }
+                                        propagatedResult[2] = compensateHeading(heading: propagatedResult[2])
+                                        
+                                        self.timeUpdatePosition.x = propagatedResult[0]
+                                        self.timeUpdatePosition.y = propagatedResult[1]
+                                        self.timeUpdatePosition.heading = propagatedResult[2]
+                                        self.updateHeading = propagatedResult[2]
+
+                                        self.timeUpdateOutput.x = propagatedResult[0]
+                                        self.timeUpdateOutput.y = propagatedResult[1]
+                                        self.timeUpdateOutput.absolute_heading = propagatedResult[2]
+
+                                        self.measurementPosition.x = propagatedResult[0]
+                                        self.measurementPosition.y = propagatedResult[1]
+                                        self.measurementPosition.heading = propagatedResult[2]
+
+                                        self.measurementOutput.x = propagatedResult[0]
+                                        self.measurementOutput.y = propagatedResult[1]
+                                        self.measurementOutput.absolute_heading = propagatedResult[2]
+
+                                        self.outputResult.x = propagatedResult[0]
+                                        self.outputResult.y = propagatedResult[1]
+                                        self.outputResult.absolute_heading = propagatedResult[2]
                                     } else {
-                                        let pathMatchingResult = pmCalculator.pathMatching(building: result.building_name, level: result.level_name, x: propagatedResult[0], y: propagatedResult[1], heading: propagatedResult[2], isPast: false, HEADING_RANGE: HEADING_RANGE, isUseHeading: true, pathType: 1, range: SQUARE_RANGE)
-                                        propagatedResult = pathMatchingResult.xyhs
+                                        self.timeUpdatePosition.x = resultCorrected.1[0]
+                                        self.timeUpdatePosition.y = resultCorrected.1[1]
+                                        self.timeUpdatePosition.heading = result.absolute_heading
+                                        self.updateHeading = result.absolute_heading
+
+                                        self.timeUpdateOutput.x = resultCorrected.1[0]
+                                        self.timeUpdateOutput.y = resultCorrected.1[1]
+                                        self.timeUpdateOutput.absolute_heading = result.absolute_heading
+
+                                        self.measurementPosition.x = resultCorrected.1[0]
+                                        self.measurementPosition.y = resultCorrected.1[1]
+                                        self.measurementPosition.heading = result.absolute_heading
+
+                                        self.measurementOutput.x = resultCorrected.1[0]
+                                        self.measurementOutput.y = resultCorrected.1[1]
+                                        self.measurementOutput.absolute_heading = result.absolute_heading
+
+                                        self.outputResult.x = resultCorrected.1[0]
+                                        self.outputResult.y = resultCorrected.1[1]
+                                        self.outputResult.absolute_heading = result.absolute_heading
                                     }
-                                    propagatedResult[2] = compensateHeading(heading: propagatedResult[2])
                                     
-                                    self.timeUpdatePosition.x = propagatedResult[0]
-                                    self.timeUpdatePosition.y = propagatedResult[1]
-                                    self.timeUpdatePosition.heading = propagatedResult[2]
-                                    self.updateHeading = propagatedResult[2]
-
-                                    self.timeUpdateOutput.x = propagatedResult[0]
-                                    self.timeUpdateOutput.y = propagatedResult[1]
-                                    self.timeUpdateOutput.absolute_heading = propagatedResult[2]
-
-                                    self.measurementPosition.x = propagatedResult[0]
-                                    self.measurementPosition.y = propagatedResult[1]
-                                    self.measurementPosition.heading = propagatedResult[2]
-
-                                    self.measurementOutput.x = propagatedResult[0]
-                                    self.measurementOutput.y = propagatedResult[1]
-                                    self.measurementOutput.absolute_heading = propagatedResult[2]
-
-                                    self.outputResult.x = propagatedResult[0]
-                                    self.outputResult.y = propagatedResult[1]
-                                    self.outputResult.absolute_heading = propagatedResult[2]
-                                } else {
-                                    self.timeUpdatePosition.x = resultCorrected.1[0]
-                                    self.timeUpdatePosition.y = resultCorrected.1[1]
-                                    self.timeUpdatePosition.heading = result.absolute_heading
-                                    self.updateHeading = result.absolute_heading
-
-                                    self.timeUpdateOutput.x = resultCorrected.1[0]
-                                    self.timeUpdateOutput.y = resultCorrected.1[1]
-                                    self.timeUpdateOutput.absolute_heading = result.absolute_heading
-
-                                    self.measurementPosition.x = resultCorrected.1[0]
-                                    self.measurementPosition.y = resultCorrected.1[1]
-                                    self.measurementPosition.heading = result.absolute_heading
-
-                                    self.measurementOutput.x = resultCorrected.1[0]
-                                    self.measurementOutput.y = resultCorrected.1[1]
-                                    self.measurementOutput.absolute_heading = result.absolute_heading
-
-                                    self.outputResult.x = resultCorrected.1[0]
-                                    self.outputResult.y = resultCorrected.1[1]
-                                    self.outputResult.absolute_heading = result.absolute_heading
+                                    if (self.isStartSimulate) {
+                                        self.makeOutputResult(input: self.outputResult, isPast: self.flagPast, runMode: self.runMode, isVenusMode: self.isVenusMode)
+                                    } else {
+                                        self.resultToReturn = self.makeOutputResult(input: self.outputResult, isPast: self.flagPast, runMode: self.runMode, isVenusMode: self.isVenusMode)
+                                    }
                                 }
+                                
+                                var resultCopy = result
+                                
+                                let resultLevelName = removeLevelDirectionString(levelName: result.level_name)
+                                let currentLevelName = removeLevelDirectionString(levelName: self.currentLevel)
+                                
+                                let levelArray: [String] = [resultLevelName, currentLevelName]
+                                var TIME_CONDITION = VALID_BL_CHANGE_TIME
+                                if (levelArray.contains("B0") && levelArray.contains("B2")) {
+                                    TIME_CONDITION = VALID_BL_CHANGE_TIME*4
+                                }
+                                
+                                if (result.building_name != self.currentBuilding || resultLevelName != currentLevelName) {
+                                    if ((result.mobile_time - self.buildingLevelChangedTime) > TIME_CONDITION) {
+                                        if (self.currentBuilding != "" && self.currentLevel != "0F") {
+                                            self.buildingLevelChangedTime = currentTime
+                                        }
+                                        // Building Level 이 바뀐지 10초 이상 지남 -> 서버 결과를 이용해 바뀌어야 한다고 판단
+                                        self.currentBuilding = result.building_name
+                                        self.currentLevel = removeLevelDirectionString(levelName: result.level_name)
+                                    } else {
+                                        resultCopy.building_name = self.currentBuilding
+                                        resultCopy.level_name = self.currentLevel
+                                    }
+                                }
+                                let finalResult = fromServerToResult(fromServer: resultCopy, velocity: displayOutput.velocity, resultPhase: resultPhase.0)
+                                
+                                self.flagPast = false
+                                self.outputResult = finalResult
+                                if (self.isStartSimulate) {
+                                    self.makeOutputResult(input: self.outputResult, isPast: self.flagPast, runMode: self.runMode, isVenusMode: self.isVenusMode)
+                                } else {
+                                    self.resultToReturn = self.makeOutputResult(input: self.outputResult, isPast: self.flagPast, runMode: self.runMode, isVenusMode: self.isVenusMode)
+                                }
+                            } else {
+                                // Kalman Filter가 동작 중이면서 위치 요청시 input의 phase 가 1~3 인 경우
+                                let propagationResult = propagateUsingUvd(drBuffer: self.unitDrBuffer, result: result)
+                                let propagationValues: [Double] = propagationResult.1
+                                var propagatedResult: [Double] = [resultCorrected.1[0]+propagationValues[0] , resultCorrected.1[1]+propagationValues[1], resultCorrected.1[2]+propagationValues[2]]
+                                let pathMatchingResult = pmCalculator.pathMatching(building: result.building_name, level: result.level_name, x: propagatedResult[0], y: propagatedResult[1], heading: propagatedResult[2], isPast: false, HEADING_RANGE: HEADING_RANGE, isUseHeading: true, pathType: 1, range: SQUARE_RANGE)
+                                propagatedResult = pathMatchingResult.xyhs
+                                propagatedResult[2] = compensateHeading(heading: propagatedResult[2])
+                                
+                                
+                                var tuHeading = compensateHeading(heading: timeUpdatePosition.heading)
+                                var muHeading = propagatedResult[2]
+                                if (tuHeading >= 270 && (muHeading >= 0 && muHeading < 90)) {
+                                    muHeading = muHeading + 360
+                                } else if (muHeading >= 270 && (tuHeading >= 0 && tuHeading < 90)) {
+                                    tuHeading = tuHeading + 360
+                                }
+                                
+                                if (resultPhase.0 == 4) {
+                                    if (pathMatchingResult.isSuccess) {
+                                        self.updateAllResult(result: propagatedResult, inputPhase: inputPhase, mode: self.runMode)
+                                    } else {
+                                        self.updateAllResult(result: resultCorrected.1, inputPhase: inputPhase, mode: self.runMode)
+                                    }
+                                } else if (resultPhase.0 == 3) {
+                                    if (pathMatchingResult.isSuccess) {
+                                        self.updateAllResult(result: propagatedResult, inputPhase: inputPhase, mode: self.runMode)
+                                    } else {
+                                        self.updateAllResult(result: resultCorrected.1, inputPhase: inputPhase, mode: self.runMode)
+                                    }
+                                }
+                                var timUpdateOutputCopy = self.timeUpdateOutput
+                                
+                                let resultLevelName = removeLevelDirectionString(levelName: result.level_name)
+                                let currentLevelName = removeLevelDirectionString(levelName: self.currentLevel)
+                                
+                                let levelArray: [String] = [resultLevelName, currentLevelName]
+                                var TIME_CONDITION = VALID_BL_CHANGE_TIME
+                                if (levelArray.contains("B0") && levelArray.contains("B2")) {
+                                    TIME_CONDITION = VALID_BL_CHANGE_TIME*4
+                                }
+                                
+                                if (result.building_name != self.currentBuilding || result.level_name != self.currentLevel) {
+                                    if ((result.mobile_time - self.buildingLevelChangedTime) > TIME_CONDITION) {
+                                        // Building Level 이 바뀐지 10초 이상 지남 -> 서버 결과를 이용해 바뀌어야 한다고 판단
+                                        self.currentBuilding = result.building_name
+                                        self.currentLevel = removeLevelDirectionString(levelName: result.level_name)
+                                        
+                                        timUpdateOutputCopy.building_name = result.building_name
+                                        timUpdateOutputCopy.level_name = result.level_name
+                                    } else {
+                                        timUpdateOutputCopy.building_name = self.currentBuilding
+                                        timUpdateOutputCopy.level_name = self.currentLevel
+                                    }
+                                    timUpdateOutputCopy.mobile_time = result.mobile_time
+                                }
+                                
+                                let updatedResult = fromServerToResult(fromServer: timUpdateOutputCopy, velocity: displayOutput.velocity, resultPhase: resultPhase.0)
+                                self.timeUpdateOutput = timUpdateOutputCopy
+                                
+                                self.flagPast = false
+                                self.outputResult = updatedResult
                                 
                                 if (self.isStartSimulate) {
                                     self.makeOutputResult(input: self.outputResult, isPast: self.flagPast, runMode: self.runMode, isVenusMode: self.isVenusMode)
@@ -4382,138 +4551,36 @@ public class ServiceManager: Observation {
                                 }
                             }
                             
-                            var resultCopy = result
-                            
-                            let resultLevelName = removeLevelDirectionString(levelName: result.level_name)
-                            let currentLevelName = removeLevelDirectionString(levelName: self.currentLevel)
-                            
-                            let levelArray: [String] = [resultLevelName, currentLevelName]
-                            var TIME_CONDITION = VALID_BL_CHANGE_TIME
-                            if (levelArray.contains("B0") && levelArray.contains("B2")) {
-                                TIME_CONDITION = VALID_BL_CHANGE_TIME*4
-                            }
-                            
-                            if (result.building_name != self.currentBuilding || resultLevelName != currentLevelName) {
-                                if ((result.mobile_time - self.buildingLevelChangedTime) > TIME_CONDITION) {
-                                    if (self.currentBuilding != "" && self.currentLevel != "0F") {
-                                        self.buildingLevelChangedTime = currentTime
-                                    }
-                                    // Building Level 이 바뀐지 10초 이상 지남 -> 서버 결과를 이용해 바뀌어야 한다고 판단
-                                    self.currentBuilding = result.building_name
-                                    self.currentLevel = removeLevelDirectionString(levelName: result.level_name)
+                            if (self.isVenusMode || !self.lookingState) {
+                                self.phase = 1
+                                self.outputResult.phase = 1
+                                self.outputResult.absolute_heading = 0
+                                
+                                if (self.isStartSimulate) {
+                                    self.makeOutputResult(input: self.outputResult, isPast: self.flagPast, runMode: self.runMode, isVenusMode: self.isVenusMode)
                                 } else {
-                                    resultCopy.building_name = self.currentBuilding
-                                    resultCopy.level_name = self.currentLevel
+                                    self.resultToReturn = self.makeOutputResult(input: self.outputResult, isPast: self.flagPast, runMode: self.runMode, isVenusMode: self.isVenusMode)
                                 }
-                            }
-                            let finalResult = fromServerToResult(fromServer: resultCopy, velocity: displayOutput.velocity, resultPhase: resultPhase.0)
-                            
-                            self.flagPast = false
-                            self.outputResult = finalResult
-                            if (self.isStartSimulate) {
-                                self.makeOutputResult(input: self.outputResult, isPast: self.flagPast, runMode: self.runMode, isVenusMode: self.isVenusMode)
                             } else {
-                                self.resultToReturn = self.makeOutputResult(input: self.outputResult, isPast: self.flagPast, runMode: self.runMode, isVenusMode: self.isVenusMode)
+                                self.phase = resultPhase.0
                             }
-                        } else {
-                            // Kalman Filter가 동작 중이면서 위치 요청시 input의 phase 가 1~3 인 경우
-                            let propagationResult = propagateUsingUvd(drBuffer: self.unitDrBuffer, result: result)
-                            let propagationValues: [Double] = propagationResult.1
-                            var propagatedResult: [Double] = [resultCorrected.1[0]+propagationValues[0] , resultCorrected.1[1]+propagationValues[1], resultCorrected.1[2]+propagationValues[2]]
-                            let pathMatchingResult = pmCalculator.pathMatching(building: result.building_name, level: result.level_name, x: propagatedResult[0], y: propagatedResult[1], heading: propagatedResult[2], isPast: false, HEADING_RANGE: HEADING_RANGE, isUseHeading: true, pathType: 1, range: SQUARE_RANGE)
-                            propagatedResult = pathMatchingResult.xyhs
-                            propagatedResult[2] = compensateHeading(heading: propagatedResult[2])
+                            self.indexPast = result.index
+                            self.preOutputMobileTime = result.mobile_time
                             
-                            
-                            var tuHeading = compensateHeading(heading: timeUpdatePosition.heading)
-                            var muHeading = propagatedResult[2]
-                            if (tuHeading >= 270 && (muHeading >= 0 && muHeading < 90)) {
-                                muHeading = muHeading + 360
-                            } else if (muHeading >= 270 && (tuHeading >= 0 && tuHeading < 90)) {
-                                tuHeading = tuHeading + 360
-                            }
-                            
-                            if (resultPhase.0 == 4) {
-                                if (pathMatchingResult.isSuccess) {
-                                    self.updateAllResult(result: propagatedResult, inputPhase: inputPhase, mode: self.runMode)
-                                } else {
-                                    self.updateAllResult(result: resultCorrected.1, inputPhase: inputPhase, mode: self.runMode)
-                                }
-                            } else if (resultPhase.0 == 3) {
-                                if (pathMatchingResult.isSuccess) {
-                                    self.updateAllResult(result: propagatedResult, inputPhase: inputPhase, mode: self.runMode)
-                                } else {
-                                    self.updateAllResult(result: resultCorrected.1, inputPhase: inputPhase, mode: self.runMode)
-                                }
-                            }
-                            var timUpdateOutputCopy = self.timeUpdateOutput
-                            
-                            let resultLevelName = removeLevelDirectionString(levelName: result.level_name)
-                            let currentLevelName = removeLevelDirectionString(levelName: self.currentLevel)
-                            
-                            let levelArray: [String] = [resultLevelName, currentLevelName]
-                            var TIME_CONDITION = VALID_BL_CHANGE_TIME
-                            if (levelArray.contains("B0") && levelArray.contains("B2")) {
-                                TIME_CONDITION = VALID_BL_CHANGE_TIME*4
-                            }
-                            
-                            if (result.building_name != self.currentBuilding || result.level_name != self.currentLevel) {
-                                if ((result.mobile_time - self.buildingLevelChangedTime) > TIME_CONDITION) {
-                                    // Building Level 이 바뀐지 10초 이상 지남 -> 서버 결과를 이용해 바뀌어야 한다고 판단
-                                    self.currentBuilding = result.building_name
-                                    self.currentLevel = removeLevelDirectionString(levelName: result.level_name)
-                                    
-                                    timUpdateOutputCopy.building_name = result.building_name
-                                    timUpdateOutputCopy.level_name = result.level_name
-                                } else {
-                                    timUpdateOutputCopy.building_name = self.currentBuilding
-                                    timUpdateOutputCopy.level_name = self.currentLevel
-                                }
-                                timUpdateOutputCopy.mobile_time = result.mobile_time
-                            }
-                            
-                            let updatedResult = fromServerToResult(fromServer: timUpdateOutputCopy, velocity: displayOutput.velocity, resultPhase: resultPhase.0)
-                            self.timeUpdateOutput = timUpdateOutputCopy
-                            
-                            self.flagPast = false
-                            self.outputResult = updatedResult
-                            
-                            if (self.isStartSimulate) {
-                                self.makeOutputResult(input: self.outputResult, isPast: self.flagPast, runMode: self.runMode, isVenusMode: self.isVenusMode)
-                            } else {
-                                self.resultToReturn = self.makeOutputResult(input: self.outputResult, isPast: self.flagPast, runMode: self.runMode, isVenusMode: self.isVenusMode)
-                            }
+                            displayOutput.indexRx = result.index
+                            displayOutput.scc = result.scc
+                            displayOutput.phase = String(self.phase)
                         }
-                        
-                        if (self.isVenusMode || !self.lookingState) {
-                            self.phase = 1
-                            self.outputResult.phase = 1
-                            self.outputResult.absolute_heading = 0
-                            
-                            if (self.isStartSimulate) {
-                                self.makeOutputResult(input: self.outputResult, isPast: self.flagPast, runMode: self.runMode, isVenusMode: self.isVenusMode)
-                            } else {
-                                self.resultToReturn = self.makeOutputResult(input: self.outputResult, isPast: self.flagPast, runMode: self.runMode, isVenusMode: self.isVenusMode)
-                            }
-                        } else {
-                            self.phase = resultPhase.0
-                        }
-                        self.indexPast = result.index
-                        self.preOutputMobileTime = result.mobile_time
-                        
-                        displayOutput.indexRx = result.index
-                        displayOutput.scc = result.scc
-                        displayOutput.phase = String(self.phase)
+                    } else {
+                        self.phase = 1
+                        self.isNeedTrajInit = true
                     }
                 } else {
-                    self.phase = 1
-                    self.isNeedTrajInit = true
+                    let log: String = localTime + " , (Jupiter) Error : \(statusCode) Fail to request indoor position in Phase 3"
+    //                print(log)
                 }
-            } else {
-                let log: String = localTime + " , (Jupiter) Error : \(statusCode) Fail to request indoor position in Phase 3"
-//                print(log)
-            }
-        })
+            })
+        }
     }
     
     private func processPhase4(currentTime: Int, localTime: String, userTrajectory: [TrajectoryInfo], searchInfo: ([Int], [Int], Int, Int)) {
