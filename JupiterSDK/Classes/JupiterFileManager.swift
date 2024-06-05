@@ -19,7 +19,7 @@ public class JupiterFileManager {
             print(getLocalTimeString() + " , (JupiterFileManager) : Unable to access document directory.")
             return nil
         }
-        let exportDirectoryUrl = documentDirectoryUrl.appendingPathComponent("Export")
+        let exportDirectoryUrl = documentDirectoryUrl.appendingPathComponent("Exports")
         if !FileManager.default.fileExists(atPath: exportDirectoryUrl.path) {
             do {
                 try FileManager.default.createDirectory(at: exportDirectoryUrl, withIntermediateDirectories: true, attributes: nil)

@@ -3,7 +3,7 @@ import CoreMotion
 import UIKit
 
 public class ServiceManager: Observation {
-    public static let sdkVersion: String = "3.4.3.1"
+    public static let sdkVersion: String = "3.4.3.2"
     var isSimulationMode: Bool = false
     var simulationBleData = [[String: Double]]()
     var simulationSensorData = [SensorData]()
@@ -564,9 +564,9 @@ public class ServiceManager: Observation {
     }
     
     public func startService(id: String, sector_id: Int, service: String, mode: String, completion: @escaping (Bool, String) -> Void) {
-        let checkAvailable = checkServiceAvailableDevice(completion: { statusCode, isUpdated, isAvailable in
-            print(getLocalTimeString() + " , (Jupiter) Information : isServiceAvailableDevice = \(statusCode) , \(isUpdated) , \(isAvailable)")
-        })
+//        let checkAvailable = checkServiceAvailableDevice(completion: { statusCode, isUpdated, isAvailable in
+//            print(getLocalTimeString() + " , (Jupiter) Information : isServiceAvailableDevice = \(statusCode) , \(isUpdated) , \(isAvailable)")
+//        })
         
         let localTime = getLocalTimeString()
         print(localTime + " , (Jupiter) Information : Try startService")
