@@ -73,6 +73,28 @@ struct AddCardSuccess: Codable {
     var dead_reckoning: String
     var service_request: String
     var building_level: [[String]]
+    
+    enum CodingKeys: String, CodingKey {
+        case message
+        case sector_id
+        case sector_name
+        case description
+        case card_color
+        case dead_reckoning
+        case service_request = "request_service"
+        case building_level
+    }
+}
+
+struct AddCardSuccessNoCustomKeys: Codable {
+    var message: String
+    var sector_id: Int
+    var sector_name: String
+    var description: String
+    var card_color: String
+    var dead_reckoning: String
+    var service_request: String
+    var building_level: [[String]]
 }
 
 struct AddCardFail: Codable {
@@ -93,6 +115,43 @@ struct CardList: Codable {
 }
 
 struct CardInfo: Codable {
+    var sector_id: Int
+    var sector_name: String
+    var description: String
+    var card_color: String
+    var dead_reckoning: String
+    var service_request: String
+    var building_level: [[String]]
+    
+    enum CodingKeys: String, CodingKey {
+        case sector_id
+        case sector_name
+        case description
+        case card_color
+        case dead_reckoning
+        case service_request = "request_service"
+        case building_level
+    }
+    
+//    init(from decoder: Decoder) throws {
+//        let container = try decoder.container(keyedBy: CodingKeys.self)
+//        sector_id = try container.decode(Int.self, forKey: .sector_id)
+//        sector_name = try container.decode(String.self, forKey: .sector_name)
+//        description = try container.decode(String.self, forKey: .description)
+//        card_color = try container.decode(String.self, forKey: .card_color)
+//        dead_reckoning = try container.decode(String.self, forKey: .dead_reckoning)
+//        
+//        if let serviceRequest = try? container.decode(String.self, forKey: .service_request) {
+//            service_request = serviceRequest
+//        } else {
+//            service_request = try container.decode(String.self, forKey: .init(stringValue: "service_request")!)
+//        }
+//        
+//        building_level = try container.decode([[String]].self, forKey: .building_level)
+//    }
+}
+
+struct CardInfoNoCustomKeys: Codable {
     var sector_id: Int
     var sector_name: String
     var description: String
@@ -144,10 +203,4 @@ public func setRegion(regionName: String) {
     LOGIN_URL = COMMON_URL + REGION_URL + "/login"
     CARD_URL = COMMON_URL + REGION_URL + "/card"
     SCALE_URL = COMMON_URL + REGION_URL + "/scale"
-    
-//    print("(innerLabs) Region : \(regionName)")
-//    print("(innerLabs) USER_URL Changed : \(USER_URL)")
-//    print("(innerLabs) CARD_URL Changed : \(CARD_URL)")
-//    print("(innerLabs) SCALE_URL Changed : \(SCALE_URL)")
-//    print("(innerLabs) IMAGE_URL Changed : \(IMAGE_URL)")
 }

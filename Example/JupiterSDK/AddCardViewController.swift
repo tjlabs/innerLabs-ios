@@ -1,10 +1,3 @@
-//
-//  AddCardViewController.swift
-//  JupiterSDK_Example
-//
-//  Created by 신동현 on 2022/04/19.
-//  Copyright © 2022 CocoaPods. All rights reserved.
-//
 
 import UIKit
 import Alamofire
@@ -88,15 +81,20 @@ class AddCardViewController: UIViewController, UITextFieldDelegate {
         var enrollMessage: String = ""
         // Add Card
         let input = AddCard(user_id: uuid, sector_code: code)
-        Network.shared.addCard(url: USER_URL, input: input, completion: { [self] statusCode, returnedString in
-            let addedCard = jsonToCard(json: returnedString)
+        var addCardUrl = USER_URL
+        var imageUrl = "https://storage.googleapis.com/\(IMAGE_URL)"
+        if (IS_OLYMPUS) {
+            addCardUrl = USER_CARD_URL
+            imageUrl = USER_IMAGE_URL
+        }
+        Network.shared.addCard(url: addCardUrl, input: input, completion: { [self] statusCode, returnedString in
+            let addedCard = jsonToCard(json: returnedString, isOlympus: IS_OLYMPUS)
             var message: String = addedCard.message
             if (message.count < 5) {
                 message = jsonToFail(json: returnedString).message
             }
             
-            switch (message) {
-            case "Update Success":
+            if (message.contains("Success")) {
                 enrollMessage = "\(addedCard.sector_name)" + self.enrollSuccessText
                 self.responseLabel.text = enrollMessage
                 self.responseLabel.textColor = .systemBlue
@@ -132,32 +130,41 @@ class AddCardViewController: UIViewController, UITextFieldDelegate {
                     }
                 }
                 
-                if (id != 10) {
-                    // KingFisher Image Download
-                    let urlSector = URL(string: "https://storage.googleapis.com/\(IMAGE_URL)/card/\(id)/main_image.png")
-                    let urlSectorShow = URL(string: "https://storage.googleapis.com/\(IMAGE_URL)/card/\(id)/edit_image.png")
-                    
-//                    let resourceSector = ImageResource(downloadURL: urlSector!, cacheKey: "\(id)Main")
-//                    let resourceSectorShow = ImageResource(downloadURL: urlSectorShow!, cacheKey: "\(id)Show")
-                    
-                    KingfisherManager.shared.retrieveImage(with: urlSector!, completionHandler: nil)
-                    KingfisherManager.shared.retrieveImage(with: urlSectorShow!, completionHandler: nil)
+                if (IS_OLYMPUS) {
+                    if (id != 1) {
+                        // KingFisher Image Download
+                        let urlSector = URL(string: "\(imageUrl)/card/\(id)/main.png")
+                        let urlSectorShow = URL(string: "\(imageUrl)/card/\(id)/edit.png")
+                        
+                        KingfisherManager.shared.retrieveImage(with: urlSector!, completionHandler: nil)
+                        KingfisherManager.shared.retrieveImage(with: urlSectorShow!, completionHandler: nil)
+                    }
+                } else {
+                    if (id != 10) {
+                        // KingFisher Image Download
+                        let urlSector = URL(string: "\(imageUrl)/card/\(id)/main_image.png")
+                        let urlSectorShow = URL(string: "\(imageUrl)/card/\(id)/edit_image.png")
+                        
+                        KingfisherManager.shared.retrieveImage(with: urlSector!, completionHandler: nil)
+                        KingfisherManager.shared.retrieveImage(with: urlSectorShow!, completionHandler: nil)
+                    }
                 }
+                
                 
                 self.cardItemData.append(CardItemData(sector_id: id, sector_name: name, description: description, cardColor: cardColor, mode: mode, service: service, infoBuilding: infoBuilding, infoLevel: infoLevel))
                 
                 self.page = self.page + 4
-            case "Update Conflict":
+            } else if (message.contains("Conflict")) {
                 enrollMessage = self.enrollConflictText
                 self.responseLabel.text = enrollMessage
                 self.responseLabel.textColor = .systemRed
                 self.responseLabel.isHidden = false
-            case "Update Fail":
+            } else if (message.contains("Fail")){
                 enrollMessage = self.enrollFailText
                 self.responseLabel.text = enrollMessage
                 self.responseLabel.textColor = .systemRed
                 self.responseLabel.isHidden = false
-            default:
+            } else {
                 enrollMessage = self.enrollFailText
                 self.responseLabel.text = enrollMessage
                 self.responseLabel.textColor = .systemRed
@@ -166,14 +173,32 @@ class AddCardViewController: UIViewController, UITextFieldDelegate {
         })
     }
     
-    func jsonToCard(json: String) -> AddCardSuccess {
+//    func jsonToCard(json: String) -> AddCardSuccess {
+//        let result = AddCardSuccess(message: "", sector_id: 100, sector_name: "", description: "", card_color: "", dead_reckoning: "pdr", service_request: "", building_level: [[]])
+//        let decoder = JSONDecoder()
+//
+//        let jsonString = json
+//
+//        if let data = jsonString.data(using: .utf8), let decoded = try? decoder.decode(AddCardSuccess.self, from: data) {
+//            return decoded
+//        }
+//
+//        return result
+//    }
+    
+    func jsonToCard(json: String, isOlympus: Bool) -> AddCardSuccess {
         let result = AddCardSuccess(message: "", sector_id: 100, sector_name: "", description: "", card_color: "", dead_reckoning: "pdr", service_request: "", building_level: [[]])
         let decoder = JSONDecoder()
 
-        let jsonString = json
-
-        if let data = jsonString.data(using: .utf8), let decoded = try? decoder.decode(AddCardSuccess.self, from: data) {
-            return decoded
+        if isOlympus {
+            if let data = json.data(using: .utf8), let decoded = try? decoder.decode(AddCardSuccess.self, from: data) {
+                return decoded
+            }
+        } else {
+            // Do not use custom coding keys
+            if let data = json.data(using: .utf8), let decoded = try? decoder.decode(AddCardSuccessNoCustomKeys.self, from: data) {
+                return AddCardSuccess(message: decoded.message, sector_id: decoded.sector_id, sector_name: decoded.sector_name, description: decoded.description, card_color: decoded.card_color, dead_reckoning: decoded.dead_reckoning, service_request: decoded.service_request, building_level: decoded.building_level)
+            }
         }
 
         return result

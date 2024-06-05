@@ -265,72 +265,132 @@ extension ShowCardViewController: UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "ShowCardCollectionViewCell", for: indexPath) as! ShowCardCollectionViewCell
         
         let sectorName: String = cardItemData[indexPath.item].sector_name
         let sectorID = cardItemData[indexPath.item].sector_id
         cell.nameLabel.text = sectorName
-        if (sectorID == 7) {
-            cell.nameLabel.textColor = .black
-        } else {
-            cell.nameLabel.textColor = .white
-        }
         
-        let ratio: Double = 8.05
-        let width = collectionViewSize[0]
-        cell.cardWidth.constant = collectionViewSize[0]
-        cell.sectorShowImageLeading.constant = (width/ratio)
-        
-        cell.cardShowImage.image = cardShowImages[indexPath.item]
-        
-        if (sectorID == 0) {
-            cell.sectorShowImage.image = sectorShowImages[indexPath.item]
-        } else if (sectorID == 10) {
-            cell.sectorShowImage.image = sectorShowImages[indexPath.item]
-        } else {
-            let urlSectorShow = URL(string: "https://storage.googleapis.com/\(IMAGE_URL)/card/\(sectorID)/edit_image.png")
-//            let resourceSectorShow = ImageResource(downloadURL: urlSectorShow!, cacheKey: "\(sectorID)Show")
-            cell.sectorShowImage.kf.setImage(with: urlSectorShow!, placeholder: nil, options: [.transition(.fade(1.2))], completionHandler: nil)
-        }
-        
-        if (isEditMode) {
-            if (sectorID != 0) {
-                cell.deleteButton.alpha = 1.0
-                cell.deleteButton.isEnabled = true
-                
-                cell.startAnimate()
-                
+        if (IS_OLYMPUS) {
+            if (sectorID == 9) {
+                cell.nameLabel.textColor = .black
+            } else {
+                cell.nameLabel.textColor = .white
+            }
+            
+            let ratio: Double = 8.05
+            let width = collectionViewSize[0]
+            cell.cardWidth.constant = collectionViewSize[0]
+            cell.sectorShowImageLeading.constant = (width/ratio)
+            
+            cell.cardShowImage.image = cardShowImages[indexPath.item]
+            
+            if (sectorID == 0) {
+                cell.sectorShowImage.image = sectorShowImages[indexPath.item]
+            } else if (sectorID == 1) {
+                cell.sectorShowImage.image = sectorShowImages[indexPath.item]
+            } else {
+                let urlSectorShow = URL(string: "\(USER_IMAGE_URL)/card/\(sectorID)/edit.png")
+                cell.sectorShowImage.kf.setImage(with: urlSectorShow!, placeholder: nil, options: [.transition(.fade(1.2))], completionHandler: nil)
+            }
+            
+            if (isEditMode) {
+                if (sectorID != 0) {
+                    cell.deleteButton.alpha = 1.0
+                    cell.deleteButton.isEnabled = true
+                    
+                    cell.startAnimate()
+                    
+                } else {
+                    cell.deleteButton.alpha = 0.0
+                    cell.deleteButton.isEnabled = false
+                    
+                    cell.stopAnimate()
+                }
             } else {
                 cell.deleteButton.alpha = 0.0
                 cell.deleteButton.isEnabled = false
+            }
+            
+            cell.delete = {
+                [unowned self] in
+                // 내가 선택한 카드 삭제
+                let uuid = self.uuid
+                let sector_id = self.cardItemData[indexPath.item].sector_id
                 
-                cell.stopAnimate()
+                let input = DeleteCard(user_id: uuid, sector_id: sector_id)
+                Network.shared.deleteCard(url: USER_CARD_URL, input: input, completion: { [self] statusCode, returnedString in
+                    self.cardItemData.remove(at: indexPath.item)
+                    self.delegate?.sendCardItemData(data: self.cardItemData)
+                    self.page = 0
+                    
+                    self.setData(data: cardItemData)
+                    
+                    // CollectionView Reload
+                    self.showCardCollectionView.reloadData()
+                })
             }
         } else {
-            cell.deleteButton.alpha = 0.0
-            cell.deleteButton.isEnabled = false
-        }
-        
-        cell.delete = {
-            [unowned self] in
-            // 내가 선택한 카드 삭제
-            let uuid = self.uuid
-            let sector_id = self.cardItemData[indexPath.item].sector_id
+            if (sectorID == 7) {
+                cell.nameLabel.textColor = .black
+            } else {
+                cell.nameLabel.textColor = .white
+            }
             
-            let input = DeleteCard(user_id: uuid, sector_id: sector_id)
-            Network.shared.deleteCard(url: USER_URL, input: input, completion: { [self] statusCode, returnedString in
-                self.cardItemData.remove(at: indexPath.item)
-                self.delegate?.sendCardItemData(data: self.cardItemData)
-                self.page = 0
+            let ratio: Double = 8.05
+            let width = collectionViewSize[0]
+            cell.cardWidth.constant = collectionViewSize[0]
+            cell.sectorShowImageLeading.constant = (width/ratio)
+            
+            cell.cardShowImage.image = cardShowImages[indexPath.item]
+            
+            if (sectorID == 0) {
+                cell.sectorShowImage.image = sectorShowImages[indexPath.item]
+            } else if (sectorID == 10) {
+                cell.sectorShowImage.image = sectorShowImages[indexPath.item]
+            } else {
+                let urlSectorShow = URL(string: "https://storage.googleapis.com/\(IMAGE_URL)/card/\(sectorID)/edit_image.png")
+                cell.sectorShowImage.kf.setImage(with: urlSectorShow!, placeholder: nil, options: [.transition(.fade(1.2))], completionHandler: nil)
+            }
+            
+            if (isEditMode) {
+                if (sectorID != 0) {
+                    cell.deleteButton.alpha = 1.0
+                    cell.deleteButton.isEnabled = true
+                    
+                    cell.startAnimate()
+                    
+                } else {
+                    cell.deleteButton.alpha = 0.0
+                    cell.deleteButton.isEnabled = false
+                    
+                    cell.stopAnimate()
+                }
+            } else {
+                cell.deleteButton.alpha = 0.0
+                cell.deleteButton.isEnabled = false
+            }
+            
+            cell.delete = {
+                [unowned self] in
+                // 내가 선택한 카드 삭제
+                let uuid = self.uuid
+                let sector_id = self.cardItemData[indexPath.item].sector_id
                 
-                self.setData(data: cardItemData)
-                
-                // CollectionView Reload
-                self.showCardCollectionView.reloadData()
-            })
+                let input = DeleteCard(user_id: uuid, sector_id: sector_id)
+                Network.shared.deleteCard(url: USER_URL, input: input, completion: { [self] statusCode, returnedString in
+                    self.cardItemData.remove(at: indexPath.item)
+                    self.delegate?.sendCardItemData(data: self.cardItemData)
+                    self.page = 0
+                    
+                    self.setData(data: cardItemData)
+                    
+                    // CollectionView Reload
+                    self.showCardCollectionView.reloadData()
+                })
+            }
         }
-        
+
         return cell
     }
     

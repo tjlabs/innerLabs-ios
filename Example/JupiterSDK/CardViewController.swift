@@ -62,7 +62,6 @@ class CardViewController: UIViewController, ServiceViewPageDelegate, FusionViewP
         super.viewDidLoad()
         serviceManager.changeRegion(regionName: self.region)
         changeButtonNameByRegion(region: self.region)
-//        serviceManager.startService(id: self.uuid, sector_id: 10, service: "CLD", mode: "pdr")
         
         blackView.backgroundColor = UIColor.black
         blackView.alpha = 0
@@ -75,9 +74,6 @@ class CardViewController: UIViewController, ServiceViewPageDelegate, FusionViewP
         let tapRecognizer = UITapGestureRecognizer()
         tapRecognizer.addTarget(self, action: #selector(self.tappedOnView))
         blackView.addGestureRecognizer(tapRecognizer)
-        
-        
-//        print("(innerLabs) Region : \(self.region)")
     }
     
     @objc func tappedOnView(_ sender:UITapGestureRecognizer) {
@@ -377,7 +373,6 @@ extension CardViewController: UICollectionViewDataSource, UICollectionViewDelega
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        
         let cardCount = cardItemData.count
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "CardCollectionViewCell", for: indexPath) as! CardCollectionViewCell
         let mod = indexPath.item%cardCount
@@ -387,30 +382,52 @@ extension CardViewController: UICollectionViewDataSource, UICollectionViewDelega
         cell.sectorName.text = cardItemData[mod].sector_name
         cell.sectorDescription.text = cardItemData[mod].description
         
-        // Sector 7
-        if (sectorID == 7) {
-            cell.sectorName.textColor = .black
-            cell.sectorDescription.textColor = .black
+        if (IS_OLYMPUS) {
+            if (sectorID == 9) {
+                cell.sectorName.textColor = .black
+                cell.sectorDescription.textColor = .black
+            } else {
+                cell.sectorName.textColor = .white
+                cell.sectorDescription.textColor = .white
+            }
+            
+            cell.cardImageView.contentMode = .scaleAspectFit
+            cell.cardImageView.image = cardImages[mod]
+
+            if (sectorID == 0) {
+                cell.sectorImageView.image = sectorImages[mod]
+            } else if (sectorID == 1) {
+                cell.sectorImageView.image = nil
+            } else {
+                let urlSector = URL(string: "\(USER_IMAGE_URL)/card/\(sectorID)/main.png")
+                print(urlSector)
+                cell.sectorImageView.kf.setImage(with: urlSector!, placeholder: nil, options: [.transition(.fade(1.2))], completionHandler: nil)
+            }
         } else {
-            cell.sectorName.textColor = .white
-            cell.sectorDescription.textColor = .white
-        }
-        
-        // Sector Image
-        cell.cardImageView.contentMode = .scaleAspectFit
-        cell.cardImageView.image = cardImages[mod]
-        
-//        cell.sectorNameLeading.constant = floor((cell.sectorImageView.frame.size.width - cell.sectorImageView.frame.size.height * 0.6)/2)
-        
-        if (sectorID == 0) {
-            cell.sectorImageView.image = sectorImages[mod]
-        } else if (sectorID == 10) {
-            cell.sectorImageView.image = nil
-        }
-        else {
-            let urlSector = URL(string: "https://storage.googleapis.com/\(IMAGE_URL)/card/\(sectorID)/main_image.png")
-//            let resourceSector = ImageResource(downloadURL: urlSector!, cacheKey: "\(sectorID)Main")
-            cell.sectorImageView.kf.setImage(with: urlSector!, placeholder: nil, options: [.transition(.fade(1.2))], completionHandler: nil)
+            // Sector 7
+            if (sectorID == 7) {
+                cell.sectorName.textColor = .black
+                cell.sectorDescription.textColor = .black
+            } else {
+                cell.sectorName.textColor = .white
+                cell.sectorDescription.textColor = .white
+            }
+            
+            // Sector Image
+            cell.cardImageView.contentMode = .scaleAspectFit
+            cell.cardImageView.image = cardImages[mod]
+            
+    //        cell.sectorNameLeading.constant = floor((cell.sectorImageView.frame.size.width - cell.sectorImageView.frame.size.height * 0.6)/2)
+            
+            if (sectorID == 0) {
+                cell.sectorImageView.image = sectorImages[mod]
+            } else if (sectorID == 10) {
+                cell.sectorImageView.image = nil
+            }
+            else {
+                let urlSector = URL(string: "https://storage.googleapis.com/\(IMAGE_URL)/card/\(sectorID)/main_image.png")
+                cell.sectorImageView.kf.setImage(with: urlSector!, placeholder: nil, options: [.transition(.fade(1.2))], completionHandler: nil)
+            }
         }
         
         return cell
@@ -422,202 +439,284 @@ extension CardViewController: UICollectionViewDataSource, UICollectionViewDelega
         
         let sector_id = cardItemData[mod].sector_id
         let serviceName = cardItemData[mod].service
-//        serviceManager.stopService()
         
         let region: String = self.region
-        switch (region) {
-        case "Korea":
-            if (sector_id == 0) {
-                guard let guideVC = self.storyboard?.instantiateViewController(withIdentifier: "GuideViewController") as? GuideViewController else { return }
-                guideVC.page = currentPage
-                self.navigationController?.pushViewController(guideVC, animated: true)
-            } else if (sector_id == 9) {
-//                guard let fusionVC = self.storyboard?.instantiateViewController(withIdentifier: "FusionViewController") as? FusionViewController else { return }
-//                fusionVC.cardData = cardItemData[mod]
-//                fusionVC.region = region
-//                fusionVC.uuid = uuid
-//                fusionVC.page = currentPage
-//                self.navigationController?.pushViewController(fusionVC, animated: true)
-                guard let serviceVC = self.storyboard?.instantiateViewController(withIdentifier: "ServiceViewController") as? ServiceViewController else { return }
-                serviceVC.cardData = cardItemData[mod]
-                serviceVC.region = region
-                serviceVC.uuid = uuid
-                serviceVC.page = currentPage
-                self.navigationController?.pushViewController(serviceVC, animated: true)
+        
+        if (IS_OLYMPUS) {
+            switch (region) {
+            case "Korea":
+                if (sector_id == 0) {
+                    guard let guideVC = self.storyboard?.instantiateViewController(withIdentifier: "GuideViewController") as? GuideViewController else { return }
+                    guideVC.page = currentPage
+                    self.navigationController?.pushViewController(guideVC, animated: true)
+                } else if (sector_id == 1) {
+                    guard let collectVC = self.storyboard?.instantiateViewController(withIdentifier: "CollectViewController") as? CollectViewController else { return }
+                    collectVC.cardData = cardItemData[mod]
+                    collectVC.userId = uuid
+                    collectVC.page = currentPage
+                    self.navigationController?.pushViewController(collectVC, animated: true)
+                } else if (serviceName == "FLT+") {
+                    guard let fusionVC = self.storyboard?.instantiateViewController(withIdentifier: "FusionViewController") as? FusionViewController else { return }
+                    fusionVC.cardData = cardItemData[mod]
+                    fusionVC.region = region
+                    fusionVC.uuid = uuid
+                    fusionVC.page = currentPage
+                    self.navigationController?.pushViewController(fusionVC, animated: true)
+                } else {
+                    guard let serviceVC = self.storyboard?.instantiateViewController(withIdentifier: "ServiceViewController") as? ServiceViewController else { return }
+                    serviceVC.cardData = cardItemData[mod]
+                    serviceVC.region = region
+                    serviceVC.uuid = uuid
+                    serviceVC.page = currentPage
+                    self.navigationController?.pushViewController(serviceVC, animated: true)
+                }
+            case "Canada":
+                if (sector_id == 0) {
+                    guard let guideVC = self.storyboard?.instantiateViewController(withIdentifier: "GuideViewController") as? GuideViewController else { return }
+                    guideVC.page = currentPage
+                    self.navigationController?.pushViewController(guideVC, animated: true)
+                } else if (sector_id == 1) {
+                    guard let collectVC = self.storyboard?.instantiateViewController(withIdentifier: "CollectViewController") as? CollectViewController else { return }
+                    collectVC.cardData = cardItemData[mod]
+                    collectVC.userId = uuid
+                    collectVC.page = currentPage
+                    self.navigationController?.pushViewController(collectVC, animated: true)
+                } else if (serviceName == "FLT+") {
+                    guard let fusionVC = self.storyboard?.instantiateViewController(withIdentifier: "FusionViewController") as? FusionViewController else { return }
+                    fusionVC.cardData = cardItemData[mod]
+                    fusionVC.region = region
+                    fusionVC.uuid = uuid
+                    fusionVC.page = currentPage
+                    self.navigationController?.pushViewController(fusionVC, animated: true)
+                } else {
+                    guard let serviceVC = self.storyboard?.instantiateViewController(withIdentifier: "ServiceViewController") as? ServiceViewController else { return }
+                    serviceVC.cardData = cardItemData[mod]
+                    serviceVC.region = region
+                    serviceVC.uuid = uuid
+                    serviceVC.page = currentPage
+                    self.navigationController?.pushViewController(serviceVC, animated: true)
+                }
+            default:
+                if (sector_id == 0) {
+                    guard let guideVC = self.storyboard?.instantiateViewController(withIdentifier: "GuideViewController") as? GuideViewController else { return }
+                    guideVC.page = currentPage
+                    self.navigationController?.pushViewController(guideVC, animated: true)
+                } else if (sector_id == 1) {
+                    guard let collectVC = self.storyboard?.instantiateViewController(withIdentifier: "CollectViewController") as? CollectViewController else { return }
+                    collectVC.cardData = cardItemData[mod]
+                    collectVC.userId = uuid
+                    collectVC.page = currentPage
+                    self.navigationController?.pushViewController(collectVC, animated: true)
+                } else if (serviceName == "FLT+") {
+                    guard let fusionVC = self.storyboard?.instantiateViewController(withIdentifier: "FusionViewController") as? FusionViewController else { return }
+                    fusionVC.cardData = cardItemData[mod]
+                    fusionVC.region = region
+                    fusionVC.uuid = uuid
+                    fusionVC.page = currentPage
+                    self.navigationController?.pushViewController(fusionVC, animated: true)
+                } else {
+                    guard let serviceVC = self.storyboard?.instantiateViewController(withIdentifier: "ServiceViewController") as? ServiceViewController else { return }
+                    serviceVC.cardData = cardItemData[mod]
+                    serviceVC.region = region
+                    serviceVC.uuid = uuid
+                    serviceVC.page = currentPage
+                    self.navigationController?.pushViewController(serviceVC, animated: true)
+                }
             }
-            else if (sector_id == 10) {
-                guard let collectVC = self.storyboard?.instantiateViewController(withIdentifier: "CollectViewController") as? CollectViewController else { return }
-                collectVC.cardData = cardItemData[mod]
-                collectVC.userId = uuid
-                collectVC.page = currentPage
-                self.navigationController?.pushViewController(collectVC, animated: true)
-            } else if (sector_id == 7) {
-                guard let galleryVC = self.storyboard?.instantiateViewController(withIdentifier: "GalleryViewController") as? GalleryViewController else { return }
-                galleryVC.cardData = cardItemData[mod]
-                galleryVC.uuid = uuid
-                galleryVC.page = currentPage
-                self.navigationController?.pushViewController(galleryVC, animated: true)
-            } else if (sector_id == 8) {
-                guard let spotVC = self.storyboard?.instantiateViewController(withIdentifier: "SpotViewController") as? SpotViewController else { return }
-                spotVC.cardData = cardItemData[mod]
-                spotVC.region = region
-                spotVC.userId = uuid
-                spotVC.page = currentPage
-                self.navigationController?.pushViewController(spotVC, animated: true)
-            } else if (serviceName == "OSA") {
-               guard let neptuneVC = self.storyboard?.instantiateViewController(withIdentifier: "NeptuneViewController") as? NeptuneViewController else { return }
-                neptuneVC.cardData = cardItemData[mod]
-                neptuneVC.region = region
-                neptuneVC.userId = uuid
-                neptuneVC.page = currentPage
-                self.navigationController?.pushViewController(neptuneVC, animated: true)
-            } else if (sector_id == 14) {
-                guard let neptuneVC = self.storyboard?.instantiateViewController(withIdentifier: "NeptuneViewController") as? NeptuneViewController else { return }
-                neptuneVC.cardData = cardItemData[mod]
-                neptuneVC.region = region
-                neptuneVC.userId = uuid
-                neptuneVC.page = currentPage
-                self.navigationController?.pushViewController(neptuneVC, animated: true)
-            } else if (sector_id == 5) { //serviceName == "FLT+"
-//                guard let fusionVC = self.storyboard?.instantiateViewController(withIdentifier: "FusionViewController") as? FusionViewController else { return }
-//                fusionVC.cardData = cardItemData[mod]
-//                fusionVC.region = region
-//                fusionVC.uuid = uuid
-//                fusionVC.page = currentPage
-//                self.navigationController?.pushViewController(fusionVC, animated: true)
-                
-                guard let serviceVC = self.storyboard?.instantiateViewController(withIdentifier: "ServiceViewController") as? ServiceViewController else { return }
-                serviceVC.cardData = cardItemData[mod]
-                serviceVC.region = region
-                serviceVC.uuid = uuid
-                serviceVC.page = currentPage
-                self.navigationController?.pushViewController(serviceVC, animated: true)
-            } else {
-                guard let serviceVC = self.storyboard?.instantiateViewController(withIdentifier: "ServiceViewController") as? ServiceViewController else { return }
-                serviceVC.cardData = cardItemData[mod]
-                serviceVC.region = region
-                serviceVC.uuid = uuid
-                serviceVC.page = currentPage
-                self.navigationController?.pushViewController(serviceVC, animated: true)
-//                guard let serviceVC = self.storyboard?.instantiateViewController(withIdentifier: "SampleViewController") as? SampleViewController else { return }
-//                serviceVC.cardData = cardItemData[mod]
-//                serviceVC.region = region
-//                serviceVC.uuid = uuid
-//                serviceVC.page = currentPage
-//                self.navigationController?.pushViewController(serviceVC, animated: true)
-            }
-        case "Canada":
-            if (sector_id == 0) {
-                guard let guideVC = self.storyboard?.instantiateViewController(withIdentifier: "GuideViewController") as? GuideViewController else { return }
-                guideVC.page = currentPage
-                self.navigationController?.pushViewController(guideVC, animated: true)
-            } else if (sector_id == 10) {
-                guard let collectVC = self.storyboard?.instantiateViewController(withIdentifier: "CollectViewController") as? CollectViewController else { return }
-                collectVC.cardData = cardItemData[mod]
-                collectVC.userId = uuid
-                collectVC.page = currentPage
-                self.navigationController?.pushViewController(collectVC, animated: true)
-            } else if (serviceName == "FLT+") {
-                guard let fusionVC = self.storyboard?.instantiateViewController(withIdentifier: "FusionViewController") as? FusionViewController else { return }
-                fusionVC.cardData = cardItemData[mod]
-                fusionVC.region = region
-                fusionVC.uuid = uuid
-                fusionVC.page = currentPage
-                self.navigationController?.pushViewController(fusionVC, animated: true)
-            } else if (serviceName == "OSA") {
-                guard let neptuneVC = self.storyboard?.instantiateViewController(withIdentifier: "NeptuneViewController") as? NeptuneViewController else { return }
-                 neptuneVC.cardData = cardItemData[mod]
-                 neptuneVC.region = region
-                 neptuneVC.userId = uuid
-                 neptuneVC.page = currentPage
-                 self.navigationController?.pushViewController(neptuneVC, animated: true)
-            } else {
-                guard let serviceVC = self.storyboard?.instantiateViewController(withIdentifier: "ServiceViewController") as? ServiceViewController else { return }
-                serviceVC.cardData = cardItemData[mod]
-                serviceVC.region = region
-                serviceVC.uuid = uuid
-                serviceVC.page = currentPage
-                self.navigationController?.pushViewController(serviceVC, animated: true)
-            }
-        case "US(East)":
-            if (sector_id == 0) {
-                guard let guideVC = self.storyboard?.instantiateViewController(withIdentifier: "GuideViewController") as? GuideViewController else { return }
-                guideVC.page = currentPage
-                self.navigationController?.pushViewController(guideVC, animated: true)
-            } else if (sector_id == 1) {
-                guard let collectVC = self.storyboard?.instantiateViewController(withIdentifier: "CollectViewController") as? CollectViewController else { return }
-                collectVC.cardData = cardItemData[mod]
-                collectVC.userId = uuid
-                collectVC.page = currentPage
-                self.navigationController?.pushViewController(collectVC, animated: true)
-            } else {
-                guard let serviceVC = self.storyboard?.instantiateViewController(withIdentifier: "ServiceViewController") as? ServiceViewController else { return }
-                serviceVC.cardData = cardItemData[mod]
-                serviceVC.region = region
-                serviceVC.uuid = uuid
-                serviceVC.page = currentPage
-                self.navigationController?.pushViewController(serviceVC, animated: true)
-            }
-        default:
-            if (sector_id == 0) {
-                guard let guideVC = self.storyboard?.instantiateViewController(withIdentifier: "GuideViewController") as? GuideViewController else { return }
-                guideVC.page = currentPage
-                self.navigationController?.pushViewController(guideVC, animated: true)
-            } else if (sector_id == 1) {
-                guard let fusionVC = self.storyboard?.instantiateViewController(withIdentifier: "FusionViewController") as? FusionViewController else { return }
-                fusionVC.cardData = cardItemData[mod]
-                fusionVC.region = region
-                fusionVC.uuid = uuid
-                fusionVC.page = currentPage
-                self.navigationController?.pushViewController(fusionVC, animated: true)
-            }
-            else if (sector_id == 10) {
-                guard let collectVC = self.storyboard?.instantiateViewController(withIdentifier: "CollectViewController") as? CollectViewController else { return }
-                collectVC.cardData = cardItemData[mod]
-                collectVC.userId = uuid
-                collectVC.page = currentPage
-                self.navigationController?.pushViewController(collectVC, animated: true)
-            } else if (sector_id == 7) {
-                guard let galleryVC = self.storyboard?.instantiateViewController(withIdentifier: "GalleryViewController") as? GalleryViewController else { return }
-                galleryVC.cardData = cardItemData[mod]
-                galleryVC.uuid = uuid
-                galleryVC.page = currentPage
-                self.navigationController?.pushViewController(galleryVC, animated: true)
-            } else if (sector_id == 8) {
-                guard let spotVC = self.storyboard?.instantiateViewController(withIdentifier: "SpotViewController") as? SpotViewController else { return }
-                spotVC.cardData = cardItemData[mod]
-                spotVC.region = region
-                spotVC.userId = uuid
-                spotVC.page = currentPage
-                self.navigationController?.pushViewController(spotVC, animated: true)
-            } else if (serviceName == "OSA") {
-               guard let neptuneVC = self.storyboard?.instantiateViewController(withIdentifier: "NeptuneViewController") as? NeptuneViewController else { return }
-                neptuneVC.cardData = cardItemData[mod]
-                neptuneVC.region = region
-                neptuneVC.userId = uuid
-                neptuneVC.page = currentPage
-                self.navigationController?.pushViewController(neptuneVC, animated: true)
-            } else if (sector_id == 14) {
-                guard let neptuneVC = self.storyboard?.instantiateViewController(withIdentifier: "NeptuneViewController") as? NeptuneViewController else { return }
-                neptuneVC.cardData = cardItemData[mod]
-                neptuneVC.region = region
-                neptuneVC.userId = uuid
-                neptuneVC.page = currentPage
-                self.navigationController?.pushViewController(neptuneVC, animated: true)
-            } else if (serviceName == "FLT+") {
-                guard let fusionVC = self.storyboard?.instantiateViewController(withIdentifier: "FusionViewController") as? FusionViewController else { return }
-                fusionVC.cardData = cardItemData[mod]
-                fusionVC.region = region
-                fusionVC.uuid = uuid
-                fusionVC.page = currentPage
-                self.navigationController?.pushViewController(fusionVC, animated: true)
-            } else {
-                guard let serviceVC = self.storyboard?.instantiateViewController(withIdentifier: "ServiceViewController") as? ServiceViewController else { return }
-                serviceVC.cardData = cardItemData[mod]
-                serviceVC.region = region
-                serviceVC.uuid = uuid
-                serviceVC.page = currentPage
-                self.navigationController?.pushViewController(serviceVC, animated: true)
+        } else {
+            switch (region) {
+            case "Korea":
+                if (sector_id == 0) {
+                    guard let guideVC = self.storyboard?.instantiateViewController(withIdentifier: "GuideViewController") as? GuideViewController else { return }
+                    guideVC.page = currentPage
+                    self.navigationController?.pushViewController(guideVC, animated: true)
+                } else if (sector_id == 9) {
+    //                guard let fusionVC = self.storyboard?.instantiateViewController(withIdentifier: "FusionViewController") as? FusionViewController else { return }
+    //                fusionVC.cardData = cardItemData[mod]
+    //                fusionVC.region = region
+    //                fusionVC.uuid = uuid
+    //                fusionVC.page = currentPage
+    //                self.navigationController?.pushViewController(fusionVC, animated: true)
+                    guard let serviceVC = self.storyboard?.instantiateViewController(withIdentifier: "ServiceViewController") as? ServiceViewController else { return }
+                    serviceVC.cardData = cardItemData[mod]
+                    serviceVC.region = region
+                    serviceVC.uuid = uuid
+                    serviceVC.page = currentPage
+                    self.navigationController?.pushViewController(serviceVC, animated: true)
+                }
+                else if (sector_id == 10) {
+                    guard let collectVC = self.storyboard?.instantiateViewController(withIdentifier: "CollectViewController") as? CollectViewController else { return }
+                    collectVC.cardData = cardItemData[mod]
+                    collectVC.userId = uuid
+                    collectVC.page = currentPage
+                    self.navigationController?.pushViewController(collectVC, animated: true)
+                } else if (sector_id == 7) {
+                    guard let galleryVC = self.storyboard?.instantiateViewController(withIdentifier: "GalleryViewController") as? GalleryViewController else { return }
+                    galleryVC.cardData = cardItemData[mod]
+                    galleryVC.uuid = uuid
+                    galleryVC.page = currentPage
+                    self.navigationController?.pushViewController(galleryVC, animated: true)
+                } else if (sector_id == 8) {
+                    guard let spotVC = self.storyboard?.instantiateViewController(withIdentifier: "SpotViewController") as? SpotViewController else { return }
+                    spotVC.cardData = cardItemData[mod]
+                    spotVC.region = region
+                    spotVC.userId = uuid
+                    spotVC.page = currentPage
+                    self.navigationController?.pushViewController(spotVC, animated: true)
+                } else if (serviceName == "OSA") {
+                   guard let neptuneVC = self.storyboard?.instantiateViewController(withIdentifier: "NeptuneViewController") as? NeptuneViewController else { return }
+                    neptuneVC.cardData = cardItemData[mod]
+                    neptuneVC.region = region
+                    neptuneVC.userId = uuid
+                    neptuneVC.page = currentPage
+                    self.navigationController?.pushViewController(neptuneVC, animated: true)
+                } else if (sector_id == 14) {
+                    guard let neptuneVC = self.storyboard?.instantiateViewController(withIdentifier: "NeptuneViewController") as? NeptuneViewController else { return }
+                    neptuneVC.cardData = cardItemData[mod]
+                    neptuneVC.region = region
+                    neptuneVC.userId = uuid
+                    neptuneVC.page = currentPage
+                    self.navigationController?.pushViewController(neptuneVC, animated: true)
+                } else if (sector_id == 5) { //serviceName == "FLT+"
+    //                guard let fusionVC = self.storyboard?.instantiateViewController(withIdentifier: "FusionViewController") as? FusionViewController else { return }
+    //                fusionVC.cardData = cardItemData[mod]
+    //                fusionVC.region = region
+    //                fusionVC.uuid = uuid
+    //                fusionVC.page = currentPage
+    //                self.navigationController?.pushViewController(fusionVC, animated: true)
+                    guard let serviceVC = self.storyboard?.instantiateViewController(withIdentifier: "ServiceViewController") as? ServiceViewController else { return }
+                    serviceVC.cardData = cardItemData[mod]
+                    serviceVC.region = region
+                    serviceVC.uuid = uuid
+                    serviceVC.page = currentPage
+                    self.navigationController?.pushViewController(serviceVC, animated: true)
+                } else {
+                    guard let serviceVC = self.storyboard?.instantiateViewController(withIdentifier: "ServiceViewController") as? ServiceViewController else { return }
+                    serviceVC.cardData = cardItemData[mod]
+                    serviceVC.region = region
+                    serviceVC.uuid = uuid
+                    serviceVC.page = currentPage
+                    self.navigationController?.pushViewController(serviceVC, animated: true)
+    //                guard let serviceVC = self.storyboard?.instantiateViewController(withIdentifier: "SampleViewController") as? SampleViewController else { return }
+    //                serviceVC.cardData = cardItemData[mod]
+    //                serviceVC.region = region
+    //                serviceVC.uuid = uuid
+    //                serviceVC.page = currentPage
+    //                self.navigationController?.pushViewController(serviceVC, animated: true)
+                }
+            case "Canada":
+                if (sector_id == 0) {
+                    guard let guideVC = self.storyboard?.instantiateViewController(withIdentifier: "GuideViewController") as? GuideViewController else { return }
+                    guideVC.page = currentPage
+                    self.navigationController?.pushViewController(guideVC, animated: true)
+                } else if (sector_id == 10) {
+                    guard let collectVC = self.storyboard?.instantiateViewController(withIdentifier: "CollectViewController") as? CollectViewController else { return }
+                    collectVC.cardData = cardItemData[mod]
+                    collectVC.userId = uuid
+                    collectVC.page = currentPage
+                    self.navigationController?.pushViewController(collectVC, animated: true)
+                } else if (serviceName == "FLT+") {
+                    guard let fusionVC = self.storyboard?.instantiateViewController(withIdentifier: "FusionViewController") as? FusionViewController else { return }
+                    fusionVC.cardData = cardItemData[mod]
+                    fusionVC.region = region
+                    fusionVC.uuid = uuid
+                    fusionVC.page = currentPage
+                    self.navigationController?.pushViewController(fusionVC, animated: true)
+                } else if (serviceName == "OSA") {
+                    guard let neptuneVC = self.storyboard?.instantiateViewController(withIdentifier: "NeptuneViewController") as? NeptuneViewController else { return }
+                     neptuneVC.cardData = cardItemData[mod]
+                     neptuneVC.region = region
+                     neptuneVC.userId = uuid
+                     neptuneVC.page = currentPage
+                     self.navigationController?.pushViewController(neptuneVC, animated: true)
+                } else {
+                    guard let serviceVC = self.storyboard?.instantiateViewController(withIdentifier: "ServiceViewController") as? ServiceViewController else { return }
+                    serviceVC.cardData = cardItemData[mod]
+                    serviceVC.region = region
+                    serviceVC.uuid = uuid
+                    serviceVC.page = currentPage
+                    self.navigationController?.pushViewController(serviceVC, animated: true)
+                }
+            case "US(East)":
+                if (sector_id == 0) {
+                    guard let guideVC = self.storyboard?.instantiateViewController(withIdentifier: "GuideViewController") as? GuideViewController else { return }
+                    guideVC.page = currentPage
+                    self.navigationController?.pushViewController(guideVC, animated: true)
+                } else if (sector_id == 1) {
+                    guard let collectVC = self.storyboard?.instantiateViewController(withIdentifier: "CollectViewController") as? CollectViewController else { return }
+                    collectVC.cardData = cardItemData[mod]
+                    collectVC.userId = uuid
+                    collectVC.page = currentPage
+                    self.navigationController?.pushViewController(collectVC, animated: true)
+                } else {
+                    guard let serviceVC = self.storyboard?.instantiateViewController(withIdentifier: "ServiceViewController") as? ServiceViewController else { return }
+                    serviceVC.cardData = cardItemData[mod]
+                    serviceVC.region = region
+                    serviceVC.uuid = uuid
+                    serviceVC.page = currentPage
+                    self.navigationController?.pushViewController(serviceVC, animated: true)
+                }
+            default:
+                if (sector_id == 0) {
+                    guard let guideVC = self.storyboard?.instantiateViewController(withIdentifier: "GuideViewController") as? GuideViewController else { return }
+                    guideVC.page = currentPage
+                    self.navigationController?.pushViewController(guideVC, animated: true)
+                } else if (sector_id == 1) {
+                    guard let fusionVC = self.storyboard?.instantiateViewController(withIdentifier: "FusionViewController") as? FusionViewController else { return }
+                    fusionVC.cardData = cardItemData[mod]
+                    fusionVC.region = region
+                    fusionVC.uuid = uuid
+                    fusionVC.page = currentPage
+                    self.navigationController?.pushViewController(fusionVC, animated: true)
+                }
+                else if (sector_id == 10) {
+                    guard let collectVC = self.storyboard?.instantiateViewController(withIdentifier: "CollectViewController") as? CollectViewController else { return }
+                    collectVC.cardData = cardItemData[mod]
+                    collectVC.userId = uuid
+                    collectVC.page = currentPage
+                    self.navigationController?.pushViewController(collectVC, animated: true)
+                } else if (sector_id == 7) {
+                    guard let galleryVC = self.storyboard?.instantiateViewController(withIdentifier: "GalleryViewController") as? GalleryViewController else { return }
+                    galleryVC.cardData = cardItemData[mod]
+                    galleryVC.uuid = uuid
+                    galleryVC.page = currentPage
+                    self.navigationController?.pushViewController(galleryVC, animated: true)
+                } else if (sector_id == 8) {
+                    guard let spotVC = self.storyboard?.instantiateViewController(withIdentifier: "SpotViewController") as? SpotViewController else { return }
+                    spotVC.cardData = cardItemData[mod]
+                    spotVC.region = region
+                    spotVC.userId = uuid
+                    spotVC.page = currentPage
+                    self.navigationController?.pushViewController(spotVC, animated: true)
+                } else if (serviceName == "OSA") {
+                   guard let neptuneVC = self.storyboard?.instantiateViewController(withIdentifier: "NeptuneViewController") as? NeptuneViewController else { return }
+                    neptuneVC.cardData = cardItemData[mod]
+                    neptuneVC.region = region
+                    neptuneVC.userId = uuid
+                    neptuneVC.page = currentPage
+                    self.navigationController?.pushViewController(neptuneVC, animated: true)
+                } else if (sector_id == 14) {
+                    guard let neptuneVC = self.storyboard?.instantiateViewController(withIdentifier: "NeptuneViewController") as? NeptuneViewController else { return }
+                    neptuneVC.cardData = cardItemData[mod]
+                    neptuneVC.region = region
+                    neptuneVC.userId = uuid
+                    neptuneVC.page = currentPage
+                    self.navigationController?.pushViewController(neptuneVC, animated: true)
+                } else if (serviceName == "FLT+") {
+                    guard let fusionVC = self.storyboard?.instantiateViewController(withIdentifier: "FusionViewController") as? FusionViewController else { return }
+                    fusionVC.cardData = cardItemData[mod]
+                    fusionVC.region = region
+                    fusionVC.uuid = uuid
+                    fusionVC.page = currentPage
+                    self.navigationController?.pushViewController(fusionVC, animated: true)
+                } else {
+                    guard let serviceVC = self.storyboard?.instantiateViewController(withIdentifier: "ServiceViewController") as? ServiceViewController else { return }
+                    serviceVC.cardData = cardItemData[mod]
+                    serviceVC.region = region
+                    serviceVC.uuid = uuid
+                    serviceVC.page = currentPage
+                    self.navigationController?.pushViewController(serviceVC, animated: true)
+                }
             }
         }
     }

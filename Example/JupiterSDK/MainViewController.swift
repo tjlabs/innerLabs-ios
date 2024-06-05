@@ -13,7 +13,6 @@ struct AppFontName {
 }
 
 class MainViewController: UIViewController, UITextFieldDelegate {
-    
     @IBOutlet weak var codeTextField: UITextField!
     @IBOutlet weak var guideLabel: UILabel!
     @IBOutlet weak var saveUuidButton: UIButton!
@@ -29,7 +28,7 @@ class MainViewController: UIViewController, UITextFieldDelegate {
     let defaults = UserDefaults.standard
     
     let networkManager = Network()
-    
+
     @IBOutlet weak var dropView: UIView!
     @IBOutlet weak var dropImage: UIImageView!
     @IBOutlet weak var dropText: UITextField!
@@ -71,6 +70,7 @@ class MainViewController: UIViewController, UITextFieldDelegate {
         
         self.dropText.text = self.currentRegion
         setRegion(regionName: self.currentRegion)
+        setServerURL(region: self.currentRegion)
         setDefaultMessage(region: self.currentRegion)
     }
     
@@ -92,7 +92,11 @@ class MainViewController: UIViewController, UITextFieldDelegate {
             defaults.synchronize()
             
             let login = Login(user_id: uuid, device_model: deviceModel, os_version: osVersion, sdk_version: sdkVersion)
-            postLogin(url: LOGIN_URL, input: login)
+            var loginUrl = LOGIN_URL
+            if (IS_OLYMPUS) {
+                loginUrl = USER_LOGIN_URL
+            }
+            postLogin(url: loginUrl, input: login)
         }
     }
     
@@ -151,7 +155,7 @@ class MainViewController: UIViewController, UITextFieldDelegate {
                     print("")
                     
                     let returnedString = String(decoding: response.data!, as: UTF8.self)
-                    let list = jsonToCardList(json: returnedString)
+                    let list = jsonToCardList(json: returnedString, isOlympus: IS_OLYMPUS)
                     let myCard = list.sectors
                     var reorderedCard = [CardInfo]()
                     
@@ -250,13 +254,35 @@ class MainViewController: UIViewController, UITextFieldDelegate {
         guideLabel.isHidden = true
     }
     
-    func jsonToCardList(json: String) -> CardList {
+//    func jsonToCardList(json: String) -> CardList {
+//        let result = CardList(sectors: [])
+//        let decoder = JSONDecoder()
+//        let jsonString = json
+//        if let data = jsonString.data(using: .utf8), let decoded = try? decoder.decode(CardList.self, from: data) {
+//            return decoded
+//        }
+//        return result
+//    }
+    
+    func jsonToCardList(json: String, isOlympus: Bool) -> CardList {
         let result = CardList(sectors: [])
         let decoder = JSONDecoder()
-        let jsonString = json
-        if let data = jsonString.data(using: .utf8), let decoded = try? decoder.decode(CardList.self, from: data) {
-            return decoded
+        
+        if isOlympus {
+            if let data = json.data(using: .utf8), let decoded = try? decoder.decode(CardList.self, from: data) {
+                return decoded
+            }
+        } else {
+            struct CardListNoCustomKeys: Codable {
+                var sectors: [CardInfoNoCustomKeys]
+            }
+            
+            if let data = json.data(using: .utf8), let decoded = try? decoder.decode(CardListNoCustomKeys.self, from: data) {
+                let sectors = decoded.sectors.map { CardInfo(sector_id: $0.sector_id, sector_name: $0.sector_name, description: $0.description, card_color: $0.card_color, dead_reckoning: $0.dead_reckoning, service_request: $0.service_request, building_level: $0.building_level) }
+                return CardList(sectors: sectors)
+            }
         }
+        
         return result
     }
     
@@ -302,6 +328,7 @@ class MainViewController: UIViewController, UITextFieldDelegate {
             self!.dropText.text = item
             self!.currentRegion = item
             setRegion(regionName: self!.currentRegion)
+            setServerURL(region: self!.currentRegion)
             self!.setDefaultMessage(region: self!.currentRegion)
             self!.dropImage.image = UIImage.init(named: "showInfoToggle")
         }

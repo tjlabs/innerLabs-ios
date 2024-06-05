@@ -64,6 +64,7 @@
 		B3967481299CC5EF00C6DC4D /* PopUpWithButtonViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3967480299CC5EF00C6DC4D /* PopUpWithButtonViewController.swift */; };
 		B3985D4A299A1F1E008E7F78 /* FileCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3985D48299A1F1E008E7F78 /* FileCollectionViewCell.swift */; };
 		B3985D4B299A1F1E008E7F78 /* FileCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B3985D49299A1F1E008E7F78 /* FileCollectionViewCell.xib */; };
+		B39C2D602C1041D700A34D0C /* OlympusProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = B39C2D5F2C1041D700A34D0C /* OlympusProtocol.swift */; };
 		B3A641AD2B621BF400845B32 /* L3_5F.csv in Resources */ = {isa = PBXBuildFile; fileRef = B3A641AC2B621BF400845B32 /* L3_5F.csv */; };
 		B3AA004928313C97007CD284 /* UILabelExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3AA004828313C97007CD284 /* UILabelExtension.swift */; };
 		B3AA004B28313CDF007CD284 /* UITextFieldExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3AA004A28313CDF007CD284 /* UITextFieldExtension.swift */; };
@@ -199,6 +200,7 @@
 		B3967480299CC5EF00C6DC4D /* PopUpWithButtonViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopUpWithButtonViewController.swift; sourceTree = "<group>"; };
 		B3985D48299A1F1E008E7F78 /* FileCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileCollectionViewCell.swift; sourceTree = "<group>"; };
 		B3985D49299A1F1E008E7F78 /* FileCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = FileCollectionViewCell.xib; sourceTree = "<group>"; };
+		B39C2D5F2C1041D700A34D0C /* OlympusProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OlympusProtocol.swift; sourceTree = "<group>"; };
 		B3A641AC2B621BF400845B32 /* L3_5F.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = L3_5F.csv; sourceTree = "<group>"; };
 		B3AA004828313C97007CD284 /* UILabelExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UILabelExtension.swift; sourceTree = "<group>"; };
 		B3AA004A28313CDF007CD284 /* UITextFieldExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITextFieldExtension.swift; sourceTree = "<group>"; };
@@ -454,6 +456,7 @@
 			children = (
 				B3F5C77D282A5408009BEDB9 /* Network.swift */,
 				B3F5C77F282A5519009BEDB9 /* Protocol.swift */,
+				B39C2D5F2C1041D700A34D0C /* OlympusProtocol.swift */,
 			);
 			name = Network;
 			sourceTree = "<group>";
@@ -895,6 +898,7 @@
 				B3455283282AB7B400F0DD3E /* ServiceInfoTableViewCell.swift in Sources */,
 				B368814D2A6FA584005CD436 /* UsefulFunctions.swift in Sources */,
 				B3FD74E9286989A600CD4D74 /* CustomSwitchButton.swift in Sources */,
+				B39C2D602C1041D700A34D0C /* OlympusProtocol.swift in Sources */,
 				B3C09C64280E941B00E6F55F /* ShowCardViewController.swift in Sources */,
 				B3BD69AC27E9A57E00A32A7A /* UICollectionViewRegisterable.swift in Sources */,
 				B3985D4A299A1F1E008E7F78 /* FileCollectionViewCell.swift in Sources */,
