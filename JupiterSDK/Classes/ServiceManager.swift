@@ -3,7 +3,7 @@ import CoreMotion
 import UIKit
 
 public class ServiceManager: Observation {
-    public static let sdkVersion: String = "3.4.3.2"
+    public static let sdkVersion: String = "3.4.4"
     var isSimulationMode: Bool = false
     var simulationBleData = [[String: Double]]()
     var simulationSensorData = [SensorData]()
