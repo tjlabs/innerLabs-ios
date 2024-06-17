@@ -14,6 +14,8 @@ public struct SensorData {
     public var gameVector: [Float] = [0,0,0,0]
     public var rotVector: [Float] = [0,0,0,0,0]
     public var pressure: [Double] = [0]
+    public var trueHeading: Double = 0
+    public var magneticHeading: Double = 0
     
     public func toString() -> String {
         return "acc=\(self.acc), gyro=\(self.gyro), mag=\(self.mag), grav=\(self.grav)"
@@ -34,6 +36,8 @@ public struct CollectData {
     public var gameVector: [Float] = [0,0,0,0]
     public var rotVector: [Float] = [0,0,0,0,0]
     public var pressure: [Double] = [0]
+    public var trueHeading: Double = 0
+    public var magneticHeading: Double = 0
     
     public var index: Int = 0
     public var length: Double = 0

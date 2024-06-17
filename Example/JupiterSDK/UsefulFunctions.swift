@@ -10,3 +10,14 @@ public func removeValuesWith_D(in dictionary: [String: [String]]) -> [String: [S
     
     return updatedDictionary
 }
+
+public func getLocalTimeString() -> String {
+    let dateFormatter = DateFormatter()
+    dateFormatter.dateFormat = "yyyy-MM-dd-HH-mm-ss"
+    dateFormatter.locale = Locale(identifier:"ko_KR")
+    let nowDate = Date()
+    let convertNowStr = dateFormatter.string(from: nowDate)
+    
+    return convertNowStr
+}
+

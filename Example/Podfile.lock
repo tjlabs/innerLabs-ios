@@ -75,9 +75,6 @@ PODS:
     - nanopb (< 2.30910.0, >= 2.30908.0)
     - PromisesSwift (~> 2.1)
   - Floaty (4.2.0)
-  - Flutter (1.0.0)
-  - FlutterPluginRegistrant (0.0.1):
-    - Flutter
   - GoogleAppMeasurement (10.16.0):
     - GoogleAppMeasurement/AdIdSupport (= 10.16.0)
     - GoogleUtilities/AppDelegateSwizzler (~> 7.11)
@@ -128,14 +125,14 @@ PODS:
     - GoogleUtilities/Logger
   - GoogleUtilities/UserDefaults (7.11.5):
     - GoogleUtilities/Logger
-  - JupiterSDK (3.4.3)
+  - JupiterSDK (3.4.4)
   - Kingfisher (7.9.1)
   - nanopb (2.30909.0):
     - nanopb/decode (= 2.30909.0)
     - nanopb/encode (= 2.30909.0)
   - nanopb/decode (2.30909.0)
   - nanopb/encode (2.30909.0)
-  - OlympusSDK (0.0.4)
+  - OlympusSDK (0.0.10)
   - PromisesObjC (2.3.1)
   - PromisesSwift (2.3.1):
     - PromisesObjC (= 2.3.1)
@@ -154,13 +151,11 @@ DEPENDENCIES:
   - Firebase/Crashlytics
   - FirebaseRemoteConfig
   - Floaty (~> 4.2.0)
-  - Flutter (from `map_ui_module/.ios/Flutter`)
-  - FlutterPluginRegistrant (from `map_ui_module/.ios/Flutter/FlutterPluginRegistrant`)
   - GoogleMaps (= 4.0.0)
   - GooglePlaces (= 4.0.0)
   - JupiterSDK (from `../`)
   - Kingfisher
-  - OlympusSDK
+  - OlympusSDK (= 0.0.10)
   - SnapKit
   - SwiftCSVExport (= 2.6.0)
   - TextFieldEffects
@@ -200,10 +195,6 @@ SPEC REPOS:
     - TextFieldEffects
 
 EXTERNAL SOURCES:
-  Flutter:
-    :path: map_ui_module/.ios/Flutter
-  FlutterPluginRegistrant:
-    :path: map_ui_module/.ios/Flutter/FlutterPluginRegistrant
   JupiterSDK:
     :path: "../"
 
@@ -225,17 +216,15 @@ SPEC CHECKSUMS:
   FirebaseRemoteConfig: 17ec974c6cac5cdc6cf8297062c2219851857f06
   FirebaseSessions: 96e7781e545929cde06dd91088ddbb0841391b43
   Floaty: e2bd5a0f6f7f70899e26ff2da31081c8bee8d1b0
-  Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
-  FlutterPluginRegistrant: 58acfb6cb31ee4ca14f920aba101815efda113ee
   GoogleAppMeasurement: 079d7632810e9d9704a99932547ba1554acc4342
   GoogleDataTransport: 54dee9d48d14580407f8f5fbf2f496e92437a2f2
   GoogleMaps: b7f7fc569a9b354a3af0d9729dbec40957b7d41e
   GooglePlaces: ca8d4aba09ba79e0a829cf1dca03a41de6a09016
   GoogleUtilities: 13e2c67ede716b8741c7989e26893d151b2b2084
-  JupiterSDK: 50280b91632966c584ecaab7b419eba507f10ef2
+  JupiterSDK: f86a70e56cf94616d7e8cd4b801fa65688a97f11
   Kingfisher: 1d14e9f59cbe19389f591c929000332bf70efd32
   nanopb: b552cce312b6c8484180ef47159bc0f65a1f0431
-  OlympusSDK: 2d720d7d26753709409f23c3b1b751df4cefab63
+  OlympusSDK: 333744848395c3d593f52ca625b4e6b8794ca6b1
   PromisesObjC: c50d2056b5253dadbd6c2bea79b0674bd5a52fa4
   PromisesSwift: 28dca69a9c40779916ac2d6985a0192a5cb4a265
   SnapKit: e01d52ebb8ddbc333eefe2132acf85c8227d9c25
@@ -243,6 +232,6 @@ SPEC CHECKSUMS:
   SwiftCSVExport: d9db3fb80484115028792f8d539445e3fb2c0ecb
   TextFieldEffects: 529b8aff706fb40f82c41c780c0777941a893796
 
-PODFILE CHECKSUM: 73db1515ac2d0037a591adf7888e6920175c5f61
+PODFILE CHECKSUM: 60f1343737518c0f5907e46aaaa238511a7a85eb
 
 COCOAPODS: 1.14.3

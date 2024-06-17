@@ -1,23 +1,19 @@
 import Foundation
 
+
 extension String {
     var hex: Int? {
         return Int(self, radix: 16)
     }
-}
-
-extension String {
-  var localized: String {
-    return NSLocalizedString(self, tableName: "Localizable", value: "**\(self)**", comment: "")
-  }
-  
-  func localized(bundle: Bundle = .main, tableName: String = "Localizable") -> String {
-    return NSLocalizedString(self, tableName: tableName, value: "**\(self)**", comment: "")
-  }
-  
-}
-
-extension String {
+    
+    var localized: String {
+      return NSLocalizedString(self, tableName: "Localizable", value: "**\(self)**", comment: "")
+    }
+    
+    func localized(bundle: Bundle = .main, tableName: String = "Localizable") -> String {
+      return NSLocalizedString(self, tableName: tableName, value: "**\(self)**", comment: "")
+    }
+    
     func substring(from: Int, to: Int) -> String {
         guard from < count, to >= 0, to - from >= 0 else {
             return ""
@@ -30,9 +26,7 @@ extension String {
         // 파싱
         return String(self[startIndex ..< endIndex])
     }
-}
-
-extension String {
+    
     var isValidURL: Bool {
         let detector = try! NSDataDetector(types: NSTextCheckingResult.CheckingType.link.rawValue)
         if let match = detector.firstMatch(in: self, options: [], range: NSRange(location: 0, length: self.utf16.count)) {

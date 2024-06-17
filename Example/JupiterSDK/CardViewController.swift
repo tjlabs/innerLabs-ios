@@ -400,7 +400,6 @@ extension CardViewController: UICollectionViewDataSource, UICollectionViewDelega
                 cell.sectorImageView.image = nil
             } else {
                 let urlSector = URL(string: "\(USER_IMAGE_URL)/card/\(sectorID)/main.png")
-                print(urlSector)
                 cell.sectorImageView.kf.setImage(with: urlSector!, placeholder: nil, options: [.transition(.fade(1.2))], completionHandler: nil)
             }
         } else {
@@ -463,7 +462,7 @@ extension CardViewController: UICollectionViewDataSource, UICollectionViewDelega
                     fusionVC.page = currentPage
                     self.navigationController?.pushViewController(fusionVC, animated: true)
                 } else {
-                    guard let serviceVC = self.storyboard?.instantiateViewController(withIdentifier: "ServiceViewController") as? ServiceViewController else { return }
+                    guard let serviceVC = self.storyboard?.instantiateViewController(withIdentifier: "OlympusServiceViewController") as? OlympusServiceViewController else { return }
                     serviceVC.cardData = cardItemData[mod]
                     serviceVC.region = region
                     serviceVC.uuid = uuid
@@ -489,7 +488,7 @@ extension CardViewController: UICollectionViewDataSource, UICollectionViewDelega
                     fusionVC.page = currentPage
                     self.navigationController?.pushViewController(fusionVC, animated: true)
                 } else {
-                    guard let serviceVC = self.storyboard?.instantiateViewController(withIdentifier: "ServiceViewController") as? ServiceViewController else { return }
+                    guard let serviceVC = self.storyboard?.instantiateViewController(withIdentifier: "OlympusServiceViewController") as? OlympusServiceViewController else { return }
                     serviceVC.cardData = cardItemData[mod]
                     serviceVC.region = region
                     serviceVC.uuid = uuid
@@ -515,7 +514,7 @@ extension CardViewController: UICollectionViewDataSource, UICollectionViewDelega
                     fusionVC.page = currentPage
                     self.navigationController?.pushViewController(fusionVC, animated: true)
                 } else {
-                    guard let serviceVC = self.storyboard?.instantiateViewController(withIdentifier: "ServiceViewController") as? ServiceViewController else { return }
+                    guard let serviceVC = self.storyboard?.instantiateViewController(withIdentifier: "OlympusServiceViewController") as? OlympusServiceViewController else { return }
                     serviceVC.cardData = cardItemData[mod]
                     serviceVC.region = region
                     serviceVC.uuid = uuid

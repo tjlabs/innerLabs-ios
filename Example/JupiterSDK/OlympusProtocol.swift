@@ -1,13 +1,15 @@
 import Foundation
 
-var IS_OLYMPUS: Bool = false
+var IS_OLYMPUS: Bool = true
 
-let USER_SERVER_VERSION = "2024-03-19"
+let USER_SERVER_VERSION = "2024-06-12"
 let BLACK_LIST_URL = "https://ap-northeast-2.client.olympus.tjlabs.dev/black"
 
 let HTTP_PREFIX = "https://"
 var REGION_PREFIX = "ap-northeast-2."
 let OLYMPUS_SUFFIX = ".olympus.tjlabs.dev"
+let OPERATING_SYSTEM = "iOS"
+
 var REGION_NAME = "Korea"
 
 var OLYMPUS_USER_URL = ""

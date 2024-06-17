@@ -17,6 +17,7 @@ class MainViewController: UIViewController, UITextFieldDelegate {
     @IBOutlet weak var guideLabel: UILabel!
     @IBOutlet weak var saveUuidButton: UIButton!
     @IBOutlet weak var sdkVersionLabel: UILabel!
+    @IBOutlet weak var loginButton: UIButton!
     
     var isSaveUuid: Bool = false
     var uuid: String = ""
@@ -96,6 +97,8 @@ class MainViewController: UIViewController, UITextFieldDelegate {
             if (IS_OLYMPUS) {
                 loginUrl = USER_LOGIN_URL
             }
+            
+            self.loginButton.isEnabled = false
             postLogin(url: loginUrl, input: login)
         }
     }
@@ -205,22 +208,30 @@ class MainViewController: UIViewController, UITextFieldDelegate {
                                 }
                             }
                             
-                            if (id != 10) { 
-                                // KingFisher Image Download
-                                let urlSector = URL(string: "https://storage.googleapis.com/" + IMAGE_URL + "/card/\(id)/main_image.png")
-                                let urlSectorShow = URL(string: "https://storage.googleapis.com/" + IMAGE_URL + "/card/\(id)/edit_image.png")
-                                
-//                                let resourceSector = ImageResource(downloadURL: urlSector!, cacheKey: "\(id)Main")
-//                                let resourceSectorShow = ImageResource(downloadURL: urlSectorShow!, cacheKey: "\(id)Show")
-                                
-                                KingfisherManager.shared.retrieveImage(with: urlSector!, completionHandler: nil)
-                                KingfisherManager.shared.retrieveImage(with: urlSectorShow!, completionHandler: nil)
+                            if (IS_OLYMPUS) {
+                                if (id != 1) {
+                                    let urlSector = URL(string: "\(USER_IMAGE_URL)/card/\(id)/main.png")
+                                    let urlSectorShow = URL(string: "\(USER_IMAGE_URL)/card/\(id)/edit.png")
+                                    
+                                    KingfisherManager.shared.retrieveImage(with: urlSector!, completionHandler: nil)
+                                    KingfisherManager.shared.retrieveImage(with: urlSectorShow!, completionHandler: nil)
+                                }
+                            } else {
+                                if (id != 10) {
+                                    // KingFisher Image Download
+                                    let urlSector = URL(string: "https://storage.googleapis.com/" + IMAGE_URL + "/card/\(id)/main_image.png")
+                                    let urlSectorShow = URL(string: "https://storage.googleapis.com/" + IMAGE_URL + "/card/\(id)/edit_image.png")
+                                    
+                                    KingfisherManager.shared.retrieveImage(with: urlSector!, completionHandler: nil)
+                                    KingfisherManager.shared.retrieveImage(with: urlSectorShow!, completionHandler: nil)
+                                }
                             }
                             
                             cardDatas.append(CardItemData(sector_id: id, sector_name: name, description: description, cardColor: cardColor, mode: mode, service: service, infoBuilding: infoBuilding, infoLevel: infoLevel))
                         }
                     }
                     
+                    self.loginButton.isEnabled = true
                     goToCardVC(cardDatas: cardDatas, region: self.currentRegion)
                 }
                 catch (let err){
@@ -230,6 +241,7 @@ class MainViewController: UIViewController, UITextFieldDelegate {
                     print("catch :: ", err.localizedDescription)
                     print("====================================")
                     print("")
+                    self.loginButton.isEnabled = true
                 }
                 break
             case .failure(let err):
@@ -239,6 +251,7 @@ class MainViewController: UIViewController, UITextFieldDelegate {
                 print("failure :: ", err.localizedDescription)
                 print("====================================")
                 print("")
+                self.loginButton.isEnabled = true
                 break
             }
         }
@@ -253,16 +266,6 @@ class MainViewController: UIViewController, UITextFieldDelegate {
         self.navigationController?.pushViewController(cardVC, animated: true)
         guideLabel.isHidden = true
     }
-    
-//    func jsonToCardList(json: String) -> CardList {
-//        let result = CardList(sectors: [])
-//        let decoder = JSONDecoder()
-//        let jsonString = json
-//        if let data = jsonString.data(using: .utf8), let decoded = try? decoder.decode(CardList.self, from: data) {
-//            return decoded
-//        }
-//        return result
-//    }
     
     func jsonToCardList(json: String, isOlympus: Bool) -> CardList {
         let result = CardList(sectors: [])

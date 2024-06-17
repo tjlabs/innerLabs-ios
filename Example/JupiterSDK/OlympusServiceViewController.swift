@@ -1,27 +1,16 @@
 import UIKit
-import JupiterSDK
+import OlympusSDK
 import Alamofire
 import Kingfisher
 import ExpyTableView
 import Charts
 import DropDown
-import SwiftUI
 
-enum TableList{
-    case sector
-}
 
-protocol ServiceViewPageDelegate {
-    func sendPage(data: Int)
-}
-
-class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyTableViewDelegate, ExpyTableViewDataSource, Observer {
+class OlympusServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyTableViewDelegate, ExpyTableViewDataSource, Observer {
     
     func robotTableViewCell(_ cell: RobotTableViewCell, didTapButtonWithValue value: String) {
         print("ID to monitor : \(value)")
-        
-        self.idToMonitor = value
-        self.isMonitor = true
     }
     
     func report(flag: Int) {
@@ -62,7 +51,7 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
     
     func update(result: FineLocationTrackingResult) {
         DispatchQueue.main.async {
-            let localTime: String = self.getLocalTimeString()
+            let localTime: String = getLocalTimeString()
             let dt = result.mobile_time - self.observerTime
             let log: String = localTime + " , (ServiceVC) : isIndoor = \(result.isIndoor) // dt = \(dt) // mode = \(result.mode) // x = \(result.x) // y = \(result.y) // index = \(result.index) // phase = \(result.phase)"
             
@@ -71,42 +60,7 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
             let level = result.level_name
             var x = result.x
             var y = result.y
-            
-//            let WINDOW_SIZE = 10
-//            var isResultTurning = false
-//            self.resultPosBuffer.append([x, y, result.absolute_heading])
-//            if (self.resultPosBuffer.count > 10) {
-//                self.resultPosBuffer.remove(at: 0)
-//            }
-//            let resultPhase: Int = result.phase
-//            if resultPhase == 4 {
-//                let preX = self.resultPosBuffer[self.resultPosBuffer.count-2][0]
-//                let preY = self.resultPosBuffer[self.resultPosBuffer.count-2][1]
-//                let preH = self.resultPosBuffer[0][2]
-//                
-//                let diffPos = sqrt((x - preX)*(x - preX) + (y - preY)*(y - preY))
-//                var diffHeading = result.absolute_heading - preH
-//                if 270 <= diffHeading &&  diffHeading < 360 {
-//                    diffHeading = 360 - diffHeading
-//                }
-//                if diffPos >= 5 && diffHeading >= 50 {
-//                    isResultTurning = true
-//                }
-//            }
-//            
-//            if resultPhase == 4 && !isResultTurning {
-//                self.averagePosBuffer.append([x, y])
-//                if (self.averagePosBuffer.count > WINDOW_SIZE) {
-//                    self.averagePosBuffer.remove(at: 0)
-//                }
-//                let avgResult = self.movingAverage(data: self.averagePosBuffer)
-//                x = avgResult[0]
-//                y = avgResult[1]
-//            } else {
-//                self.averagePosBuffer = [[Double]]()
-//            }
-            
-            
+
             if (result.ble_only_position) {
                 self.isBleOnlyMode = true
             } else {
@@ -135,15 +89,15 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
     @IBOutlet weak var displayViewHeight: NSLayoutConstraint!
     
     @IBOutlet weak var imageLevel: UIImageView!
+    
     @IBOutlet weak var scatterChart: ScatterChartView!
     @IBOutlet weak var noImageLabel: UILabel!
-    
     
     @IBOutlet weak var containerTableView: ExpyTableView!
     @IBOutlet weak var containerViewHeight: NSLayoutConstraint!
     
     private let tableList: [TableList] = [.sector]
-    
+ 
     @IBOutlet weak var sectorNameLabel: UILabel!
     @IBOutlet weak var cardTopImage: UIImageView!
     @IBOutlet weak var infoLabel: UILabel!
@@ -153,7 +107,7 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
     var showInfoText: String = ""
     var closeInfoText: String = ""
     
-    var serviceManager = ServiceManager()
+    var serviceManager = OlympusServiceManager()
     var serviceName = "FLT"
     var region: String = ""
     var uuid: String = ""
@@ -165,7 +119,6 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
     let TIMER_INTERVAL: TimeInterval = 1/10 // second
     var pathPixelTimer: DispatchSourceTimer?
     let PP_CHECK_INTERVAL: TimeInterval = 2
-    var isReportPpExist: Bool = false
     
     private var foregroundObserver: Any!
     private var backgroundObserver: Any!
@@ -179,8 +132,6 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
     var cardData: CardItemData?
     var page: Int = 0
     
-    var RP = [String: [[Double]]]()
-    var Road = [[Double]]()
     var chartLimits = [String: [Double]]()
     var chartLoad = [String: Bool]()
     
@@ -204,24 +155,27 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
     var isOpen: Bool = false
     
     var coordToDisplay = CoordToDisplay()
-    var monitorToDisplay = CoordToDisplay()
     var resultToDisplay = ResultToDisplay()
     
-    var isShowRP = false
+    var isShowPathPixel = false
     var countTap: Int = 0
     
     var headingImage = UIImage(named: "heading")
     var observerTime = 0
     
-    var idToMonitor: String = ""
-    var isMonitor: Bool = false
     var isBleOnlyMode: Bool = false
     var isPathMatchingSuccess: Bool = true
     
-    var resultPosBuffer = [[Double]]()
-    var averagePosBuffer = [[Double]]()
-    
     var trajectoryOg: [[Double]] = [[0, 0]]
+    
+    var PpLoaded = [String: Bool]()
+    var PpType = [String: [Int]]()
+    var PpNode = [String: [Int]]()
+    var PpCoord = [String: [[Double]]]()
+    var PpMinMax = [Double]()
+    var PpMagScale = [String: [Double]]()
+    var PpHeading = [String: [String]]()
+    
     // Level Collection View
     @IBOutlet weak var levelCollectionView: UICollectionView!
     
@@ -234,6 +188,7 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
     let dropDown = DropDown()
     
     // Switch
+    
     @IBOutlet weak var switchButton: CustomSwitchButton!
     @IBOutlet weak var switchButtonOffset: NSLayoutConstraint!
     var modeAuto: Bool = false
@@ -314,6 +269,7 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
         goToBack()
     }
     
+    
     func goToBack() {
         self.forceStop()
         self.coordToDisplay = CoordToDisplay()
@@ -322,7 +278,7 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
         self.currentLevel = ""
         self.pastBuilding = ""
         self.pastLevel = ""
-        self.displayLevelImage(building: currentBuilding, level: currentLevel, flag: isShowRP)
+        self.displayLevelImage(building: currentBuilding, level: currentLevel, flag: isShowPathPixel)
         self.notificationCenterRemoveObserver()
         self.stopTimer()
         
@@ -339,7 +295,7 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
     }
     
     @objc func forceStop() {
-        serviceManager.forceStopService()
+        serviceManager.stopService()
         serviceManager.removeObserver(self)
         self.notificationCenterRemoveObserver()
     }
@@ -380,7 +336,7 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
         
         self.sectorNameLabel.isUserInteractionEnabled = true
         let tapRecognizer = UITapGestureRecognizer()
-        tapRecognizer.addTarget(self, action: #selector(self.showRP))
+        tapRecognizer.addTarget(self, action: #selector(self.showPathPixel))
         self.sectorNameLabel.addGestureRecognizer(tapRecognizer)
         
         self.buildings = cardData.infoBuilding
@@ -402,45 +358,96 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
             
             for level in 0..<numLevels {
                 let levelName: String = levels[level]
-                
-                // Download RP
-                let key: String = "\(buildingName)_\(levelName)"
-                let rpXY = loadRP(fileName: key)
-                if (!rpXY.isEmpty) {
-                    RP[key] = rpXY
-                }
-                
-                // Scale
+                loadPathPixelFile(building: buildingName, level: levelName)
                 self.loadScale(sector_id: self.sector_id, building: buildingName, level: levelName)
             }
         }
     }
     
-    func getLocalTimeString() -> String {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd-HH-mm-ss"
-        dateFormatter.locale = Locale(identifier:"ko_KR")
-        let nowDate = Date()
-        let convertNowStr = dateFormatter.string(from: nowDate)
+    private func loadPathPixelFile(building: String, level: String) -> URL? {
+        let key = "\(building)_\(level)"
         
-        return convertNowStr
-    }
-    
-    func movingAverage(data: [[Double]]) -> [Double] {
-        var result: [Double] = data[0]
-        
-        var sumX: Double = 0
-        var sumY: Double = 0
-        for i in 0..<data.count {
-            sumX += data[i][0]
-            sumY += data[i][1]
+        guard let documentDirectoryUrl = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
+            print(getLocalTimeString() + " , (ServiceVC) FileManager : Unable to access document directory.")
+            PpLoaded[key] = false
+            return nil
         }
         
-        let avgX = sumX/Double(data.count)
-        let avgY = sumY/Double(data.count)
-        result = [avgX, avgY]
+        let fileName: String = "\(building)_\(level).csv"
+        let ppFileUrl = documentDirectoryUrl.appendingPathComponent(fileName)
+        do {
+            let contents = try String(contentsOf: ppFileUrl)
+            ( PpType[key], PpNode[key], PpCoord[key], PpMagScale[key], PpHeading[key] ) = parsePathPixel(data: contents)
+            PpLoaded[key] = true
+        } catch {
+            print("Error reading file:", error.localizedDescription)
+            PpLoaded[key] = false
+            return nil
+        }
         
-        return result
+        return ppFileUrl
+    }
+    
+    private func parsePathPixel(data: String)  -> ([Int], [Int], [[Double]], [Double], [String]) {
+        var roadType = [Int]()
+        var roadNode = [Int]()
+        var road = [[Double]]()
+        var roadScale = [Double]()
+        var roadHeading = [String]()
+        
+        var roadX = [Double]()
+        var roadY = [Double]()
+        
+        let roadString = data.components(separatedBy: .newlines)
+        for i in 0..<roadString.count {
+            if (roadString[i] != "") {
+                let lineString: String = roadString[i]
+                let lineData = roadString[i].components(separatedBy: ",")
+                
+                guard let type = Int(lineData[0].trimmingCharacters(in: .whitespaces)),
+                      let node = Int(lineData[1].trimmingCharacters(in: .whitespaces)),
+                      let x = Double(lineData[2].trimmingCharacters(in: .whitespaces)),
+                      let y = Double(lineData[3].trimmingCharacters(in: .whitespaces)),
+                      let scale = Double(lineData[4].trimmingCharacters(in: .whitespaces)) else {
+                    continue
+                }
+                
+                roadType.append(type)
+                roadNode.append(node)
+                roadX.append(x)
+                roadY.append(y)
+                roadScale.append(scale)
+                
+                let headingString = extractContentBetweenBrackets(from: lineString).replacingOccurrences(of: " ", with: "")
+                roadHeading.append(headingString)
+            }
+        }
+        road = [roadX, roadY]
+        self.PpMinMax = [roadX.min() ?? 0, roadY.min() ?? 0, roadX.max() ?? 0, roadY.max() ?? 0]
+        
+        return (roadType, roadNode, road, roadScale, roadHeading)
+    }
+    
+    private func extractContentBetweenBrackets(from string: String) -> String {
+        let pattern = "\\[([^\\]]+)\\]"
+        var extractedContent = ""
+        
+        do {
+            let regex = try NSRegularExpression(pattern: pattern, options: [])
+            let nsString = string as NSString
+            let matches = regex.matches(in: string, options: [], range: NSRange(location: 0, length: string.utf16.count))
+            
+            for match in matches {
+                let nsRange = match.range(at: 1)
+                let matchString = nsString.substring(with: nsRange)
+                extractedContent.append(matchString)
+                extractedContent.append(" ")
+            }
+        } catch {
+            print("Invalid regular expression pattern")
+        }
+        
+        return extractedContent.trimmingCharacters(in: .whitespaces)
     }
     
     func displayLevelInfo(infoLevel: [String]) {
@@ -465,34 +472,21 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
     
     func loadScale(sector_id: Int, building: String, level: String) {
         let key = "\(building)_\(level)"
-        let input = Scale(sector_id: sector_id, building_name: building, level_name: level)
-        Network.shared.postScale(url: SCALE_URL, input: input, completion: { [self] statusCode, returnedString, buildingLevel in
-            let result = jsonToScale(json: returnedString)
-            
+        let input = ScaleOlympus(sector_id: sector_id, building_name: building, level_name: level, operating_system: OPERATING_SYSTEM)
+        Network.shared.postScaleOlympus(url: USER_SCALE_URL, input: input, completion: { [self] statusCode, returnedString, buildingLevel in
+            let result = decodeScale(json: returnedString)
             if (statusCode >= 200 && statusCode <= 300) {
-                let scaleString = result.image_scale
-                
-                if (scaleString.isEmpty) {
-                    chartLoad[buildingLevel] = true
-                    chartLimits[key] = [0, 0, 0, 0]
-                } else if (scaleString == "None") {
+                var data = [Double]()
+                let resultScale = result.image_scale
+                if (resultScale.count < 4) {
                     chartLoad[buildingLevel] = true
                     chartLimits[key] = [0, 0, 0, 0]
                 } else {
-                    let os = scaleString.components(separatedBy: "/")
-                    let iosScale = os[1].components(separatedBy: " ")
-                    
-                    var data = [Double]()
-                    if (iosScale.count < 4) {
-                        chartLoad[buildingLevel] = true
-                        chartLimits[key] = [0, 0, 0, 0]
-                    } else {
-                        for i in 0..<iosScale.count {
-                            data.append(Double(iosScale[i])!)
-                        }
-                        chartLoad[buildingLevel] = true
-                        chartLimits[key] = data
+                    for i in 0..<resultScale.count {
+                        data.append(resultScale[i])
                     }
+                    chartLoad[buildingLevel] = true
+                    chartLimits[key] = data
                 }
             } else {
                 chartLoad[buildingLevel] = false
@@ -500,18 +494,18 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
         })
     }
     
-    @objc func showRP() {
+    @objc func showPathPixel() {
         countTap += 1
         
         if (countTap == 5) {
-            isShowRP = true
+            isShowPathPixel = true
             self.sectorNameLabel.textColor = .yellow
             for view in self.scatterChart.subviews {
                 view.removeFromSuperview()
             }
             
         } else if (countTap > 9) {
-            isShowRP = false
+            isShowPathPixel = false
             countTap = 0
             self.sectorNameLabel.textColor = .white
         }
@@ -531,19 +525,11 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
             
             switch (region) {
             case "Korea":
-                if ( cardData?.sector_id == 1 || cardData?.sector_id == 2 ) {
-                    displayViewHeight.constant = 480
-                    containerViewHeight.constant = 150
-                } else {
-                    let ratio: Double = 114900 / 68700
-                    displayViewHeight.constant = displayView.bounds.width * ratio
-                    
-                    
-                    let bottomPadding = window?.safeAreaInsets.bottom ?? 0.0
-                    
-                    defaultHeight = ServiceView.bounds.height - 100 - displayViewHeight.constant - bottomPadding
-                    containerViewHeight.constant = defaultHeight
-                }
+                let ratio: Double = 114900 / 68700
+                displayViewHeight.constant = displayView.bounds.width * ratio
+                let bottomPadding = window?.safeAreaInsets.bottom ?? 0.0
+                defaultHeight = ServiceView.bounds.height - 100 - displayViewHeight.constant - bottomPadding
+                containerViewHeight.constant = defaultHeight
             case "Canada":
                 if ( cardData?.sector_id == 4 ) {
                     displayViewHeight.constant = 480
@@ -551,27 +537,16 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
                 } else {
                     let ratio: Double = 114900 / 68700
                     displayViewHeight.constant = displayView.bounds.width * ratio
-                    let window = UIApplication.shared.keyWindow
                     let bottomPadding = window?.safeAreaInsets.bottom ?? 0.0
-                    
                     defaultHeight = ServiceView.bounds.height - 100 - displayViewHeight.constant - bottomPadding
                     containerViewHeight.constant = defaultHeight
                 }
             default:
-                if ( cardData?.sector_id == 1 || cardData?.sector_id == 2 ) {
-                    displayViewHeight.constant = 480
-                    containerViewHeight.constant = 150
-                } else {
-                    let ratio: Double = 114900 / 68700
-                    displayViewHeight.constant = displayView.bounds.width * ratio
-                    
-                    let window = UIApplication.shared.keyWindow
-                    let bottomPadding = window?.safeAreaInsets.bottom ?? 0.0
-                    
-                    defaultHeight = ServiceView.bounds.height - 100 - displayViewHeight.constant - bottomPadding
-                    
-                    containerViewHeight.constant = defaultHeight
-                }
+                let ratio: Double = 114900 / 68700
+                displayViewHeight.constant = displayView.bounds.width * ratio
+                let bottomPadding = window?.safeAreaInsets.bottom ?? 0.0
+                defaultHeight = ServiceView.bounds.height - 100 - displayViewHeight.constant - bottomPadding
+                containerViewHeight.constant = defaultHeight
             }
         } else {
             displayViewHeight.constant = 480
@@ -664,56 +639,6 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
     }
     
     
-    private func loadRP(fileName: String) -> [[Double]] {
-        guard let path = Bundle.main.path(forResource: fileName, ofType: "csv") else {
-            return [[Double]]()
-        }
-        let rpXY:[[Double]] = parseRP(url: URL(fileURLWithPath: path))
-        
-        return rpXY
-    }
-    
-    private func parseRP(url:URL) -> [[Double]] {
-        var rpXY = [[Double]]()
-        
-        var rpX = [Double]()
-        var rpY = [Double]()
-        
-        do {
-            let data = try Data(contentsOf: url)
-            let dataEncoded = String(data: data, encoding: .utf8)
-            
-            if let dataArr = dataEncoded?.components(separatedBy: "\n").map({$0.components(separatedBy: ",")}) {
-                for item in dataArr {
-                    let rp: [String] = item
-                    if (rp.count >= 2) {
-                        if (self.runMode == "pdr") {
-                            guard let x: Double = Double(rp[1]) else { return [[Double]]() }
-                            guard let y: Double = Double(rp[2].components(separatedBy: "\r")[0]) else { return [[Double]]() }
-                            
-                            rpX.append(x)
-                            rpY.append(y)
-                        } else {
-                            let pathType = Int(rp[0])
-                            if (pathType == 1) {
-                                guard let x: Double = Double(rp[1]) else { return [[Double]]() }
-                                guard let y: Double = Double(rp[2].components(separatedBy: "\r")[0]) else { return [[Double]]() }
-                                
-                                rpX.append(x)
-                                rpY.append(y)
-                            }
-                        }
-                    }
-                }
-            }
-            rpXY = [rpX, rpY]
-        } catch {
-            print("Error reading .csv file")
-        }
-        
-        return rpXY
-    }
-    
     // Display Outputs
     func startTimer() {
         if (timer == nil) {
@@ -735,7 +660,6 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
         }
         
         pathPixelTimer?.cancel()
-        self.isReportPpExist = false
     }
     
     @objc func timerUpdate() {
@@ -747,54 +671,7 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
             elapsedTime += (dt*1e-3)
         }
         
-        // Map
-        if (self.isMonitor) {
-            serviceManager.getRecentResult(id: self.idToMonitor, completion: { [self] statusCode, result in
-                if (statusCode == 200) {
-//                    let recentResult: RecentResultFromServer = jsonToRecent(json: result)
-//                    let resultCoordX = recentResult.x
-//                    let resultCoordY = recentResult.y
-//                    let resultHeading = recentResult.absolute_heading
-//                    
-//                    let resultBuildingName = recentResult.building_name
-//                    let resultLevelName = recentResult.level_name
-//                    
-//                    if (resultCoordX != 0 && resultCoordY != 0) {
-//                        self.monitorToDisplay.x = resultCoordX
-//                        self.monitorToDisplay.y = resultCoordY
-//                        self.monitorToDisplay.heading = resultHeading
-//
-//                        self.monitorToDisplay.building = resultBuildingName
-//                        self.monitorToDisplay.level = resultLevelName
-//                        self.monitorToDisplay.isIndoor = true
-//                        self.monitorCoord(data: self.monitorToDisplay, flag: self.isShowRP)
-//                    }
-                    
-                    let recentResult: FineLocationTrackingFromServer = result
-                    let resultCoordX = recentResult.x
-                    let resultCoordY = recentResult.y
-                    let resultHeading = recentResult.absolute_heading
-                    
-                    let resultBuildingName = recentResult.building_name
-                    let resultLevelName = recentResult.level_name
-                    
-                    if (resultCoordX != 0 && resultCoordY != 0) {
-                        self.monitorToDisplay.x = resultCoordX
-                        self.monitorToDisplay.y = resultCoordY
-                        self.monitorToDisplay.heading = resultHeading
-
-                        self.monitorToDisplay.building = resultBuildingName
-                        self.monitorToDisplay.level = resultLevelName
-                        self.monitorToDisplay.isIndoor = true
-                        self.monitorCoord(data: self.monitorToDisplay, flag: self.isShowRP)
-                    }
-                } else {
-                    print(getLocalTimeString() + " , (Monitor Result) : \(statusCode) , Error")
-                }
-            })
-        } else {
-            self.updateCoord(data: self.coordToDisplay, flag: self.isShowRP)
-        }
+        self.updateCoord(data: self.coordToDisplay, flag: self.isShowPathPixel)
         
         // Info
         if (serviceManager.displayOutput.isIndexChanged) {
@@ -819,23 +696,25 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
     }
     
     @objc func pathPixelTimerUpdate() {
-        if (!self.isReportPpExist) {
-            let builidng: String = self.coordToDisplay.building
-            let level: String = self.coordToDisplay.level
-            let key: String = "\(builidng)_\(level)"
-            
-            DispatchQueue.main.async {
-                if (builidng != "" && level != "") {
-                    if let isLoadEnd = self.serviceManager.isLoadEnd[key] {
-                        if (isLoadEnd[0] && !isLoadEnd[1]) {
-                            self.isReportPpExist = true
-                            
-                            self.serviceManager.stopService()
-                            self.noImageLabel.text = "Cannot load the Path-Pixel"
-                            self.noImageLabel.isHidden = false
-                            self.imageLevel.isHidden = true
-                        }
+        let builidng: String = self.coordToDisplay.building
+        let level: String = self.coordToDisplay.level
+        let key: String = "\(builidng)_\(level)"
+        
+        DispatchQueue.main.async {
+            if (builidng != "" && level != "") {
+                if let isLoaded = self.PpLoaded[key] {
+                    if (isLoaded) {
+                        self.noImageLabel.isHidden = true
+                        self.imageLevel.isHidden = false
+                    } else {
+                        self.noImageLabel.text = "Cannot load the Path-Pixel"
+                        self.noImageLabel.isHidden = false
+                        self.imageLevel.isHidden = true
                     }
+                } else {
+                    self.noImageLabel.text = "Cannot load the Path-Pixel"
+                    self.noImageLabel.isHidden = false
+                    self.imageLevel.isHidden = true
                 }
             }
         }
@@ -848,13 +727,13 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
         return unique_id
     }
     
-    func jsonToScale(json: String) -> ScaleResponse {
-        let result = ScaleResponse(image_scale: "")
+    func decodeScale(json: String) -> ScaleResponseOlympus {
+        let result = ScaleResponseOlympus(image_scale: [])
         let decoder = JSONDecoder()
         
         let jsonString = json
         
-        if let data = jsonString.data(using: .utf8), let decoded = try? decoder.decode(ScaleResponse.self, from: data) {
+        if let data = jsonString.data(using: .utf8), let decoded = try? decoder.decode(ScaleResponseOlympus.self, from: data) {
             return decoded
         }
         
@@ -862,15 +741,18 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
     }
     
     private func loadLevel(building: String, level: String, flag: Bool, completion: @escaping (UIImage?, Error?) -> Void) {
-        let urlString: String = "https://storage.googleapis.com/\(IMAGE_URL)/map/\(self.sector_id)/\(building)_\(level).png"
+        let urlString: String = "\(USER_IMAGE_URL)/map/\(self.sector_id)/\(building)/\(level).png"
+        print("IMAGE : URL = \(urlString)")
         if let urlLevel = URL(string: urlString) {
             let cacheKey = NSString(string: urlString)
             
             if let cachedImage = ImageCacheManager.shared.object(forKey: cacheKey) {
+                print("IMAGE : cache")
                 completion(cachedImage, nil)
             } else {
                 let task = URLSession.shared.dataTask(with: urlLevel) { (data, response, error) in
                     if let error = error {
+                        print("IMAGE : Error(1) = \(error)")
                         completion(nil, error)
                     }
                     
@@ -881,136 +763,50 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
                             completion(UIImage(data: data), nil)
                         }
                     } else {
+                        print("IMAGE : Error(2) = \(error)")
                         completion(nil, error)
                     }
                 }
                 task.resume()
             }
         } else {
+            print("IMAGE : Error(3) = \(urlString)")
             completion(nil, nil)
         }
     }
     
     private func displayLevelImage(building: String, level: String, flag: Bool) {
-        self.loadLevel(building: building, level: level, flag: flag, completion: { [self] data, error in
-            DispatchQueue.main.async {
-                if (data != nil) {
-                    // 빌딩 -> 층 이미지가 있는 경우
-                    self.imageLevel.isHidden = false
-                    self.noImageLabel.isHidden = true
-                    self.imageLevel.image = data
-                } else {
-                    // 빌딩 -> 층 이미지가 없는 경우
-                    if (flag) {
+        if (building != "" && level != "") {
+            print("Display : \(building) , \(level) , \(flag)")
+            self.loadLevel(building: building, level: level, flag: flag, completion: { [self] data, error in
+                DispatchQueue.main.async {
+                    if (data != nil) {
+                        print("Display : data is not nil")
+                        // 빌딩 -> 층 이미지가 있는 경우
                         self.imageLevel.isHidden = false
                         self.noImageLabel.isHidden = true
-                        
-                        self.imageLevel.image = UIImage(named: "emptyLevel")
+                        self.imageLevel.image = data
                     } else {
-                        self.scatterChart.isHidden = true
-                        self.noImageLabel.isHidden = false
-                        self.imageLevel.isHidden = true
+                        // 빌딩 -> 층 이미지가 없는 경우
+                        if (flag) {
+                            print("Display : data nil (1)")
+                            self.imageLevel.isHidden = false
+                            self.noImageLabel.isHidden = true
+                            self.imageLevel.image = UIImage(named: "emptyLevel")
+                        } else {
+                            print("Display : data is nil (2)")
+                            self.scatterChart.isHidden = true
+                            self.noImageLabel.isHidden = false
+                            self.imageLevel.isHidden = true
+                        }
+                        
                     }
-                    
                 }
-            }
-        })
+            })
+        }
     }
     
-    private func drawRP(RP_X: [Double], RP_Y: [Double], XY: [Double], heading: Double, limits: [Double]) {
-        let xAxisValue: [Double] = RP_X
-        let yAxisValue: [Double] = RP_Y
-        
-        let values1 = (0..<xAxisValue.count).map { (i) -> ChartDataEntry in
-            return ChartDataEntry(x: xAxisValue[i], y: yAxisValue[i])
-        }
-        
-        let values2 = (0..<1).map { (i) -> ChartDataEntry in
-            return ChartDataEntry(x: XY[0], y: XY[1])
-        }
-        
-        let set1 = ScatterChartDataSet(entries: values1, label: "RP")
-        set1.drawValuesEnabled = false
-        set1.setScatterShape(.square)
-        set1.setColor(UIColor.yellow)
-        set1.scatterShapeSize = 4
-        
-        let set2 = ScatterChartDataSet(entries: values2, label: "User")
-        set2.drawValuesEnabled = false
-        set2.setScatterShape(.circle)
-        set2.setColor(UIColor.systemRed)
-        set2.scatterShapeSize = 14
-        
-        let chartData = ScatterChartData(dataSet: set1)
-        chartData.append(set2)
-        
-        // Heading
-        if (XY[0] != 0 && XY[1] != 0) {
-            let point = scatterChart.getPosition(entry: ChartDataEntry(x: XY[0], y: XY[1]), axis: .left)
-            let imageView = UIImageView(image: headingImage!.rotate(degrees: -heading+90))
-            imageView.frame = CGRect(x: point.x - 15, y: point.y - 15, width: 30, height: 30)
-            imageView.contentMode = .center
-            imageView.tag = 100
-            if let viewWithTag = scatterChart.viewWithTag(100) {
-                viewWithTag.removeFromSuperview()
-            }
-            scatterChart.addSubview(imageView)
-        }
-        
-        let xMin = xAxisValue.min()!
-        let xMax = xAxisValue.max()!
-        let yMin = yAxisValue.min()!
-        let yMax = yAxisValue.max()!
-        
-//        print("\(currentBuilding) \(currentLevel) MinMax : \(xMin) , \(xMax), \(yMin), \(yMax)")
-        
-        let chartFlag: Bool = false
-        scatterChart.isHidden = false
-        
-        // Configure Chart
-        if (self.sector_id == 9 && currentLevel == "7F") {
-            scatterChart.xAxis.axisMinimum = xMin-2.5
-            scatterChart.xAxis.axisMaximum = xMax+2.5
-            scatterChart.leftAxis.axisMinimum = yMin-7.5
-            scatterChart.leftAxis.axisMaximum = yMax+7.5
-        } else if ( limits[0] == 0 && limits[1] == 0 && limits[2] == 0 && limits[3] == 0 ) {
-            scatterChart.xAxis.axisMinimum = xMin
-            scatterChart.xAxis.axisMaximum = xMax
-            scatterChart.leftAxis.axisMinimum = yMin
-            scatterChart.leftAxis.axisMaximum = yMax
-        } else {
-            scatterChart.xAxis.axisMinimum = limits[0]
-            scatterChart.xAxis.axisMaximum = limits[1]
-            scatterChart.leftAxis.axisMinimum = limits[2]
-            scatterChart.leftAxis.axisMaximum = limits[3]
-        }
-        
-//        print("\(currentBuilding) \(currentLevel) Limits : \(limits[0]) , \(limits[1]), \(limits[2]), \(limits[3])")
-        
-        scatterChart.xAxis.drawGridLinesEnabled = chartFlag
-        scatterChart.leftAxis.drawGridLinesEnabled = chartFlag
-        scatterChart.rightAxis.drawGridLinesEnabled = chartFlag
-        
-        scatterChart.xAxis.drawAxisLineEnabled = chartFlag
-        scatterChart.leftAxis.drawAxisLineEnabled = chartFlag
-        scatterChart.rightAxis.drawAxisLineEnabled = chartFlag
-        
-        scatterChart.xAxis.centerAxisLabelsEnabled = chartFlag
-        scatterChart.leftAxis.centerAxisLabelsEnabled = chartFlag
-        scatterChart.rightAxis.centerAxisLabelsEnabled = chartFlag
-        
-        scatterChart.xAxis.drawLabelsEnabled = chartFlag
-        scatterChart.leftAxis.drawLabelsEnabled = chartFlag
-        scatterChart.rightAxis.drawLabelsEnabled = chartFlag
-        
-        scatterChart.legend.enabled = chartFlag
-        
-        scatterChart.backgroundColor = .clear
-        
-        scatterChart.data = chartData
-    }
-    
-    private func drawUser(XY: [Double], heading: Double, limits: [Double], isMonitor: Bool, isBleOnlyMode: Bool, isPmSuccess: Bool, isIndoor: Bool) {
+    private func drawResult(XY: [Double], heading: Double, limits: [Double], isBleOnlyMode: Bool, isPmSuccess: Bool, isIndoor: Bool) {
         let values1 = (0..<1).map { (i) -> ChartDataEntry in
             return ChartDataEntry(x: XY[0], y: XY[1])
         }
@@ -1018,8 +814,6 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
         var valueColor = UIColor.systemRed
         if (!isIndoor) {
             valueColor = .systemGray
-        } else if (isMonitor) {
-            valueColor = UIColor.systemBlue
         } else if (isBleOnlyMode) {
             valueColor = UIColor.systemBlue
         } else if (!isPmSuccess) {
@@ -1152,8 +946,8 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
         let set4 = ScatterChartDataSet(entries: values4, label: "startCoord")
         set4.drawValuesEnabled = false
         set4.setScatterShape(.circle)
-        set4.setColor(.black)
-        set4.scatterShapeSize = 6
+        set4.setColor(.blue)
+        set4.scatterShapeSize = 8
         
         let values5 = (0..<userTrajectory.count).map { (i) -> ChartDataEntry in
             return ChartDataEntry(x: userTrajectory[i][0], y: userTrajectory[i][1])
@@ -1203,13 +997,13 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
             // Tail 직선
             set6.setColor(.blue3)
         case 4:
-            // Phase == 2 & Request
+            // PDR_IN_PHASE4_HAS_MAJOR_DIR & Phase == 2 Request
             set6.setColor(.systemOrange)
         case 5:
             // PDR Phase < 4
             set6.setColor(.systemGreen)
         case 6:
-            // PDR Phase = 4
+            // PDR_IN_PHASE4_NO_MAJOR_DIR
             set6.setColor(.systemBlue)
         case 7:
             // PDR Phase = 4 & Empty Closest Index
@@ -1275,8 +1069,8 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
         let yMin = yAxisValue.min()!
         let yMax = yAxisValue.max()!
         
-        print("\(currentBuilding) \(currentLevel) MinMax : \(xMin) , \(xMax), \(yMin), \(yMax)")
-        print("\(currentBuilding) \(currentLevel) Limits : \(limits[0]) , \(limits[1]), \(limits[2]), \(limits[3])")
+//        print("\(currentBuilding) \(currentLevel) MinMax : \(xMin) , \(xMax), \(yMin), \(yMax)")
+//        print("\(currentBuilding) \(currentLevel) Limits : \(limits[0]) , \(limits[1]), \(limits[2]), \(limits[3])")
         
 //        scatterChart.xAxis.axisMinimum = -5.8
 //        scatterChart.xAxis.axisMaximum = 56.8
@@ -1295,10 +1089,10 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
         
         // Configure Chart
         if ( limits[0] == 0 && limits[1] == 0 && limits[2] == 0 && limits[3] == 0 ) {
-            scatterChart.xAxis.axisMinimum = xMin - 5
-            scatterChart.xAxis.axisMaximum = xMax + 5
-            scatterChart.leftAxis.axisMinimum = yMin - 5
-            scatterChart.leftAxis.axisMaximum = yMax + 5
+            scatterChart.xAxis.axisMinimum = xMin - 10
+            scatterChart.xAxis.axisMaximum = xMax + 10
+            scatterChart.leftAxis.axisMinimum = yMin - 10
+            scatterChart.leftAxis.axisMaximum = yMax + 10
         } else {
             scatterChart.xAxis.axisMinimum = limits[0]
             scatterChart.xAxis.axisMaximum = limits[1]
@@ -1357,7 +1151,7 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
         let condition: ((String, [[Double]])) -> Bool = {
             $0.0.contains(key)
         }
-        let rp: [[Double]] = RP[key] ?? [[Double]]()
+        let pathPixel: [[Double]] = PpCoord[key] ?? [[Double]]()
         if let isScaleLoad = chartLoad[key] {
             if (!isScaleLoad) {
                 self.loadScale(sector_id: self.sector_id, building: currentBuilding, level: currentLevel)
@@ -1368,77 +1162,23 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
         let heading: Double = data.heading
         
         if (flag) {
-            if (RP.contains(where: condition)) {
-                if (rp.isEmpty) {
+            if (PpCoord.contains(where: condition)) {
+                if (pathPixel.isEmpty) {
                     scatterChart.isHidden = true
                 } else {
-//                    drawRP(RP_X: rp[0], RP_Y: rp[1], XY: XY, heading: heading, limits: limits)
-                    drawDebug(XY: XY, RP_X: rp[0], RP_Y: rp[1], serverXY: serviceManager.serverResult, tuXY: serviceManager.timeUpdateResult, heading: heading, limits: limits, isBleOnlyMode: self.isBleOnlyMode, isPmSuccess: self.isPathMatchingSuccess, trajectoryStartCoord: serviceManager.displayOutput.trajectoryStartCoord, userTrajectory: serviceManager.displayOutput.userTrajectory, searchArea: serviceManager.displayOutput.searchArea, searchType: serviceManager.displayOutput.searchType, isIndoor: isIndoor, trajPm: serviceManager.displayOutput.trajectoryPm, trajOg: serviceManager.displayOutput.trajectoryOg)
+                    drawDebug(XY: XY, RP_X: pathPixel[0], RP_Y: pathPixel[1], serverXY: serviceManager.displayOutput.serverResult, tuXY: serviceManager.timeUpdateResult, heading: heading, limits: limits, isBleOnlyMode: self.isBleOnlyMode, isPmSuccess: self.isPathMatchingSuccess, trajectoryStartCoord: serviceManager.displayOutput.trajectoryStartCoord, userTrajectory: serviceManager.displayOutput.userTrajectory, searchArea: serviceManager.displayOutput.searchArea, searchType: serviceManager.displayOutput.searchType, isIndoor: isIndoor, trajPm: serviceManager.displayOutput.trajectoryPm, trajOg: serviceManager.displayOutput.trajectoryOg)
                 }
             }
         } else {
             if (buildings.contains(currentBuilding)) {
                 if (XY[0] != 0 && XY[1] != 0) {
-                    drawUser(XY: XY, heading: heading, limits: limits, isMonitor: false, isBleOnlyMode: self.isBleOnlyMode, isPmSuccess: self.isPathMatchingSuccess, isIndoor: isIndoor)
+                    drawResult(XY: XY, heading: heading, limits: limits, isBleOnlyMode: self.isBleOnlyMode, isPmSuccess: true, isIndoor: isIndoor)
                 }
             }
         }
         
         dropText.text = currentBuilding
     }
-    
-    func monitorCoord(data: CoordToDisplay, flag: Bool) {
-        self.XY[0] = data.x
-        self.XY[1] = data.y
-        let isIndoor = data.isIndoor
-        
-        if (data.building == "") {
-            currentBuilding = buildings[0]
-        } else {
-            currentBuilding = data.building
-            if (data.level == "") {
-                currentLevel = levels[currentBuilding]![0]
-            } else {
-                currentLevel = data.level
-            }
-        }
-        
-        if (pastBuilding != currentBuilding || pastLevel != currentLevel) {
-            displayLevelImage(building: currentBuilding, level: currentLevel, flag: flag)
-        }
-        
-        pastBuilding = currentBuilding
-        pastLevel = currentLevel
-        
-        
-        let key = "\(currentBuilding)_\(currentLevel)"
-        let condition: ((String, [[Double]])) -> Bool = {
-            $0.0.contains(key)
-        }
-        let rp: [[Double]] = RP[key] ?? [[Double]]()
-        var limits: [Double] = chartLimits[key] ?? [0, 0, 0, 0]
-        let heading: Double = data.heading
-        
-        if (flag) {
-            if (RP.contains(where: condition)) {
-                if (rp.isEmpty) {
-                    scatterChart.isHidden = true
-                } else {
-//                    drawRP(RP_X: rp[0], RP_Y: rp[1], XY: XY, heading: heading, limits: limits)
-                    drawDebug(XY: XY, RP_X: rp[0], RP_Y: rp[1], serverXY: serviceManager.serverResult, tuXY: serviceManager.timeUpdateResult, heading: heading, limits: limits, isBleOnlyMode: self.isBleOnlyMode, isPmSuccess: self.isPathMatchingSuccess, trajectoryStartCoord: serviceManager.displayOutput.trajectoryStartCoord, userTrajectory: serviceManager.displayOutput.userTrajectory, searchArea: serviceManager.displayOutput.searchArea, searchType: serviceManager.displayOutput.searchType, isIndoor: isIndoor, trajPm: serviceManager.displayOutput.trajectoryPm, trajOg: serviceManager.displayOutput.trajectoryOg)
-                }
-            }
-        } else {
-            if (buildings.contains(currentBuilding)) {
-                if (XY[0] != 0 && XY[1] != 0) {
-                    drawUser(XY: XY, heading: heading, limits: limits, isMonitor: true, isBleOnlyMode: self.isBleOnlyMode, isPmSuccess: self.isPathMatchingSuccess, isIndoor: isIndoor)
-                }
-            }
-        }
-        
-        dropText.text = currentBuilding
-    }
-    
     
     func removeLevelDirectionString(levelName: String) -> String {
         var levelToReturn: String = levelName
@@ -1538,7 +1278,7 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
 }
 
 
-extension ServiceViewController: UITableViewDelegate {
+extension OlympusServiceViewController: UITableViewDelegate {
     // 높이 지정 index별
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         if indexPath.row == 0 {
@@ -1562,7 +1302,7 @@ extension ServiceViewController: UITableViewDelegate {
     }
 }
 
-extension ServiceViewController: UITableViewDataSource {
+extension OlympusServiceViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if section == 0 {
             return 2
@@ -1595,7 +1335,7 @@ extension ServiceViewController: UITableViewDataSource {
     }
 }
 
-extension ServiceViewController : UICollectionViewDelegate{
+extension OlympusServiceViewController : UICollectionViewDelegate{
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         currentLevel = levels[currentBuilding]![indexPath.row]
         
@@ -1604,19 +1344,18 @@ extension ServiceViewController : UICollectionViewDelegate{
         resultToDisplay.infoLevels = self.infoOfLevels
         
         let key = "\(currentBuilding)_\(currentLevel)"
-        let rp: [[Double]] = RP[key] ?? [[Double]]()
+        let rp: [[Double]] = PpCoord[key] ?? [[Double]]()
         
         var limits: [Double] = chartLimits[key] ?? [0, 0, 0, 0]
         if (rp.isEmpty) {
             // RP가 없어서 그리지 않음
             scatterChart.isHidden = true
         } else {
-            if (isShowRP) {
-//                drawRP(RP_X: rp[0], RP_Y: rp[1], XY: XY, heading: 0, limits: limits)
-                drawDebug(XY: XY, RP_X: rp[0], RP_Y: rp[1], serverXY: serviceManager.serverResult, tuXY: serviceManager.timeUpdateResult, heading: 0, limits: limits, isBleOnlyMode: self.isBleOnlyMode, isPmSuccess: self.isPathMatchingSuccess, trajectoryStartCoord: serviceManager.displayOutput.trajectoryStartCoord, userTrajectory: serviceManager.displayOutput.userTrajectory, searchArea: serviceManager.displayOutput.searchArea, searchType: serviceManager.displayOutput.searchType, isIndoor: false, trajPm: serviceManager.displayOutput.trajectoryPm, trajOg: serviceManager.displayOutput.trajectoryOg)
+            if (isShowPathPixel) {
+                drawDebug(XY: XY, RP_X: rp[0], RP_Y: rp[1], serverXY: serviceManager.displayOutput.serverResult, tuXY: serviceManager.timeUpdateResult, heading: 0, limits: limits, isBleOnlyMode: self.isBleOnlyMode, isPmSuccess: self.isPathMatchingSuccess, trajectoryStartCoord: serviceManager.displayOutput.trajectoryStartCoord, userTrajectory: serviceManager.displayOutput.userTrajectory, searchArea: serviceManager.displayOutput.searchArea, searchType: serviceManager.displayOutput.searchType, isIndoor: false, trajPm: serviceManager.displayOutput.trajectoryPm, trajOg: serviceManager.displayOutput.trajectoryOg)
                 
             }
-            displayLevelImage(building: currentBuilding, level: currentLevel, flag: isShowRP)
+            displayLevelImage(building: currentBuilding, level: currentLevel, flag: isShowPathPixel)
         }
         
         levelCollectionView.reloadData()
@@ -1624,7 +1363,7 @@ extension ServiceViewController : UICollectionViewDelegate{
     
 }
 
-extension ServiceViewController : UICollectionViewDataSource{
+extension OlympusServiceViewController : UICollectionViewDataSource{
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         levels[currentBuilding]!.count
     }
@@ -1635,7 +1374,7 @@ extension ServiceViewController : UICollectionViewDataSource{
         
         levelCollectionView.setName(level: levels[currentBuilding]![indexPath.row],
                                     isClicked: currentLevel == levels[currentBuilding]![indexPath.row] ? true : false)
-        displayLevelImage(building: currentBuilding, level: currentLevel, flag: isShowRP)
+        displayLevelImage(building: currentBuilding, level: currentLevel, flag: isShowPathPixel)
         
         levelCollectionView.layer.cornerRadius = 15
         levelCollectionView.layer.borderColor = UIColor.darkgrey4.cgColor
@@ -1645,7 +1384,7 @@ extension ServiceViewController : UICollectionViewDataSource{
     }
 }
 
-extension ServiceViewController : UICollectionViewDelegateFlowLayout{
+extension OlympusServiceViewController : UICollectionViewDelegateFlowLayout{
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let label = UILabel()
         label.font = .systemFont(ofSize: 14)
@@ -1668,14 +1407,13 @@ extension ServiceViewController : UICollectionViewDelegateFlowLayout{
     }
 }
 
-extension ServiceViewController: CustomSwitchButtonDelegate {
+extension OlympusServiceViewController: CustomSwitchButtonDelegate {
     func isOnValueChange(isOn: Bool) {
         DispatchQueue.main.async { [self] in
             self.modeAuto = isOn
             if (isOn) {
                 self.hideDropDown(flag: true)
-                serviceManager = ServiceManager()
-                serviceManager.changeRegion(regionName: self.region)
+                serviceManager = OlympusServiceManager()
                 
                 var inputMode: String = "auto"
                 if (self.sector_id == 6 && self.region != "Canada") {
@@ -1684,36 +1422,32 @@ extension ServiceViewController: CustomSwitchButtonDelegate {
                     inputMode = cardData!.mode
                 }
                 let uniqueId = self.makeUniqueId(uuid: uuid)
-                serviceManager.startService(id: uniqueId, sector_id: cardData!.sector_id, service: "FLT", mode: inputMode, completion: { isStart, message in
+                serviceManager.startService(user_id: uniqueId, region: self.region, sector_id: self.sector_id, service: self.serviceName, mode: inputMode, completion: { isStart, message in
                     if (isStart) {
-                        serviceManager.addObserver(self)
                         print("(ServiceVC) Success : \(message)")
+                        serviceManager.addObserver(self)
                         self.notificationCenterAddObserver()
                         self.startTimer()
                     } else {
                         print("(ServiceVC) Fail : \(message)")
                         serviceManager.stopService()
-//                        self.showPopUp(title: "Service Fail", message: message)
                         self.goToBackServiceFail()
                     }
                 })
-                
             } else {
                 self.hideDropDown(flag: false)
                 
                 let isStop = serviceManager.stopService()
                 if (isStop.0) {
                     self.serviceManager.saveSimulationFile()
-                    
                     self.coordToDisplay = CoordToDisplay()
-                    self.monitorToDisplay = CoordToDisplay()
                     self.resultToDisplay = ResultToDisplay()
                     
                     self.currentBuilding = ""
                     self.currentLevel = ""
                     self.pastBuilding = ""
                     self.pastLevel = ""
-                    self.displayLevelImage(building: currentBuilding, level: currentLevel, flag: isShowRP)
+                    self.displayLevelImage(building: currentBuilding, level: currentLevel, flag: isShowPathPixel)
                     self.notificationCenterRemoveObserver()
                     
                     print("(SeviceVC) Success : \(isStop.1)")
@@ -1722,7 +1456,6 @@ extension ServiceViewController: CustomSwitchButtonDelegate {
                 } else {
                     print("(SeviceVC) Fail : \(isStop.1)")
                     let message: String = isStop.1
-//                    showPopUp(title: "Service Fail", message: message)
                     self.goToBackServiceFail()
                 }
             }

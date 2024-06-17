@@ -88,7 +88,22 @@ class AddCardViewController: UIViewController, UITextFieldDelegate {
             imageUrl = USER_IMAGE_URL
         }
         Network.shared.addCard(url: addCardUrl, input: input, completion: { [self] statusCode, returnedString in
-            let addedCard = jsonToCard(json: returnedString, isOlympus: IS_OLYMPUS)
+            var addedCard = AddCardSuccess(message: "", sector_id: -1, sector_name: "", description: "", card_color: "", dead_reckoning: "", service_request: "", building_level: [[]])
+            if (IS_OLYMPUS) {
+                let addCardOlympus: AddCardOlympus = jsonToOlympusCard(json: returnedString)
+                addedCard.message = addCardOlympus.message
+                addedCard.sector_id = addCardOlympus.sector.sector_id
+                addedCard.sector_name = addCardOlympus.sector.sector_name
+                addedCard.description = addCardOlympus.sector.description
+                addedCard.card_color = addCardOlympus.sector.card_color
+                addedCard.dead_reckoning = addCardOlympus.sector.dead_reckoning
+                addedCard.service_request = addCardOlympus.sector.service_request
+                addedCard.building_level = addCardOlympus.sector.building_level
+            } else {
+                let addCardSuccess: AddCardSuccess = jsonToCard(json: returnedString)
+                addedCard = addCardSuccess
+            }
+
             var message: String = addedCard.message
             if (message.count < 5) {
                 message = jsonToFail(json: returnedString).message
@@ -173,36 +188,53 @@ class AddCardViewController: UIViewController, UITextFieldDelegate {
         })
     }
     
-//    func jsonToCard(json: String) -> AddCardSuccess {
-//        let result = AddCardSuccess(message: "", sector_id: 100, sector_name: "", description: "", card_color: "", dead_reckoning: "pdr", service_request: "", building_level: [[]])
-//        let decoder = JSONDecoder()
-//
-//        let jsonString = json
-//
-//        if let data = jsonString.data(using: .utf8), let decoded = try? decoder.decode(AddCardSuccess.self, from: data) {
-//            return decoded
-//        }
-//
-//        return result
-//    }
-    
-    func jsonToCard(json: String, isOlympus: Bool) -> AddCardSuccess {
+    func jsonToCard(json: String) -> AddCardSuccess {
         let result = AddCardSuccess(message: "", sector_id: 100, sector_name: "", description: "", card_color: "", dead_reckoning: "pdr", service_request: "", building_level: [[]])
         let decoder = JSONDecoder()
 
-        if isOlympus {
-            if let data = json.data(using: .utf8), let decoded = try? decoder.decode(AddCardSuccess.self, from: data) {
-                return decoded
-            }
-        } else {
-            // Do not use custom coding keys
-            if let data = json.data(using: .utf8), let decoded = try? decoder.decode(AddCardSuccessNoCustomKeys.self, from: data) {
-                return AddCardSuccess(message: decoded.message, sector_id: decoded.sector_id, sector_name: decoded.sector_name, description: decoded.description, card_color: decoded.card_color, dead_reckoning: decoded.dead_reckoning, service_request: decoded.service_request, building_level: decoded.building_level)
-            }
+        let jsonString = json
+
+        if let data = jsonString.data(using: .utf8), let decoded = try? decoder.decode(AddCardSuccess.self, from: data) {
+            return decoded
         }
 
         return result
     }
+    
+    func jsonToOlympusCard(json: String) -> AddCardOlympus {
+        let result = AddCardOlympus(message: "", sector: CardInfo(sector_id: 100, sector_name: "", description: "", card_color: "", dead_reckoning: "pdr", service_request: "", building_level: [[]]))
+        let decoder = JSONDecoder()
+        let jsonString = json
+        if let data = jsonString.data(using: .utf8), let decoded = try? decoder.decode(AddCardOlympus.self, from: data) {
+            return decoded
+        }
+        return result
+    }
+    
+//    func jsonToCard(json: String, isOlympus: Bool) -> AddCardSuccess {
+//        let result = AddCardSuccess(message: "", sector_id: 100, sector_name: "", description: "", card_color: "", dead_reckoning: "pdr", service_request: "", building_level: [[]])
+//        let decoder = JSONDecoder()
+//        
+//        print("Check (0) : \(json)")
+//        if isOlympus {
+//            if let data = json.data(using: .utf8), let decoded = try? decoder.decode(AddCardSuccess.self, from: data) {
+//                print("Check (1) : \(data)")
+//                return decoded
+//            } else {
+//                print("Check (1) : Error")
+//            }
+//        } else {
+//            // Do not use custom coding keys
+//            if let data = json.data(using: .utf8), let decoded = try? decoder.decode(AddCardSuccessNoCustomKeys.self, from: data) {
+//                print("Check (2) : \(data)")
+//                return AddCardSuccess(message: decoded.message, sector_id: decoded.sector_id, sector_name: decoded.sector_name, description: decoded.description, card_color: decoded.card_color, dead_reckoning: decoded.dead_reckoning, service_request: decoded.service_request, building_level: decoded.building_level)
+//            } else {
+//                print("Check (2) : Error")
+//            }
+//        }
+//
+//        return result
+//    }
     
     func jsonToFail(json: String) -> AddCardFail {
         let result = AddCardFail(message: "")

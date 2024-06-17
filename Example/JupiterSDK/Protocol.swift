@@ -64,29 +64,19 @@ struct Scale: Codable {
     var level_name: String
 }
 
-struct AddCardSuccess: Codable {
-    var message: String
+struct ScaleOlympus: Codable {
     var sector_id: Int
-    var sector_name: String
-    var description: String
-    var card_color: String
-    var dead_reckoning: String
-    var service_request: String
-    var building_level: [[String]]
-    
-    enum CodingKeys: String, CodingKey {
-        case message
-        case sector_id
-        case sector_name
-        case description
-        case card_color
-        case dead_reckoning
-        case service_request = "request_service"
-        case building_level
-    }
+    var building_name: String
+    var level_name: String
+    var operating_system: String
 }
 
-struct AddCardSuccessNoCustomKeys: Codable {
+struct AddCardOlympus: Codable {
+    var message: String
+    var sector: CardInfo
+}
+
+struct AddCardSuccess: Codable {
     var message: String
     var sector_id: Int
     var sector_name: String
@@ -108,6 +98,11 @@ struct DeleteCardResponse: Codable {
 struct ScaleResponse: Codable {
     var image_scale: String
 }
+
+struct ScaleResponseOlympus: Codable {
+    var image_scale: [Double]
+}
+
 
 
 struct CardList: Codable {

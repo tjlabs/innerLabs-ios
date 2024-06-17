@@ -25,6 +25,7 @@
 		B30D4F89298A0BF000BFC124 /* morguard_6F.csv in Resources */ = {isa = PBXBuildFile; fileRef = B30D4F87298A0BF000BFC124 /* morguard_6F.csv */; };
 		B30EED7C28936CB5009A3EDA /* TipsTownViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B30EED7B28936CB5009A3EDA /* TipsTownViewController.swift */; };
 		B30EED872893B64C009A3EDA /* CollectViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B30EED862893B64C009A3EDA /* CollectViewController.swift */; };
+		B31B5E9E2C1C25F800289BF8 /* OlympusServiceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B31B5E9D2C1C25F800289BF8 /* OlympusServiceViewController.swift */; };
 		B31EC7D92876C03A00799659 /* ServiceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B31EC7D82876C03A00799659 /* ServiceViewController.swift */; };
 		B3261B1A2BB668D6006F076D /* G2_2F.csv in Resources */ = {isa = PBXBuildFile; fileRef = B3261B192BB668D6006F076D /* G2_2F.csv */; };
 		B340EE3328093FB20096E404 /* CardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B340EE3228093FB20096E404 /* CardViewController.swift */; };
@@ -161,6 +162,7 @@
 		B30D4F87298A0BF000BFC124 /* morguard_6F.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = morguard_6F.csv; sourceTree = "<group>"; };
 		B30EED7B28936CB5009A3EDA /* TipsTownViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TipsTownViewController.swift; sourceTree = "<group>"; };
 		B30EED862893B64C009A3EDA /* CollectViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectViewController.swift; sourceTree = "<group>"; };
+		B31B5E9D2C1C25F800289BF8 /* OlympusServiceViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OlympusServiceViewController.swift; sourceTree = "<group>"; };
 		B31EC7D82876C03A00799659 /* ServiceViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceViewController.swift; sourceTree = "<group>"; };
 		B3261B192BB668D6006F076D /* G2_2F.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = G2_2F.csv; sourceTree = "<group>"; };
 		B340EE3228093FB20096E404 /* CardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardViewController.swift; sourceTree = "<group>"; };
@@ -430,6 +432,7 @@
 		B30EED7F289381F9009A3EDA /* ViewController */ = {
 			isa = PBXGroup;
 			children = (
+				B31B5E9D2C1C25F800289BF8 /* OlympusServiceViewController.swift */,
 				607FACD71AFB9204008FA782 /* MainViewController.swift */,
 				B340EE3228093FB20096E404 /* CardViewController.swift */,
 				B3C09C63280E941B00E6F55F /* ShowCardViewController.swift */,
@@ -550,14 +553,12 @@
 			buildConfigurationList = 607FACEF1AFB9204008FA782 /* Build configuration list for PBXNativeTarget "JupiterSDK_Example" */;
 			buildPhases = (
 				E5FB031E877E558388550E41 /* [CP] Check Pods Manifest.lock */,
-				C72810F572AF7DEEEB3EFEFE /* [CP-User] Run Flutter Build map_ui_module Script */,
 				607FACCC1AFB9204008FA782 /* Sources */,
 				607FACCD1AFB9204008FA782 /* Frameworks */,
 				607FACCE1AFB9204008FA782 /* Resources */,
 				B3F7C8D429F7A46E00EC30E0 /* Run Script */,
 				23B874579DED908C89C9DDAE /* [CP] Embed Pods Frameworks */,
 				22CE5EE675665624472ED0F0 /* [CP] Copy Pods Resources */,
-				BB57D3C2DFCEB9F0190FA3C9 /* [CP-User] Embed Flutter Build map_ui_module Script */,
 			);
 			buildRules = (
 			);
@@ -834,26 +835,6 @@
 			shellPath = /bin/sh;
 			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\n\"${PODS_ROOT}/FirebaseCrashlytics/run\"\n\"${PODS_ROOT}/FirebaseCrashlytics/upload-symbols\" -gsp ${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.app/GoogleService-Info.plist -p ios ${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}\n";
 		};
-		BB57D3C2DFCEB9F0190FA3C9 /* [CP-User] Embed Flutter Build map_ui_module Script */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			name = "[CP-User] Embed Flutter Build map_ui_module Script";
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "set -e\nset -u\nsource \"${SRCROOT}/map_ui_module/.ios/Flutter/flutter_export_environment.sh\"\nexport VERBOSE_SCRIPT_LOGGING=1 && \"$FLUTTER_ROOT\"/packages/flutter_tools/bin/xcode_backend.sh embed_and_thin";
-		};
-		C72810F572AF7DEEEB3EFEFE /* [CP-User] Run Flutter Build map_ui_module Script */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			name = "[CP-User] Run Flutter Build map_ui_module Script";
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "set -e\nset -u\nsource \"${SRCROOT}/map_ui_module/.ios/Flutter/flutter_export_environment.sh\"\nexport VERBOSE_SCRIPT_LOGGING=1 && \"$FLUTTER_ROOT\"/packages/flutter_tools/bin/xcode_backend.sh build";
-		};
 		E5FB031E877E558388550E41 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -913,6 +894,7 @@
 				B3967481299CC5EF00C6DC4D /* PopUpWithButtonViewController.swift in Sources */,
 				B3D19DEC29079CE000A5F7D4 /* SpotTableViewCell.swift in Sources */,
 				B3CC3C07283231E000D50522 /* PrivacyPolicyViewController.swift in Sources */,
+				B31B5E9E2C1C25F800289BF8 /* OlympusServiceViewController.swift in Sources */,
 				B3D488F0289B4D5500A8154C /* UIColorExtension.swift in Sources */,
 				B3F5C77E282A5408009BEDB9 /* Network.swift in Sources */,
 				B3BD69A427E9A54700A32A7A /* StringExtension.swift in Sources */,
