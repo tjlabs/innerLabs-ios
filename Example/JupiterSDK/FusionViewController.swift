@@ -290,7 +290,7 @@ class FusionViewController: UIViewController, Observer {
         
         self.stopTimer()
         
-        //        serviceManager.stopService()
+        // serviceManager.stopService()
         self.delegate?.sendPage(data: page)
         self.navigationController?.popViewController(animated: true)
     }

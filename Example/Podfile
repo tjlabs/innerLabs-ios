@@ -10,7 +10,7 @@ target 'JupiterSDK_Example' do
 #  install_all_flutter_pods(flutter_application_path) # Added for Flutter
   
   pod 'JupiterSDK', :path => '../'
-  pod 'OlympusSDK', '0.0.10'
+  pod 'OlympusSDK', '0.0.15'
   pod 'Alamofire'
   pod 'SwiftCSVExport' , '= 2.6.0'
   pod 'GoogleMaps', '4.0.0'

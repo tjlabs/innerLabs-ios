@@ -34,15 +34,10 @@ class Measurements {
 
 class Trajectory {
     var time: Int = 0
-
     var index: Int = 0
-    
     var length: Double = 0
-    
     var heading: Double = 0
-
     var pressure: Double = 0
-
     var ble: String = ""
 }
 
@@ -57,6 +52,7 @@ class CollectViewController: UIViewController {
     var delegate : ServiceViewPageDelegate?
     var cardData: CardItemData?
     var page: Int = 0
+    var region: String = ""
     var userId: String = ""
     
     var timer: Timer?

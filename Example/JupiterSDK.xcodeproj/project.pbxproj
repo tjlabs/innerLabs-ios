@@ -26,6 +26,7 @@
 		B30EED7C28936CB5009A3EDA /* TipsTownViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B30EED7B28936CB5009A3EDA /* TipsTownViewController.swift */; };
 		B30EED872893B64C009A3EDA /* CollectViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B30EED862893B64C009A3EDA /* CollectViewController.swift */; };
 		B31B5E9E2C1C25F800289BF8 /* OlympusServiceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B31B5E9D2C1C25F800289BF8 /* OlympusServiceViewController.swift */; };
+		B31B5EA02C2012F900289BF8 /* OlympusFusionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B31B5E9F2C2012F900289BF8 /* OlympusFusionViewController.swift */; };
 		B31EC7D92876C03A00799659 /* ServiceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B31EC7D82876C03A00799659 /* ServiceViewController.swift */; };
 		B3261B1A2BB668D6006F076D /* G2_2F.csv in Resources */ = {isa = PBXBuildFile; fileRef = B3261B192BB668D6006F076D /* G2_2F.csv */; };
 		B340EE3328093FB20096E404 /* CardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B340EE3228093FB20096E404 /* CardViewController.swift */; };
@@ -163,6 +164,7 @@
 		B30EED7B28936CB5009A3EDA /* TipsTownViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TipsTownViewController.swift; sourceTree = "<group>"; };
 		B30EED862893B64C009A3EDA /* CollectViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectViewController.swift; sourceTree = "<group>"; };
 		B31B5E9D2C1C25F800289BF8 /* OlympusServiceViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OlympusServiceViewController.swift; sourceTree = "<group>"; };
+		B31B5E9F2C2012F900289BF8 /* OlympusFusionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OlympusFusionViewController.swift; sourceTree = "<group>"; };
 		B31EC7D82876C03A00799659 /* ServiceViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceViewController.swift; sourceTree = "<group>"; };
 		B3261B192BB668D6006F076D /* G2_2F.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = G2_2F.csv; sourceTree = "<group>"; };
 		B340EE3228093FB20096E404 /* CardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardViewController.swift; sourceTree = "<group>"; };
@@ -450,6 +452,7 @@
 				B349730F293847DC0078C872 /* FusionViewController.swift */,
 				B3DE961E299A111B00352F40 /* FileViewController.swift */,
 				B30C09782A80B54300509A0E /* SampleViewController.swift */,
+				B31B5E9F2C2012F900289BF8 /* OlympusFusionViewController.swift */,
 			);
 			name = ViewController;
 			sourceTree = "<group>";
@@ -902,6 +905,7 @@
 				B3D48909289B96F900A8154C /* RemoteConfigManager.swift in Sources */,
 				B3BD69B427E9A8AD00A32A7A /* LevelCollectionViewCell.swift in Sources */,
 				B3DE961F299A111B00352F40 /* FileViewController.swift in Sources */,
+				B31B5EA02C2012F900289BF8 /* OlympusFusionViewController.swift in Sources */,
 				607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */,
 				B30EED7C28936CB5009A3EDA /* TipsTownViewController.swift in Sources */,
 				B30C09792A80B54300509A0E /* SampleViewController.swift in Sources */,

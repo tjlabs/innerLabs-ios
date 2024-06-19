@@ -6,12 +6,7 @@ import ExpyTableView
 import Charts
 import DropDown
 
-
-class OlympusServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyTableViewDelegate, ExpyTableViewDataSource, Observer {
-    
-    func robotTableViewCell(_ cell: RobotTableViewCell, didTapButtonWithValue value: String) {
-        print("ID to monitor : \(value)")
-    }
+class OlympusFusionViewController: UIViewController, Observer {
     
     func report(flag: Int) {
         let localTime = getLocalTimeString()
@@ -83,29 +78,36 @@ class OlympusServiceViewController: UIViewController, RobotTableViewCellDelegate
         }
     }
     
-    @IBOutlet var ServiceView: UIView!
+    
+    @IBOutlet var FusionView: UIView!
+    @IBOutlet weak var cardTopImage: UIImageView!
+    @IBOutlet weak var sectorNameLabel: UILabel!
+    @IBOutlet weak var onSpotButton: UIButton!
     
     @IBOutlet weak var displayView: UIView!
     @IBOutlet weak var displayViewHeight: NSLayoutConstraint!
+
+    @IBOutlet weak var switchButton: CustomSwitchButton!
+    @IBOutlet weak var switchButtonOffset: NSLayoutConstraint!
     
+    @IBOutlet weak var dropView: UIView!
+    @IBOutlet weak var dropImage: UIImageView!
+    @IBOutlet weak var dropText: UITextField!
+    @IBOutlet weak var dropButton: UIButton!
+    
+    @IBOutlet weak var levelCollectionView: UICollectionView!
     @IBOutlet weak var imageLevel: UIImageView!
-    
     @IBOutlet weak var scatterChart: ScatterChartView!
     @IBOutlet weak var noImageLabel: UILabel!
     
-    @IBOutlet weak var containerTableView: ExpyTableView!
-    @IBOutlet weak var containerViewHeight: NSLayoutConstraint!
+    @IBOutlet weak var mainImage: UIImageView!
+    
+    @IBOutlet weak var spotBuildingLabel: UILabel!
+    @IBOutlet weak var spotLevelLabel: UILabel!
+    @IBOutlet weak var spotNameLabel: UILabel!
+    @IBOutlet weak var spotCcsLabel: UILabel!
     
     private let tableList: [TableList] = [.sector]
- 
-    @IBOutlet weak var sectorNameLabel: UILabel!
-    @IBOutlet weak var cardTopImage: UIImageView!
-    @IBOutlet weak var infoLabel: UILabel!
-    
-    var currentRegion: String = ""
-    var noImageText: String = ""
-    var showInfoText: String = ""
-    var closeInfoText: String = ""
     
     var serviceManager = OlympusServiceManager()
     var serviceName = "FLT"
@@ -117,12 +119,9 @@ class OlympusServiceViewController: UIViewController, RobotTableViewCellDelegate
     var timerCounter: Int = 0
     var timerTimeOut: Int = 10
     let TIMER_INTERVAL: TimeInterval = 1/10 // second
+    
     var pathPixelTimer: DispatchSourceTimer?
     let PP_CHECK_INTERVAL: TimeInterval = 2
-    
-    private var foregroundObserver: Any!
-    private var backgroundObserver: Any!
-    private var terminateObserver: Any!
     
     var pastTime: Double = 0
     var elapsedTime: Double = 0
@@ -150,9 +149,7 @@ class OlympusServiceViewController: UIViewController, RobotTableViewCellDelegate
     var pastBuilding: String = ""
     var pastLevel: String = ""
     
-    var isShow: Bool = false
     var isRadioMap: Bool = false
-    var isOpen: Bool = false
     
     var coordToDisplay = CoordToDisplay()
     var resultToDisplay = ResultToDisplay()
@@ -163,10 +160,11 @@ class OlympusServiceViewController: UIViewController, RobotTableViewCellDelegate
     var headingImage = UIImage(named: "heading")
     var observerTime = 0
     
+    let dropDown = DropDown()
+    
+    var modeAuto: Bool = false
     var isBleOnlyMode: Bool = false
     var isPathMatchingSuccess: Bool = true
-    
-    var trajectoryOg: [[Double]] = [[0, 0]]
     
     var PpLoaded = [String: Bool]()
     var PpType = [String: [Int]]()
@@ -177,32 +175,26 @@ class OlympusServiceViewController: UIViewController, RobotTableViewCellDelegate
     var PpHeading = [String: [String]]()
     var isFileSaved: Bool = false
     
-    // Level Collection View
-    @IBOutlet weak var levelCollectionView: UICollectionView!
+    // Neptune
+    @IBOutlet weak var spotContentsView: UIView!
     
-    // DropDown
-    @IBOutlet weak var dropView: UIView!
-    @IBOutlet weak var dropImage: UIImageView!
-    @IBOutlet weak var dropText: UITextField!
-    @IBOutlet weak var dropButton: UIButton!
+    var spotToDisplay = Spot()
+    var spotAuthTime = 0
+    var spotImage = UIImage(named: "spotPin")
+    var spotCircle = UIImage(named: "spotCircle")
     
-    let dropDown = DropDown()
-    
-    // Switch
-    
-    @IBOutlet weak var switchButton: CustomSwitchButton!
-    @IBOutlet weak var switchButtonOffset: NSLayoutConstraint!
-    var modeAuto: Bool = false
+    let CCS_THRESHOLD: Double = 0.3
     
     // View
     var defaultHeight: CGFloat = 100
     
+    private var foregroundObserver: Any!
+    private var backgroundObserver: Any!
+    private var terminateObserver: Any!
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(false)
         setCardData(cardData: cardData!)
-        
-        makeDelegate()
-        registerXib()
         
         setCells()
         setLevelCollectionView()
@@ -219,49 +211,23 @@ class OlympusServiceViewController: UIViewController, RobotTableViewCellDelegate
             let firstBuildingLevels: [String] = (cardData?.infoLevel[firstBuilding])!
             
             displayLevelInfo(infoLevel: firstBuildingLevels)
-            
             levelList = firstBuildingLevels
-            
             isRadioMap = true
         } else {
             isRadioMap = false
         }
         
         fixChartHeight(flag: isRadioMap, region: self.region)
+        
         headingImage = headingImage?.resize(newWidth: 20)
+        self.spotContentsView.alpha = 0.0
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        let locale = Locale.current
-        if let countryCode = locale.regionCode, countryCode == "KR" {
-            self.currentRegion = "Korea"
-        } else {
-            self.currentRegion = "Canada"
-        }
-        self.setTextByRegion(region: self.currentRegion)
+        runMode = cardData!.mode
         
         self.hideKeyboardWhenTappedAround()
-    }
-    
-    func setTextByRegion(region: String) {
-        switch (region) {
-        case "Korea":
-            self.noImageText = "해당 층 이미지가 없습니다."
-            self.showInfoText = "정보 보기"
-            self.closeInfoText = "정보 닫기"
-        case "Canada":
-            self.noImageText = "There is no image of floor"
-            self.showInfoText = "Show"
-            self.closeInfoText = "Close"
-        default:
-            self.noImageText = "There is no image of floor"
-            self.showInfoText = "Show"
-            self.closeInfoText = "Close"
-        }
-        
-        self.noImageLabel.text = self.noImageText
-        self.infoLabel.text = self.showInfoText
     }
     
     @IBAction func tapBackButton(_ sender: UIButton) {
@@ -269,7 +235,6 @@ class OlympusServiceViewController: UIViewController, RobotTableViewCellDelegate
         self.notificationCenterRemoveObserver()
         goToBack()
     }
-    
     
     func goToBack() {
         self.forceStop()
@@ -281,8 +246,8 @@ class OlympusServiceViewController: UIViewController, RobotTableViewCellDelegate
         self.pastLevel = ""
         self.displayLevelImage(building: currentBuilding, level: currentLevel, flag: isShowPathPixel)
         self.notificationCenterRemoveObserver()
-        self.stopTimer()
         
+        self.stopTimer()
         self.delegate?.sendPage(data: page)
         self.navigationController?.popViewController(animated: true)
     }
@@ -304,32 +269,9 @@ class OlympusServiceViewController: UIViewController, RobotTableViewCellDelegate
         self.notificationCenterRemoveObserver()
     }
     
-    @IBAction func tapShowButton(_ sender: UIButton) {
-        UIView.animate(withDuration: 0.5, delay: 0.01, options: .curveLinear, animations: {
-        }) { (success) in
-            sender.isSelected = !sender.isSelected
-            UIView.animate(withDuration: 0.5, delay: 0.01, options: .curveLinear, animations: {
-                sender.transform = .identity
-            }, completion: nil)
-        }
-        
-        if sender.isSelected == false {
-            isShow = true
-            self.infoLabel.text = self.closeInfoText
-            showContainerTableView()
-        }
-        else {
-            isShow = false
-            self.infoLabel.text = self.showInfoText
-            hideContainerTableView()
-        }
-    }
-    
-    
     func setCardData(cardData: CardItemData) {
         self.sector_id = cardData.sector_id
         self.sectorNameLabel.text = cardData.sector_name
-        self.runMode = cardData.mode
         
         let imageName: String = cardData.cardColor + "CardTop"
         if let topImage = UIImage(named: imageName) {
@@ -337,6 +279,7 @@ class OlympusServiceViewController: UIViewController, RobotTableViewCellDelegate
         } else {
             self.cardTopImage.image = UIImage(named: "purpleCardTop")
         }
+        
         
         self.sectorNameLabel.isUserInteractionEnabled = true
         let tapRecognizer = UITapGestureRecognizer()
@@ -474,6 +417,117 @@ class OlympusServiceViewController: UIViewController, RobotTableViewCellDelegate
         
     }
     
+    @objc func showPathPixel() {
+        countTap += 1
+        
+        if (countTap == 5) {
+            isShowPathPixel = true
+            self.sectorNameLabel.textColor = .yellow
+            for view in self.scatterChart.subviews {
+                view.removeFromSuperview()
+            }
+            
+        } else if (countTap > 9) {
+            isShowPathPixel = false
+            countTap = 0
+            self.sectorNameLabel.textColor = .white
+        }
+    }
+    
+    func fixChartHeight(flag: Bool, region: String) {
+        if (flag) {
+            let window = UIApplication.shared.keyWindow
+            
+            switch (region) {
+            case "Korea":
+                if ( cardData?.sector_id == 1 || cardData?.sector_id == 2 ) {
+                    displayViewHeight.constant = 480
+                } else {
+                    let ratio: Double = 114900 / 68700
+                    displayViewHeight.constant = displayView.bounds.width * ratio
+                    let bottomPadding = window?.safeAreaInsets.bottom ?? 0.0
+                    defaultHeight = FusionView.bounds.height - 100 - displayViewHeight.constant - bottomPadding
+                }
+            case "Canada":
+                if ( cardData?.sector_id == 4 ) {
+                    displayViewHeight.constant = 480
+                } else {
+                    let ratio: Double = 114900 / 68700
+                    displayViewHeight.constant = displayView.bounds.width * ratio
+                    let bottomPadding = window?.safeAreaInsets.bottom ?? 0.0
+                    defaultHeight = FusionView.bounds.height - 100 - displayViewHeight.constant - bottomPadding
+                }
+            default:
+                if ( cardData?.sector_id == 1 || cardData?.sector_id == 2 ) {
+                    displayViewHeight.constant = 480
+                } else {
+                    let ratio: Double = 114900 / 68700
+                    displayViewHeight.constant = displayView.bounds.width * ratio
+                    let bottomPadding = window?.safeAreaInsets.bottom ?? 0.0
+                    defaultHeight = FusionView.bounds.height - 100 - displayViewHeight.constant - bottomPadding
+                }
+            }
+        } else {
+            displayViewHeight.constant = 480
+        }
+    }
+    
+    private func setCells() {
+        LevelCollectionViewCell.register(target: levelCollectionView)
+    }
+    
+    private func setLevelCollectionView() {
+        levelCollectionView.delegate = self
+        levelCollectionView.dataSource = self
+        levelCollectionView.reloadData()
+    }
+    
+    
+    private func initDropDown() {
+        dropView.layer.cornerRadius = 6
+        //        dropView.borderColor = .blue1
+        dropView.borderColor = .darkgrey4
+        
+        DropDown.appearance().textColor = UIColor.black // 아이템 텍스트 색상
+        DropDown.appearance().selectedTextColor = UIColor.red // 선택된 아이템 텍스트 색상
+        DropDown.appearance().backgroundColor = UIColor.white // 아이템 팝업 배경 색상
+        DropDown.appearance().selectionBackgroundColor = UIColor.lightGray // 선택한 아이템 배경 색상
+        DropDown.appearance().setupCornerRadius(6)
+        
+        dropText.borderStyle = .none
+        if (currentBuilding == "") {
+            dropText.text = "Buildings"
+        } else {
+            dropText.text = self.currentBuilding
+        }
+        
+        dropText.textColor = .darkgrey4
+        
+        dropDown.dismissMode = .automatic // 팝업을 닫을 모드 설정
+    }
+    
+    private func setDropDown() {
+        dropDown.dataSource = self.buildings
+        dropDown.anchorView = self.dropView
+        dropDown.bottomOffset = CGPoint(x: 0, y: dropView.bounds.height)
+        dropDown.selectionAction = { [weak self] (index, item) in
+            self!.dropText.text = item
+            self!.currentBuilding = item
+            self!.levelCollectionView.reloadData()
+            self!.dropImage.image = UIImage.init(named: "showInfoToggle")
+        }
+        dropDown.cancelAction = { [weak self] in
+            self!.dropImage.image = UIImage.init(named: "showInfoToggle")
+        }
+    }
+    
+    
+    @IBAction func dropDownClicked(_ sender: Any) {
+        dropDown.show()
+        self.dropImage.image = UIImage.init(named: "closeInfoToggle")
+    }
+    
+    
     func loadScale(sector_id: Int, building: String, level: String) {
         let key = "\(building)_\(level)"
         let input = ScaleOlympus(sector_id: sector_id, building_name: building, level_name: level, operating_system: OPERATING_SYSTEM)
@@ -498,155 +552,10 @@ class OlympusServiceViewController: UIViewController, RobotTableViewCellDelegate
         })
     }
     
-    @objc func showPathPixel() {
-        countTap += 1
-        
-        if (countTap == 5) {
-            isShowPathPixel = true
-            self.sectorNameLabel.textColor = .yellow
-            for view in self.scatterChart.subviews {
-                view.removeFromSuperview()
-            }
-            
-        } else if (countTap > 9) {
-            isShowPathPixel = false
-            countTap = 0
-            self.sectorNameLabel.textColor = .white
-        }
-    }
-    
-    func showContainerTableView() {
-        containerViewHeight.constant = 220
-    }
-    
-    func hideContainerTableView() {
-        containerViewHeight.constant = defaultHeight
-    }
-    
-    func fixChartHeight(flag: Bool, region: String) {
-        if (flag) {
-            let window = UIApplication.shared.keyWindow
-            
-            switch (region) {
-            case "Korea":
-                let ratio: Double = 114900 / 68700
-                displayViewHeight.constant = displayView.bounds.width * ratio
-                let bottomPadding = window?.safeAreaInsets.bottom ?? 0.0
-                defaultHeight = ServiceView.bounds.height - 100 - displayViewHeight.constant - bottomPadding
-                containerViewHeight.constant = defaultHeight
-            case "Canada":
-                if ( cardData?.sector_id == 4 ) {
-                    displayViewHeight.constant = 480
-                    containerViewHeight.constant = 150
-                } else {
-                    let ratio: Double = 114900 / 68700
-                    displayViewHeight.constant = displayView.bounds.width * ratio
-                    let bottomPadding = window?.safeAreaInsets.bottom ?? 0.0
-                    defaultHeight = ServiceView.bounds.height - 100 - displayViewHeight.constant - bottomPadding
-                    containerViewHeight.constant = defaultHeight
-                }
-            default:
-                let ratio: Double = 114900 / 68700
-                displayViewHeight.constant = displayView.bounds.width * ratio
-                let bottomPadding = window?.safeAreaInsets.bottom ?? 0.0
-                defaultHeight = ServiceView.bounds.height - 100 - displayViewHeight.constant - bottomPadding
-                containerViewHeight.constant = defaultHeight
-            }
-        } else {
-            displayViewHeight.constant = 480
-            containerViewHeight.constant = 150
-        }
-    }
-    
-    private func setCells() {
-        LevelCollectionViewCell.register(target: levelCollectionView)
-    }
-    
-    private func setLevelCollectionView() {
-        levelCollectionView.delegate = self
-        levelCollectionView.dataSource = self
-        levelCollectionView.reloadData()
-    }
-    
-    func registerXib() {
-        let serviceInfoNib = UINib(nibName: "ServiceInfoTableViewCell", bundle: nil)
-        containerTableView.register(serviceInfoNib, forCellReuseIdentifier: "ServiceInfoTableViewCell")
-        
-        let robotNib = UINib(nibName: "RobotTableViewCell", bundle: nil)
-        containerTableView.register(robotNib, forCellReuseIdentifier: "RobotTableViewCell")
-    }
-    
-    func makeDelegate() {
-        containerTableView.dataSource = self
-        containerTableView.delegate = self
-        containerTableView.bounces = false
-    }
-    
-    func setTableView() {
-        //테이블 뷰 셀 사이의 회색 선 없애기
-        containerTableView.separatorStyle = UITableViewCell.SeparatorStyle.none
-    }
-    
-    private func initDropDown() {
-        dropView.layer.cornerRadius = 6
-//        dropView.borderColor = .blue1
-        dropView.borderColor = .darkgrey4
-        
-        DropDown.appearance().textColor = UIColor.black // 아이템 텍스트 색상
-        DropDown.appearance().selectedTextColor = UIColor.red // 선택된 아이템 텍스트 색상
-        DropDown.appearance().backgroundColor = UIColor.white // 아이템 팝업 배경 색상
-        DropDown.appearance().selectionBackgroundColor = UIColor.lightGray // 선택한 아이템 배경 색상
-        DropDown.appearance().setupCornerRadius(6)
-        
-        dropText.borderStyle = .none
-        if (currentBuilding == "") {
-            dropText.text = "Buildings"
-        } else {
-            dropText.text = self.currentBuilding
-        }
-        
-//        dropText.textColor = .blue1
-        dropText.textColor = .darkgrey4
-        
-        dropDown.dismissMode = .automatic // 팝업을 닫을 모드 설정
-    }
-    
-    private func setDropDown() {
-        dropDown.dataSource = self.buildings
-        
-        // anchorView를 통해 UI와 연결
-        dropDown.anchorView = self.dropView
-        
-        // View를 갖리지 않고 View아래에 Item 팝업이 붙도록 설정
-        dropDown.bottomOffset = CGPoint(x: 0, y: dropView.bounds.height)
-        
-        // Item 선택 시 처리
-        dropDown.selectionAction = { [weak self] (index, item) in
-            //선택한 Item을 TextField에 넣어준다.
-            self!.dropText.text = item
-            self!.currentBuilding = item
-            self!.levelCollectionView.reloadData()
-            self!.dropImage.image = UIImage.init(named: "showInfoToggle")
-        }
-        
-        // 취소 시 처리
-        dropDown.cancelAction = { [weak self] in
-            //빈 화면 터치 시 DropDown이 사라지고 아이콘을 원래대로 변경
-            self!.dropImage.image = UIImage.init(named: "showInfoToggle")
-        }
-    }
-    
-    @IBAction func dropDownClicked(_ sender: UIButton) {
-        dropDown.show() // 아이템 팝업을 보여준다.
-        // 아이콘 이미지를 변경하여 DropDown이 펼쳐진 것을 표현
-        self.dropImage.image = UIImage.init(named: "closeInfoToggle")
-    }
-    
-    
     // Display Outputs
     func startTimer() {
         if (timer == nil) {
-            timer = Timer.scheduledTimer(timeInterval: TIMER_INTERVAL, target: self, selector: #selector(self.timerUpdate), userInfo: nil, repeats: true)
+            self.timer = Timer.scheduledTimer(timeInterval: TIMER_INTERVAL, target: self, selector: #selector(self.timerUpdate), userInfo: nil, repeats: true)
             RunLoop.current.add(self.timer!, forMode: .common)
         }
         
@@ -667,15 +576,17 @@ class OlympusServiceViewController: UIViewController, RobotTableViewCellDelegate
     }
     
     @objc func timerUpdate() {
-        let timeStamp = getCurrentTimeInMillisecondsDouble()
-        let dt = timeStamp - pastTime
-        pastTime = timeStamp
+        let timeStamp: Double = getCurrentTimeInMillisecondsDouble()
         
-        if (dt < 100) {
-            elapsedTime += (dt*1e-3)
-        }
-        
+        // Map
         self.updateCoord(data: self.coordToDisplay, flag: self.isShowPathPixel)
+        if (spotAuthTime != 0) {
+            if (Int(timeStamp) - self.spotAuthTime > 3000) {
+                let spotXY: [Double] = [Double(self.spotToDisplay.spot_x), Double(self.spotToDisplay.spot_y)]
+                dissapearSpot(XY: spotXY)
+                self.spotAuthTime = 0
+            }
+        }
         
         // Info
         if (serviceManager.displayOutput.isIndexChanged) {
@@ -692,10 +603,6 @@ class OlympusServiceViewController: UIViewController, RobotTableViewCellDelegate
             resultToDisplay.unitLength = serviceManager.displayOutput.length
             resultToDisplay.scc = serviceManager.displayOutput.scc
             resultToDisplay.phase = serviceManager.displayOutput.phase
-            
-            if (isOpen) {
-                UIView.performWithoutAnimation { self.containerTableView.reloadSections(IndexSet(0...0), with: .none) }
-            }
         }
     }
     
@@ -785,34 +692,36 @@ class OlympusServiceViewController: UIViewController, RobotTableViewCellDelegate
     }
     
     private func displayLevelImage(building: String, level: String, flag: Bool) {
-        if (building != "" && level != "") {
-            print("Display : \(building) , \(level) , \(flag)")
-            self.loadLevel(building: building, level: level, flag: flag, completion: { [self] data, error in
-                DispatchQueue.main.async {
-                    if (data != nil) {
-                        print("Display : data is not nil")
-                        // 빌딩 -> 층 이미지가 있는 경우
+        self.loadLevel(building: building, level: level, flag: flag, completion: { [self] data, error in
+            DispatchQueue.main.async {
+                if (data != nil) {
+                    // 빌딩 -> 층 이미지가 있는 경우
+                    self.imageLevel.isHidden = false
+                    self.noImageLabel.isHidden = true
+                    self.imageLevel.image = data
+                } else {
+                    // 빌딩 -> 층 이미지가 없는 경우
+                    if (flag) {
                         self.imageLevel.isHidden = false
                         self.noImageLabel.isHidden = true
-                        self.imageLevel.image = data
+
+                        self.imageLevel.image = UIImage(named: "emptyLevel")
                     } else {
-                        // 빌딩 -> 층 이미지가 없는 경우
-                        if (flag) {
-                            print("Display : data nil (1)")
-                            self.imageLevel.isHidden = false
-                            self.noImageLabel.isHidden = true
-                            self.imageLevel.image = UIImage(named: "emptyLevel")
-                        } else {
-                            print("Display : data is nil (2)")
-                            self.scatterChart.isHidden = true
-                            self.noImageLabel.isHidden = false
-                            self.imageLevel.isHidden = true
+                        self.scatterChart.isHidden = true
+                        switch (self.region) {
+                        case "Korea":
+                            self.noImageLabel.text = "There is no image of floor"
+                        case "Canada":
+                            self.noImageLabel.text = "There is no image of floor"
+                        default:
+                            self.noImageLabel.text = "There is no image of floor"
                         }
-                        
+                        self.noImageLabel.isHidden = false
+                        self.imageLevel.isHidden = true
                     }
                 }
-            })
-        }
+            }
+        })
     }
     
     private func drawResult(XY: [Double], heading: Double, limits: [Double], isBleOnlyMode: Bool, isPmSuccess: Bool, isIndoor: Bool) {
@@ -862,7 +771,7 @@ class OlympusServiceViewController: UIViewController, RobotTableViewCellDelegate
         
         let chartFlag: Bool = false
         scatterChart.isHidden = false
-//        print("\(currentBuilding) \(currentLevel) Limits : \(limits[0]) , \(limits[1]), \(limits[2]), \(limits[3])")
+        print("\(currentBuilding) \(currentLevel) Limits : \(limits[0]) , \(limits[1]), \(limits[2]), \(limits[3])")
         
         // Configure Chart
         scatterChart.xAxis.axisMinimum = limits[0]
@@ -1135,7 +1044,7 @@ class OlympusServiceViewController: UIViewController, RobotTableViewCellDelegate
     func updateCoord(data: CoordToDisplay, flag: Bool) {
         self.XY[0] = data.x
         self.XY[1] = data.y
-        let isIndoor = data.isIndoor
+        let isIndoor: Bool = data.isIndoor
         
         if (data.building == "") {
             currentBuilding = buildings[0]
@@ -1161,11 +1070,6 @@ class OlympusServiceViewController: UIViewController, RobotTableViewCellDelegate
             $0.0.contains(key)
         }
         let pathPixel: [[Double]] = PpCoord[key] ?? [[Double]]()
-        if let isScaleLoad = chartLoad[key] {
-            if (!isScaleLoad) {
-                self.loadScale(sector_id: self.sector_id, building: currentBuilding, level: currentLevel)
-            }
-        }
         var limits: [Double] = chartLimits[key] ?? [0, 0, 0, 0]
         
         let heading: Double = data.heading
@@ -1185,38 +1089,10 @@ class OlympusServiceViewController: UIViewController, RobotTableViewCellDelegate
                 }
             }
         }
-        
         dropText.text = currentBuilding
     }
     
-    func removeLevelDirectionString(levelName: String) -> String {
-        var levelToReturn: String = levelName
-        if (levelToReturn.contains("_D")) {
-            levelToReturn = levelName.replacingOccurrences(of: "_D", with: "")
-        }
-        return levelToReturn
-    }
-    
-    func notificationCenterAddObserver() {
-        self.backgroundObserver = NotificationCenter.default.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: .main) { _ in
-            self.serviceManager.setBackgroundMode(flag: true)
-        }
-        
-        self.foregroundObserver = NotificationCenter.default.addObserver(forName: UIApplication.didBecomeActiveNotification, object: nil, queue: .main) { _ in
-            self.serviceManager.setBackgroundMode(flag: false)
-        }
-        
-        self.terminateObserver = NotificationCenter.default.addObserver(forName: UIApplication.willTerminateNotification, object: nil, queue: .main) { _ in
-            self.forceStop()
-        }
-    }
-    
-    func notificationCenterRemoveObserver() {
-        NotificationCenter.default.removeObserver(self.backgroundObserver)
-        NotificationCenter.default.removeObserver(self.foregroundObserver)
-        NotificationCenter.default.removeObserver(self.terminateObserver)
-    }
-    
+
     func hideDropDown(flag: Bool) {
         if (flag) {
             // Hide
@@ -1243,108 +1119,183 @@ class OlympusServiceViewController: UIViewController, RobotTableViewCellDelegate
         }
     }
     
-    
-    func tableView(_ tableView: ExpyTableView, expyState state: ExpyState, changeForSection section: Int) {
-        switch state {
-        case .willExpand:
-            print("WILL EXPAND")
-            if (section == 0) {
-                isOpen = true
-            }
-        case .willCollapse:
-            print("WILL COLLAPSE")
-            if (section == 0) {
-                isOpen = false
-            }
-        case .didExpand:
-            print("DID EXPAND")
-            
-        case .didCollapse:
-            print("DID COLLAPSE")
-        }
+
+    @IBAction func tapOnSpotButton(_ sender: UIButton) {
     }
     
-    func tableView(_ tableView: ExpyTableView, canExpandSection section: Int) -> Bool {
-        return true
-    }
     
-    func tableView(_ tableView: ExpyTableView, expandableCellForSection section: Int) -> UITableViewCell {
-        let cell = UITableViewCell()
-        cell.backgroundColor = .systemGray6
-        cell.selectionStyle = .none //선택했을 때 회색되는거 없애기
+    func showOSAResult(data: Spot, flag: Bool) {
+        self.spotAuthTime = data.mobile_time
         
-        cell.separatorInset = UIEdgeInsets(top: 5, left: 10, bottom: 0, right: 10)
-        if section == 0 {
-            cell.textLabel?.text = "  🧑🏻‍🔧 Service Information"
-            cell.textLabel?.font = UIFont(name: AppFontName.bold, size: 16)
-        } else {
-            cell.textLabel?.text = "  🤖 Robot"
-            cell.textLabel?.font = UIFont(name: AppFontName.bold, size: 16)
-            
+        let spotX = Double(data.spot_x) // -9.5
+        let spotY = Double(data.spot_y) // -14
+        let XY: [Double] = [spotX, spotY]
+        
+        self.spotToDisplay = data
+        
+        let key = "\(currentBuilding)_\(currentLevel)"
+        let condition: ((String, [[Double]])) -> Bool = {
+            $0.0.contains(key)
         }
-        return cell
-    }
-}
-
-
-extension OlympusServiceViewController: UITableViewDelegate {
-    // 높이 지정 index별
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        if indexPath.row == 0 {
-            return 40
-        } else {
-            if (indexPath.section == 0) {
-                return 220 + 20
-            } else {
-                return 160 + 20
+        
+        let limits: [Double] = chartLimits[key] ?? [0, 0, 0, 0]
+        let pathPixel: [[Double]] = PpCoord[key] ?? [[Double]]()
+        
+        if (flag) {
+            if (PpCoord.contains(where: condition)) {
+                if (pathPixel.isEmpty) {
+                    scatterChart.isHidden = true
+                } else {
+                    showSpotContents(data: data)
+                    drawSpot(XY: XY, limits: limits)
+                }
             }
-            
+        } else {
+            showSpotContents(data: data)
+            drawSpot(XY: XY, limits: limits)
         }
     }
     
-    func numberOfSections(in tableView: UITableView) -> Int {
-        return 2
+    private func drawSpot(XY: [Double], limits: [Double]) {
+        scatterChart.isHidden = false
+        
+        let chartFlag: Bool = false
+        scatterChart.xAxis.axisMinimum = limits[0]
+        scatterChart.xAxis.axisMaximum = limits[1]
+        scatterChart.leftAxis.axisMinimum = limits[2]
+        scatterChart.leftAxis.axisMaximum = limits[3]
+        
+        scatterChart.xAxis.drawGridLinesEnabled = chartFlag
+        scatterChart.leftAxis.drawGridLinesEnabled = chartFlag
+        scatterChart.rightAxis.drawGridLinesEnabled = chartFlag
+        
+        scatterChart.xAxis.drawAxisLineEnabled = chartFlag
+        scatterChart.leftAxis.drawAxisLineEnabled = chartFlag
+        scatterChart.rightAxis.drawAxisLineEnabled = chartFlag
+        
+        scatterChart.xAxis.centerAxisLabelsEnabled = chartFlag
+        scatterChart.leftAxis.centerAxisLabelsEnabled = chartFlag
+        scatterChart.rightAxis.centerAxisLabelsEnabled = chartFlag
+
+        scatterChart.xAxis.drawLabelsEnabled = chartFlag
+        scatterChart.leftAxis.drawLabelsEnabled = chartFlag
+        scatterChart.rightAxis.drawLabelsEnabled = chartFlag
+        
+        scatterChart.legend.enabled = chartFlag
+        
+        scatterChart.backgroundColor = .clear
+        
+        let values1 = (0..<1).map { (i) -> ChartDataEntry in
+            return ChartDataEntry(x: XY[0], y: XY[1])
+        }
+        
+        let set1 = ScatterChartDataSet(entries: values1, label: "USER")
+        set1.drawValuesEnabled = false
+        set1.setScatterShape(.circle)
+
+        set1.setColor(UIColor.clear)
+        set1.scatterShapeSize = 1
+        
+        let chartData = ScatterChartData(dataSet: set1)
+        chartData.setDrawValues(false)
+        
+        scatterChart.data = chartData
+        
+        let point = scatterChart.getPosition(entry: ChartDataEntry(x: XY[0], y: XY[1]), axis: .left)
+        
+        // Spot Image Size (default = 120)
+        let imageCircle = UIImageView(image: spotCircle?.resize(newWidth: 60))
+        imageCircle.alpha = 0.6
+        imageCircle.frame = CGRect(x: point.x-15, y: point.y-35, width: 30, height: 30)
+        imageCircle.contentMode = .center
+        imageCircle.tag = 150
+        
+        let imageView = UIImageView(image: spotImage?.resize(newWidth: 20))
+        imageView.frame = CGRect(x: point.x-15, y: point.y-35, width: 30, height: 30)
+        imageView.contentMode = .center
+        imageView.tag = 151
+        
+        if let viewWithTagCircle = scatterChart.viewWithTag(150) {
+            viewWithTagCircle.removeFromSuperview()
+        }
+        
+        if let viewWithTagPin = scatterChart.viewWithTag(151) {
+            viewWithTagPin.removeFromSuperview()
+        }
+        
+        
+        UIView.animate(withDuration: 0.5) {
+            self.scatterChart.addSubview(imageView)
+            self.scatterChart.addSubview(imageCircle)
+        }
+        
     }
     
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-//        print("\(indexPath.section)섹션 \(indexPath.row)로우 선택됨")
+    private func dissapearSpot(XY: [Double]) {
+        if let viewWithTagCircle = scatterChart.viewWithTag(150) {
+            UIView.animate(withDuration: 1.0) {
+                viewWithTagCircle.removeFromSuperview()
+            }
+        }
+        
+        if let viewWithTagPin = scatterChart.viewWithTag(151) {
+            UIView.animate(withDuration: 1.0) {
+                viewWithTagPin.removeFromSuperview()
+            }
+        }
+        self.spotContentsView.alpha = 0.0
+        self.mainImage.image = UIImage(named: "TJLABS_Total")
+    }
+    
+    func showSpotContents(data: Spot) {
+        let sector = data.sector_name
+        let building = data.building_name
+        let level = data.level_name
+        let spotId = data.spot_id
+        let spotNumber = data.spot_number
+        let spotName = data.spot_name
+        let spotX: Double = Double(data.spot_x)
+        let spotY: Double = Double(data.spot_y)
+        let sfId = data.spot_feature_id
+        let ccs = data.ccs
+        
+        UIView.animate(withDuration: 0.5) {
+            self.spotContentsView.alpha = 1.0
+        }
+        
+        let locationName: String = building + " in " + sector
+        let sfImageName: String = "sf_id_\(sfId)_small"
+        self.mainImage.image = UIImage(named: sfImageName)
+        
+        self.spotBuildingLabel.text = locationName
+        self.spotLevelLabel.text = level
+        self.spotNameLabel.text = spotName
+        self.spotCcsLabel.text = String(format: "%.4f", ccs)
+    }
+    
+    func notificationCenterAddObserver() {
+        self.backgroundObserver = NotificationCenter.default.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: .main) { _ in
+            self.serviceManager.setBackgroundMode(flag: true)
+        }
+        
+        self.foregroundObserver = NotificationCenter.default.addObserver(forName: UIApplication.didBecomeActiveNotification, object: nil, queue: .main) { _ in
+            self.serviceManager.setBackgroundMode(flag: false)
+        }
+        
+        self.terminateObserver = NotificationCenter.default.addObserver(forName: UIApplication.willTerminateNotification, object: nil, queue: .main) { _ in
+            self.forceStop()
+        }
+    }
+    
+    func notificationCenterRemoveObserver() {
+        NotificationCenter.default.removeObserver(self.backgroundObserver)
+        NotificationCenter.default.removeObserver(self.foregroundObserver)
+        NotificationCenter.default.removeObserver(self.terminateObserver)
     }
 }
 
-extension OlympusServiceViewController: UITableViewDataSource {
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if section == 0 {
-            return 2
-        } else {
-            return 2
-        }
-    }
-    
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if indexPath.section == 0 {
-            let serviceInfoTVC = tableView.dequeueReusableCell(withIdentifier: ServiceInfoTableViewCell.identifier) as!
-            ServiceInfoTableViewCell
-            
-            serviceInfoTVC.backgroundColor = .systemGray6
-            serviceInfoTVC.infoOfLevelsLabel.text = infoOfLevels
-            serviceInfoTVC.velocityLabel.text = "0"
-            
-            serviceInfoTVC.updateResult(data: resultToDisplay)
-            
-            return serviceInfoTVC
-        } else {
-            let robotTVC = tableView.dequeueReusableCell(withIdentifier: RobotTableViewCell.identifier) as!
-            RobotTableViewCell
-            
-            robotTVC.delegate = self
-            robotTVC.backgroundColor = .systemGray6
-            
-            return robotTVC
-        }
-    }
-}
 
-extension OlympusServiceViewController : UICollectionViewDelegate{
+extension OlympusFusionViewController : UICollectionViewDelegate{
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         currentLevel = levels[currentBuilding]![indexPath.row]
         
@@ -1356,13 +1307,13 @@ extension OlympusServiceViewController : UICollectionViewDelegate{
         let pathPixel: [[Double]] = PpCoord[key] ?? [[Double]]()
         
         var limits: [Double] = chartLimits[key] ?? [0, 0, 0, 0]
+        
         if (pathPixel.isEmpty) {
             // RP가 없어서 그리지 않음
             scatterChart.isHidden = true
         } else {
             if (isShowPathPixel) {
                 drawDebug(XY: XY, RP_X: pathPixel[0], RP_Y: pathPixel[1], serverXY: serviceManager.displayOutput.serverResult, tuXY: serviceManager.timeUpdateResult, heading: 0, limits: limits, isBleOnlyMode: self.isBleOnlyMode, isPmSuccess: self.isPathMatchingSuccess, trajectoryStartCoord: serviceManager.displayOutput.trajectoryStartCoord, userTrajectory: serviceManager.displayOutput.userTrajectory, searchArea: serviceManager.displayOutput.searchArea, searchType: serviceManager.displayOutput.searchType, isIndoor: false, trajPm: serviceManager.displayOutput.trajectoryPm, trajOg: serviceManager.displayOutput.trajectoryOg)
-                
             }
             displayLevelImage(building: currentBuilding, level: currentLevel, flag: isShowPathPixel)
         }
@@ -1372,7 +1323,7 @@ extension OlympusServiceViewController : UICollectionViewDelegate{
     
 }
 
-extension OlympusServiceViewController : UICollectionViewDataSource{
+extension OlympusFusionViewController : UICollectionViewDataSource{
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         levels[currentBuilding]!.count
     }
@@ -1380,7 +1331,7 @@ extension OlympusServiceViewController : UICollectionViewDataSource{
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let levelCollectionView = collectionView.dequeueReusableCell(withReuseIdentifier: LevelCollectionViewCell.className, for: indexPath)
                 as? LevelCollectionViewCell else {return UICollectionViewCell()}
-        
+
         levelCollectionView.setName(level: levels[currentBuilding]![indexPath.row],
                                     isClicked: currentLevel == levels[currentBuilding]![indexPath.row] ? true : false)
         displayLevelImage(building: currentBuilding, level: currentLevel, flag: isShowPathPixel)
@@ -1393,7 +1344,7 @@ extension OlympusServiceViewController : UICollectionViewDataSource{
     }
 }
 
-extension OlympusServiceViewController : UICollectionViewDelegateFlowLayout{
+extension OlympusFusionViewController : UICollectionViewDelegateFlowLayout{
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let label = UILabel()
         label.font = .systemFont(ofSize: 14)
@@ -1416,7 +1367,7 @@ extension OlympusServiceViewController : UICollectionViewDelegateFlowLayout{
     }
 }
 
-extension OlympusServiceViewController: CustomSwitchButtonDelegate {
+extension OlympusFusionViewController: CustomSwitchButtonDelegate {
     func isOnValueChange(isOn: Bool) {
         DispatchQueue.main.async { [self] in
             self.modeAuto = isOn
@@ -1433,19 +1384,18 @@ extension OlympusServiceViewController: CustomSwitchButtonDelegate {
                 let uniqueId = self.makeUniqueId(uuid: uuid)
                 serviceManager.startService(user_id: uniqueId, region: self.region, sector_id: self.sector_id, service: self.serviceName, mode: inputMode, completion: { isStart, message in
                     if (isStart) {
-                        print("(ServiceVC) Success : \(message)")
+                        print("(FusionVC) Success : \(message)")
                         serviceManager.addObserver(self)
                         self.notificationCenterAddObserver()
                         self.startTimer()
                     } else {
-                        print("(ServiceVC) Fail : \(message)")
+                        print("(FusionVC) Fail : \(message)")
                         serviceManager.stopService()
                         self.goToBackServiceFail()
                     }
                 })
             } else {
                 self.hideDropDown(flag: false)
-                
                 let isStop = serviceManager.stopService()
                 if (isStop.0) {
                     self.isFileSaved = self.serviceManager.saveSimulationFile()
@@ -1458,13 +1408,13 @@ extension OlympusServiceViewController: CustomSwitchButtonDelegate {
                     self.pastLevel = ""
                     self.displayLevelImage(building: currentBuilding, level: currentLevel, flag: isShowPathPixel)
                     self.notificationCenterRemoveObserver()
-                    
-                    print("(SeviceVC) Success : \(isStop.1)")
-                    self.stopTimer()
+                    print("(FusionVC) Success : \(isStop.1)")
                     serviceManager.removeObserver(self)
+                    self.stopTimer()
                 } else {
-                    print("(SeviceVC) Fail : \(isStop.1)")
+                    print("(FusionVC) Fail : \(isStop.1)")
                     let message: String = isStop.1
+//                    showPopUp(title: "Service Fail", message: message)
                     self.goToBackServiceFail()
                 }
             }

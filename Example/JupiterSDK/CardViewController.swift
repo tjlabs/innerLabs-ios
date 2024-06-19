@@ -451,11 +451,21 @@ extension CardViewController: UICollectionViewDataSource, UICollectionViewDelega
                 } else if (sector_id == 1) {
                     guard let collectVC = self.storyboard?.instantiateViewController(withIdentifier: "CollectViewController") as? CollectViewController else { return }
                     collectVC.cardData = cardItemData[mod]
+                    collectVC.region = region
                     collectVC.userId = uuid
                     collectVC.page = currentPage
                     self.navigationController?.pushViewController(collectVC, animated: true)
-                } else if (serviceName == "FLT+") {
-                    guard let fusionVC = self.storyboard?.instantiateViewController(withIdentifier: "FusionViewController") as? FusionViewController else { return }
+                }
+//                else if (sector_id == 2) {
+//                    guard let fusionVC = self.storyboard?.instantiateViewController(withIdentifier: "OlympusFusionViewController") as? OlympusFusionViewController else { return }
+//                    fusionVC.cardData = cardItemData[mod]
+//                    fusionVC.region = region
+//                    fusionVC.uuid = uuid
+//                    fusionVC.page = currentPage
+//                    self.navigationController?.pushViewController(fusionVC, animated: true)
+//                }
+                else if (serviceName == "FLT+") {
+                    guard let fusionVC = self.storyboard?.instantiateViewController(withIdentifier: "OlympusFusionViewController") as? OlympusFusionViewController else { return }
                     fusionVC.cardData = cardItemData[mod]
                     fusionVC.region = region
                     fusionVC.uuid = uuid
@@ -477,11 +487,12 @@ extension CardViewController: UICollectionViewDataSource, UICollectionViewDelega
                 } else if (sector_id == 1) {
                     guard let collectVC = self.storyboard?.instantiateViewController(withIdentifier: "CollectViewController") as? CollectViewController else { return }
                     collectVC.cardData = cardItemData[mod]
+                    collectVC.region = region
                     collectVC.userId = uuid
                     collectVC.page = currentPage
                     self.navigationController?.pushViewController(collectVC, animated: true)
                 } else if (serviceName == "FLT+") {
-                    guard let fusionVC = self.storyboard?.instantiateViewController(withIdentifier: "FusionViewController") as? FusionViewController else { return }
+                    guard let fusionVC = self.storyboard?.instantiateViewController(withIdentifier: "OlympusFusionViewController") as? OlympusFusionViewController else { return }
                     fusionVC.cardData = cardItemData[mod]
                     fusionVC.region = region
                     fusionVC.uuid = uuid
@@ -503,11 +514,12 @@ extension CardViewController: UICollectionViewDataSource, UICollectionViewDelega
                 } else if (sector_id == 1) {
                     guard let collectVC = self.storyboard?.instantiateViewController(withIdentifier: "CollectViewController") as? CollectViewController else { return }
                     collectVC.cardData = cardItemData[mod]
+                    collectVC.region = region
                     collectVC.userId = uuid
                     collectVC.page = currentPage
                     self.navigationController?.pushViewController(collectVC, animated: true)
                 } else if (serviceName == "FLT+") {
-                    guard let fusionVC = self.storyboard?.instantiateViewController(withIdentifier: "FusionViewController") as? FusionViewController else { return }
+                    guard let fusionVC = self.storyboard?.instantiateViewController(withIdentifier: "OlympusFusionViewController") as? OlympusFusionViewController else { return }
                     fusionVC.cardData = cardItemData[mod]
                     fusionVC.region = region
                     fusionVC.uuid = uuid
@@ -546,6 +558,7 @@ extension CardViewController: UICollectionViewDataSource, UICollectionViewDelega
                 else if (sector_id == 10) {
                     guard let collectVC = self.storyboard?.instantiateViewController(withIdentifier: "CollectViewController") as? CollectViewController else { return }
                     collectVC.cardData = cardItemData[mod]
+                    collectVC.region = region
                     collectVC.userId = uuid
                     collectVC.page = currentPage
                     self.navigationController?.pushViewController(collectVC, animated: true)
@@ -611,6 +624,7 @@ extension CardViewController: UICollectionViewDataSource, UICollectionViewDelega
                 } else if (sector_id == 10) {
                     guard let collectVC = self.storyboard?.instantiateViewController(withIdentifier: "CollectViewController") as? CollectViewController else { return }
                     collectVC.cardData = cardItemData[mod]
+                    collectVC.region = region
                     collectVC.userId = uuid
                     collectVC.page = currentPage
                     self.navigationController?.pushViewController(collectVC, animated: true)
@@ -644,6 +658,7 @@ extension CardViewController: UICollectionViewDataSource, UICollectionViewDelega
                 } else if (sector_id == 1) {
                     guard let collectVC = self.storyboard?.instantiateViewController(withIdentifier: "CollectViewController") as? CollectViewController else { return }
                     collectVC.cardData = cardItemData[mod]
+                    collectVC.region = region
                     collectVC.userId = uuid
                     collectVC.page = currentPage
                     self.navigationController?.pushViewController(collectVC, animated: true)
@@ -671,6 +686,7 @@ extension CardViewController: UICollectionViewDataSource, UICollectionViewDelega
                 else if (sector_id == 10) {
                     guard let collectVC = self.storyboard?.instantiateViewController(withIdentifier: "CollectViewController") as? CollectViewController else { return }
                     collectVC.cardData = cardItemData[mod]
+                    collectVC.region = region
                     collectVC.userId = uuid
                     collectVC.page = currentPage
                     self.navigationController?.pushViewController(collectVC, animated: true)

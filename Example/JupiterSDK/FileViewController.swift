@@ -280,6 +280,9 @@ extension FileViewController: UICollectionViewDataSource {
         }
         
         cell.fileNameLabel.text = fileName
+//        cell.fileNameLabel.adjustsFontSizeToFitWidth = true
+//        cell.fileNameLabel.minimumScaleFactor = 0.3
+//        cell.fileNameLabel.lineBreakMode = .byTruncatingTail
         cell.fileNameLabel.sizeToFit()
         
         return cell
