@@ -1,14 +1,7 @@
-
 import UIKit
 import Alamofire
 import Kingfisher
 import JupiterSDK
-
-protocol AddCardDelegate {
-    func sendCardItemData(data: [CardItemData])
-    
-    func sendPage(data: Int)
-}
 
 class AddCardViewController: UIViewController, UITextFieldDelegate {
     
@@ -22,7 +15,7 @@ class AddCardViewController: UIViewController, UITextFieldDelegate {
     
     var page: Int = 0
 
-    var delegate : AddCardDelegate?
+    var delegate: AddCardDelegate?
     var currentRegion: String = ""
     var confirmText: String = ""
     var enrollSuccessText: String = ""

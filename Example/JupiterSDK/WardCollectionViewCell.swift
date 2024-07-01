@@ -10,7 +10,4 @@ class WardCollectionViewCell: UICollectionViewCell {
         super.awakeFromNib()
         // Initialization code
     }
-    
-    
-
 }

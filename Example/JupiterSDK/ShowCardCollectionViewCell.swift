@@ -1,26 +1,15 @@
-//
-//  ShowCardCollectionViewCell.swift
-//  JupiterSDK_Example
-//
-//  Created by 신동현 on 2022/04/21.
-//  Copyright © 2022 CocoaPods. All rights reserved.
-//
-
 import UIKit
 
 class ShowCardCollectionViewCell: UICollectionViewCell {
     var delete : (() -> ()) = {}
 
     @IBOutlet weak var cardUIView: UIView!
-
     @IBOutlet weak var cardHeight: NSLayoutConstraint!
     @IBOutlet weak var cardWidth: NSLayoutConstraint!
     @IBOutlet weak var nameLabel: UILabel!
-    
     @IBOutlet weak var deleteButton: UIButton!
     @IBOutlet weak var cardShowImage: UIImageView!
     @IBOutlet weak var sectorShowImage: UIImageView!
-    
     @IBOutlet weak var sectorShowImageWidth: NSLayoutConstraint!
     @IBOutlet weak var sectorShowImageHeight: NSLayoutConstraint!
     @IBOutlet weak var sectorShowImageLeading: NSLayoutConstraint!

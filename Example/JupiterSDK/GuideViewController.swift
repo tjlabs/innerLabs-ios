@@ -13,10 +13,6 @@ import CoreLocation
 import GoogleMaps
 import SnapKit
 
-protocol GuideSendPageDelegate {
-    func sendPage(data: Int)
-}
-
 class GuideViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewDataSource {
     
     @IBOutlet weak var containerMapView: UIView!

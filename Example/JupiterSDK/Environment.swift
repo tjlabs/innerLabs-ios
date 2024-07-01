@@ -1,11 +1,3 @@
-//
-//  Environment.swift
-//  JupiterSDK_Example
-//
-//  Created by 신동현 on 2022/07/20.
-//  Copyright © 2022 CocoaPods. All rights reserved.
-//
-
 import Foundation
 
 public enum Environment {

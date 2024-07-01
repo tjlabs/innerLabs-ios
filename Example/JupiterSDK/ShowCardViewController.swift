@@ -2,15 +2,7 @@ import UIKit
 import Kingfisher
 import JupiterSDK
 
-
-protocol ShowCardDelegate {
-    func sendCardItemData(data: [CardItemData])
-    
-    func sendPage(data: Int)
-}
-
 class ShowCardViewController: UIViewController, AddCardDelegate {
-    
     func sendPage(data: Int) {
         page = data
     }

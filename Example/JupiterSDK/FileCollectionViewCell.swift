@@ -9,5 +9,4 @@ class FileCollectionViewCell: UICollectionViewCell {
         super.awakeFromNib()
         // Initialization code
     }
-
 }

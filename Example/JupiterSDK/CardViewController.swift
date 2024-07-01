@@ -31,7 +31,6 @@ class CardViewController: UIViewController, ServiceViewPageDelegate, FusionViewP
     @IBOutlet weak var menuView: UIView!
     @IBOutlet weak var menuViewWidth: NSLayoutConstraint!
     @IBOutlet weak var menuViewRight: NSLayoutConstraint!
-    
     @IBOutlet weak var showCardButton: UIButton!
     @IBOutlet weak var addCardButton: UIButton!
     
@@ -84,58 +83,49 @@ class CardViewController: UIViewController, ServiceViewPageDelegate, FusionViewP
             break
         case .ended:
             if isMenuOpened {
-                hideMenu() {
-                    
-                }
+                hideMenu() {}
                 isMenuOpened = false
-            }
-            else {
+            } else {
                 openMenu()
                 isMenuOpened = true
             }
             break
         default:
-            print("default")
+            break
         }
-        
     }
     
     func openMenu() {
         menuViewRight.constant = 0
-            
         menuView.isHidden = false
         blackView.isHidden = false
         
-            UIView.animate(withDuration: 0.3, animations: {
-                self.view.layoutIfNeeded()
-                self.blackView.alpha = 0.5
-            }, completion: { (complete) in
-            })
-        }
+        UIView.animate(withDuration: 0.3, animations: {
+            self.view.layoutIfNeeded()
+            self.blackView.alpha = 0.5
+        }, completion: { (complete) in })
+    }
         
     func hideMenu(completionHandler: @escaping () -> Void) {
         menuViewRight.constant = -menuViewRight.constant
 
         UIView.animate(withDuration: 0.1, animations: {
-                self.view.layoutIfNeeded()
-                self.blackView.alpha = 0
-            }, completion: { (complete) in
-                self.blackView.isHidden = true
-                self.menuView.isHidden = true
-                completionHandler()
-            })
+            self.view.layoutIfNeeded()
+            self.blackView.alpha = 0
+        }, completion: { (complete) in
+            self.blackView.isHidden = true
+            self.menuView.isHidden = true
+            completionHandler()
+        })
     }
     
     func initCardVC() {
         setData(data: cardItemData)
-        
         collectionViewSize = [collectionView.frame.width, collectionView.frame.height]
-        
 //        let sizes = checkImageSize(cards: cardImages, sectors: sectorImages)
 //        print("Card -> Size of CollectionView : \(collectionViewSize)")
 //        print("Card -> Size of Card : \(sizes.sizeCard)")
 //        print("Card -> Size of Sector : \(sizes.sizeSector)")
-        
         setupCollectionView()
         setupProgressView()
         
@@ -233,9 +223,7 @@ class CardViewController: UIViewController, ServiceViewPageDelegate, FusionViewP
         var progressValue: Float = 0.0
         let cardCount = cardItemData.count
         var modPage = (currentPage+1)%cardCount
-        if (modPage == 0) {
-            modPage = cardItemData.count
-        }
+        modPage = (modPage == 0) ? cardItemData.count : modPage
         progressValue = Float(modPage)/Float(cardItemData.count)
 
         return progressValue
@@ -266,15 +254,11 @@ class CardViewController: UIViewController, ServiceViewPageDelegate, FusionViewP
         collectionView.decelerationRate = UIScrollView.DecelerationRate.fast
     }
     
-    
     @IBAction func tapShowUserInfoButton(_ sender: UIButton) {
         if isMenuOpened {
-            hideMenu() {
-                
-            }
+            hideMenu() { }
             isMenuOpened = false
-        }
-        else {
+        } else {
             openMenu()
             isMenuOpened = true
         }
@@ -415,15 +399,12 @@ extension CardViewController: UICollectionViewDataSource, UICollectionViewDelega
             // Sector Image
             cell.cardImageView.contentMode = .scaleAspectFit
             cell.cardImageView.image = cardImages[mod]
-            
     //        cell.sectorNameLeading.constant = floor((cell.sectorImageView.frame.size.width - cell.sectorImageView.frame.size.height * 0.6)/2)
-            
             if (sectorID == 0) {
                 cell.sectorImageView.image = sectorImages[mod]
             } else if (sectorID == 10) {
                 cell.sectorImageView.image = nil
-            }
-            else {
+            } else {
                 let urlSector = URL(string: "https://storage.googleapis.com/\(IMAGE_URL)/card/\(sectorID)/main_image.png")
                 cell.sectorImageView.kf.setImage(with: urlSector!, placeholder: nil, options: [.transition(.fade(1.2))], completionHandler: nil)
             }
@@ -790,31 +771,18 @@ extension CardViewController : UIScrollViewDelegate {
         let layout = self.collectionView.collectionViewLayout as! UICollectionViewFlowLayout
         
         let cellWidth = floor(collectionView.frame.width * cellWidthRatio)
-        
         let cellWidthIncludeSpacing = cellWidth + layout.minimumLineSpacing
-        
         let offsetX = collectionView.contentOffset.x
         let index = (offsetX + collectionView.contentInset.left) / cellWidthIncludeSpacing
         let roundedIndex = round(index)
         let indexPath = IndexPath(item: Int(roundedIndex), section: 0)
         
-//        print("indexPath :", indexPath)
-        
-//        print("roundedIndex : \(roundedIndex)")
-//        print("previousIndex : \(previousIndex)")
-        
-        if let cell = collectionView.cellForItem(at: indexPath) {
-//            print("This Cell will be Original Size :", indexPath)
-//            animateZoomforCell(zoomCell: cell)
-        }
+//        if let cell = collectionView.cellForItem(at: indexPath) { }
         if Int(roundedIndex) != previousIndex {
             let preIndexPath = IndexPath(item: previousIndex, section: 0)
-            if let preCell = collectionView.cellForItem(at: preIndexPath)
-            {
-//                print("This Cell will be Smaller Size :", preIndexPath)
-//                animateZoomforCellremove(zoomCell: preCell)
-                
-            }
+//            if let preCell = collectionView.cellForItem(at: preIndexPath)
+//            {
+//            }
             previousIndex = indexPath.item
         }
     }
@@ -833,5 +801,3 @@ extension CardViewController : UIScrollViewDelegate {
         }
     }
 }
-
-

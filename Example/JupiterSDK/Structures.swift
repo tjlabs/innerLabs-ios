@@ -1,7 +1,10 @@
 import Foundation
 
-enum TableList{
-    case sector
+struct AppFontName {
+    static let bold = "NotoSansKR-Bold"
+    static let medium = "NotoSansKR-Medium"
+    static let regular = "NotoSansKR-Regular"
+    static let light = "NotoSansKR-Light"
 }
 
 struct CardItemData: Codable {
@@ -15,7 +18,7 @@ struct CardItemData: Codable {
     public var infoLevel: [String: [String]]
     
     public init(sector_id: Int, sector_name: String, description: String, cardColor: String, mode: String, service: String,
-                infoBuilding: [String], infoLevel: [String:[String]]) {
+                infoBuilding: [String], infoLevel: [String: [String]]) {
         self.sector_id = sector_id
         self.sector_name = sector_name
         self.description = description
@@ -116,23 +119,6 @@ struct CardInfo: Codable {
         case service_request = "request_service"
         case building_level
     }
-    
-//    init(from decoder: Decoder) throws {
-//        let container = try decoder.container(keyedBy: CodingKeys.self)
-//        sector_id = try container.decode(Int.self, forKey: .sector_id)
-//        sector_name = try container.decode(String.self, forKey: .sector_name)
-//        description = try container.decode(String.self, forKey: .description)
-//        card_color = try container.decode(String.self, forKey: .card_color)
-//        dead_reckoning = try container.decode(String.self, forKey: .dead_reckoning)
-//
-//        if let serviceRequest = try? container.decode(String.self, forKey: .service_request) {
-//            service_request = serviceRequest
-//        } else {
-//            service_request = try container.decode(String.self, forKey: .init(stringValue: "service_request")!)
-//        }
-//
-//        building_level = try container.decode([[String]].self, forKey: .building_level)
-//    }
 }
 
 struct CardInfoNoCustomKeys: Codable {

@@ -31,6 +31,8 @@
 		B33C72152C329B09005ABE9B /* AppConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = B33C72142C329B09005ABE9B /* AppConstants.swift */; };
 		B33C72192C329E8F005ABE9B /* Structures.swift in Sources */ = {isa = PBXBuildFile; fileRef = B33C72182C329E8F005ABE9B /* Structures.swift */; };
 		B33C721B2C329EF5005ABE9B /* OlympusStructures.swift in Sources */ = {isa = PBXBuildFile; fileRef = B33C721A2C329EF4005ABE9B /* OlympusStructures.swift */; };
+		B33C721D2C32A430005ABE9B /* Protocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = B33C721C2C32A430005ABE9B /* Protocols.swift */; };
+		B33C721F2C32A465005ABE9B /* Enums.swift in Sources */ = {isa = PBXBuildFile; fileRef = B33C721E2C32A465005ABE9B /* Enums.swift */; };
 		B340EE3328093FB20096E404 /* CardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B340EE3228093FB20096E404 /* CardViewController.swift */; };
 		B34111B92AD6503400CFA422 /* L1_1F.csv in Resources */ = {isa = PBXBuildFile; fileRef = B34111AF2AD6503300CFA422 /* L1_1F.csv */; };
 		B34111BA2AD6503400CFA422 /* L3_4F.csv in Resources */ = {isa = PBXBuildFile; fileRef = B34111B02AD6503300CFA422 /* L3_4F.csv */; };
@@ -68,7 +70,7 @@
 		B3967481299CC5EF00C6DC4D /* PopUpWithButtonViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3967480299CC5EF00C6DC4D /* PopUpWithButtonViewController.swift */; };
 		B3985D4A299A1F1E008E7F78 /* FileCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3985D48299A1F1E008E7F78 /* FileCollectionViewCell.swift */; };
 		B3985D4B299A1F1E008E7F78 /* FileCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B3985D49299A1F1E008E7F78 /* FileCollectionViewCell.xib */; };
-		B39C2D602C1041D700A34D0C /* OlympusProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = B39C2D5F2C1041D700A34D0C /* OlympusProtocol.swift */; };
+		B39C2D602C1041D700A34D0C /* OlympusNetworkURL.swift in Sources */ = {isa = PBXBuildFile; fileRef = B39C2D5F2C1041D700A34D0C /* OlympusNetworkURL.swift */; };
 		B3A641AD2B621BF400845B32 /* L3_5F.csv in Resources */ = {isa = PBXBuildFile; fileRef = B3A641AC2B621BF400845B32 /* L3_5F.csv */; };
 		B3AA004928313C97007CD284 /* UILabelExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3AA004828313C97007CD284 /* UILabelExtension.swift */; };
 		B3AA004B28313CDF007CD284 /* UITextFieldExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3AA004A28313CDF007CD284 /* UITextFieldExtension.swift */; };
@@ -116,7 +118,7 @@
 		B3E0A4F62887E51700B88E08 /* Environment.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3E0A4F52887E51700B88E08 /* Environment.swift */; };
 		B3E6C0F8292D6B1400D0AC13 /* ImageCacheManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3E6C0F7292D6B1400D0AC13 /* ImageCacheManager.swift */; };
 		B3F5C77E282A5408009BEDB9 /* Network.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3F5C77D282A5408009BEDB9 /* Network.swift */; };
-		B3F5C780282A5519009BEDB9 /* Protocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3F5C77F282A5519009BEDB9 /* Protocol.swift */; };
+		B3F5C780282A5519009BEDB9 /* NetworkURL.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3F5C77F282A5519009BEDB9 /* NetworkURL.swift */; };
 		B3F9F31E298B701500BA5833 /* morguard_7F.csv in Resources */ = {isa = PBXBuildFile; fileRef = B3F9F31D298B701500BA5833 /* morguard_7F.csv */; };
 		B3FD74E9286989A600CD4D74 /* CustomSwitchButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3FD74E8286989A600CD4D74 /* CustomSwitchButton.swift */; };
 		B3FD74EC2869A38800CD4D74 /* Gallery_4F.csv in Resources */ = {isa = PBXBuildFile; fileRef = B3FD74EA2869A38800CD4D74 /* Gallery_4F.csv */; };
@@ -171,6 +173,8 @@
 		B33C72142C329B09005ABE9B /* AppConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppConstants.swift; sourceTree = "<group>"; };
 		B33C72182C329E8F005ABE9B /* Structures.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Structures.swift; sourceTree = "<group>"; };
 		B33C721A2C329EF4005ABE9B /* OlympusStructures.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OlympusStructures.swift; sourceTree = "<group>"; };
+		B33C721C2C32A430005ABE9B /* Protocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Protocols.swift; sourceTree = "<group>"; };
+		B33C721E2C32A465005ABE9B /* Enums.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Enums.swift; sourceTree = "<group>"; };
 		B340EE3228093FB20096E404 /* CardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardViewController.swift; sourceTree = "<group>"; };
 		B34111AF2AD6503300CFA422 /* L1_1F.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = L1_1F.csv; sourceTree = "<group>"; };
 		B34111B02AD6503300CFA422 /* L3_4F.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = L3_4F.csv; sourceTree = "<group>"; };
@@ -208,7 +212,7 @@
 		B3967480299CC5EF00C6DC4D /* PopUpWithButtonViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopUpWithButtonViewController.swift; sourceTree = "<group>"; };
 		B3985D48299A1F1E008E7F78 /* FileCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileCollectionViewCell.swift; sourceTree = "<group>"; };
 		B3985D49299A1F1E008E7F78 /* FileCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = FileCollectionViewCell.xib; sourceTree = "<group>"; };
-		B39C2D5F2C1041D700A34D0C /* OlympusProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OlympusProtocol.swift; sourceTree = "<group>"; };
+		B39C2D5F2C1041D700A34D0C /* OlympusNetworkURL.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OlympusNetworkURL.swift; sourceTree = "<group>"; };
 		B3A641AC2B621BF400845B32 /* L3_5F.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = L3_5F.csv; sourceTree = "<group>"; };
 		B3AA004828313C97007CD284 /* UILabelExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UILabelExtension.swift; sourceTree = "<group>"; };
 		B3AA004A28313CDF007CD284 /* UITextFieldExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITextFieldExtension.swift; sourceTree = "<group>"; };
@@ -258,7 +262,7 @@
 		B3E0A4F52887E51700B88E08 /* Environment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Environment.swift; sourceTree = "<group>"; };
 		B3E6C0F7292D6B1400D0AC13 /* ImageCacheManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageCacheManager.swift; sourceTree = "<group>"; };
 		B3F5C77D282A5408009BEDB9 /* Network.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Network.swift; sourceTree = "<group>"; };
-		B3F5C77F282A5519009BEDB9 /* Protocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Protocol.swift; sourceTree = "<group>"; };
+		B3F5C77F282A5519009BEDB9 /* NetworkURL.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "\U0010NetworkURL.swift"; sourceTree = "<group>"; };
 		B3F9F31D298B701500BA5833 /* morguard_7F.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = morguard_7F.csv; sourceTree = "<group>"; };
 		B3FD74E8286989A600CD4D74 /* CustomSwitchButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomSwitchButton.swift; sourceTree = "<group>"; };
 		B3FD74EA2869A38800CD4D74 /* Gallery_4F.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Gallery_4F.csv; sourceTree = "<group>"; };
@@ -328,11 +332,8 @@
 			children = (
 				B33C72162C329DCC005ABE9B /* Constants */,
 				B30EED7F289381F9009A3EDA /* ViewController */,
-				B3D194D9282E270C004E6F9A /* Guide */,
-				B3455280282AACD000F0DD3E /* Output */,
 				B345527F282AA00700F0DD3E /* Network */,
 				B360D88728090D400084FB22 /* Fonts */,
-				B3BD69B127E9A88B00A32A7A /* Sector */,
 				B3BD69A227E9A53C00A32A7A /* Utils */,
 				B3BD699627E9A48E00A32A7A /* Color */,
 				607FACD51AFB9204008FA782 /* AppDelegate.swift */,
@@ -435,12 +436,9 @@
 				B3C2348D2C2CFC3300E606F3 /* Cards */,
 				B3C2348C2C2CFC2600E606F3 /* Olympus */,
 				607FACD71AFB9204008FA782 /* MainViewController.swift */,
-				B3D194DE282E2782004E6F9A /* GuideViewController.swift */,
 				B3CC3C06283231E000D50522 /* PrivacyPolicyViewController.swift */,
 				B3B7FBF42856DA4000E23EDF /* PopUpViewController.swift */,
 				B3967480299CC5EF00C6DC4D /* PopUpWithButtonViewController.swift */,
-				B30EED862893B64C009A3EDA /* CollectViewController.swift */,
-				B3DE961E299A111B00352F40 /* FileViewController.swift */,
 			);
 			name = ViewController;
 			sourceTree = "<group>";
@@ -452,6 +450,8 @@
 				B33C72142C329B09005ABE9B /* AppConstants.swift */,
 				B33C72182C329E8F005ABE9B /* Structures.swift */,
 				B33C721A2C329EF4005ABE9B /* OlympusStructures.swift */,
+				B33C721C2C32A430005ABE9B /* Protocols.swift */,
+				B33C721E2C32A465005ABE9B /* Enums.swift */,
 			);
 			name = Constants;
 			sourceTree = "<group>";
@@ -459,6 +459,9 @@
 		B33C72172C329DF3005ABE9B /* Cells */ = {
 			isa = PBXGroup;
 			children = (
+				B3D194D9282E270C004E6F9A /* Guide */,
+				B3455280282AACD000F0DD3E /* Output */,
+				B3BD69B127E9A88B00A32A7A /* Sector */,
 				B3844E8C28099EE3007A5215 /* CardCollectionViewCell.swift */,
 				B3844E8D28099EE3007A5215 /* CardCollectionViewCell.xib */,
 				B3B4F85828114EEB009F9E6C /* ShowCardCollectionViewCell.swift */,
@@ -475,8 +478,8 @@
 			isa = PBXGroup;
 			children = (
 				B3F5C77D282A5408009BEDB9 /* Network.swift */,
-				B39C2D5F2C1041D700A34D0C /* OlympusProtocol.swift */,
-				B3F5C77F282A5519009BEDB9 /* Protocol.swift */,
+				B39C2D5F2C1041D700A34D0C /* OlympusNetworkURL.swift */,
+				B3F5C77F282A5519009BEDB9 /* NetworkURL.swift */,
 			);
 			name = Network;
 			sourceTree = "<group>";
@@ -573,10 +576,13 @@
 		B3C2348E2C2CFC4800E606F3 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				B3D194DE282E2782004E6F9A /* GuideViewController.swift */,
 				B31EC7D82876C03A00799659 /* ServiceViewController.swift */,
 				B30EED7B28936CB5009A3EDA /* TipsTownViewController.swift */,
 				B3D397A628F5A64700B5DBED /* SpotViewController.swift */,
 				B38C7F4B28FE6AC200DEEF32 /* NeptuneViewController.swift */,
+				B30EED862893B64C009A3EDA /* CollectViewController.swift */,
+				B3DE961E299A111B00352F40 /* FileViewController.swift */,
 				B349730F293847DC0078C872 /* FusionViewController.swift */,
 			);
 			name = Services;
@@ -946,18 +952,19 @@
 				B3455283282AB7B400F0DD3E /* ServiceInfoTableViewCell.swift in Sources */,
 				B368814D2A6FA584005CD436 /* UsefulFunctions.swift in Sources */,
 				B3FD74E9286989A600CD4D74 /* CustomSwitchButton.swift in Sources */,
-				B39C2D602C1041D700A34D0C /* OlympusProtocol.swift in Sources */,
+				B39C2D602C1041D700A34D0C /* OlympusNetworkURL.swift in Sources */,
 				B3C09C64280E941B00E6F55F /* ShowCardViewController.swift in Sources */,
 				B3BD69AC27E9A57E00A32A7A /* UICollectionViewRegisterable.swift in Sources */,
 				B3985D4A299A1F1E008E7F78 /* FileCollectionViewCell.swift in Sources */,
 				607FACD81AFB9204008FA782 /* MainViewController.swift in Sources */,
 				B3AA004D28313CEA007CD284 /* UITextViewExtension.swift in Sources */,
 				B3844E8E28099EE3007A5215 /* CardCollectionViewCell.swift in Sources */,
+				B33C721D2C32A430005ABE9B /* Protocols.swift in Sources */,
 				B340EE3328093FB20096E404 /* CardViewController.swift in Sources */,
 				B3D194E2282E2B2B004E6F9A /* LocationTableViewCell.swift in Sources */,
 				B3DE146F280E7556006DA43C /* UIApplicationExtension.swift in Sources */,
 				B3D194DC282E2726004E6F9A /* JupiterGuideTableViewCell.swift in Sources */,
-				B3F5C780282A5519009BEDB9 /* Protocol.swift in Sources */,
+				B3F5C780282A5519009BEDB9 /* NetworkURL.swift in Sources */,
 				B3967481299CC5EF00C6DC4D /* PopUpWithButtonViewController.swift in Sources */,
 				B3D19DEC29079CE000A5F7D4 /* SpotTableViewCell.swift in Sources */,
 				B3CC3C07283231E000D50522 /* PrivacyPolicyViewController.swift in Sources */,
@@ -966,6 +973,7 @@
 				B3F5C77E282A5408009BEDB9 /* Network.swift in Sources */,
 				B33C721B2C329EF5005ABE9B /* OlympusStructures.swift in Sources */,
 				B3BD69A427E9A54700A32A7A /* StringExtension.swift in Sources */,
+				B33C721F2C32A465005ABE9B /* Enums.swift in Sources */,
 				B388AC31282BF6A3001C3D71 /* RobotTableViewCell.swift in Sources */,
 				B3D48909289B96F900A8154C /* RemoteConfigManager.swift in Sources */,
 				B3BD69B427E9A8AD00A32A7A /* LevelCollectionViewCell.swift in Sources */,

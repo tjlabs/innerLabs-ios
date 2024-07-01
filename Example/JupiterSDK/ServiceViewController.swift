@@ -7,10 +7,6 @@ import Charts
 import DropDown
 import SwiftUI
 
-protocol ServiceViewPageDelegate {
-    func sendPage(data: Int)
-}
-
 class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyTableViewDelegate, ExpyTableViewDataSource, Observer {
     
     func robotTableViewCell(_ cell: RobotTableViewCell, didTapButtonWithValue value: String) {

@@ -7,10 +7,6 @@ import Charts
 import DropDown
 import SwiftUI
 
-protocol FusionViewPageDelegate {
-    func sendPage(data: Int)
-}
-
 class FusionViewController: UIViewController, Observer {
     
     func report(flag: Int) {

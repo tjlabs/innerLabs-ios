@@ -58,14 +58,8 @@ class OlympusServiceViewController: UIViewController, RobotTableViewCellDelegate
             self.observerTime = result.mobile_time
             let building = result.building_name
             let level = result.level_name
-            var x = result.x
-            var y = result.y
-
-            if (result.ble_only_position) {
-                self.isBleOnlyMode = true
-            } else {
-                self.isBleOnlyMode = false
-            }
+            
+            self.isBleOnlyMode = result.ble_only_position
             self.isPathMatchingSuccess = self.serviceManager.displayOutput.isPmSuccess
             
             if (self.buildings.contains(building)) {
@@ -73,8 +67,8 @@ class OlympusServiceViewController: UIViewController, RobotTableViewCellDelegate
                     if (levelList.contains(level)) {
                         self.coordToDisplay.building = building
                         self.coordToDisplay.level = level
-                        self.coordToDisplay.x = x
-                        self.coordToDisplay.y = y
+                        self.coordToDisplay.x = result.x
+                        self.coordToDisplay.y = result.y
                         self.coordToDisplay.heading = result.absolute_heading
                         self.coordToDisplay.isIndoor = result.isIndoor
                     }
@@ -84,15 +78,11 @@ class OlympusServiceViewController: UIViewController, RobotTableViewCellDelegate
     }
     
     @IBOutlet var serviceView: UIView!
-    
     @IBOutlet weak var displayView: UIView!
     @IBOutlet weak var displayViewHeight: NSLayoutConstraint!
-    
     @IBOutlet weak var imageLevel: UIImageView!
-    
     @IBOutlet weak var scatterChart: ScatterChartView!
     @IBOutlet weak var noImageLabel: UILabel!
-    
     @IBOutlet weak var containerTableView: ExpyTableView!
     @IBOutlet weak var containerViewHeight: NSLayoutConstraint!
     
@@ -1360,7 +1350,7 @@ extension OlympusServiceViewController : UICollectionViewDelegate{
         let key = "\(currentBuilding)_\(currentLevel)"
         let pathPixel: [[Double]] = ppCoord[key] ?? [[Double]]()
         
-        var limits: [Double] = chartLimits[key] ?? [0, 0, 0, 0]
+        let limits: [Double] = chartLimits[key] ?? [0, 0, 0, 0]
         if (pathPixel.isEmpty) {
             // RP가 없어서 그리지 않음
             scatterChart.isHidden = true

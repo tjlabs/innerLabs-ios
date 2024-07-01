@@ -1,26 +1,14 @@
-//
-//  CardCollectionViewCell.swift
-//  JupiterSDK_Example
-//
-//  Created by 신동현 on 2022/04/15.
-//  Copyright © 2022 CocoaPods. All rights reserved.
-//
-
 import UIKit
 
 class CardCollectionViewCell: UICollectionViewCell {
     
     @IBOutlet weak var centerLabel: UILabel!
-    
     @IBOutlet weak var cardImageView: UIImageView!
     @IBOutlet weak var sectorImageView: UIImageView!
-    
     @IBOutlet weak var sectorName: UILabel!
     @IBOutlet weak var sectorDescription: UILabel!
-
     @IBOutlet weak var sectorImageWidth: NSLayoutConstraint!
     @IBOutlet weak var sectorImageFromTop: NSLayoutConstraint!
-    
     @IBOutlet weak var sectorNameLeading: NSLayoutConstraint!
     
     override func awakeFromNib() {
