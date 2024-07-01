@@ -132,7 +132,7 @@ PODS:
     - nanopb/encode (= 2.30909.0)
   - nanopb/decode (2.30909.0)
   - nanopb/encode (2.30909.0)
-  - OlympusSDK (0.0.15)
+  - OlympusSDK (0.0.20)
   - PromisesObjC (2.3.1)
   - PromisesSwift (2.3.1):
     - PromisesObjC (= 2.3.1)
@@ -155,12 +155,14 @@ DEPENDENCIES:
   - GooglePlaces (= 4.0.0)
   - JupiterSDK (from `../`)
   - Kingfisher
-  - OlympusSDK (= 0.0.15)
+  - OlympusSDK (= 0.0.20)
   - SnapKit
   - SwiftCSVExport (= 2.6.0)
   - TextFieldEffects
 
 SPEC REPOS:
+  https://github.com/CocoaPods/Specs.git:
+    - OlympusSDK
   trunk:
     - Alamofire
     - AWSCore
@@ -186,7 +188,6 @@ SPEC REPOS:
     - GoogleUtilities
     - Kingfisher
     - nanopb
-    - OlympusSDK
     - PromisesObjC
     - PromisesSwift
     - SnapKit
@@ -224,7 +225,7 @@ SPEC CHECKSUMS:
   JupiterSDK: f86a70e56cf94616d7e8cd4b801fa65688a97f11
   Kingfisher: 1d14e9f59cbe19389f591c929000332bf70efd32
   nanopb: b552cce312b6c8484180ef47159bc0f65a1f0431
-  OlympusSDK: 40137661112c327bf95549e49075dcdbb5b64d95
+  OlympusSDK: 578d4b3e5de89afe7b2315480e6ee29d58dedd7d
   PromisesObjC: c50d2056b5253dadbd6c2bea79b0674bd5a52fa4
   PromisesSwift: 28dca69a9c40779916ac2d6985a0192a5cb4a265
   SnapKit: e01d52ebb8ddbc333eefe2132acf85c8227d9c25
@@ -232,6 +233,6 @@ SPEC CHECKSUMS:
   SwiftCSVExport: d9db3fb80484115028792f8d539445e3fb2c0ecb
   TextFieldEffects: 529b8aff706fb40f82c41c780c0777941a893796
 
-PODFILE CHECKSUM: 6b982640cce2729bc2df263f37e59fdd1150d850
+PODFILE CHECKSUM: a6d364c2b2e44399a29b19f7a51281ffb4dc4bd3
 
-COCOAPODS: 1.14.3
+COCOAPODS: 1.15.2

@@ -1,28 +1,16 @@
 import UIKit
 import GoogleMaps
 import FirebaseCore
-//import Flutter
-//import FlutterPluginRegistrant
 
 @UIApplicationMain
-//class AppDelegate: FlutterAppDelegate {
-class AppDelegate: UIResponder, UIApplicationDelegate {
-//    private let flutterGroup: FlutterEngineGroup = .init(name: "map_ui_module", project: nil)
-//    private(set) var mapEngine: FlutterEngine?
 
+class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Google Maps
         GMSServices.provideAPIKey("AIzaSyAGA86GDZ3me4mkBHHdKcv_KSgGqzXveLU")
         FirebaseApp.configure()
-//        Auth.auth().signInAnonymously()
-//        mapEngine = flutterGroup.makeEngine(withEntrypoint: nil, libraryURI: nil, initialRoute: "/map")
-//        guard let mapEngine else {
-//            return super.application(application, didFinishLaunchingWithOptions: launchOptions)
-//        }
-//        GeneratedPluginRegistrant.register(with: mapEngine)
-        
         RemoteConfigManager.sharedManager.launching(completionHandler: { (config) in }, forceUpdate: {
             (forceUpdate) in
             if !forceUpdate {

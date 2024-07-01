@@ -12,7 +12,16 @@ public class JupiterFileManager {
     var bleTime = [Int]()
     var bleData = [[String: Double]]()
     
+    var region: String = ""
+    var sector_id: Int = 0
+    var deviceModel: String = "Unknown"
+    var osVersion: Int = 0
+    
     init() {}
+    
+    public func setRegion(region: String) {
+        self.region = region
+    }
     
     private func createExportDirectory() -> URL? {
         guard let documentDirectoryUrl = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
@@ -35,10 +44,21 @@ public class JupiterFileManager {
         return exportDirectoryUrl
     }
     
-    public func createFiles(time: Int) {
+    public func createFiles(region: String, sector_id: Int, deviceModel: String, osVersion: Int) {
         if let exportDir: URL = self.createExportDirectory() {
-            let sensorFileName = "sensor_\(time).csv"
-            let bleFileName = "ble_\(time).csv"
+            self.region = region
+            self.sector_id = sector_id
+            self.deviceModel = deviceModel
+            self.osVersion = osVersion
+            
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "yyyyMMddHHmmss"
+            dateFormatter.locale = Locale(identifier:"ko_KR")
+            let nowDate = Date()
+            let convertNowStr = dateFormatter.string(from: nowDate)
+            
+            let sensorFileName = "ios_\(region)_\(sector_id)_\(convertNowStr)_\(deviceModel)_\(osVersion)_sensor.csv"
+            let bleFileName = "ios_\(region)_\(sector_id)_\(convertNowStr)_\(deviceModel)_\(osVersion)_ble.csv"
             sensorFileUrl = exportDir.appendingPathComponent(sensorFileName)
             bleFileUrl = exportDir.appendingPathComponent(bleFileName)
         } else {
@@ -110,7 +130,7 @@ public class JupiterFileManager {
         saveSensorData()
     }
     
-    public func loadFilesForSimulation() -> ([[String: Double]], [SensorData]) {
+    public func loadFilesForSimulation(bleFile: String, sensorFile: String) -> ([[String: Double]], [SensorData]) {
         var loadedBleData = [[String: Double]]()
         var loadedSenorData = [SensorData]()
         
@@ -119,8 +139,10 @@ public class JupiterFileManager {
 //            let sensorFileName = "sensor_check2.csv"
 //            let bleFileName = "ble_ds04.csv"
 //            let sensorFileName = "sensor_ds04.csv"
-            let bleFileName = "ble_coex02.csv"
-            let sensorFileName = "sensor_coex02.csv"
+//            let bleFileName = "ble_coex02.csv"
+//            let sensorFileName = "sensor_coex02.csv"
+            let bleFileName = bleFile
+            let sensorFileName = sensorFile
             
             let bleSimulationUrl = exportDir.appendingPathComponent(bleFileName)
             do {

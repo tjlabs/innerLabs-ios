@@ -243,6 +243,7 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(false)
+        BlacklistChecker.shared.addObserver(self)
         setCardData(cardData: cardData!)
         
         makeDelegate()
@@ -286,6 +287,10 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
         self.setTextByRegion(region: self.currentRegion)
         
         self.hideKeyboardWhenTappedAround()
+        
+        BlacklistChecker.shared.checkServiceAvailableDevice(completion: { statusCode, isUpdated, isAvailable in
+            print("(Jupiter) Information : isServiceAvailableDevice = \(statusCode) , \(isUpdated) , \(isAvailable)")
+        })
     }
     
     func setTextByRegion(region: String) {
@@ -309,6 +314,7 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
     }
     
     @IBAction func tapBackButton(_ sender: UIButton) {
+        BlacklistChecker.shared.addObserver(self)
         serviceManager.removeObserver(self)
         self.notificationCenterRemoveObserver()
         goToBack()
@@ -341,6 +347,7 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
     @objc func forceStop() {
         serviceManager.forceStopService()
         serviceManager.removeObserver(self)
+        BlacklistChecker.shared.addObserver(self)
         self.notificationCenterRemoveObserver()
     }
     
@@ -1676,6 +1683,7 @@ extension ServiceViewController: CustomSwitchButtonDelegate {
                 self.hideDropDown(flag: true)
                 serviceManager = ServiceManager()
                 serviceManager.changeRegion(regionName: self.region)
+                serviceManager.setSimulationMode(flag: false, bleFileName: "ble_lg_eval06.csv", sensorFileName: "sensor_lg_eval06.csv")
                 
                 var inputMode: String = "auto"
                 if (self.sector_id == 6 && self.region != "Canada") {
@@ -1683,6 +1691,7 @@ extension ServiceViewController: CustomSwitchButtonDelegate {
                 } else {
                     inputMode = cardData!.mode
                 }
+                
                 let uniqueId = self.makeUniqueId(uuid: uuid)
                 serviceManager.startService(id: uniqueId, sector_id: cardData!.sector_id, service: "FLT", mode: inputMode, completion: { isStart, message in
                     if (isStart) {

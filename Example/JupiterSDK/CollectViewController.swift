@@ -1,6 +1,5 @@
 import UIKit
-import SwiftCSVExport
-import JupiterSDK
+import OlympusSDK
 import Charts
 
 class Measurements {
@@ -47,7 +46,7 @@ class CollectViewController: UIViewController {
     
     @IBOutlet var collectView: UIView!
     
-    var serviceManager = ServiceManager()
+    var serviceManager = OlympusServiceManager()
     
     var delegate : ServiceViewPageDelegate?
     var cardData: CardItemData?
@@ -102,7 +101,7 @@ class CollectViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        serviceManager.initCollect()
+        serviceManager.initCollect(region: self.region)
         startTimer()
         
         setupCollectionView()
@@ -158,7 +157,7 @@ class CollectViewController: UIViewController {
     }
     
     func saveFile() {
-        self.saveData()
+//        self.saveData()
 //        self.saveTrajData()
         
         serviceManager.stopCollect()
@@ -191,169 +190,164 @@ class CollectViewController: UIViewController {
         saveFlag = true
     }
 
-    func writeData(collectData: CollectData) {
-        let time = collectData.time
-
-        let accX = collectData.acc[0]
-        let accY = collectData.acc[1]
-        let accZ = collectData.acc[2]
-
-        let gyroX = collectData.gyro[0]
-        let gyroY = collectData.gyro[1]
-        let gyroZ = collectData.gyro[2]
-
-        let magX = collectData.mag[0]
-        let magY = collectData.mag[1]
-        let magZ = collectData.mag[2]
-
-        let roll = collectData.att[0]
-        let pitch = collectData.att[1]
-        let yaw = collectData.att[2]
-
-        let qx = collectData.quaternion[0]
-        let qy = collectData.quaternion[1]
-        let qz = collectData.quaternion[2]
-        let qw = collectData.quaternion[3]
-
-        let pressure = collectData.pressure[0]
-
-        let meas = Measurements()
-
-        meas.time = time
-
-        meas.accX = accX
-        meas.accY = accY
-        meas.accZ = accZ
-
-        meas.gyroX = gyroX
-        meas.gyroY = gyroY
-        meas.gyroZ = gyroZ
-
-        meas.magX = magX
-        meas.magY = magY
-        meas.magZ = magZ
-
-        meas.roll = roll
-        meas.pitch = pitch
-        meas.yaw = yaw
-
-        meas.qx = qx
-        meas.qy = qy
-        meas.qz = qz
-        meas.qw = qw
-
-        meas.pressure = pressure
-        
-        let bleData = collectData.bleRaw
-        let bleString = (bleData.flatMap({ (key, value) -> String in
-            let str = String(format: "%.2f", value)
-            return "\(key),\(str)"
-        }) as Array).joined(separator: ",")
-        meas.ble = bleString
-
-        data.add(listPropertiesWithValues(meas))
-    }
+//    func writeData(collectData: CollectData) {
+//        let time = collectData.time
+//
+//        let accX = collectData.acc[0]
+//        let accY = collectData.acc[1]
+//        let accZ = collectData.acc[2]
+//
+//        let gyroX = collectData.gyro[0]
+//        let gyroY = collectData.gyro[1]
+//        let gyroZ = collectData.gyro[2]
+//
+//        let magX = collectData.mag[0]
+//        let magY = collectData.mag[1]
+//        let magZ = collectData.mag[2]
+//
+//        let roll = collectData.att[0]
+//        let pitch = collectData.att[1]
+//        let yaw = collectData.att[2]
+//
+//        let qx = collectData.quaternion[0]
+//        let qy = collectData.quaternion[1]
+//        let qz = collectData.quaternion[2]
+//        let qw = collectData.quaternion[3]
+//
+//        let pressure = collectData.pressure[0]
+//
+//        let meas = Measurements()
+//
+//        meas.time = time
+//
+//        meas.accX = accX
+//        meas.accY = accY
+//        meas.accZ = accZ
+//
+//        meas.gyroX = gyroX
+//        meas.gyroY = gyroY
+//        meas.gyroZ = gyroZ
+//
+//        meas.magX = magX
+//        meas.magY = magY
+//        meas.magZ = magZ
+//
+//        meas.roll = roll
+//        meas.pitch = pitch
+//        meas.yaw = yaw
+//
+//        meas.qx = qx
+//        meas.qy = qy
+//        meas.qz = qz
+//        meas.qw = qw
+//
+//        meas.pressure = pressure
+//        
+//        let bleData = collectData.bleRaw
+//        let bleString = (bleData.flatMap({ (key, value) -> String in
+//            let str = String(format: "%.2f", value)
+//            return "\(key),\(str)"
+//        }) as Array).joined(separator: ",")
+//        meas.ble = bleString
+//
+//        data.add(listPropertiesWithValues(meas))
+//    }
+//    
+//    func writeTrajectoryData(collectData: CollectData) {
+//        let time = collectData.time
+//
+//        let index = collectData.index
+//        let length = collectData.length
+//        let heading = collectData.heading
+//        let pressure = collectData.pressure[0]
+//
+//        let traj = Trajectory()
+//
+//        traj.time = time
+//        traj.index = index
+//        traj.length = length
+//        traj.heading = heading
+//        traj.pressure = pressure
+//        
+//        let bleData = collectData.bleAvg
+//        let bleString = (bleData.flatMap({ (key, value) -> String in
+//            let str = String(format: "%.2f", value)
+//            return "\(key),\(str)"
+//        }) as Array).joined(separator: ",")
+//        traj.ble = bleString
+//
+//        data.add(listPropertiesWithValues(traj))
+//    }
     
-    func writeTrajectoryData(collectData: CollectData) {
-        let time = collectData.time
-
-        let index = collectData.index
-        let length = collectData.length
-        let heading = collectData.heading
-        let pressure = collectData.pressure[0]
-
-        let traj = Trajectory()
-
-        traj.time = time
-        traj.index = index
-        traj.length = length
-        traj.heading = heading
-        traj.pressure = pressure
-        
-        let bleData = collectData.bleAvg
-        let bleString = (bleData.flatMap({ (key, value) -> String in
-            let str = String(format: "%.2f", value)
-            return "\(key),\(str)"
-        }) as Array).joined(separator: ",")
-        traj.ble = bleString
-
-        data.add(listPropertiesWithValues(traj))
-    }
-    
-    func saveData() {
-        let header = ["time", "accX", "accY", "accZ", "gyroX", "gyroY", "gyroZ", "magX", "magY", "magZ", "roll", "pitch", "yaw", "qx", "qy", "qz", "qw", "pressure", "ble"]
-        
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyyMMddHHmmss"
-        dateFormatter.locale = Locale(identifier:"ko_KR")
-        let nowDate = Date()
-        let convertNowStr = dateFormatter.string(from: nowDate)
-        
-        var fileHeader: String = "ios_Korea_"
-        let locale = Locale.current
-        if let countryCode = locale.regionCode, countryCode == "KR" {
-            fileHeader = "ios_Korea_"
-        } else {
-            fileHeader = "ios_Canada_"
-        }
-        
-        // Create a object for write CSV
-        let writeCSVObj = CSV()
-        writeCSVObj.rows = self.data
-        writeCSVObj.delimiter = DividerType.comma.rawValue
-        writeCSVObj.fields = header as NSArray
-        writeCSVObj.name = fileHeader + convertNowStr + "_\(self.deviceModel)_\(self.osVersion)"
-        
-        // Write File using CSV class object
-        let output = CSVExport.export(writeCSVObj)
-        if output.result.isSuccess {
-            guard let filePath =  output.filePath else {
-                print("Export Error: \(String(describing: output.message))")
-                return
-            }
-            
-            print("File Path: \(filePath)")
-            self.readCSVPath(filePath)
-        } else {
-            print("Export Error: \(String(describing: output.message))")
-        }
-    }
-    
-    func saveTrajData() {
-        let header = ["time", "index", "length", "heading", "pressure", "ble"]
-        
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd-HH-mm"
-        dateFormatter.locale = Locale(identifier:"ko_KR")
-        let nowDate = Date()
-        let convertNowStr = dateFormatter.string(from: nowDate)
-        
-        // Create a object for write CSV
-        let writeCSVObj = CSV()
-        writeCSVObj.rows = self.data
-        writeCSVObj.delimiter = DividerType.comma.rawValue
-        writeCSVObj.fields = header as NSArray
-        writeCSVObj.name = "iosData_" + convertNowStr
-        
-        // Write File using CSV class object
-        let output = CSVExport.export(writeCSVObj)
-        if output.result.isSuccess {
-            guard let filePath =  output.filePath else {
-                print("Export Error: \(String(describing: output.message))")
-                return
-            }
-            
-            print("File Path: \(filePath)")
-            self.readCSVPath(filePath)
-        } else {
-            print("Export Error: \(String(describing: output.message))")
-        }
-    }
-    
-    func readCSVPath(_ filePath: String) {
-        let request = NSURLRequest(url:  URL(fileURLWithPath: filePath) )
-        _ = CSVExport.readCSVObject(filePath);
-    }
+//    func saveData() {
+//        let header = ["time", "accX", "accY", "accZ", "gyroX", "gyroY", "gyroZ", "magX", "magY", "magZ", "roll", "pitch", "yaw", "qx", "qy", "qz", "qw", "pressure", "ble"]
+//        
+//        let dateFormatter = DateFormatter()
+//        dateFormatter.dateFormat = "yyyyMMddHHmmss"
+//        dateFormatter.locale = Locale(identifier:"ko_KR")
+//        let nowDate = Date()
+//        let convertNowStr = dateFormatter.string(from: nowDate)
+//        
+//        var fileHeader: String = "ios_Korea_"
+//        let locale = Locale.current
+//        if let countryCode = locale.regionCode, countryCode == "KR" {
+//            fileHeader = "ios_Korea_"
+//        } else {
+//            fileHeader = "ios_Canada_"
+//        }
+//        
+//        // Create a object for write CSV
+//        let writeCSVObj = CSV()
+//        writeCSVObj.rows = self.data
+//        writeCSVObj.delimiter = DividerType.comma.rawValue
+//        writeCSVObj.fields = header as NSArray
+//        writeCSVObj.name = fileHeader + convertNowStr + "_\(self.deviceModel)_\(self.osVersion)"
+//        
+//        // Write File using CSV class object
+//        let output = CSVExport.export(writeCSVObj)
+//        if output.result.isSuccess {
+//            guard let filePath =  output.filePath else {
+//                print("Export Error: \(String(describing: output.message))")
+//                return
+//            }
+//            
+//            print("File Path: \(filePath)")
+//            self.readCSVPath(filePath)
+//        } else {
+//            print("Export Error: \(String(describing: output.message))")
+//        }
+//    }
+//    
+//    func saveTrajData() {
+//        let header = ["time", "index", "length", "heading", "pressure", "ble"]
+//        
+//        let dateFormatter = DateFormatter()
+//        dateFormatter.dateFormat = "yyyy-MM-dd-HH-mm"
+//        dateFormatter.locale = Locale(identifier:"ko_KR")
+//        let nowDate = Date()
+//        let convertNowStr = dateFormatter.string(from: nowDate)
+//        
+//        // Create a object for write CSV
+//        let writeCSVObj = CSV()
+//        writeCSVObj.rows = self.data
+//        writeCSVObj.delimiter = DividerType.comma.rawValue
+//        writeCSVObj.fields = header as NSArray
+//        writeCSVObj.name = "iosData_" + convertNowStr
+//        
+//        // Write File using CSV class object
+//        let output = CSVExport.export(writeCSVObj)
+//        if output.result.isSuccess {
+//            guard let filePath =  output.filePath else {
+//                print("Export Error: \(String(describing: output.message))")
+//                return
+//            }
+//            
+//            print("File Path: \(filePath)")
+//            self.readCSVPath(filePath)
+//        } else {
+//            print("Export Error: \(String(describing: output.message))")
+//        }
+//    }
 
     @objc func timerUpdate() {
         let collectedData = serviceManager.collectData
@@ -364,7 +358,7 @@ class CollectViewController: UIViewController {
         self.wardCollectionView.reloadData()
         
         if (saveFlag) {
-            writeData(collectData: collectedData)
+//            writeData(collectData: collectedData)
             if (collectedData.isIndexChanged) {
 //                writeTrajectoryData(collectData: serviceManager.collectData)
                 let index = collectedData.index

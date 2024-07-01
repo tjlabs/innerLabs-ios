@@ -621,7 +621,7 @@ extension CardViewController: UICollectionViewDataSource, UICollectionViewDelega
                     guard let guideVC = self.storyboard?.instantiateViewController(withIdentifier: "GuideViewController") as? GuideViewController else { return }
                     guideVC.page = currentPage
                     self.navigationController?.pushViewController(guideVC, animated: true)
-                } else if (sector_id == 10) {
+                } else if (sector_id == 3) {
                     guard let collectVC = self.storyboard?.instantiateViewController(withIdentifier: "CollectViewController") as? CollectViewController else { return }
                     collectVC.cardData = cardItemData[mod]
                     collectVC.region = region

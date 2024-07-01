@@ -1,6 +1,6 @@
 import Foundation
 
-var IS_OLYMPUS: Bool = true
+var IS_OLYMPUS: Bool = false
 
 let USER_SERVER_VERSION = "2024-06-12"
 let BLACK_LIST_URL = "https://ap-northeast-2.client.olympus.tjlabs.dev/black"

@@ -240,7 +240,6 @@ class OlympusServiceViewController: UIViewController, RobotTableViewCellDelegate
             self.currentRegion = "Canada"
         }
         self.setTextByRegion(region: self.currentRegion)
-        
         self.hideKeyboardWhenTappedAround()
     }
     
@@ -1423,6 +1422,7 @@ extension OlympusServiceViewController: CustomSwitchButtonDelegate {
             if (isOn) {
                 self.hideDropDown(flag: true)
                 serviceManager = OlympusServiceManager()
+                serviceManager.setSimulationMode(flag: true, bleFileName: "ble_lg_eval06.csv", sensorFileName: "sensor_lg_eval06.csv")
                 
                 var inputMode: String = "auto"
                 if (self.sector_id == 6 && self.region != "Canada") {
@@ -1433,12 +1433,12 @@ extension OlympusServiceViewController: CustomSwitchButtonDelegate {
                 let uniqueId = self.makeUniqueId(uuid: uuid)
                 serviceManager.startService(user_id: uniqueId, region: self.region, sector_id: self.sector_id, service: self.serviceName, mode: inputMode, completion: { isStart, message in
                     if (isStart) {
-                        print("(ServiceVC) Success : \(message)")
+                        print(getLocalTimeString() + " , (ServiceVC) Success : \(message)")
                         serviceManager.addObserver(self)
                         self.notificationCenterAddObserver()
                         self.startTimer()
                     } else {
-                        print("(ServiceVC) Fail : \(message)")
+                        print(getLocalTimeString() + " , (ServiceVC) Fail : \(message)")
                         serviceManager.stopService()
                         self.goToBackServiceFail()
                     }
@@ -1462,6 +1462,10 @@ extension OlympusServiceViewController: CustomSwitchButtonDelegate {
                     print("(SeviceVC) Success : \(isStop.1)")
                     self.stopTimer()
                     serviceManager.removeObserver(self)
+                    
+                    if (self.isFileSaved) {
+                        self.sectorNameLabel.textColor = .black
+                    }
                 } else {
                     print("(SeviceVC) Fail : \(isStop.1)")
                     let message: String = isStop.1

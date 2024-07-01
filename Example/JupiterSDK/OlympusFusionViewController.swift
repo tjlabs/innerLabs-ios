@@ -1374,6 +1374,7 @@ extension OlympusFusionViewController: CustomSwitchButtonDelegate {
             if (isOn) {
                 self.hideDropDown(flag: true)
                 serviceManager = OlympusServiceManager()
+                serviceManager.setSimulationMode(flag: false, bleFileName: "ble_lg01.csv", sensorFileName: "sensor_lg01.csv")
                 
                 var inputMode: String = "auto"
                 if (self.sector_id == 6 && self.region != "Canada") {

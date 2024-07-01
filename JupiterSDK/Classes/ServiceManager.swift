@@ -5,6 +5,9 @@ import UIKit
 public class ServiceManager: Observation {
     public static let sdkVersion: String = "3.4.4"
     var isSimulationMode: Bool = false
+    var bleFileName: String = ""
+    var sensorFileName: String = ""
+    
     var simulationBleData = [[String: Double]]()
     var simulationSensorData = [SensorData]()
     var bleLineCount: Int = 0
@@ -79,8 +82,8 @@ public class ServiceManager: Observation {
     
     var deviceModel: String = "Unknown"
     var deviceIdentifier: String = "Unknown"
+    var deviceOsVersion: Int = 0
     var os: String = "Unknown"
-    var osVersion: Int = 0
     
     var LoadPathPoint = [String: Bool]()
     
@@ -379,7 +382,7 @@ public class ServiceManager: Observation {
         deviceModel = UIDevice.modelName
         os = UIDevice.current.systemVersion
         let arr = os.components(separatedBy: ".")
-        osVersion = Int(arr[0]) ?? 0
+        deviceOsVersion = Int(arr[0]) ?? 0
     }
     
     public func initService(service: String, mode: String) -> (Bool, String) {
@@ -628,7 +631,7 @@ public class ServiceManager: Observation {
                         completion(false, message)
                     } else {
                         // Login Success
-                        let userInfo = UserLogin(user_id: self.user_id, device_model: deviceModel, os_version: osVersion, sdk_version: ServiceManager.sdkVersion)
+                        let userInfo = UserLogin(user_id: self.user_id, device_model: deviceModel, os_version: deviceOsVersion, sdk_version: ServiceManager.sdkVersion)
                         NetworkManager.shared.postUserLogin(url: LOGIN_URL, input: userInfo, completion: { [self] statusCode, returnedString in
                             if (statusCode == 200) {
                                 let log: String = getLocalTimeString() + " , (Jupiter) Success : User Login(input = \(self.user_id))"
@@ -784,7 +787,7 @@ public class ServiceManager: Observation {
                                                                         print(getLocalTimeString() + " , (Jupiter) Trajectory Info Load : \(self.USER_TRAJECTORY_LENGTH) // \(self.USER_TRAJECTORY_DIAGONAL) // \(self.NUM_STRAIGHT_INDEX_DR)")
                                                                         
                                                                         // Load Bias
-                                                                        let inputGetParam = JupiterParamGet(device_model: self.deviceModel, os_version: self.osVersion, sector_id: self.sector_id)
+                                                                        let inputGetParam = JupiterParamGet(device_model: self.deviceModel, os_version: self.deviceOsVersion, sector_id: self.sector_id)
                                                                         NetworkManager.shared.getJupiterParam(url: RC_URL, input: inputGetParam, completion: { [self] statusCode, returnedString in
                                                                             let loadedScale = paramEstimator.loadNormalizationScale(sector_id: self.sector_id)
                                                                             if (statusCode == 200) {
@@ -808,7 +811,7 @@ public class ServiceManager: Observation {
                                                                                                 completion(true, message)
                                                                                             } else {
                                                                                                 // Success Load without OS
-                                                                                                if let closest = findClosestStructure(to: self.osVersion, in: result.rss_compensations) {
+                                                                                                if let closest = findClosestStructure(to: self.deviceOsVersion, in: result.rss_compensations) {
                                                                                                     let paramFromServer: rss_compensation = closest
                                                                                                     
                                                                                                     if (loadedScale.0) {
@@ -958,13 +961,22 @@ public class ServiceManager: Observation {
         }
     }
     
-    private func initSimulationMode() {
-        JupiterFileManager.shared.createFiles(time: getCurrentTimeInMilliseconds())
+    public func setSimulationMode(flag: Bool, bleFileName: String, sensorFileName: String) {
+        self.isSimulationMode = flag
+        self.bleFileName = bleFileName
+        self.sensorFileName = sensorFileName
         
+        print(getLocalTimeString() + " , (Jupiter) Simulation Mode : flag = \(self.isSimulationMode)")
+    }
+    
+    private func initSimulationMode() {
         if (isSimulationMode) {
-            let result = JupiterFileManager.shared.loadFilesForSimulation()
+            let result = JupiterFileManager.shared.loadFilesForSimulation(bleFile: self.bleFileName, sensorFile: self.sensorFileName)
             simulationBleData = result.0
             simulationSensorData = result.1
+        } else {
+            JupiterFileManager.shared.setRegion(region: region)
+            JupiterFileManager.shared.createFiles(region: region, sector_id: sector_id, deviceModel: deviceModel, osVersion: deviceOsVersion)
         }
     }
     
@@ -5169,7 +5181,7 @@ public class ServiceManager: Observation {
     func postParam(sector_id: Int, normailzationScale: Double) {
         let localTime = getLocalTimeString()
         
-        let input = JupiterParamPost(device_model: self.deviceModel, os_version: self.osVersion, sector_id: sector_id, normalization_scale: normailzationScale)
+        let input = JupiterParamPost(device_model: self.deviceModel, os_version: self.deviceOsVersion, sector_id: sector_id, normalization_scale: normailzationScale)
         NetworkManager.shared.postJupiterParam(url: NS_URL, input: input, completion: { statusCode, returnedString in
             if (statusCode == 200) {
                 print(localTime + " , (Jupiter) Success : Save Jupiter Param \(normailzationScale)")

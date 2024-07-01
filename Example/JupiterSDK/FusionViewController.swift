@@ -216,6 +216,7 @@ class FusionViewController: UIViewController, Observer {
     var resultPosBuffer = [[Double]]()
     var averagePosBuffer = [[Double]]()
     
+    var isFileSaved: Bool = false
     // Neptune
     @IBOutlet weak var spotContentsView: UIView!
     
@@ -1350,6 +1351,7 @@ extension FusionViewController: CustomSwitchButtonDelegate {
                 self.hideDropDown(flag: true)
                 serviceManager = ServiceManager()
                 serviceManager.changeRegion(regionName: self.region)
+                serviceManager.setSimulationMode(flag: false, bleFileName: "ble_lg_eval06.csv", sensorFileName: "sensor_lg_eval06.csv")
                 
                 var inputMode: String = "auto"
                 if (self.sector_id == 6 && self.region != "Canada") {
@@ -1374,6 +1376,8 @@ extension FusionViewController: CustomSwitchButtonDelegate {
                 self.hideDropDown(flag: false)
                 let isStop = serviceManager.stopService()
                 if (isStop.0) {
+                    self.isFileSaved = self.serviceManager.saveSimulationFile()
+                    
                     self.coordToDisplay = CoordToDisplay()
                     self.resultToDisplay = ResultToDisplay()
                     
@@ -1386,6 +1390,10 @@ extension FusionViewController: CustomSwitchButtonDelegate {
                     print("(FusionVC) Success : \(isStop.1)")
                     serviceManager.removeObserver(self)
                     self.stopTimer()
+                    
+                    if (self.isFileSaved) {
+                        goToBack()
+                    }
                 } else {
                     print("(FusionVC) Fail : \(isStop.1)")
                     let message: String = isStop.1

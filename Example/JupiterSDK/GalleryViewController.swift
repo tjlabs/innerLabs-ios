@@ -897,8 +897,6 @@ class GalleryViewController: UIViewController, WKNavigationDelegate, UIScrollVie
         
         return minIdx
     }
-    
-    
 }
 
 extension GalleryViewController: CustomSwitchButtonDelegate {

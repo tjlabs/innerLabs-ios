@@ -13,6 +13,7 @@ struct AppFontName {
 }
 
 class MainViewController: UIViewController, UITextFieldDelegate {
+    
     @IBOutlet weak var codeTextField: UITextField!
     @IBOutlet weak var guideLabel: UILabel!
     @IBOutlet weak var saveUuidButton: UIButton!
@@ -40,6 +41,8 @@ class MainViewController: UIViewController, UITextFieldDelegate {
     var defaultMeasage: String = ""
     
     let dropDown = DropDown()
+    
+//    var jupiterService = ServiceManager()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -73,6 +76,13 @@ class MainViewController: UIViewController, UITextFieldDelegate {
         setRegion(regionName: self.currentRegion)
         setServerURL(region: self.currentRegion)
         setDefaultMessage(region: self.currentRegion)
+        
+//        jupiterService.checkServiceAvailableDevice(completion: { statusCode, isUpdated, isAvailable in
+//            print(getLocalTimeString() + " , (Jupiter) Information : isServiceAvailableDevice = \(statusCode) , \(isUpdated) , \(isAvailable)")
+//        })
+//        BlacklistChecker.shared.checkServiceAvailableDevice(completion: { statusCode, isUpdated, isAvailable in
+//            print(getLocalTimeString() + " , (Jupiter) Information : isServiceAvailableDevice = \(statusCode) , \(isUpdated) , \(isAvailable)")
+//        })
     }
     
     override func didReceiveMemoryWarning() {
@@ -97,7 +107,6 @@ class MainViewController: UIViewController, UITextFieldDelegate {
             if (IS_OLYMPUS) {
                 loginUrl = USER_LOGIN_URL
             }
-            
             self.loginButton.isEnabled = false
             postLogin(url: loginUrl, input: login)
         }
@@ -135,7 +144,6 @@ class MainViewController: UIViewController, UITextFieldDelegate {
         let header : HTTPHeaders = [
             "Content-Type" : "application/json"
         ]
-        
         AF.request(
             url, // [주소]
             method: .post, // [전송 타입]
@@ -330,6 +338,7 @@ class MainViewController: UIViewController, UITextFieldDelegate {
             //선택한 Item을 TextField에 넣어준다.
             self!.dropText.text = item
             self!.currentRegion = item
+            print("Drop Down Clicked : \(self!.currentRegion)")
             setRegion(regionName: self!.currentRegion)
             setServerURL(region: self!.currentRegion)
             self!.setDefaultMessage(region: self!.currentRegion)
