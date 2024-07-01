@@ -8,7 +8,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        // Google Maps
+        
         GMSServices.provideAPIKey("AIzaSyAGA86GDZ3me4mkBHHdKcv_KSgGqzXveLU")
         FirebaseApp.configure()
         RemoteConfigManager.sharedManager.launching(completionHandler: { (config) in }, forceUpdate: {

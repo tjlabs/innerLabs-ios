@@ -120,7 +120,7 @@ class FusionViewController: UIViewController, Observer {
         }
     }
     
-    @IBOutlet var FusionView: UIView!
+    @IBOutlet var fusionView: UIView!
     @IBOutlet weak var cardTopImage: UIImageView!
     @IBOutlet weak var sectorNameLabel: UILabel!
     @IBOutlet weak var onSpotButton: UIButton!
@@ -174,7 +174,6 @@ class FusionViewController: UIViewController, Observer {
     var page: Int = 0
     
     var RP = [String: [[Double]]]()
-    var Road = [[Double]]()
     var chartLimits = [String: [Double]]()
     var chartLoad = [String: Bool]()
     
@@ -432,7 +431,7 @@ class FusionViewController: UIViewController, Observer {
                     let ratio: Double = 114900 / 68700
                     displayViewHeight.constant = displayView.bounds.width * ratio
                     let bottomPadding = window?.safeAreaInsets.bottom ?? 0.0
-                    defaultHeight = FusionView.bounds.height - 100 - displayViewHeight.constant - bottomPadding
+                    defaultHeight = fusionView.bounds.height - 100 - displayViewHeight.constant - bottomPadding
                 }
             case "Canada":
                 if ( cardData?.sector_id == 4 ) {
@@ -441,7 +440,7 @@ class FusionViewController: UIViewController, Observer {
                     let ratio: Double = 114900 / 68700
                     displayViewHeight.constant = displayView.bounds.width * ratio
                     let bottomPadding = window?.safeAreaInsets.bottom ?? 0.0
-                    defaultHeight = FusionView.bounds.height - 100 - displayViewHeight.constant - bottomPadding
+                    defaultHeight = fusionView.bounds.height - 100 - displayViewHeight.constant - bottomPadding
                 }
             default:
                 if ( cardData?.sector_id == 1 || cardData?.sector_id == 2 ) {
@@ -450,7 +449,7 @@ class FusionViewController: UIViewController, Observer {
                     let ratio: Double = 114900 / 68700
                     displayViewHeight.constant = displayView.bounds.width * ratio
                     let bottomPadding = window?.safeAreaInsets.bottom ?? 0.0
-                    defaultHeight = FusionView.bounds.height - 100 - displayViewHeight.constant - bottomPadding
+                    defaultHeight = fusionView.bounds.height - 100 - displayViewHeight.constant - bottomPadding
                 }
             }
         } else {
@@ -771,7 +770,7 @@ class FusionViewController: UIViewController, Observer {
             valueColor = .systemGray
         } else if (isBleOnlyMode) {
             valueColor = UIColor.systemBlue
-        } else if (!isIndoor) {
+        } else if (!isPmSuccess) {
             valueColor = .systemOrange
         } else {
             valueColor = UIColor.systemRed

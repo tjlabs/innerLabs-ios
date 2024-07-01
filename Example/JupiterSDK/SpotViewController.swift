@@ -6,7 +6,7 @@ import JupiterSDK
 
 class SpotViewController: UIViewController {
     
-    @IBOutlet var SpotView: UIView!
+    @IBOutlet var spotView: UIView!
     
     @IBOutlet weak var displayView: UIView!
     @IBOutlet weak var imageLevel: UIImageView!
@@ -55,8 +55,7 @@ class SpotViewController: UIViewController {
     
     var limits: [Double] = [-100, 100, -200, 200]
     
-    var Spots: [[Double]] = [[-42, -97], [5, -89], [-15, -68], [0, -55], [-40, -56]]
-//    var Spots: [[Double]] = [[-42, -97], [5, -89], [0, -55], [-40, -56], [-70, -23], [-30, -12], [-15, -68]]
+    var spotInfo: [[Double]] = [[-42, -97], [5, -89], [-15, -68], [0, -55], [-40, -56]]
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(false)
@@ -246,8 +245,8 @@ class SpotViewController: UIViewController {
             self.typeLabel.text = "Unknown"
             self.ccsLabel.text = "0.6744"
         }
-        drawValues(XY: Spots[id-1])
-        drawSpot(XY: Spots[id-1])
+        drawValues(XY: spotInfo[id-1])
+        drawSpot(XY: spotInfo[id-1])
     }
     
     func showSpotContents(data: Spot) {

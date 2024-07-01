@@ -167,8 +167,7 @@ class AddCardViewController: UIViewController, UITextFieldDelegate {
                 
                 
                 self.cardItemData.append(CardItemData(sector_id: id, sector_name: name, description: description, cardColor: cardColor, mode: mode, service: service, infoBuilding: infoBuilding, infoLevel: infoLevel))
-                
-                self.page = self.page + 4
+                self.page += 4
             } else if (message.contains("Conflict")) {
                 enrollMessage = self.enrollConflictText
                 self.responseLabel.text = enrollMessage

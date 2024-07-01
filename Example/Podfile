@@ -19,6 +19,7 @@ target 'JupiterSDK_Example' do
   pod 'Floaty', '~> 4.2.0'
   pod 'TextFieldEffects'
   pod 'AWSS3'
+  pod 'SwiftLint', '0.55.1'
   
   pod 'FirebaseRemoteConfig'
   pod 'Firebase/Analytics'

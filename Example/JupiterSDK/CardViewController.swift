@@ -2,7 +2,7 @@ import UIKit
 import Kingfisher
 import JupiterSDK
 
-class CardViewController: UIViewController, ServiceViewPageDelegate, FusionViewPageDelegate, GalleryViewPageDelegate, AddCardDelegate, ShowCardDelegate {
+class CardViewController: UIViewController, ServiceViewPageDelegate, FusionViewPageDelegate, AddCardDelegate, ShowCardDelegate {
     
     func sendCardItemData(data: [CardItemData]) {
         cardItemData = data
@@ -562,12 +562,6 @@ extension CardViewController: UICollectionViewDataSource, UICollectionViewDelega
                     collectVC.userId = uuid
                     collectVC.page = currentPage
                     self.navigationController?.pushViewController(collectVC, animated: true)
-                } else if (sector_id == 7) {
-                    guard let galleryVC = self.storyboard?.instantiateViewController(withIdentifier: "GalleryViewController") as? GalleryViewController else { return }
-                    galleryVC.cardData = cardItemData[mod]
-                    galleryVC.uuid = uuid
-                    galleryVC.page = currentPage
-                    self.navigationController?.pushViewController(galleryVC, animated: true)
                 } else if (sector_id == 8) {
                     guard let spotVC = self.storyboard?.instantiateViewController(withIdentifier: "SpotViewController") as? SpotViewController else { return }
                     spotVC.cardData = cardItemData[mod]
@@ -690,12 +684,6 @@ extension CardViewController: UICollectionViewDataSource, UICollectionViewDelega
                     collectVC.userId = uuid
                     collectVC.page = currentPage
                     self.navigationController?.pushViewController(collectVC, animated: true)
-                } else if (sector_id == 7) {
-                    guard let galleryVC = self.storyboard?.instantiateViewController(withIdentifier: "GalleryViewController") as? GalleryViewController else { return }
-                    galleryVC.cardData = cardItemData[mod]
-                    galleryVC.uuid = uuid
-                    galleryVC.page = currentPage
-                    self.navigationController?.pushViewController(galleryVC, animated: true)
                 } else if (sector_id == 8) {
                     guard let spotVC = self.storyboard?.instantiateViewController(withIdentifier: "SpotViewController") as? SpotViewController else { return }
                     spotVC.cardData = cardItemData[mod]

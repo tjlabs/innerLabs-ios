@@ -16,8 +16,8 @@ class ServiceInfoTableViewCell: UITableViewCell {
     @IBOutlet weak var infoOfLevelsLabel: UILabel!
     @IBOutlet weak var detectedLevelLabel: UILabel!
     @IBOutlet weak var velocityLabel: UILabel!
-    @IBOutlet weak var IndexTxLabel: UILabel!
-    @IBOutlet weak var IndexRxLabel: UILabel!
+    @IBOutlet weak var indexTxLabel: UILabel!
+    @IBOutlet weak var indexRxLabel: UILabel!
     @IBOutlet weak var headingLabel: UILabel!
     @IBOutlet weak var lengthLabel: UILabel!
     @IBOutlet weak var sccLabel: UILabel!
@@ -38,8 +38,8 @@ class ServiceInfoTableViewCell: UITableViewCell {
         self.infoOfLevelsLabel.text = data.infoLevels
         self.detectedLevelLabel.text = data.level
         self.velocityLabel.text = String(format: "%.2f", data.velocity)
-        self.IndexRxLabel.text = String(data.unitIndexRx)
-        self.IndexTxLabel.text = String(data.unitIndexTx)
+        self.indexRxLabel.text = String(data.unitIndexRx)
+        self.indexTxLabel.text = String(data.unitIndexTx)
         self.lengthLabel.text = String(format: "%.4f", data.unitLength)
         self.headingLabel.text = String(format: "%.2f", data.heading)
         if ( abs(data.scc) < 100 ) {

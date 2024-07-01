@@ -4,7 +4,7 @@ import JupiterSDK
 
 class TipsTownViewController: UIViewController {
 
-    @IBOutlet var TipsTownView: UIView!
+    @IBOutlet var tipsTownView: UIView!
     
     @IBOutlet weak var sectorNameLabel: UILabel!
     @IBOutlet weak var cardTopImage: UIImageView!

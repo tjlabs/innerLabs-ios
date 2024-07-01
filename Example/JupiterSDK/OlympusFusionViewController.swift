@@ -79,7 +79,7 @@ class OlympusFusionViewController: UIViewController, Observer {
     }
     
     
-    @IBOutlet var FusionView: UIView!
+    @IBOutlet var fusionView: UIView!
     @IBOutlet weak var cardTopImage: UIImageView!
     @IBOutlet weak var sectorNameLabel: UILabel!
     @IBOutlet weak var onSpotButton: UIButton!
@@ -166,13 +166,13 @@ class OlympusFusionViewController: UIViewController, Observer {
     var isBleOnlyMode: Bool = false
     var isPathMatchingSuccess: Bool = true
     
-    var PpLoaded = [String: Bool]()
-    var PpType = [String: [Int]]()
-    var PpNode = [String: [Int]]()
-    var PpCoord = [String: [[Double]]]()
-    var PpMinMax = [Double]()
-    var PpMagScale = [String: [Double]]()
-    var PpHeading = [String: [String]]()
+    var ppLoaded = [String: Bool]()
+    var ppType = [String: [Int]]()
+    var ppNode = [String: [Int]]()
+    var ppCoord = [String: [[Double]]]()
+    var ppMinMax = [Double]()
+    var ppMagScale = [String: [Double]]()
+    var ppHeading = [String: [String]]()
     var isFileSaved: Bool = false
     
     // Neptune
@@ -316,7 +316,7 @@ class OlympusFusionViewController: UIViewController, Observer {
         
         guard let documentDirectoryUrl = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
             print(getLocalTimeString() + " , (ServiceVC) FileManager : Unable to access document directory.")
-            PpLoaded[key] = false
+            ppLoaded[key] = false
             return nil
         }
         
@@ -324,18 +324,24 @@ class OlympusFusionViewController: UIViewController, Observer {
         let ppFileUrl = documentDirectoryUrl.appendingPathComponent(fileName)
         do {
             let contents = try String(contentsOf: ppFileUrl)
-            ( PpType[key], PpNode[key], PpCoord[key], PpMagScale[key], PpHeading[key] ) = parsePathPixel(data: contents)
-            PpLoaded[key] = true
+            let pathPixelInfo = parsePathPixel(data: contents)
+            ppType[key] = pathPixelInfo.ppType
+            ppNode[key] = pathPixelInfo.ppNode
+            ppCoord[key] = pathPixelInfo.ppCoord
+            ppMagScale[key] = pathPixelInfo.ppMagScale
+            ppHeading[key] = pathPixelInfo.ppHeadings
+//            ( ppType[key], ppNode[key], ppCoord[key], ppMagScale[key], ppHeading[key] ) = parsePathPixel(data: contents)
+            ppLoaded[key] = true
         } catch {
             print("Error reading file:", error.localizedDescription)
-            PpLoaded[key] = false
+            ppLoaded[key] = false
             return nil
         }
         
         return ppFileUrl
     }
     
-    private func parsePathPixel(data: String)  -> ([Int], [Int], [[Double]], [Double], [String]) {
+    private func parsePathPixel(data: String)  -> PathPixelInfo {
         var roadType = [Int]()
         var roadNode = [Int]()
         var road = [[Double]]()
@@ -370,9 +376,9 @@ class OlympusFusionViewController: UIViewController, Observer {
             }
         }
         road = [roadX, roadY]
-        self.PpMinMax = [roadX.min() ?? 0, roadY.min() ?? 0, roadX.max() ?? 0, roadY.max() ?? 0]
+        self.ppMinMax = [roadX.min() ?? 0, roadY.min() ?? 0, roadX.max() ?? 0, roadY.max() ?? 0]
         
-        return (roadType, roadNode, road, roadScale, roadHeading)
+        return PathPixelInfo(ppType: roadType, ppNode: roadNode, ppCoord: road, ppMagScale: roadScale, ppHeadings: roadHeading)
     }
     
     private func extractContentBetweenBrackets(from string: String) -> String {
@@ -446,7 +452,7 @@ class OlympusFusionViewController: UIViewController, Observer {
                     let ratio: Double = 114900 / 68700
                     displayViewHeight.constant = displayView.bounds.width * ratio
                     let bottomPadding = window?.safeAreaInsets.bottom ?? 0.0
-                    defaultHeight = FusionView.bounds.height - 100 - displayViewHeight.constant - bottomPadding
+                    defaultHeight = fusionView.bounds.height - 100 - displayViewHeight.constant - bottomPadding
                 }
             case "Canada":
                 if ( cardData?.sector_id == 4 ) {
@@ -455,7 +461,7 @@ class OlympusFusionViewController: UIViewController, Observer {
                     let ratio: Double = 114900 / 68700
                     displayViewHeight.constant = displayView.bounds.width * ratio
                     let bottomPadding = window?.safeAreaInsets.bottom ?? 0.0
-                    defaultHeight = FusionView.bounds.height - 100 - displayViewHeight.constant - bottomPadding
+                    defaultHeight = fusionView.bounds.height - 100 - displayViewHeight.constant - bottomPadding
                 }
             default:
                 if ( cardData?.sector_id == 1 || cardData?.sector_id == 2 ) {
@@ -464,7 +470,7 @@ class OlympusFusionViewController: UIViewController, Observer {
                     let ratio: Double = 114900 / 68700
                     displayViewHeight.constant = displayView.bounds.width * ratio
                     let bottomPadding = window?.safeAreaInsets.bottom ?? 0.0
-                    defaultHeight = FusionView.bounds.height - 100 - displayViewHeight.constant - bottomPadding
+                    defaultHeight = fusionView.bounds.height - 100 - displayViewHeight.constant - bottomPadding
                 }
             }
         } else {
@@ -613,7 +619,7 @@ class OlympusFusionViewController: UIViewController, Observer {
         
         DispatchQueue.main.async {
             if (building != "" && level != "") {
-                if let isLoaded = self.PpLoaded[key] {
+                if let isLoaded = self.ppLoaded[key] {
                     if (isLoaded) {
                         self.noImageLabel.isHidden = true
                         self.imageLevel.isHidden = false
@@ -1069,13 +1075,13 @@ class OlympusFusionViewController: UIViewController, Observer {
         let condition: ((String, [[Double]])) -> Bool = {
             $0.0.contains(key)
         }
-        let pathPixel: [[Double]] = PpCoord[key] ?? [[Double]]()
+        let pathPixel: [[Double]] = ppCoord[key] ?? [[Double]]()
         var limits: [Double] = chartLimits[key] ?? [0, 0, 0, 0]
         
         let heading: Double = data.heading
         
         if (flag) {
-            if (PpCoord.contains(where: condition)) {
+            if (ppCoord.contains(where: condition)) {
                 if (pathPixel.isEmpty) {
                     scatterChart.isHidden = true
                 } else {
@@ -1139,10 +1145,10 @@ class OlympusFusionViewController: UIViewController, Observer {
         }
         
         let limits: [Double] = chartLimits[key] ?? [0, 0, 0, 0]
-        let pathPixel: [[Double]] = PpCoord[key] ?? [[Double]]()
+        let pathPixel: [[Double]] = ppCoord[key] ?? [[Double]]()
         
         if (flag) {
-            if (PpCoord.contains(where: condition)) {
+            if (ppCoord.contains(where: condition)) {
                 if (pathPixel.isEmpty) {
                     scatterChart.isHidden = true
                 } else {
@@ -1304,7 +1310,7 @@ extension OlympusFusionViewController : UICollectionViewDelegate{
         resultToDisplay.infoLevels = self.infoOfLevels
         
         let key = "\(currentBuilding)_\(currentLevel)"
-        let pathPixel: [[Double]] = PpCoord[key] ?? [[Double]]()
+        let pathPixel: [[Double]] = ppCoord[key] ?? [[Double]]()
         
         var limits: [Double] = chartLimits[key] ?? [0, 0, 0, 0]
         

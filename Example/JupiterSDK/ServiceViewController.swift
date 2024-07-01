@@ -7,10 +7,6 @@ import Charts
 import DropDown
 import SwiftUI
 
-enum TableList{
-    case sector
-}
-
 protocol ServiceViewPageDelegate {
     func sendPage(data: Int)
 }
@@ -18,8 +14,6 @@ protocol ServiceViewPageDelegate {
 class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyTableViewDelegate, ExpyTableViewDataSource, Observer {
     
     func robotTableViewCell(_ cell: RobotTableViewCell, didTapButtonWithValue value: String) {
-        print("ID to monitor : \(value)")
-        
         self.idToMonitor = value
         self.isMonitor = true
     }
@@ -64,13 +58,10 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
         DispatchQueue.main.async {
             let localTime: String = self.getLocalTimeString()
             let dt = result.mobile_time - self.observerTime
-            let log: String = localTime + " , (ServiceVC) : isIndoor = \(result.isIndoor) // dt = \(dt) // mode = \(result.mode) // x = \(result.x) // y = \(result.y) // index = \(result.index) // phase = \(result.phase)"
             
             self.observerTime = result.mobile_time
             let building = result.building_name
             let level = result.level_name
-            var x = result.x
-            var y = result.y
             
 //            let WINDOW_SIZE = 10
 //            var isResultTurning = false
@@ -106,7 +97,6 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
 //                self.averagePosBuffer = [[Double]]()
 //            }
             
-            
             if (result.ble_only_position) {
                 self.isBleOnlyMode = true
             } else {
@@ -119,8 +109,8 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
                     if (levelList.contains(level)) {
                         self.coordToDisplay.building = building
                         self.coordToDisplay.level = level
-                        self.coordToDisplay.x = x
-                        self.coordToDisplay.y = y
+                        self.coordToDisplay.x = result.x
+                        self.coordToDisplay.y = result.y
                         self.coordToDisplay.heading = result.absolute_heading
                         self.coordToDisplay.isIndoor = result.isIndoor
                     }
@@ -129,7 +119,7 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
         }
     }
     
-    @IBOutlet var ServiceView: UIView!
+    @IBOutlet var serviceView: UIView!
     
     @IBOutlet weak var displayView: UIView!
     @IBOutlet weak var displayViewHeight: NSLayoutConstraint!
@@ -180,7 +170,6 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
     var page: Int = 0
     
     var RP = [String: [[Double]]]()
-    var Road = [[Double]]()
     var chartLimits = [String: [Double]]()
     var chartLoad = [String: Bool]()
     
@@ -548,7 +537,7 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
                     
                     let bottomPadding = window?.safeAreaInsets.bottom ?? 0.0
                     
-                    defaultHeight = ServiceView.bounds.height - 100 - displayViewHeight.constant - bottomPadding
+                    defaultHeight = serviceView.bounds.height - 100 - displayViewHeight.constant - bottomPadding
                     containerViewHeight.constant = defaultHeight
                 }
             case "Canada":
@@ -561,7 +550,7 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
                     let window = UIApplication.shared.keyWindow
                     let bottomPadding = window?.safeAreaInsets.bottom ?? 0.0
                     
-                    defaultHeight = ServiceView.bounds.height - 100 - displayViewHeight.constant - bottomPadding
+                    defaultHeight = serviceView.bounds.height - 100 - displayViewHeight.constant - bottomPadding
                     containerViewHeight.constant = defaultHeight
                 }
             default:
@@ -575,7 +564,7 @@ class ServiceViewController: UIViewController, RobotTableViewCellDelegate, ExpyT
                     let window = UIApplication.shared.keyWindow
                     let bottomPadding = window?.safeAreaInsets.bottom ?? 0.0
                     
-                    defaultHeight = ServiceView.bounds.height - 100 - displayViewHeight.constant - bottomPadding
+                    defaultHeight = serviceView.bounds.height - 100 - displayViewHeight.constant - bottomPadding
                     
                     containerViewHeight.constant = defaultHeight
                 }

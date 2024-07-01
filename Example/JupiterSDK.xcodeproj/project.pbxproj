@@ -28,6 +28,9 @@
 		B31B5EA02C2012F900289BF8 /* OlympusFusionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B31B5E9F2C2012F900289BF8 /* OlympusFusionViewController.swift */; };
 		B31EC7D92876C03A00799659 /* ServiceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B31EC7D82876C03A00799659 /* ServiceViewController.swift */; };
 		B3261B1A2BB668D6006F076D /* G2_2F.csv in Resources */ = {isa = PBXBuildFile; fileRef = B3261B192BB668D6006F076D /* G2_2F.csv */; };
+		B33C72152C329B09005ABE9B /* AppConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = B33C72142C329B09005ABE9B /* AppConstants.swift */; };
+		B33C72192C329E8F005ABE9B /* Structures.swift in Sources */ = {isa = PBXBuildFile; fileRef = B33C72182C329E8F005ABE9B /* Structures.swift */; };
+		B33C721B2C329EF5005ABE9B /* OlympusStructures.swift in Sources */ = {isa = PBXBuildFile; fileRef = B33C721A2C329EF4005ABE9B /* OlympusStructures.swift */; };
 		B340EE3328093FB20096E404 /* CardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B340EE3228093FB20096E404 /* CardViewController.swift */; };
 		B34111B92AD6503400CFA422 /* L1_1F.csv in Resources */ = {isa = PBXBuildFile; fileRef = B34111AF2AD6503300CFA422 /* L1_1F.csv */; };
 		B34111BA2AD6503400CFA422 /* L3_4F.csv in Resources */ = {isa = PBXBuildFile; fileRef = B34111B02AD6503300CFA422 /* L3_4F.csv */; };
@@ -75,7 +78,6 @@
 		B3B4F85A28114EEB009F9E6C /* ShowCardCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3B4F85828114EEB009F9E6C /* ShowCardCollectionViewCell.swift */; };
 		B3B4F85B28114EEB009F9E6C /* ShowCardCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B3B4F85928114EEB009F9E6C /* ShowCardCollectionViewCell.xib */; };
 		B3B7FBF52856DA4000E23EDF /* PopUpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3B7FBF42856DA4000E23EDF /* PopUpViewController.swift */; };
-		B3B7FBF72856F43200E23EDF /* GalleryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3B7FBF62856F43200E23EDF /* GalleryViewController.swift */; };
 		B3B9F4E5286C2EA300FEE914 /* Gallery_4F_Road.csv in Resources */ = {isa = PBXBuildFile; fileRef = B3B9F4E4286C2EA300FEE914 /* Gallery_4F_Road.csv */; };
 		B3BD699827E9A4A500A32A7A /* ColorPalette.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3BD699727E9A4A500A32A7A /* ColorPalette.swift */; };
 		B3BD699A27E9A4BE00A32A7A /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B3BD699927E9A4BE00A32A7A /* Colors.xcassets */; };
@@ -165,6 +167,10 @@
 		B31B5E9F2C2012F900289BF8 /* OlympusFusionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OlympusFusionViewController.swift; sourceTree = "<group>"; };
 		B31EC7D82876C03A00799659 /* ServiceViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceViewController.swift; sourceTree = "<group>"; };
 		B3261B192BB668D6006F076D /* G2_2F.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = G2_2F.csv; sourceTree = "<group>"; };
+		B33C72132C329287005ABE9B /* .swiftlint.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = .swiftlint.yml; sourceTree = "<group>"; };
+		B33C72142C329B09005ABE9B /* AppConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppConstants.swift; sourceTree = "<group>"; };
+		B33C72182C329E8F005ABE9B /* Structures.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Structures.swift; sourceTree = "<group>"; };
+		B33C721A2C329EF4005ABE9B /* OlympusStructures.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OlympusStructures.swift; sourceTree = "<group>"; };
 		B340EE3228093FB20096E404 /* CardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardViewController.swift; sourceTree = "<group>"; };
 		B34111AF2AD6503300CFA422 /* L1_1F.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = L1_1F.csv; sourceTree = "<group>"; };
 		B34111B02AD6503300CFA422 /* L3_4F.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = L3_4F.csv; sourceTree = "<group>"; };
@@ -214,7 +220,6 @@
 		B3B4F85928114EEB009F9E6C /* ShowCardCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ShowCardCollectionViewCell.xib; sourceTree = "<group>"; };
 		B3B5E5AF2B0DD1CC00639A1E /* JupiterSDK_Example.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = JupiterSDK_Example.entitlements; sourceTree = "<group>"; };
 		B3B7FBF42856DA4000E23EDF /* PopUpViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopUpViewController.swift; sourceTree = "<group>"; };
-		B3B7FBF62856F43200E23EDF /* GalleryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GalleryViewController.swift; sourceTree = "<group>"; };
 		B3B9F4E4286C2EA300FEE914 /* Gallery_4F_Road.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Gallery_4F_Road.csv; sourceTree = "<group>"; };
 		B3BD699727E9A4A500A32A7A /* ColorPalette.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorPalette.swift; sourceTree = "<group>"; };
 		B3BD699927E9A4BE00A32A7A /* Colors.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Colors.xcassets; sourceTree = "<group>"; };
@@ -297,6 +302,7 @@
 		607FACC71AFB9204008FA782 = {
 			isa = PBXGroup;
 			children = (
+				B33C72132C329287005ABE9B /* .swiftlint.yml */,
 				B3B5E5AF2B0DD1CC00639A1E /* JupiterSDK_Example.entitlements */,
 				B3AE49DE2AAECB770035E8F0 /* JupiterSDK_ExampleRelease.entitlements */,
 				607FACF51AFB993E008FA782 /* Podspec Metadata */,
@@ -320,6 +326,7 @@
 		607FACD21AFB9204008FA782 /* Example for JupiterSDK */ = {
 			isa = PBXGroup;
 			children = (
+				B33C72162C329DCC005ABE9B /* Constants */,
 				B30EED7F289381F9009A3EDA /* ViewController */,
 				B3D194D9282E270C004E6F9A /* Guide */,
 				B3455280282AACD000F0DD3E /* Output */,
@@ -330,14 +337,6 @@
 				B3BD699627E9A48E00A32A7A /* Color */,
 				607FACD51AFB9204008FA782 /* AppDelegate.swift */,
 				B3D48908289B96F900A8154C /* RemoteConfigManager.swift */,
-				B3844E8C28099EE3007A5215 /* CardCollectionViewCell.swift */,
-				B3844E8D28099EE3007A5215 /* CardCollectionViewCell.xib */,
-				B3B4F85828114EEB009F9E6C /* ShowCardCollectionViewCell.swift */,
-				B3B4F85928114EEB009F9E6C /* ShowCardCollectionViewCell.xib */,
-				B3DE961A2999F65500352F40 /* WardCollectionViewCell.swift */,
-				B3DE961B2999F65500352F40 /* WardCollectionViewCell.xib */,
-				B3985D48299A1F1E008E7F78 /* FileCollectionViewCell.swift */,
-				B3985D49299A1F1E008E7F78 /* FileCollectionViewCell.xib */,
 				B3BEBF572B4BEDB800624875 /* PG_1F.csv */,
 				607FACD91AFB9204008FA782 /* Main.storyboard */,
 				B35272B1281F8DC300321CC6 /* SplashScreen.storyboard */,
@@ -431,6 +430,7 @@
 		B30EED7F289381F9009A3EDA /* ViewController */ = {
 			isa = PBXGroup;
 			children = (
+				B33C72172C329DF3005ABE9B /* Cells */,
 				B3C2348E2C2CFC4800E606F3 /* Services */,
 				B3C2348D2C2CFC3300E606F3 /* Cards */,
 				B3C2348C2C2CFC2600E606F3 /* Olympus */,
@@ -445,12 +445,38 @@
 			name = ViewController;
 			sourceTree = "<group>";
 		};
+		B33C72162C329DCC005ABE9B /* Constants */ = {
+			isa = PBXGroup;
+			children = (
+				B3E0A4F52887E51700B88E08 /* Environment.swift */,
+				B33C72142C329B09005ABE9B /* AppConstants.swift */,
+				B33C72182C329E8F005ABE9B /* Structures.swift */,
+				B33C721A2C329EF4005ABE9B /* OlympusStructures.swift */,
+			);
+			name = Constants;
+			sourceTree = "<group>";
+		};
+		B33C72172C329DF3005ABE9B /* Cells */ = {
+			isa = PBXGroup;
+			children = (
+				B3844E8C28099EE3007A5215 /* CardCollectionViewCell.swift */,
+				B3844E8D28099EE3007A5215 /* CardCollectionViewCell.xib */,
+				B3B4F85828114EEB009F9E6C /* ShowCardCollectionViewCell.swift */,
+				B3B4F85928114EEB009F9E6C /* ShowCardCollectionViewCell.xib */,
+				B3DE961A2999F65500352F40 /* WardCollectionViewCell.swift */,
+				B3DE961B2999F65500352F40 /* WardCollectionViewCell.xib */,
+				B3985D48299A1F1E008E7F78 /* FileCollectionViewCell.swift */,
+				B3985D49299A1F1E008E7F78 /* FileCollectionViewCell.xib */,
+			);
+			name = Cells;
+			sourceTree = "<group>";
+		};
 		B345527F282AA00700F0DD3E /* Network */ = {
 			isa = PBXGroup;
 			children = (
 				B3F5C77D282A5408009BEDB9 /* Network.swift */,
-				B3F5C77F282A5519009BEDB9 /* Protocol.swift */,
 				B39C2D5F2C1041D700A34D0C /* OlympusProtocol.swift */,
+				B3F5C77F282A5519009BEDB9 /* Protocol.swift */,
 			);
 			name = Network;
 			sourceTree = "<group>";
@@ -509,7 +535,6 @@
 				B3C6F99F289CCF92003FB402 /* UIImageExtension.swift */,
 				B3E6C0F7292D6B1400D0AC13 /* ImageCacheManager.swift */,
 				B3607E4D29B8C34700F11AA6 /* ProgressCircleView.swift */,
-				B3E0A4F52887E51700B88E08 /* Environment.swift */,
 				B368814C2A6FA584005CD436 /* UsefulFunctions.swift */,
 			);
 			name = Utils;
@@ -548,7 +573,6 @@
 		B3C2348E2C2CFC4800E606F3 /* Services */ = {
 			isa = PBXGroup;
 			children = (
-				B3B7FBF62856F43200E23EDF /* GalleryViewController.swift */,
 				B31EC7D82876C03A00799659 /* ServiceViewController.swift */,
 				B30EED7B28936CB5009A3EDA /* TipsTownViewController.swift */,
 				B3D397A628F5A64700B5DBED /* SpotViewController.swift */,
@@ -583,6 +607,7 @@
 				B3F7C8D429F7A46E00EC30E0 /* Run Script */,
 				23B874579DED908C89C9DDAE /* [CP] Embed Pods Frameworks */,
 				22CE5EE675665624472ED0F0 /* [CP] Copy Pods Resources */,
+				B33C72112C3291C4005ABE9B /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -839,6 +864,23 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
+		B33C72112C3291C4005ABE9B /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "${PODS_ROOT}/SwiftLint/swiftlint\n";
+		};
 		B3F7C8D429F7A46E00EC30E0 /* Run Script */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -889,6 +931,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				B3D397A728F5A64700B5DBED /* SpotViewController.swift in Sources */,
+				B33C72192C329E8F005ABE9B /* Structures.swift in Sources */,
 				B3D194DF282E2782004E6F9A /* GuideViewController.swift in Sources */,
 				B3C6F99E289CCF78003FB402 /* NSObjectExtension.swift in Sources */,
 				B3DE961C2999F65500352F40 /* WardCollectionViewCell.swift in Sources */,
@@ -921,6 +964,7 @@
 				B31B5E9E2C1C25F800289BF8 /* OlympusServiceViewController.swift in Sources */,
 				B3D488F0289B4D5500A8154C /* UIColorExtension.swift in Sources */,
 				B3F5C77E282A5408009BEDB9 /* Network.swift in Sources */,
+				B33C721B2C329EF5005ABE9B /* OlympusStructures.swift in Sources */,
 				B3BD69A427E9A54700A32A7A /* StringExtension.swift in Sources */,
 				B388AC31282BF6A3001C3D71 /* RobotTableViewCell.swift in Sources */,
 				B3D48909289B96F900A8154C /* RemoteConfigManager.swift in Sources */,
@@ -937,8 +981,8 @@
 				B38C7F4C28FE6AC200DEEF32 /* NeptuneViewController.swift in Sources */,
 				B3BD69A827E9A56B00A32A7A /* UITableViewRegisterable.swift in Sources */,
 				B3E0A4F62887E51700B88E08 /* Environment.swift in Sources */,
-				B3B7FBF72856F43200E23EDF /* GalleryViewController.swift in Sources */,
 				B3607E4E29B8C34700F11AA6 /* ProgressCircleView.swift in Sources */,
+				B33C72152C329B09005ABE9B /* AppConstants.swift in Sources */,
 				B3AA004928313C97007CD284 /* UILabelExtension.swift in Sources */,
 				B3BD699F27E9A51100A32A7A /* UIViewControllerExtension.swift in Sources */,
 			);

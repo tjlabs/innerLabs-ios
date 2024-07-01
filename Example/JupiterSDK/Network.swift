@@ -1,9 +1,3 @@
-//
-//  NetworkManager.swift
-//  JupiterSDK
-//
-//  Created by 신동현 on 2022/04/14.
-//
 
 import Foundation
 import Alamofire
@@ -25,7 +19,6 @@ public class Network {
             "userId" : 1,
             "id" : 1
         ]
-        
         
         // [http 요청 수행 실시]
         print("")

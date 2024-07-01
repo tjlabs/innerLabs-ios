@@ -6,7 +6,7 @@ import JupiterSDK
 
 class NeptuneViewController: UIViewController, ExpyTableViewDelegate, ExpyTableViewDataSource {
     
-    @IBOutlet var NeptuneView: UIView!
+    @IBOutlet var neptuneView: UIView!
     
     @IBOutlet weak var displayView: UIView!
     @IBOutlet weak var displayViewHeight: NSLayoutConstraint!
@@ -254,7 +254,7 @@ class NeptuneViewController: UIViewController, ExpyTableViewDelegate, ExpyTableV
             let window = UIApplication.shared.keyWindow
             let bottomPadding = window?.safeAreaInsets.bottom ?? 0.0
             
-            defaultHeight = NeptuneView.bounds.height - displayViewHeight.constant - bottomPadding
+            defaultHeight = neptuneView.bounds.height - displayViewHeight.constant - bottomPadding
             containerViewHeight.constant = defaultHeight
         } else {
             displayViewHeight.constant = 480

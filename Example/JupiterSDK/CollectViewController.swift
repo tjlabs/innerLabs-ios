@@ -41,9 +41,6 @@ class Trajectory {
 }
 
 class CollectViewController: UIViewController {
-    let R2D: Double = 180 / Double.pi
-    let D2R: Double = Double.pi / 180
-    
     @IBOutlet var collectView: UIView!
     
     var serviceManager = OlympusServiceManager()
@@ -367,8 +364,8 @@ class CollectViewController: UIViewController {
                 lengthLabel.text = String(format: "%.4f", length)
                 let currentHeading: Double = collectedData.heading + 90
                 
-                x = x + (length * cos(currentHeading*D2R))
-                y = y + (length * sin(currentHeading*D2R))
+                x += (length * cos(currentHeading*deg2rad))
+                y += (length * sin(currentHeading*rad2deg))
                 
                 xAxisValue.append(x)
                 yAxisValue.append(y)

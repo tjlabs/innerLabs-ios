@@ -139,6 +139,7 @@ PODS:
   - SnapKit (5.6.0)
   - SwiftAlgorithms (1.0.0)
   - SwiftCSVExport (2.6.0)
+  - SwiftLint (0.55.1)
   - TextFieldEffects (1.6.0)
 
 DEPENDENCIES:
@@ -158,11 +159,13 @@ DEPENDENCIES:
   - OlympusSDK (= 0.0.20)
   - SnapKit
   - SwiftCSVExport (= 2.6.0)
+  - SwiftLint
   - TextFieldEffects
 
 SPEC REPOS:
   https://github.com/CocoaPods/Specs.git:
     - OlympusSDK
+    - SwiftLint
   trunk:
     - Alamofire
     - AWSCore
@@ -231,8 +234,9 @@ SPEC CHECKSUMS:
   SnapKit: e01d52ebb8ddbc333eefe2132acf85c8227d9c25
   SwiftAlgorithms: 38dda4731d19027fdeee1125f973111bf3386b53
   SwiftCSVExport: d9db3fb80484115028792f8d539445e3fb2c0ecb
+  SwiftLint: 3fe909719babe5537c552ee8181c0031392be933
   TextFieldEffects: 529b8aff706fb40f82c41c780c0777941a893796
 
-PODFILE CHECKSUM: a6d364c2b2e44399a29b19f7a51281ffb4dc4bd3
+PODFILE CHECKSUM: 500cb8c36971267a175bef414dbcec8d23b10a9e
 
 COCOAPODS: 1.15.2
