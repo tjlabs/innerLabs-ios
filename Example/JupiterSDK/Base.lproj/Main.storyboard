@@ -70,7 +70,7 @@
                                 <state key="normal" image="unCheckedBox"/>
                                 <state key="selected" image="checkedBox"/>
                                 <connections>
-                                    <action selector="tapSaveUuidButton:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="qSf-RO-FgE"/>
+                                    <action selector="tapSaveUserIDButton:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="TTL-Qc-DFR"/>
                                 </connections>
                             </button>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="innerLabsBI" translatesAutoresizingMaskIntoConstraints="NO" id="zl8-wP-m6e">
@@ -187,7 +187,7 @@
                         <outlet property="dropView" destination="C17-O1-Ggj" id="5UC-38-2xm"/>
                         <outlet property="guideLabel" destination="3cD-sh-gUq" id="qM7-fN-aJC"/>
                         <outlet property="loginButton" destination="I89-If-8y7" id="9tT-Zz-0un"/>
-                        <outlet property="saveUuidButton" destination="U3z-wL-2zJ" id="CJG-0x-IaM"/>
+                        <outlet property="saveUserIDButton" destination="U3z-wL-2zJ" id="us3-mh-bmv"/>
                         <outlet property="sdkVersionLabel" destination="qqT-Dj-6j4" id="Uzl-ch-Dgq"/>
                     </connections>
                 </viewController>

@@ -132,10 +132,16 @@ PODS:
     - nanopb/encode (= 2.30909.0)
   - nanopb/decode (2.30909.0)
   - nanopb/encode (2.30909.0)
-  - OlympusSDK (0.0.20)
+  - OlympusSDK (0.0.22)
   - PromisesObjC (2.3.1)
   - PromisesSwift (2.3.1):
     - PromisesObjC (= 2.3.1)
+  - RxCocoa (6.5.0):
+    - RxRelay (= 6.5.0)
+    - RxSwift (= 6.5.0)
+  - RxRelay (6.5.0):
+    - RxSwift (= 6.5.0)
+  - RxSwift (6.5.0)
   - SnapKit (5.6.0)
   - SwiftAlgorithms (1.0.0)
   - SwiftCSVExport (2.6.0)
@@ -156,15 +162,20 @@ DEPENDENCIES:
   - GooglePlaces (= 4.0.0)
   - JupiterSDK (from `../`)
   - Kingfisher
-  - OlympusSDK (= 0.0.20)
+  - OlympusSDK (= 0.0.22)
+  - RxCocoa (~> 6.5.0)
+  - RxSwift (~> 6.5.0)
   - SnapKit
   - SwiftCSVExport (= 2.6.0)
-  - SwiftLint
+  - SwiftLint (= 0.55.1)
   - TextFieldEffects
 
 SPEC REPOS:
   https://github.com/CocoaPods/Specs.git:
     - OlympusSDK
+    - RxCocoa
+    - RxRelay
+    - RxSwift
     - SwiftLint
   trunk:
     - Alamofire
@@ -228,15 +239,18 @@ SPEC CHECKSUMS:
   JupiterSDK: f86a70e56cf94616d7e8cd4b801fa65688a97f11
   Kingfisher: 1d14e9f59cbe19389f591c929000332bf70efd32
   nanopb: b552cce312b6c8484180ef47159bc0f65a1f0431
-  OlympusSDK: 578d4b3e5de89afe7b2315480e6ee29d58dedd7d
+  OlympusSDK: 4e056c8046e323e6500a0b1df36e763ecc7bd024
   PromisesObjC: c50d2056b5253dadbd6c2bea79b0674bd5a52fa4
   PromisesSwift: 28dca69a9c40779916ac2d6985a0192a5cb4a265
+  RxCocoa: 94f817b71c07517321eb4f9ad299112ca8af743b
+  RxRelay: 1de1523e604c72b6c68feadedd1af3b1b4d0ecbd
+  RxSwift: 5710a9e6b17f3c3d6e40d6e559b9fa1e813b2ef8
   SnapKit: e01d52ebb8ddbc333eefe2132acf85c8227d9c25
   SwiftAlgorithms: 38dda4731d19027fdeee1125f973111bf3386b53
   SwiftCSVExport: d9db3fb80484115028792f8d539445e3fb2c0ecb
   SwiftLint: 3fe909719babe5537c552ee8181c0031392be933
   TextFieldEffects: 529b8aff706fb40f82c41c780c0777941a893796
 
-PODFILE CHECKSUM: 500cb8c36971267a175bef414dbcec8d23b10a9e
+PODFILE CHECKSUM: 73c85dfa8805952e202989d98cd69635076630c3
 
 COCOAPODS: 1.15.2

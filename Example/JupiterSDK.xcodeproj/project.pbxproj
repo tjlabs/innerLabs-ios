@@ -115,6 +115,10 @@
 		B3DE961D2999F65500352F40 /* WardCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B3DE961B2999F65500352F40 /* WardCollectionViewCell.xib */; };
 		B3DE961F299A111B00352F40 /* FileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3DE961E299A111B00352F40 /* FileViewController.swift */; };
 		B3DEEDC22B3E818600A47623 /* ASJTM_1F.csv in Resources */ = {isa = PBXBuildFile; fileRef = B3DEEDC12B3E818600A47623 /* ASJTM_1F.csv */; };
+		B3E008542C33E8720080A299 /* UserInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3E008532C33E8720080A299 /* UserInfo.swift */; };
+		B3E008572C33E87E0080A299 /* CardInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3E008562C33E87E0080A299 /* CardInfo.swift */; };
+		B3E0085B2C33EC670080A299 /* JSONConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3E0085A2C33EC670080A299 /* JSONConverter.swift */; };
+		B3E0085D2C33F1640080A299 /* Observable.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3E0085C2C33F1640080A299 /* Observable.swift */; };
 		B3E0A4F62887E51700B88E08 /* Environment.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3E0A4F52887E51700B88E08 /* Environment.swift */; };
 		B3E6C0F8292D6B1400D0AC13 /* ImageCacheManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3E6C0F7292D6B1400D0AC13 /* ImageCacheManager.swift */; };
 		B3F5C77E282A5408009BEDB9 /* Network.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3F5C77D282A5408009BEDB9 /* Network.swift */; };
@@ -259,6 +263,10 @@
 		B3DE961B2999F65500352F40 /* WardCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = WardCollectionViewCell.xib; sourceTree = "<group>"; };
 		B3DE961E299A111B00352F40 /* FileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileViewController.swift; sourceTree = "<group>"; };
 		B3DEEDC12B3E818600A47623 /* ASJTM_1F.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ASJTM_1F.csv; sourceTree = "<group>"; };
+		B3E008532C33E8720080A299 /* UserInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserInfo.swift; sourceTree = "<group>"; };
+		B3E008562C33E87E0080A299 /* CardInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardInfo.swift; sourceTree = "<group>"; };
+		B3E0085A2C33EC670080A299 /* JSONConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSONConverter.swift; sourceTree = "<group>"; };
+		B3E0085C2C33F1640080A299 /* Observable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Observable.swift; sourceTree = "<group>"; };
 		B3E0A4F52887E51700B88E08 /* Environment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Environment.swift; sourceTree = "<group>"; };
 		B3E6C0F7292D6B1400D0AC13 /* ImageCacheManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageCacheManager.swift; sourceTree = "<group>"; };
 		B3F5C77D282A5408009BEDB9 /* Network.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Network.swift; sourceTree = "<group>"; };
@@ -330,6 +338,9 @@
 		607FACD21AFB9204008FA782 /* Example for JupiterSDK */ = {
 			isa = PBXGroup;
 			children = (
+				B3E008522C33E7880080A299 /* Views */,
+				B3E008512C33E7640080A299 /* ViewModels */,
+				B3E008502C33E48D0080A299 /* Models */,
 				B33C72162C329DCC005ABE9B /* Constants */,
 				B30EED7F289381F9009A3EDA /* ViewController */,
 				B345527F282AA00700F0DD3E /* Network */,
@@ -448,7 +459,6 @@
 			children = (
 				B3E0A4F52887E51700B88E08 /* Environment.swift */,
 				B33C72142C329B09005ABE9B /* AppConstants.swift */,
-				B33C72182C329E8F005ABE9B /* Structures.swift */,
 				B33C721A2C329EF4005ABE9B /* OlympusStructures.swift */,
 				B33C721C2C32A430005ABE9B /* Protocols.swift */,
 				B33C721E2C32A465005ABE9B /* Enums.swift */,
@@ -480,6 +490,7 @@
 				B3F5C77D282A5408009BEDB9 /* Network.swift */,
 				B39C2D5F2C1041D700A34D0C /* OlympusNetworkURL.swift */,
 				B3F5C77F282A5519009BEDB9 /* NetworkURL.swift */,
+				B3E0085A2C33EC670080A299 /* JSONConverter.swift */,
 			);
 			name = Network;
 			sourceTree = "<group>";
@@ -539,6 +550,7 @@
 				B3E6C0F7292D6B1400D0AC13 /* ImageCacheManager.swift */,
 				B3607E4D29B8C34700F11AA6 /* ProgressCircleView.swift */,
 				B368814C2A6FA584005CD436 /* UsefulFunctions.swift */,
+				B3E0085C2C33F1640080A299 /* Observable.swift */,
 			);
 			name = Utils;
 			sourceTree = "<group>";
@@ -597,6 +609,30 @@
 				B3D194E1282E2B2B004E6F9A /* LocationTableViewCell.xib */,
 			);
 			name = Guide;
+			sourceTree = "<group>";
+		};
+		B3E008502C33E48D0080A299 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				B33C72182C329E8F005ABE9B /* Structures.swift */,
+				B3E008532C33E8720080A299 /* UserInfo.swift */,
+				B3E008562C33E87E0080A299 /* CardInfo.swift */,
+			);
+			name = Models;
+			sourceTree = "<group>";
+		};
+		B3E008512C33E7640080A299 /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = ViewModels;
+			sourceTree = "<group>";
+		};
+		B3E008522C33E7880080A299 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Views;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -809,6 +845,9 @@
 				"${BUILT_PRODUCTS_DIR}/Kingfisher/Kingfisher.framework",
 				"${BUILT_PRODUCTS_DIR}/PromisesObjC/FBLPromises.framework",
 				"${BUILT_PRODUCTS_DIR}/PromisesSwift/Promises.framework",
+				"${BUILT_PRODUCTS_DIR}/RxCocoa/RxCocoa.framework",
+				"${BUILT_PRODUCTS_DIR}/RxRelay/RxRelay.framework",
+				"${BUILT_PRODUCTS_DIR}/RxSwift/RxSwift.framework",
 				"${BUILT_PRODUCTS_DIR}/SnapKit/SnapKit.framework",
 				"${BUILT_PRODUCTS_DIR}/SwiftAlgorithms/Algorithms.framework",
 				"${BUILT_PRODUCTS_DIR}/SwiftCSVExport/SwiftCSVExport.framework",
@@ -837,6 +876,9 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Kingfisher.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FBLPromises.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Promises.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RxCocoa.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RxRelay.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RxSwift.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SnapKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Algorithms.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftCSVExport.framework",
@@ -961,6 +1003,7 @@
 				B3844E8E28099EE3007A5215 /* CardCollectionViewCell.swift in Sources */,
 				B33C721D2C32A430005ABE9B /* Protocols.swift in Sources */,
 				B340EE3328093FB20096E404 /* CardViewController.swift in Sources */,
+				B3E008572C33E87E0080A299 /* CardInfo.swift in Sources */,
 				B3D194E2282E2B2B004E6F9A /* LocationTableViewCell.swift in Sources */,
 				B3DE146F280E7556006DA43C /* UIApplicationExtension.swift in Sources */,
 				B3D194DC282E2726004E6F9A /* JupiterGuideTableViewCell.swift in Sources */,
@@ -972,6 +1015,7 @@
 				B3D488F0289B4D5500A8154C /* UIColorExtension.swift in Sources */,
 				B3F5C77E282A5408009BEDB9 /* Network.swift in Sources */,
 				B33C721B2C329EF5005ABE9B /* OlympusStructures.swift in Sources */,
+				B3E008542C33E8720080A299 /* UserInfo.swift in Sources */,
 				B3BD69A427E9A54700A32A7A /* StringExtension.swift in Sources */,
 				B33C721F2C32A465005ABE9B /* Enums.swift in Sources */,
 				B388AC31282BF6A3001C3D71 /* RobotTableViewCell.swift in Sources */,
@@ -980,6 +1024,7 @@
 				B3DE961F299A111B00352F40 /* FileViewController.swift in Sources */,
 				B31B5EA02C2012F900289BF8 /* OlympusFusionViewController.swift in Sources */,
 				607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */,
+				B3E0085B2C33EC670080A299 /* JSONConverter.swift in Sources */,
 				B30EED7C28936CB5009A3EDA /* TipsTownViewController.swift in Sources */,
 				B3BD69A627E9A55400A32A7A /* UIViewExtension.swift in Sources */,
 				B3BD699827E9A4A500A32A7A /* ColorPalette.swift in Sources */,
@@ -990,6 +1035,7 @@
 				B3BD69A827E9A56B00A32A7A /* UITableViewRegisterable.swift in Sources */,
 				B3E0A4F62887E51700B88E08 /* Environment.swift in Sources */,
 				B3607E4E29B8C34700F11AA6 /* ProgressCircleView.swift in Sources */,
+				B3E0085D2C33F1640080A299 /* Observable.swift in Sources */,
 				B33C72152C329B09005ABE9B /* AppConstants.swift in Sources */,
 				B3AA004928313C97007CD284 /* UILabelExtension.swift in Sources */,
 				B3BD699F27E9A51100A32A7A /* UIViewControllerExtension.swift in Sources */,

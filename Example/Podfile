@@ -6,7 +6,7 @@ source ‘https://github.com/CocoaPods/Specs.git’
 target 'JupiterSDK_Example' do
   use_frameworks!
   pod 'JupiterSDK', :path => '../'
-  pod 'OlympusSDK', '0.0.20'
+  pod 'OlympusSDK', '0.0.22'
   pod 'Alamofire'
   pod 'SwiftCSVExport' , '= 2.6.0'
   pod 'GoogleMaps', '4.0.0'
@@ -20,6 +20,8 @@ target 'JupiterSDK_Example' do
   pod 'TextFieldEffects'
   pod 'AWSS3'
   pod 'SwiftLint', '0.55.1'
+  pod 'RxSwift', '~> 6.5.0'
+  pod 'RxCocoa', '~> 6.5.0'
   
   pod 'FirebaseRemoteConfig'
   pod 'Firebase/Analytics'

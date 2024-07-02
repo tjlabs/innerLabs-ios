@@ -30,13 +30,6 @@ struct CardItemData: Codable {
     }
 }
 
-struct Login: Codable {
-    var user_id: String
-    var device_model: String
-    var os_version: Int
-    var sdk_version: String
-}
-
 struct AddCard: Codable {
     var user_id: String
     var sector_code: String
@@ -89,14 +82,6 @@ struct DeleteCardResponse: Codable {
     var message: String
 }
 
-struct ScaleResponse: Codable {
-    var image_scale: String
-}
-
-struct ScaleResponseOlympus: Codable {
-    var image_scale: [Double]
-}
-
 struct CardList: Codable {
     var sectors: [CardInfo]
 }
@@ -130,6 +115,16 @@ struct CardInfoNoCustomKeys: Codable {
     var service_request: String
     var building_level: [[String]]
 }
+
+
+struct ScaleResponse: Codable {
+    var image_scale: String
+}
+
+struct ScaleResponseOlympus: Codable {
+    var image_scale: [Double]
+}
+
 
 struct ResultToDisplay {
     var infoLevels: String = ""
