@@ -11,7 +11,6 @@ public class BlacklistChecker: Observation {
     
     func reporting(input: Int) {
         for observer in observers {
-//            print("BlackList Report (1) : \(input)")
             observer.report(flag: input)
         }
     }
