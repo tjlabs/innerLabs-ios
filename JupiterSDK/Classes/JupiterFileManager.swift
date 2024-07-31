@@ -197,8 +197,10 @@ public class JupiterFileManager {
                         jupiterSensorData.gameVector = [Float(columns[32])!, Float(columns[33])!, Float(columns[34])!, Float(columns[35])!]
                         jupiterSensorData.rotVector = [Float(columns[36])!, Float(columns[37])!, Float(columns[38])!, Float(columns[39])!, Float(columns[40])!]
                         jupiterSensorData.pressure = [Double(columns[41])!]
-                        jupiterSensorData.trueHeading = Double(columns[42])!
-                        jupiterSensorData.magneticHeading = Double(columns[43])!
+                        if (columns.count > 42) {
+                            jupiterSensorData.trueHeading = Double(columns[42])!
+                            jupiterSensorData.magneticHeading = Double(columns[43])!
+                        }
                         loadedSenorData.append(jupiterSensorData)
                     }
                 }

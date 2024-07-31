@@ -3,7 +3,7 @@ import CoreMotion
 import UIKit
 
 public class ServiceManager: Observation {
-    public static let sdkVersion: String = "3.4.5"
+    public static let sdkVersion: String = "3.4.5.1"
     var isSimulationMode: Bool = false
     var bleFileName: String = ""
     var sensorFileName: String = ""
@@ -1126,6 +1126,7 @@ public class ServiceManager: Observation {
         
         self.inputReceivedForce = [ReceivedForce(user_id: user_id, mobile_time: 0, ble: [:], pressure: 0)]
         self.inputUserVelocity = [UserVelocity(user_id: user_id, mobile_time: 0, index: 0, length: 0, heading: 0, looking: true)]
+        self.inputMobileResult = [MobileResult(user_id: "", mobile_time: 0, sector_id: 0, building_name: "", level_name: "", scc: 0, x: 0, y: 0, absolute_heading: 0, phase: 0, calculated_time: 0, index: 0, velocity: 0, ble_only_position: false, normalization_scale: 0, device_min_rss: 0, sc_compensation: 0, is_indoor: false)]
         self.indexAfterResponse = 0
         self.indexAfterSimulate = 0
         self.lastOsrId = 0

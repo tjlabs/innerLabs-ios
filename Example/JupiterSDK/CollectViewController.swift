@@ -382,7 +382,7 @@ class CollectViewController: UIViewController {
                 
                 // Heading
                 let point = scatterChart.getPosition(entry: ChartDataEntry(x: xAxisValue[xAxisValue.count-1], y: yAxisValue[yAxisValue.count-1]), axis: .left)
-                let imageView = UIImageView(image: headingImage!.rotate(degrees: -currentHeading + 90))
+                let imageView = UIImageView(image: headingImage?.rotate(degrees: -currentHeading + 90))
                 imageView.frame = CGRect(x: point.x - 15, y: point.y - 15, width: 30, height: 30)
                 imageView.contentMode = .center
                 imageView.tag = 100

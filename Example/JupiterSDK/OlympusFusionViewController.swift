@@ -448,6 +448,8 @@ class OlympusFusionViewController: UIViewController, Observer {
             case "Korea":
                 if ( cardData?.sector_id == 1 || cardData?.sector_id == 2 ) {
                     displayViewHeight.constant = 480
+                } else if cardData?.sector_id == 16 {
+                    displayViewHeight.constant = 480
                 } else {
                     let ratio: Double = 114900 / 68700
                     displayViewHeight.constant = displayView.bounds.width * ratio
@@ -1229,7 +1231,6 @@ class OlympusFusionViewController: UIViewController, Observer {
             viewWithTagPin.removeFromSuperview()
         }
         
-        
         UIView.animate(withDuration: 0.5) {
             self.scatterChart.addSubview(imageView)
             self.scatterChart.addSubview(imageCircle)
@@ -1380,7 +1381,7 @@ extension OlympusFusionViewController: CustomSwitchButtonDelegate {
             if (isOn) {
                 self.hideDropDown(flag: true)
                 serviceManager = OlympusServiceManager()
-                serviceManager.setSimulationMode(flag: false, bleFileName: "ble_lg01.csv", sensorFileName: "sensor_lg01.csv")
+                serviceManager.setSimulationMode(flag: true, bleFileName: "pg_test03_ble.csv", sensorFileName: "pg_test03_sensor.csv")
                 
                 var inputMode: String = "auto"
                 if (self.sector_id == 6 && self.region != "Canada") {

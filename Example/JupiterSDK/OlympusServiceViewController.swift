@@ -1418,8 +1418,8 @@ extension OlympusServiceViewController: CustomSwitchButtonDelegate {
             if (isOn) {
                 self.hideDropDown(flag: true)
                 serviceManager = OlympusServiceManager()
-                let uniqueId = "debug05"
-                serviceManager.setSimulationMode(flag: true, bleFileName: "ble_lg_\(uniqueId).csv", sensorFileName: "sensor_lg_\(uniqueId).csv")
+//                let uniqueId = "coex01"
+//                serviceManager.setSimulationMode(flag: true, bleFileName: "ble_\(uniqueId).csv", sensorFileName: "sensor_\(uniqueId).csv")
                 
                 var inputMode: String = "auto"
                 if (self.sector_id == 6 && self.region != "Canada") {
@@ -1427,7 +1427,7 @@ extension OlympusServiceViewController: CustomSwitchButtonDelegate {
                 } else {
                     inputMode = cardData!.mode
                 }
-//                let uniqueId = self.makeUniqueId(uuid: uuid)
+                let uniqueId = self.makeUniqueId(uuid: uuid)
                 serviceManager.startService(user_id: uniqueId, region: self.region, sector_id: self.sector_id, service: self.serviceName, mode: inputMode, completion: { isStart, message in
                     if (isStart) {
                         print(getLocalTimeString() + " , (ServiceVC) Success : \(message)")

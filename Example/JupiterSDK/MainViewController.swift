@@ -2,7 +2,8 @@ import UIKit
 import Alamofire
 import Kingfisher
 import DropDown
-import JupiterSDK
+import OlympusSDK
+//import JupiterSDK
 
 class MainViewController: UIViewController, UITextFieldDelegate {
     
@@ -67,7 +68,7 @@ class MainViewController: UIViewController, UITextFieldDelegate {
         OS = UIDevice.current.systemVersion
         let arr = OS.components(separatedBy: ".")
         OSVersion = Int(arr[0]) ?? 0
-        SDKVersion = ServiceManager.sdkVersion
+        SDKVersion = OlympusServiceManager.sdkVersion
         sdkVersionLabel.text = SDKVersion
     }
     
