@@ -491,6 +491,10 @@ public class ServiceManager: Observation {
     }
     
     public func startService(id: String, sector_id: Int, service: String, mode: String, completion: @escaping (Bool, String) -> Void) {
+//        BlacklistChecker.shared.checkServiceAvailableDevice(completion: { [self] statusCode, isUpdated, isAvailable in
+//            print("BlacklistChecker : model = \(deviceModel) , identifier = \(deviceIdentifier)")
+//            print("BlacklistChecker : \(statusCode) , \(isUpdated) , \(isAvailable)")
+//        })
         let localTime = getLocalTimeString()
         print(localTime + " , (Jupiter) Information : Try startService")
         let log: String = localTime + " , (Jupiter) Success : Service Initalization"

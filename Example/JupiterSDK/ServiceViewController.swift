@@ -1668,9 +1668,10 @@ extension ServiceViewController: CustomSwitchButtonDelegate {
                 self.hideDropDown(flag: true)
                 serviceManager = ServiceManager()
                 serviceManager.changeRegion(regionName: self.region)
-                let uniqueId = "coex01_jupiter"
-                serviceManager.setSimulationMode(flag: true, bleFileName: "ble_coex01.csv", sensorFileName: "sensor_coex01.csv")
-//                serviceManager.setSimulationMode(flag: false, bleFileName: "ble_lg_eval06.csv", sensorFileName: "sensor_lg_eval06.csv")
+                let uniqueId = makeUniqueId(uuid: self.uuid)
+//                let uniqueId = "coex01_jupiter"
+//                serviceManager.setSimulationMode(flag: true, bleFileName: "ble_coex01.csv", sensorFileName: "sensor_coex01.csv")
+//                serviceManager.setSimulationMode(flag: true, bleFileName: "ble_dr1.csv", sensorFileName: "sensor_dr1.csv")
                 var inputMode: String = "auto"
                 if (self.sector_id == 6 && self.region != "Canada") {
                     inputMode = "auto"
