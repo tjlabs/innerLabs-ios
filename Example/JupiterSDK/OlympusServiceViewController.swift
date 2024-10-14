@@ -1418,8 +1418,7 @@ extension OlympusServiceViewController: CustomSwitchButtonDelegate {
             if (isOn) {
                 self.hideDropDown(flag: true)
                 serviceManager = OlympusServiceManager()
-//                let uniqueId = "coex01"
-//                serviceManager.setSimulationMode(flag: true, bleFileName: "ble_\(uniqueId).csv", sensorFileName: "sensor_\(uniqueId).csv")
+//                serviceManager.setSimulationMode(flag: true, bleFileName: "ble_coex_01_02_1007.csv", sensorFileName: "sensor_coex_01_02_1007.csv")
                 
                 var inputMode: String = "auto"
                 if (self.sector_id == 6 && self.region != "Canada") {

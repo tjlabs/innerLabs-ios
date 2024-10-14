@@ -125,14 +125,14 @@ PODS:
     - GoogleUtilities/Logger
   - GoogleUtilities/UserDefaults (7.11.5):
     - GoogleUtilities/Logger
-  - JupiterSDK (3.4.5)
+  - JupiterSDK (3.4.5.1)
   - Kingfisher (7.9.1)
   - nanopb (2.30909.0):
     - nanopb/decode (= 2.30909.0)
     - nanopb/encode (= 2.30909.0)
   - nanopb/decode (2.30909.0)
   - nanopb/encode (2.30909.0)
-  - OlympusSDK (0.0.28)
+  - OlympusSDK (0.0.31)
   - PromisesObjC (2.3.1)
   - PromisesSwift (2.3.1):
     - PromisesObjC (= 2.3.1)
@@ -162,7 +162,7 @@ DEPENDENCIES:
   - GooglePlaces (= 4.0.0)
   - JupiterSDK (from `../`)
   - Kingfisher
-  - OlympusSDK (= 0.0.28)
+  - OlympusSDK (= 0.0.31)
   - RxCocoa (~> 6.5.0)
   - RxSwift (~> 6.5.0)
   - SnapKit
@@ -236,10 +236,10 @@ SPEC CHECKSUMS:
   GoogleMaps: b7f7fc569a9b354a3af0d9729dbec40957b7d41e
   GooglePlaces: ca8d4aba09ba79e0a829cf1dca03a41de6a09016
   GoogleUtilities: 13e2c67ede716b8741c7989e26893d151b2b2084
-  JupiterSDK: 8e186448f19fcc41590e07f34cb5bfd0bfdd0951
+  JupiterSDK: 31d855987774a2afccd55ea77605dd46893a61b7
   Kingfisher: 1d14e9f59cbe19389f591c929000332bf70efd32
   nanopb: b552cce312b6c8484180ef47159bc0f65a1f0431
-  OlympusSDK: b39db87b9aa59a98db99bfe31f6cd7b9c9da7fc9
+  OlympusSDK: 12d989f536a45dbdb4f94755a916ebb4e78bfd57
   PromisesObjC: c50d2056b5253dadbd6c2bea79b0674bd5a52fa4
   PromisesSwift: 28dca69a9c40779916ac2d6985a0192a5cb4a265
   RxCocoa: 94f817b71c07517321eb4f9ad299112ca8af743b
@@ -251,6 +251,6 @@ SPEC CHECKSUMS:
   SwiftLint: 3fe909719babe5537c552ee8181c0031392be933
   TextFieldEffects: 529b8aff706fb40f82c41c780c0777941a893796
 
-PODFILE CHECKSUM: ea59a5d4a1fc2b9566d5b7a0d4e02e4d293605b4
+PODFILE CHECKSUM: 977e7855e65339e8318f8479cdbab879eed10295
 
 COCOAPODS: 1.15.2

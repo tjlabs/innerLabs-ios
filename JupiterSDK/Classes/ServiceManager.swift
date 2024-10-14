@@ -3,7 +3,7 @@ import CoreMotion
 import UIKit
 
 public class ServiceManager: Observation {
-    public static let sdkVersion: String = "3.4.5.1"
+    public static let sdkVersion: String = "3.4.6"
     var isSimulationMode: Bool = false
     var bleFileName: String = ""
     var sensorFileName: String = ""
@@ -495,6 +495,7 @@ public class ServiceManager: Observation {
 //            print("BlacklistChecker : model = \(deviceModel) , identifier = \(deviceIdentifier)")
 //            print("BlacklistChecker : \(statusCode) , \(isUpdated) , \(isAvailable)")
 //        })
+        
         let localTime = getLocalTimeString()
         print(localTime + " , (Jupiter) Information : Try startService")
         let log: String = localTime + " , (Jupiter) Success : Service Initalization"
