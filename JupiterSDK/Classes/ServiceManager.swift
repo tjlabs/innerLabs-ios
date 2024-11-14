@@ -3,7 +3,7 @@ import CoreMotion
 import UIKit
 
 public class ServiceManager: Observation {
-    public static let sdkVersion: String = "3.4.6"
+    public static let sdkVersion: String = "3.4.6.1"
     var isSimulationMode: Bool = false
     var bleFileName: String = ""
     var sensorFileName: String = ""
@@ -167,7 +167,7 @@ public class ServiceManager: Observation {
     var distanceAfterPhase2To4: Double = 0
     var SCC_FOR_PHASE4: Double = 0.5
     var isVenusMode: Bool = false
-    var collectTimer: Timer?
+    var collectTimer: DispatchSourceTimer?
     // ------------------ //
     
     
@@ -367,8 +367,8 @@ public class ServiceManager: Observation {
     public var TIME_INIT_THRESHOLD: Double = 25
     
     // State Observer
-    private var venusObserver: Any!
-    private var jupiterObserver: Any!
+    private var venusObserver: NSObjectProtocol?
+    private var jupiterObserver: NSObjectProtocol?
     
     public override init() {
         super.init()
@@ -1086,14 +1086,20 @@ public class ServiceManager: Observation {
         if (self.backgroundUpTimer == nil) {
             self.backgroundUpTimer = DispatchSource.makeTimerSource(queue: DispatchQueue.global(qos: .background))
             self.backgroundUpTimer!.schedule(deadline: .now(), repeating: UPDATE_INTERVAL)
-            self.backgroundUpTimer!.setEventHandler(handler: self.outputTimerUpdate)
+            self.backgroundUpTimer!.setEventHandler { [weak self] in
+                guard let self = self else { return }
+                self.outputTimerUpdate()
+            }
             self.backgroundUpTimer!.resume()
         }
             
         if (self.backgroundUvTimer == nil) {
             self.backgroundUvTimer = DispatchSource.makeTimerSource(queue: DispatchQueue.global(qos: .background))
             self.backgroundUvTimer!.schedule(deadline: .now(), repeating: UVD_INTERVAL)
-            self.backgroundUvTimer!.setEventHandler(handler: self.userVelocityTimerUpdate)
+            self.backgroundUvTimer!.setEventHandler { [weak self] in
+                guard let self = self else { return }
+                self.userVelocityTimerUpdate()
+            }
             self.backgroundUvTimer!.resume()
         }
             
@@ -1167,35 +1173,43 @@ public class ServiceManager: Observation {
     }
     
     func notificationCenterAddObserver() {
-        self.venusObserver = NotificationCenter.default.addObserver(self, selector: #selector(onDidReceiveNotification), name: .didBecomeVenus, object: nil)
-        self.jupiterObserver = NotificationCenter.default.addObserver(self, selector: #selector(onDidReceiveNotification), name: .didBecomeJupiter, object: nil)
+        self.venusObserver = NotificationCenter.default.addObserver(forName: .didBecomeVenus, object: nil, queue: .main) { [weak self] notification in
+            self?.handleVenusNotification(notification)
+        }
+        
+        self.jupiterObserver = NotificationCenter.default.addObserver(forName: .didBecomeJupiter, object: nil, queue: .main) { [weak self] notification in
+            self?.handleJupiterNotification(notification)
+        }
     }
-    
+
     func notificationCenterRemoveObserver() {
-        NotificationCenter.default.removeObserver(self.venusObserver)
-        NotificationCenter.default.removeObserver(self.jupiterObserver)
+        if let venusObserver = self.venusObserver {
+            NotificationCenter.default.removeObserver(venusObserver)
+        }
+        if let jupiterObserver = self.jupiterObserver {
+            NotificationCenter.default.removeObserver(jupiterObserver)
+        }
     }
-    
-    @objc func onDidReceiveNotification(_ notification: Notification) {
-        if notification.name == .didBecomeVenus {
-            self.phase = 1
-            self.isActiveKf = false
-            self.timeUpdateFlag = false
-            self.measurementUpdateFlag = false
-            self.timeUpdatePosition = KalmanOutput()
-            self.measurementPosition = KalmanOutput()
-            self.timeUpdateOutput = FineLocationTrackingFromServer()
-            self.measurementOutput = FineLocationTrackingFromServer()
-            self.isVenusMode = true
-            self.isStartSimulate = false
-            unitDRGenerator.setIsStartSimulate(isStartSimulate: self.isStartSimulate)
-            self.reporting(input: VENUS_FLAG)
-        }
-    
-        if notification.name == .didBecomeJupiter {
-            self.isVenusMode = false
-            self.reporting(input: JUPITER_FLAG)
-        }
+
+    // Private methods to handle each notification separately without @objc
+    private func handleVenusNotification(_ notification: Notification) {
+        self.phase = 1
+        self.isActiveKf = false
+        self.timeUpdateFlag = false
+        self.measurementUpdateFlag = false
+        self.timeUpdatePosition = KalmanOutput()
+        self.measurementPosition = KalmanOutput()
+        self.timeUpdateOutput = FineLocationTrackingFromServer()
+        self.measurementOutput = FineLocationTrackingFromServer()
+        self.isVenusMode = true
+        self.isStartSimulate = false
+        unitDRGenerator.setIsStartSimulate(isStartSimulate: self.isStartSimulate)
+        self.reporting(input: VENUS_FLAG)
+    }
+
+    private func handleJupiterNotification(_ notification: Notification) {
+        self.isVenusMode = false
+        self.reporting(input: JUPITER_FLAG)
     }
     
     public func initCollect() {
@@ -1370,7 +1384,10 @@ public class ServiceManager: Observation {
             let queueRFD = DispatchQueue(label: Bundle.main.bundleIdentifier! + ".receivedForceTimer")
             self.receivedForceTimer = DispatchSource.makeTimerSource(queue: queueRFD)
             self.receivedForceTimer!.schedule(deadline: .now(), repeating: RFD_INTERVAL)
-            self.receivedForceTimer!.setEventHandler(handler: self.receivedForceTimerUpdate)
+            self.receivedForceTimer!.setEventHandler { [weak self] in
+                guard let self = self else { return }
+                self.receivedForceTimerUpdate()
+            }
             self.receivedForceTimer!.resume()
         }
         
@@ -1378,7 +1395,10 @@ public class ServiceManager: Observation {
             let queueUVD = DispatchQueue(label: Bundle.main.bundleIdentifier! + ".userVelocityTimer")
             self.userVelocityTimer = DispatchSource.makeTimerSource(queue: queueUVD)
             self.userVelocityTimer!.schedule(deadline: .now(), repeating: UVD_INTERVAL)
-            self.userVelocityTimer!.setEventHandler(handler: self.userVelocityTimerUpdate)
+            self.userVelocityTimer!.setEventHandler { [weak self] in
+                guard let self = self else { return }
+                self.userVelocityTimerUpdate()
+            }
             self.userVelocityTimer!.resume()
         }
         
@@ -1387,7 +1407,10 @@ public class ServiceManager: Observation {
             let queueUP = DispatchQueue(label: Bundle.main.bundleIdentifier! + ".updateTimer")
             self.updateTimer = DispatchSource.makeTimerSource(queue: queueUP)
             self.updateTimer!.schedule(deadline: .now(), repeating: UPDATE_INTERVAL)
-            self.updateTimer!.setEventHandler(handler: self.outputTimerUpdate)
+            self.updateTimer!.setEventHandler { [weak self] in
+                guard let self = self else { return }
+                self.outputTimerUpdate()
+            }
             self.updateTimer!.resume()
         }
         
@@ -1396,7 +1419,10 @@ public class ServiceManager: Observation {
             let queueOSR = DispatchQueue(label: Bundle.main.bundleIdentifier! + ".osrTimer")
             self.osrTimer = DispatchSource.makeTimerSource(queue: queueOSR)
             self.osrTimer!.schedule(deadline: .now(), repeating: OSR_INTERVAL)
-            self.osrTimer!.setEventHandler(handler: self.osrTimerUpdate)
+            self.osrTimer!.setEventHandler { [weak self] in
+                guard let self = self else { return }
+                self.osrTimerUpdate()
+            }
             self.osrTimer!.resume()
         }
     }
@@ -1436,19 +1462,24 @@ public class ServiceManager: Observation {
     
     func startCollectTimer() {
         if (self.collectTimer == nil) {
-            self.collectTimer = Timer.scheduledTimer(timeInterval: UVD_INTERVAL, target: self, selector: #selector(self.collectTimerUpdate), userInfo: nil, repeats: true)
-            RunLoop.current.add(self.collectTimer!, forMode: .common)
+            let queueCollect = DispatchQueue(label: Bundle.main.bundleIdentifier! + ".collectTimer")
+            self.collectTimer = DispatchSource.makeTimerSource(queue: queueCollect)
+            self.collectTimer!.schedule(deadline: .now(), repeating: UVD_INTERVAL)
+            self.collectTimer!.setEventHandler { [weak self] in
+                guard let self = self else { return }
+                self.collectTimerUpdate()
+            }
+            self.collectTimer!.resume()
         }
+        
     }
     
     func stopCollectTimer() {
-        if (self.collectTimer != nil) {
-            self.collectTimer!.invalidate()
-            self.collectTimer = nil
-        }
+        self.collectTimer?.cancel()
+        self.collectTimer = nil
     }
     
-    @objc func outputTimerUpdate() {
+    func outputTimerUpdate() {
         if (self.isActiveService) {
             let currentTime = getCurrentTimeInMilliseconds()
             
@@ -1650,7 +1681,7 @@ public class ServiceManager: Observation {
         return result
     }
     
-    @objc func receivedForceTimerUpdate() {
+    func receivedForceTimerUpdate() {
         handleRfd()
     }
     
@@ -2061,7 +2092,7 @@ public class ServiceManager: Observation {
         }
     }
     
-    @objc func userVelocityTimerUpdate() {
+    func userVelocityTimerUpdate() {
         sensorManager.setRunMode(mode: self.runMode)
         let currentTime = getCurrentTimeInMilliseconds()
         let localTime = getLocalTimeString()
@@ -4575,7 +4606,7 @@ public class ServiceManager: Observation {
         })
     }
     
-    @objc func osrTimerUpdate() {
+    func osrTimerUpdate() {
         let currentTime = getCurrentTimeInMilliseconds()
         var isRunOsr: Bool = true
         if (self.isGetFirstResponse && !self.isInNetworkBadEntrance) {
@@ -4915,7 +4946,7 @@ public class ServiceManager: Observation {
     }
     
     
-    @objc func collectTimerUpdate() {
+    func collectTimerUpdate() {
         self.collectData = sensorManager.collectData
         
         let localTime = getLocalTimeString()

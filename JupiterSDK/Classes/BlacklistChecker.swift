@@ -1,5 +1,5 @@
 import Foundation
-
+import UIKit
 
 public class BlacklistChecker: Observation {
     public static let shared = BlacklistChecker()

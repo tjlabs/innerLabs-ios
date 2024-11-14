@@ -1670,7 +1670,7 @@ extension ServiceViewController: CustomSwitchButtonDelegate {
                 serviceManager.changeRegion(regionName: self.region)
                 let uniqueId = makeUniqueId(uuid: self.uuid)
 //                serviceManager.setSimulationMode(flag: true, bleFileName: "ble_coex_05_05_1007.csv", sensorFileName: "sensor_coex_05_05_1007.csv")
-//                serviceManager.setSimulationMode(flag: true, bleFileName: "ble_coex_04_0930.csv", sensorFileName: "sensor_coex_05_0930.csv")
+                serviceManager.setSimulationMode(flag: true, bleFileName: "ble_coex_04_0930.csv", sensorFileName: "sensor_coex_05_0930.csv")
                 var inputMode: String = "auto"
                 if (self.sector_id == 6 && self.region != "Canada") {
                     inputMode = "auto"
