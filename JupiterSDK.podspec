@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = 'JupiterSDK'
-  s.version          = '3.4.6.1'
+  s.version          = '3.4.6.2'
   s.summary          = 'JupiterSDK for iOS'
   s.swift_version    = '5.0'
   
@@ -19,5 +19,15 @@ Pod::Spec.new do |s|
   s.source_files = 'JupiterSDK/Classes/**/*'
 
   s.static_framework = true
+  s.pod_target_xcconfig = {
+      'ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES' => 'NO',
+      'VALID_ARCHS' => 'arm64 armv7 x86_64',
+      'SWIFT_OPTIMIZATION_LEVEL' => '-Onone'
+  }
+  s.user_target_xcconfig = {
+    'ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES' => 'NO',
+    'VALID_ARCHS' => 'arm64 armv7 x86_64',
+    'SWIFT_OPTIMIZATION_LEVEL' => '-Onone'
+  }
   
 end
