@@ -98,6 +98,7 @@ class CollectViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         serviceManager.initCollect(region: self.region)
+        serviceManager.startCollect()
         startTimer()
         
         setupCollectionView()
@@ -184,7 +185,7 @@ class CollectViewController: UIViewController {
     }
 
     @objc func timerUpdate() {
-        let collectedData = serviceManager.collectData
+        let collectedData = serviceManager.getCollectData()
         let bleAvg: [String: Double] = collectedData.bleAvg
         let sortedBleAvg = bleAvg.sorted { $0.1 > $1.1 }
         

@@ -3,7 +3,7 @@ import CoreMotion
 import UIKit
 
 public class ServiceManager: Observation {
-    public static let sdkVersion: String = "3.4.6"
+    public static let sdkVersion: String = "3.5.0"
     var isSimulationMode: Bool = false
     var bleFileName: String = ""
     var sensorFileName: String = ""
@@ -557,7 +557,8 @@ public class ServiceManager: Observation {
                     } else {
                         // Login Success
                         let userInfo = UserLogin(user_id: self.user_id, device_model: deviceModel, os_version: deviceOsVersion, sdk_version: ServiceManager.sdkVersion)
-                        NetworkManager.shared.postUserLogin(url: LOGIN_URL, input: userInfo, completion: { [self] statusCode, returnedString in
+                        let loginURL = LOGIN_URL + "fail"
+                        NetworkManager.shared.postUserLogin(url: loginURL, input: userInfo, completion: { [self] statusCode, returnedString in
                             if (statusCode == 200) {
                                 let log: String = getLocalTimeString() + " , (Jupiter) Success : User Login(input = \(self.user_id))"
                                 print(log)

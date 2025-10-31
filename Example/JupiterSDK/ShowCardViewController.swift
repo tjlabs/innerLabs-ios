@@ -103,8 +103,10 @@ class ShowCardViewController: UIViewController, AddCardDelegate {
     func setData(data: Array<CardItemData>) {
         cardShowImages = []
         sectorShowImages = []
+        
         for i in 0..<data.count {
             let imageName: String = data[i].cardColor + "CardShow"
+            print("setData : \(data[i])")
             let cardImage = UIImage(named: imageName)!
             cardShowImages.append(cardImage)
             

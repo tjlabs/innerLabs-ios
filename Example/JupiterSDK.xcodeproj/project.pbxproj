@@ -46,6 +46,7 @@
 		B3455283282AB7B400F0DD3E /* ServiceInfoTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3455281282AB7B400F0DD3E /* ServiceInfoTableViewCell.swift */; };
 		B3455284282AB7B400F0DD3E /* ServiceInfoTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B3455282282AB7B400F0DD3E /* ServiceInfoTableViewCell.xib */; };
 		B3497310293847DC0078C872 /* FusionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B349730F293847DC0078C872 /* FusionViewController.swift */; };
+		B34EC3562DDD9BAA00531DBB /* SecretConfig.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = B34EC3552DDD9BAA00531DBB /* SecretConfig.xcconfig */; };
 		B35272B2281F8DC300321CC6 /* SplashScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B35272B1281F8DC300321CC6 /* SplashScreen.storyboard */; };
 		B3607E4E29B8C34700F11AA6 /* ProgressCircleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3607E4D29B8C34700F11AA6 /* ProgressCircleView.swift */; };
 		B360D88E28090D6A0084FB22 /* NotoSansKR-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = B360D88828090D680084FB22 /* NotoSansKR-Bold.otf */; };
@@ -76,7 +77,6 @@
 		B3AA004B28313CDF007CD284 /* UITextFieldExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3AA004A28313CDF007CD284 /* UITextFieldExtension.swift */; };
 		B3AA004D28313CEA007CD284 /* UITextViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3AA004C28313CEA007CD284 /* UITextViewExtension.swift */; };
 		B3AE49DD2AAAD8C70035E8F0 /* Dabeeo_8F.csv in Resources */ = {isa = PBXBuildFile; fileRef = B3AE49DC2AAAD8C70035E8F0 /* Dabeeo_8F.csv */; };
-		B3B2963C29B9756F0010CC64 /* SecretConfig.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = B3B2963B29B9756F0010CC64 /* SecretConfig.xcconfig */; };
 		B3B4F85A28114EEB009F9E6C /* ShowCardCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3B4F85828114EEB009F9E6C /* ShowCardCollectionViewCell.swift */; };
 		B3B4F85B28114EEB009F9E6C /* ShowCardCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B3B4F85928114EEB009F9E6C /* ShowCardCollectionViewCell.xib */; };
 		B3B7FBF52856DA4000E23EDF /* PopUpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3B7FBF42856DA4000E23EDF /* PopUpViewController.swift */; };
@@ -192,6 +192,7 @@
 		B3455281282AB7B400F0DD3E /* ServiceInfoTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceInfoTableViewCell.swift; sourceTree = "<group>"; };
 		B3455282282AB7B400F0DD3E /* ServiceInfoTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ServiceInfoTableViewCell.xib; sourceTree = "<group>"; };
 		B349730F293847DC0078C872 /* FusionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FusionViewController.swift; sourceTree = "<group>"; };
+		B34EC3552DDD9BAA00531DBB /* SecretConfig.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = SecretConfig.xcconfig; sourceTree = "<group>"; };
 		B35272B1281F8DC300321CC6 /* SplashScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = SplashScreen.storyboard; sourceTree = "<group>"; };
 		B3607E4D29B8C34700F11AA6 /* ProgressCircleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressCircleView.swift; sourceTree = "<group>"; };
 		B360D8642807C6090084FB22 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../../Downloads/GoogleService-Info.plist"; sourceTree = "<group>"; };
@@ -223,7 +224,6 @@
 		B3AA004C28313CEA007CD284 /* UITextViewExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITextViewExtension.swift; sourceTree = "<group>"; };
 		B3AE49DC2AAAD8C70035E8F0 /* Dabeeo_8F.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Dabeeo_8F.csv; sourceTree = "<group>"; };
 		B3AE49DE2AAECB770035E8F0 /* JupiterSDK_ExampleRelease.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = JupiterSDK_ExampleRelease.entitlements; sourceTree = "<group>"; };
-		B3B2963B29B9756F0010CC64 /* SecretConfig.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = SecretConfig.xcconfig; sourceTree = "<group>"; };
 		B3B4F85828114EEB009F9E6C /* ShowCardCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowCardCollectionViewCell.swift; sourceTree = "<group>"; };
 		B3B4F85928114EEB009F9E6C /* ShowCardCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ShowCardCollectionViewCell.xib; sourceTree = "<group>"; };
 		B3B5E5AF2B0DD1CC00639A1E /* JupiterSDK_Example.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = JupiterSDK_Example.entitlements; sourceTree = "<group>"; };
@@ -385,7 +385,7 @@
 				B3FE481C2967965600EDAE94 /* Eureka_KIST.csv */,
 				B364B35328BCD8C5001A8950 /* LUPIUM_7F.csv */,
 				B3D488F5289B8B4900A8154C /* GoogleService-Info.plist */,
-				B3B2963B29B9756F0010CC64 /* SecretConfig.xcconfig */,
+				B34EC3552DDD9BAA00531DBB /* SecretConfig.xcconfig */,
 				B3614BC62BB6CAEC005D2588 /* PrivacyInfo.xcprivacy */,
 				607FACDC1AFB9204008FA782 /* Images.xcassets */,
 				607FACD31AFB9204008FA782 /* Supporting Files */,
@@ -646,10 +646,10 @@
 				607FACCC1AFB9204008FA782 /* Sources */,
 				607FACCD1AFB9204008FA782 /* Frameworks */,
 				607FACCE1AFB9204008FA782 /* Resources */,
-				B3F7C8D429F7A46E00EC30E0 /* Run Script */,
 				23B874579DED908C89C9DDAE /* [CP] Embed Pods Frameworks */,
 				22CE5EE675665624472ED0F0 /* [CP] Copy Pods Resources */,
-				B33C72112C3291C4005ABE9B /* ShellScript */,
+				B33C72112C3291C4005ABE9B /* Run Script */,
+				B3F7C8D429F7A46E00EC30E0 /* Run Script */,
 			);
 			buildRules = (
 			);
@@ -772,6 +772,7 @@
 				B3B9F4E5286C2EA300FEE914 /* Gallery_4F_Road.csv in Resources */,
 				B34111BA2AD6503400CFA422 /* L3_4F.csv in Resources */,
 				B34111C02AD6503400CFA422 /* L8_B1.csv in Resources */,
+				B34EC3562DDD9BAA00531DBB /* SecretConfig.xcconfig in Resources */,
 				B3985D4B299A1F1E008E7F78 /* FileCollectionViewCell.xib in Resources */,
 				B30638F52A36E58800C7FF89 /* COEX_B4.csv in Resources */,
 				B3BD69B027E9A78000A32A7A /* SectorContainerTableViewCell.xib in Resources */,
@@ -781,7 +782,6 @@
 				B3DEEDC22B3E818600A47623 /* ASJTM_1F.csv in Resources */,
 				B3DE961D2999F65500352F40 /* WardCollectionViewCell.xib in Resources */,
 				B30D4F89298A0BF000BFC124 /* morguard_6F.csv in Resources */,
-				B3B2963C29B9756F0010CC64 /* SecretConfig.xcconfig in Resources */,
 				B3A641AD2B621BF400845B32 /* L3_5F.csv in Resources */,
 				B3844E8F28099EE3007A5215 /* CardCollectionViewCell.xib in Resources */,
 			);
@@ -912,7 +912,7 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		B33C72112C3291C4005ABE9B /* ShellScript */ = {
+		B33C72112C3291C4005ABE9B /* Run Script */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -921,6 +921,7 @@
 			);
 			inputPaths = (
 			);
+			name = "Run Script";
 			outputFileListPaths = (
 			);
 			outputPaths = (
@@ -947,7 +948,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\n\"${PODS_ROOT}/FirebaseCrashlytics/run\"\n\"${PODS_ROOT}/FirebaseCrashlytics/upload-symbols\" -gsp ${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.app/GoogleService-Info.plist -p ios ${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}\n";
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\n\"${PODS_ROOT}/FirebaseCrashlytics/run\" \\\n  -gsp \"${PROJECT_DIR}/JupiterSDK/GoogleService-Info.plist\" \\\n  -dSYM \"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}\"\n";
 		};
 		E5FB031E877E558388550E41 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1082,7 +1083,6 @@
 /* Begin XCBuildConfiguration section */
 		607FACED1AFB9204008FA782 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = B3B2963B29B9756F0010CC64 /* SecretConfig.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
@@ -1137,7 +1137,6 @@
 		};
 		607FACEE1AFB9204008FA782 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = B3B2963B29B9756F0010CC64 /* SecretConfig.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
